@@ -1,0 +1,17 @@
+{
+  "PM_DATABASE": {
+    "connectionLimit": 20,
+    "host": "localhost",
+    "port": 3012,
+    "user": "root",
+    "password": "root",
+    "database": ""
+  },
+
+  "API": {
+    "LOCAL": "",
+    "ONLINE": "",
+    "CURRENT": ""
+  },
+  "PORT": 9000
+}
