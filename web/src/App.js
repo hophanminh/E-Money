@@ -1,24 +1,60 @@
-import logo from './logo.svg';
 import './App.css';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+} from "react-router-dom";
+import NavBar from './components/navBar/navBar';
+import Home from './components/home/home';
+import PrivateRoute from './components/PrivateRoute';
+import StickyFooter from './components/stickyFooter/StickyFooter';
+import Dashboard from './components/Dashboard/Dashboard';
+
+const routes = [
+  {
+    path: "/",
+    exact: true,
+    private: false,
+    main: () => <Home />
+  },
+  {
+    path: "/Dashboard",
+    private: true,
+    main: () => <Dashboard />
+  },
+
+];
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <div className="App">
+        <NavBar />
+        <Switch>
+          {routes.map((route, index) => {
+            return (route.private ?
+              <PrivateRoute
+                key={index}
+                path={route.path}
+                exact={route.exact}
+                children={<route.main />}
+              />
+              :
+              <Route
+                key={index}
+                path={route.path}
+                exact={route.exact}
+                children={<route.main />}
+              />
+            )
+          })}
+          <Route path="*">
+            <Home />
+          </Route>
+        </Switch>
+        <StickyFooter />
+      </div>
+    </Router>
   );
 }
 
