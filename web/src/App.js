@@ -29,7 +29,7 @@ function App() {
   return (
     <Router>
       <div className="App">
-        <NavBar />
+        {/* <NavBar /> */}
         <Switch>
           {routes.map((route, index) => {
             return (route.private ?
@@ -52,7 +52,7 @@ function App() {
             <Home />
           </Route>
         </Switch>
-        <StickyFooter />
+        {/* <StickyFooter /> */}
       </div>
     </Router>
   );
