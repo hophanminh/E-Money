@@ -4,11 +4,11 @@ import {
   Switch,
   Route,
 } from "react-router-dom";
-import NavBar from './components/navBar/navBar';
 import Home from './components/home/home';
 import PrivateRoute from './components/PrivateRoute';
 import StickyFooter from './components/stickyFooter/StickyFooter';
 import Dashboard from './components/Dashboard/Dashboard';
+import Menu from "./components/SideBar/Menu";
 
 const routes = [
   {
@@ -30,6 +30,7 @@ function App() {
     <Router>
       <div className="App">
         {/* <NavBar /> */}
+        <Menu />
         <Switch>
           {routes.map((route, index) => {
             return (route.private ?
@@ -52,7 +53,7 @@ function App() {
             <Home />
           </Route>
         </Switch>
-        {/* <StickyFooter /> */}
+        <StickyFooter/>
       </div>
     </Router>
   );
