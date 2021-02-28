@@ -9,7 +9,9 @@ import PrivateRoute from './components/PrivateRoute';
 import StickyFooter from './components/stickyFooter/StickyFooter';
 import Dashboard from './components/Dashboard/Dashboard';
 import Menu from "./components/SideBar/Menu";
-
+import SignIn from './components/signin/SignIn';
+import SignUp from './components/signup/SignUp';
+import ActivateDestination from './components/activedestination/ActiveDestination';
 const routes = [
   {
     path: "/",
@@ -18,11 +20,25 @@ const routes = [
     main: () => <Home />
   },
   {
-    path: "/Dashboard",
+    path: "/dashboard",
     private: true,
     main: () => <Dashboard />
   },
-
+  {
+    path: "/signin",
+    private: false,
+    main: () => <SignIn />
+  },
+  {
+    path: '/signup',
+    private: false,
+    main: () => <SignUp />
+  },
+  {
+    path: '/active/:id',
+    private: false,
+    main: () => <ActivateDestination />
+  }
 ];
 
 function App() {
@@ -53,7 +69,7 @@ function App() {
             <Home />
           </Route>
         </Switch>
-        <StickyFooter/>
+        <StickyFooter />
       </div>
     </Router>
   );

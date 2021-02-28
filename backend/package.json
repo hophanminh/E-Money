@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node app",
+    "start": "nodemon app",
     "dev": "nodemon app"
   },
   "author": "",
@@ -16,8 +16,13 @@
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "http-errors": "^1.8.0",
+    "js-base64": "^3.6.0",
     "moment": "^2.29.1",
     "mysql": "^2.18.1",
-    "nodemon": "^2.0.7"
+    "nodemailer": "^6.5.0",
+    "nodemon": "^2.0.7",
+    "passport": "^0.4.1",
+    "passport-jwt": "^4.0.0",
+    "uuid": "^8.3.2"
   }
 }
