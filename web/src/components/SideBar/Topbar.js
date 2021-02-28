@@ -140,7 +140,7 @@ function Topbar(props) {
           )}
         </div>
       </Toolbar>
-    </AppBar >
+    </AppBar>
   )
 }
 
