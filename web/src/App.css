@@ -36,3 +36,39 @@
     transform: rotate(360deg);
   }
 }
+
+.bgimg {
+  background-image: url('/src/resources/images/background1.jpg');
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  filter: brightness(60%);
+}
+
+.trap-container {
+  position: relative;
+  /*Change this to test responsive*/
+  width: 100%;
+  /*change this to test responsive*/
+  height: 100vh;
+}
+
+.trap-container div svg {
+  position: absolute;
+}
+.trap-content {
+  display: inline-block;
+  position: relative;
+  padding-top: 11%;
+  height: 80%;
+  width: 90%;
+  bottom: 10%;
+  color: white;
+}
+
+.input-invalid {
+  color: red;
+  font-style: italic;
+  font-size: small;
+  text-align: left;
+  margin-bottom: 5px;
+}

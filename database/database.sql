@@ -23,7 +23,7 @@ CREATE TABLE Users(
     Email VARCHAR(100) NOT NULL,
     DateOfBirth DATE,
     AvatarURL VARCHAR(1000),
-    ActivatedDate DATE NOT NULL,
+    ActivatedDate DATE,
     WalletID VARCHAR(100),
     PRIMARY KEY(ID)
 );
