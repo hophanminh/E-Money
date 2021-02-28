@@ -8,8 +8,10 @@ import NavBar from './components/navBar/navBar';
 import Home from './components/home/home';
 import PrivateRoute from './components/PrivateRoute';
 import StickyFooter from './components/stickyFooter/StickyFooter';
-import Dashboard from './components/Dashboard/Dashboard';
-
+import Dashboard from './components/dashboard/Dashboard';
+import SignIn from './components/signin/SignIn';
+import SignUp from './components/signup/SignUp';
+import ActivateDestination from './components/activedestination/ActiveDestination';
 const routes = [
   {
     path: "/",
@@ -18,11 +20,25 @@ const routes = [
     main: () => <Home />
   },
   {
-    path: "/Dashboard",
+    path: "/dashboard",
     private: true,
     main: () => <Dashboard />
   },
-
+  {
+    path: "/signin",
+    private: false,
+    main: () => <SignIn />
+  },
+  {
+    path: '/signup',
+    private: false,
+    main: () => <SignUp />
+  },
+  {
+    path: '/active/:id',
+    private: false,
+    main: () => <ActivateDestination />
+  }
 ];
 
 function App() {

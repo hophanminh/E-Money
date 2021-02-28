@@ -1,4 +1,13 @@
 {
+  "mysql": {
+    "connectionLimit": 10,
+    "host": "localhost",
+    "port": 3306,
+    "user": "root",
+    "password": "root",
+    "database": "qlchitieu",
+    "insecureAuth": true
+  },
   "PM_DATABASE": {
     "connectionLimit": 20,
     "host": "localhost",
@@ -7,11 +16,14 @@
     "password": "root",
     "database": ""
   },
-
   "API": {
     "LOCAL": "",
     "ONLINE": "",
     "CURRENT": ""
   },
-  "PORT": 9000
+  "PORT": 9000,
+  "PASSPORTKEY": "whatdoyoumean",
+  "HASHROUND": 10,
+  "APPLOCAL": "http://localhost:3000",
+  "APPPRODUCTION": ""
 }
