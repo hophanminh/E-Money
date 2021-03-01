@@ -92,6 +92,9 @@ const useStyles = makeStyles((theme) => ({
         wight: 52,
         height: 52,
         borderRadius: 50
+    },
+    colorTopBar: {
+        background: "green !important"
     }
 }));
 
@@ -104,7 +107,7 @@ function Topbar(props) {
     const openSidebar = props.open;
     return (
         <AppBar position="absolute" className={clsx(classes.appBar, openSidebar && classes.appBarShift)}>
-            <Toolbar className={`${classes.toolbar} ${classes.spaceBetween}`}>
+            <Toolbar className={`${classes.toolbar} ${classes.spaceBetween} ${classes.colorTopBar}`}>
                 <div>
                     <IconButton
                         edge="start"
