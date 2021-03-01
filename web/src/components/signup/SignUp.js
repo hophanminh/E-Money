@@ -76,11 +76,11 @@ export default function SignUp() {
       errorObjs.email = "Email không hợp lệ";
     }
 
-    if (password.length < config.passwordMinLength) {
+    if (password.length < config.PASSWORDMINLENGTH) {
       errorObjs.password = "Mật khẩu phải chứa ít nhất 6 ký tự";
     }
 
-    if (confirmedPassword.length < config.passwordMinLength) {
+    if (confirmedPassword.length < config.PASSWORDMINLENGTH) {
       errorObjs.confirmedPassword = "Mật khẩu phải chứa ít nhất 6 ký tự";
     } else if (password !== confirmedPassword) {
       errorObjs.confirmedPassword = "Mật khẩu xác nhận không khớp";

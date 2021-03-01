@@ -92,7 +92,7 @@ export default function SignIn() {
       errorObjs.username = "Tên tài khoản không được chứa khoảng trắng";
     }
 
-    if (password.length < config.passwordMinLength) {
+    if (password.length < config.PASSWORDMINLENGTH) {
       errorObjs.password = "Mật khẩu phải chứa ít nhất 6 ký tự";
     }
     setErrors(errorObjs);
