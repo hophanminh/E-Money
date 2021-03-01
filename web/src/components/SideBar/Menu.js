@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import SideBar from "./SideBar";
 import Topbar from "./Topbar";
+import TopBarNotLogin from "./TopBarNotLogIn";
 
 export default function Menu(props) {
     const [open, setOpen] = useState(false);
@@ -13,11 +14,12 @@ export default function Menu(props) {
   
     return (
         <>
-            <Topbar 
+            <Topbar
                 handleDrawerOpen = {(i) => handleDrawerOpen()}
                 open = {open}
                 title = {props.title}
             />
+            {/*<TopBarNotLogin/>*/}
             <SideBar  
                 handleDrawerClose = {(i) => handleDrawerClose()}
                 open = {open}
