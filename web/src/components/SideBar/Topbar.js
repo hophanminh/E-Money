@@ -104,7 +104,7 @@ function Topbar(props) {
   const openSidebar = props.open;
   return (
     <AppBar position="absolute" className={clsx(classes.appBar, openSidebar && classes.appBarShift)}>
-      <Toolbar className={`${classes.toolbar } ${classes.spaceBetween}`} >
+      <Toolbar className={`${classes.toolbar} ${classes.spaceBetween}`} >
         <IconButton
           edge="start"
           color="inherit"
@@ -125,16 +125,16 @@ function Topbar(props) {
           )}
 
           {(
-              <>
-                <ListItem button component={NavLink} to="/Login" onClick={(e) => logOut(e)} className={classes.button}>
-                  <NotificationsNoneIcon/>
-                </ListItem>
-              </>
+            <>
+              <ListItem button component={NavLink} to="/Login" onClick={(e) => logOut(e)} className={classes.button}>
+                <NotificationsNoneIcon />
+              </ListItem>
+            </>
           )}
           {(
             <>
               <ListItem button component={NavLink} to="/Login" onClick={(e) => logOut(e)} className={classes.button}>
-                <ExitToAppIcon   />
+                <ExitToAppIcon />
               </ListItem>
             </>
           )}
