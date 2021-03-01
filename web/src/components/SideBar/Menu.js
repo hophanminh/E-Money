@@ -3,27 +3,40 @@ import SideBar from "./SideBar";
 import Topbar from "./Topbar";
 import TopBarNotLogin from "./TopBarNotLogIn";
 
+
 export default function Menu(props) {
     const [open, setOpen] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(true);
     const handleDrawerOpen = () => {
-      setOpen(true);
+        setOpen(true);
     };
     const handleDrawerClose = () => {
-      setOpen(false);
+        setOpen(false);
     };
-  
-    return (
-        <>
-            <Topbar
-                handleDrawerOpen = {(i) => handleDrawerOpen()}
-                open = {open}
-                title = {props.title}
-            />
-            {/*<TopBarNotLogin/>*/}
-            <SideBar  
-                handleDrawerClose = {(i) => handleDrawerClose()}
-                open = {open}
-            />
-        </>
-    )
+
+        return (
+            <>
+                {isLoggedIn ?
+                    (
+                        <>
+                            <Topbar
+                                handleDrawerOpen = {() => handleDrawerOpen()}
+                                open = {open}
+                                titl e = {props.title}
+                            />
+                            <SideBar
+                                handleDrawerClose = {() => handleDrawerClose()}
+                                open = {open}
+                            />
+                        </>
+                    )
+                    :
+                    (
+                        <>
+                            <TopBarNotLogin/>
+                            </>
+                    )
+                }
+            </>
+        )
 }
