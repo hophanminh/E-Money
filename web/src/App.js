@@ -1,3 +1,4 @@
+import React, { useEffect, useContext } from 'react';
 import './App.css';
 import {
   BrowserRouter as Router,
@@ -14,6 +15,13 @@ import Menu from "./components/SideBar/Menu";
 import SignIn from './components/signin/SignIn';
 import SignUp from './components/signup/SignUp';
 import ActivateDestination from './components/activedestination/ActiveDestination';
+import Profile from './components/profile/Profile';
+// import { MyProvider } from './components/mycontext/MyContext';
+import MyContext from './components/mycontext/MyContext';
+import config from './constants/config.json';
+
+const API_URL = config.API_LOCAL;
+
 const routes = [
   {
     path: "/",
@@ -40,6 +48,10 @@ const routes = [
     path: '/active/:id',
     private: false,
     main: () => <ActivateDestination />
+  }, {
+    path: '/profile',
+    private: true,
+    main: () => <Profile />
   }
 ];
 
@@ -50,18 +62,40 @@ const useStyles = makeStyles((theme) => ({
   },
   content: {
     margin: "auto",
-    marginTop: '100px',
+    marginTop: '68px',
     width: '100%'
   },
 }));
 
 function App() {
   const classes = useStyles();
+  const [isLoggedIn, setIsLoggedIn] = useContext(MyContext);
+
+  useEffect(() => {
+
+    async function authen() {
+      const jwtToken = window.localStorage.getItem('jwtToken');
+      const res = await fetch(`${API_URL}/users/authenticate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${jwtToken}`
+        }
+      });
+      if (res.status === 200) {
+        setIsLoggedIn(true);
+      } else {
+        setIsLoggedIn(false);
+      }
+    }
+    authen();
+  }, [])
 
   return (
     <Router>
       <div>
         <CssBaseline />
+        {/* <MyProvider> */}
         <div className={classes.body}>
           <Menu />
           <div className={classes.content}>
@@ -89,6 +123,7 @@ function App() {
             </Switch>
           </div>
         </div>
+        {/* </MyProvider> */}
         <StickyFooter />
       </div>
     </Router>

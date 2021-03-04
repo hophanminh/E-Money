@@ -92,6 +92,9 @@ const useStyles = makeStyles((theme) => ({
     wight: 52,
     height: 52,
     borderRadius: 50
+  },
+  colorTopBar: {
+    background: "green !important"
   }
 }));
 
@@ -104,16 +107,18 @@ function Topbar(props) {
   const openSidebar = props.open;
   return (
     <AppBar position="absolute" className={clsx(classes.appBar, openSidebar && classes.appBarShift)}>
-      <Toolbar className={`${classes.toolbar } ${classes.spaceBetween}`} >
-        <IconButton
-          edge="start"
-          color="inherit"
-          aria-label="open drawer"
-          onClick={() => props.handleDrawerOpen()}
-          className={clsx(classes.menuButton, openSidebar && classes.menuButtonHidden)}
-        >
-          <MenuIcon />
-        </IconButton>
+      <Toolbar className={`${classes.toolbar} ${classes.spaceBetween} ${classes.colorTopBar}`}>
+        <div>
+          <IconButton
+            edge="start"
+            color="inherit"
+            aria-label="open drawer"
+            onClick={() => props.handleDrawerOpen()}
+            className={clsx(classes.menuButton, openSidebar && classes.menuButtonHidden)}
+          >
+            <MenuIcon />
+          </IconButton>
+        </div>
         <div className={classes.topBarButton}>
           {(
             <>
@@ -125,16 +130,18 @@ function Topbar(props) {
           )}
 
           {(
-              <>
-                <ListItem button component={NavLink} to="/Login" onClick={(e) => logOut(e)} className={classes.button}>
-                  <NotificationsNoneIcon/>
-                </ListItem>
-              </>
+            <>
+              <ListItem button component={NavLink} to="/Login" onClick={(e) => logOut(e)}
+                className={classes.button}>
+                <NotificationsNoneIcon />
+              </ListItem>
+            </>
           )}
           {(
             <>
-              <ListItem button component={NavLink} to="/Login" onClick={(e) => logOut(e)} className={classes.button}>
-                <ExitToAppIcon   />
+              <ListItem button component={NavLink} to="/Login" onClick={(e) => logOut(e)}
+                className={classes.button}>
+                <ExitToAppIcon />
               </ListItem>
             </>
           )}
