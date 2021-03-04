@@ -51,6 +51,7 @@ const useStyles = makeStyles((theme) => ({
   content: {
     margin: "auto",
     marginTop: '100px',
+    width: '100%'
   },
 }));
 
