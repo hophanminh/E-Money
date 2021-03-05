@@ -16,14 +16,16 @@
     "@testing-library/jest-dom": "^5.11.9",
     "@testing-library/react": "^11.2.5",
     "@testing-library/user-event": "^12.6.3",
-    "moment": "^2.29.1",
+    "currency.js": "^2.0.3",
     "date-fns": "^2.18.0",
     "material-ui-dropzone": "^3.5.0",
+    "moment": "^2.29.1",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-icons": "^4.2.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.2",
+    "socket.io-client": "^3.1.2",
     "web-vitals": "^1.1.0"
   },
   "scripts": {

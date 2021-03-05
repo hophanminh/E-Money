@@ -60,47 +60,19 @@ const useStyles = makeStyles({
 });
 
 const fakeCategory = [{
-    id: 1,
+    id: '1',
     avatar: "food",
     categoryName: 'Ăn uống',
     check: true
 },
 {
-    id: 2,
+    id: '2',
     avatar: "book",
     categoryName: 'Học tập',
     check: true
 },
-{
-    id: 3,
-    avatar: "food",
-    categoryName: 'Ăn uống',
-    check: true
-},
-{
-    id: 4,
-    avatar: "book",
-    categoryName: 'Ăn vặt',
-    check: true
-},
 ]
-const fakeEvent = [{
-    id: 0,
-    name: "Không có"
-},
-{
-    id: 1,
-    name: "Tổng kết học kì 1"
-},
-{
-    id: 2,
-    name: "Tiền lương hàng tháng"
-},
-{
-    id: 3,
-    name: "Tiền điện"
-},
-]
+const fakeEvent = [];
 
 export default function EditTransaction({ data, setData, open, setOpen }) {
     const classes = useStyles();
@@ -124,7 +96,7 @@ export default function EditTransaction({ data, setData, open, setOpen }) {
 
         newTransaction.avatar = newCategory.avatar;
         newTransaction.categoryName = newCategory.categoryName;
-        newTransaction.eventName = newEvent.name;
+        newTransaction.eventName = newEvent ? newEvent.name : null;
 
         setData(newTransaction);
         setOpen(false);
@@ -146,6 +118,16 @@ export default function EditTransaction({ data, setData, open, setOpen }) {
             time: time
         });
     }
+    const handleChangeMoney = (e) => {
+        const max = 999999999;
+        const min = -999999999;
+        let temp = Number(e.target.value) > 999999999 ? 999999999 : e.target.value;
+        temp = Number(e.target.value) < -999999999 ? -999999999 : temp;
+        setNewTransaction({
+            ...newTransaction,
+            price: temp
+        });
+    }
 
     return (
         <Dialog open={open} onClose={handleCloseEditDialog} aria-labelledby="form-dialog-title">
@@ -164,7 +146,7 @@ export default function EditTransaction({ data, setData, open, setOpen }) {
                         label="Số tiền *"
                         type="number"
                         value={newTransaction.price}
-                        onChange={handleChange}
+                        onChange={e => handleChangeMoney(e)}
                         InputLabelProps={{
                             shrink: true,
                         }}
@@ -221,6 +203,10 @@ export default function EditTransaction({ data, setData, open, setOpen }) {
                         fullWidth
                         variant="outlined"
                     >
+                        <MenuItem key={0} value={0}>
+                            Không có
+                        </MenuItem>
+
                         {fakeEvent.map((event) => (
                             <MenuItem key={event.id} value={event.id}>
                                 {event.name}
