@@ -20,6 +20,7 @@ import {
 } from '@material-ui/pickers';
 
 import DefaultIcon from '../../../utils/DefaultIcon'
+import currency from 'currency.js'
 
 const useStyles = makeStyles({
     title: {
@@ -60,54 +61,26 @@ const useStyles = makeStyles({
 });
 
 const fakeCategory = [{
-    id: 1,
+    id: '1',
     avatar: "food",
     categoryName: 'Ăn uống',
     check: true
 },
 {
-    id: 2,
+    id: '2',
     avatar: "book",
     categoryName: 'Học tập',
     check: true
 },
-{
-    id: 3,
-    avatar: "food",
-    categoryName: 'Ăn uống',
-    check: true
-},
-{
-    id: 4,
-    avatar: "book",
-    categoryName: 'Ăn vặt',
-    check: true
-},
 ]
-const fakeEvent = [{
-    id: 0,
-    name: "Không có"
-},
-{
-    id: 1,
-    name: "Tổng kết học kì 1"
-},
-{
-    id: 2,
-    name: "Tiền lương hàng tháng"
-},
-{
-    id: 3,
-    name: "Tiền điện"
-},
-]
+const fakeEvent = []
 
 export default function AddTransaction({ open, setOpen, addList }) {
     const classes = useStyles();
     const [newTransaction, setNewTransaction] = useState({
         price: 1000,
         time: new Date(),
-        catID: 1,
+        catID: '1',
         eventID: 0,
         description: "",
         avatar: "",
@@ -119,7 +92,7 @@ export default function AddTransaction({ open, setOpen, addList }) {
         setNewTransaction({
             price: 1000,
             time: new Date(),
-            catID: 1,
+            catID: '1',
             eventID: 0,
             description: "",
             avatar: "",
@@ -138,8 +111,8 @@ export default function AddTransaction({ open, setOpen, addList }) {
 
         newTransaction.avatar = newCategory.avatar;
         newTransaction.categoryName = newCategory.categoryName;
-        newTransaction.eventName = newEvent.name;
-        
+        newTransaction.eventName = newEvent ? newEvent.name : null;
+
         addList(newTransaction);
         setOpen(false);
         clearNewTransaction();
@@ -161,6 +134,17 @@ export default function AddTransaction({ open, setOpen, addList }) {
         });
     }
 
+    const handleChangeMoney = (e) => {
+        const max = 999999999;
+        const min = -999999999;
+        let temp = Number(e.target.value) > 999999999 ? 999999999 : e.target.value;
+        temp = Number(e.target.value) < -999999999 ? -999999999 : temp;
+        setNewTransaction({
+            ...newTransaction,
+            price: temp
+        });
+    }
+
     return (
         <Dialog open={open} onClose={handleCloseAddDialog} aria-labelledby="form-dialog-title">
             <DialogTitle id="form-dialog-title" >
@@ -178,11 +162,12 @@ export default function AddTransaction({ open, setOpen, addList }) {
                         label="Số tiền *"
                         type="number"
                         value={newTransaction.price}
-                        onChange={handleChange}
+                        onChange={e => handleChangeMoney(e)}
                         InputLabelProps={{
                             shrink: true,
                         }}
                         fullWidth
+                        inputProps={{ max: 12 }}
                         variant="outlined"
                     />
                     <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -235,6 +220,9 @@ export default function AddTransaction({ open, setOpen, addList }) {
                         fullWidth
                         variant="outlined"
                     >
+                        <MenuItem key={0} value={0}>
+                            Không có
+                        </MenuItem>
                         {fakeEvent.map((event) => (
                             <MenuItem key={event.id} value={event.id}>
                                 {event.name}

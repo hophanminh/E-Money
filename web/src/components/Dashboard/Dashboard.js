@@ -25,6 +25,7 @@ import TransactionDetail from './TransactionDetail'
 
 import moment from 'moment'
 import AddTransaction from './CRUDTransaction/AddTransaction';
+import socket from "../../utils/socket";
 
 const useStyles = makeStyles((theme) => ({
   root: (theme) => ({
@@ -192,74 +193,16 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-const fakeData = [{
-  id: 1,
-  catID: 1,
-  avatar: "food",
-  categoryName: 'Ăn uống',
-  description: 'Mua 2 cuốn 1 sách khoa học dawd awd awd awd adsa dawd awd awd asd sa dsad awda wdaw daw d',
-  price: 9000000,
-  time: Date(),
-  eventID: 3,
-  eventName: "Tiền điện"
-},
-{
-  id: 2,
-  catID: 2,
-  avatar: "book",
-  categoryName: 'Học tập',
-  description: 'Mua 2 cuốn sách khoa học dawd awd awd awd adsa dawd awd awd asd sa dsad awda wdaw daw d',
-  price: 9000000,
-  time: Date(),
-  eventID: 3,
-  eventName: "Tiền điện"
-},
-{
-  id: 3,
-  catID: 3,
-  avatar: "food",
-  categoryName: 'Ăn uống',
-  description: 'Mua 2 cuốn sách khoa học dawd awd awd awd adsa dawd awd awd asd sa dsad awda wdaw daw d',
-  price: 9000,
-  time: Date(),
-  eventID: 3,
-  eventName: "Tiền điện"
-},
-{
-  id: 4,
-  catID: 4,
-  avatar: "book",
-  categoryName: 'Ăn vặt',
-  description: 'abcdef Mua 2 cuốn sách khoa học dawd awd awd awd adsa dawd awd awd asd sa dsad awda wdaw daw d',
-  price: 9000,
-  time: Date(),
-  eventID: 3,
-  eventName: "Tiền điện"
-},
-]
-
 const fakeCategory = [{
-  id: 1,
+  id: '1',
   avatar: "food",
   categoryName: 'Ăn uống',
   check: true
 },
 {
-  id: 2,
+  id: '2',
   avatar: "book",
   categoryName: 'Học tập',
-  check: true
-},
-{
-  id: 3,
-  avatar: "food",
-  categoryName: 'Ăn uống',
-  check: true
-},
-{
-  id: 4,
-  avatar: "book",
-  categoryName: 'Ăn vặt',
   check: true
 },
 ]
@@ -268,39 +211,47 @@ const fakeEvent = [{
   id: 0,
   name: "Không có"
 },
-{
-  id: 1,
-  name: "Tổng kết học kì 1"
-},
-{
-  id: 2,
-  name: "Tiền lương hàng tháng"
-},
-{
-  id: 3,
-  name: "Tiền điện"
-},
 ]
 
 export default function Dashboard() {
   const classes = useStyles();
 
-  const now = new Date();
+  const userID = localStorage.getItem('userID');
+  const [walletID, setWalletID] = useState();
+
   const [categoryList, setCategoryList] = useState(fakeCategory);
-  const [list, setList] = useState(fakeData);
+  const [list, setList] = useState([]);
   const [searchInput, setSearchInput] = useState('');
   const [filterList, setFilterList] = useState(list);
 
   const [selected, setSelected] = useState(1);
 
+  ////////////////////////////////////////////////////////////////////////////////////// CHƯA LÀM
   const [spend, setSpend] = useState(14000000);
   const [receive, setReceive] = useState(9000000);
   const total = receive - spend;
+  //////////////////////////////////////////////////////////////////////////////////////
+  
+  // get initial data
+  useEffect(() => {
+    console.log(userID);
+    socket.emit("get_private_wallet", { userID }, ({ wallet, transactionList, categoryList }) => {
+      setWalletID(wallet[0].ID);
+      //setCategoryList(categoryList);
+      setList(transactionList);
+    });
 
-  const handleClick = (event) => {
-    event.preventDefault();
-    console.info('You clicked a breadcrumb.');
-  }
+    socket.on('wait_for_update', ({ wallet, transactionList, categoryList }) => {
+      //setCategoryList(categoryList);
+      //setList(transactionList);
+
+    });
+
+    return () => {
+      socket.off("wait_for_update");
+    }
+  }, []);
+
 
   // select 1 transaction
   const selectTransaction = (n) => {
@@ -314,7 +265,6 @@ export default function Dashboard() {
   }
   const filterCategory = (list) => {
     setCategoryList(list);
-    console.log(categoryList);
   }
   useEffect(() => {
     let filtered = list;
@@ -332,26 +282,34 @@ export default function Dashboard() {
 
   // add 
   const addList = (newTransaction) => {
-    const tempList = list.slice();
-    tempList.push(newTransaction);
-    setList(tempList);
+    socket.emit("add_transaction", { walletID, userID, newTransaction }, ({ ID }) => {
+      let tempList = list.slice();
+      newTransaction.id = ID;
+      tempList = [newTransaction].concat(tempList);
+      console.log(tempList)
+      setList(tempList);
+    });
   }
 
   // update
   const updateList = (newTransaction) => {
-    const tempList = list.slice();
-    const index = tempList.findIndex(obj => obj.id == newTransaction.id);
-    tempList[index] = newTransaction;
-    setList(tempList);
-  }
-  // update
-  const deleteList = (id) => {
-    const tempList = list.slice();
-    const index = tempList.findIndex(obj => obj.id == id);
-    tempList.splice(index, 1);
-    setList(tempList);
-  }
+    socket.emit("update_transaction", { userID, transactionID: newTransaction.id, newTransaction }, () => {
+      let tempList = list.slice();
+      const index = tempList.findIndex(obj => obj.id == newTransaction.id);
+      tempList[index] = newTransaction;
+      setList(tempList);
+    });
 
+  }
+  // delete
+  const deleteList = (id) => {
+    socket.emit("delete_transaction", { userID, id }, () => {
+      const tempList = list.slice();
+      const index = tempList.findIndex(obj => obj.id == id);
+      tempList.splice(index, 1);
+      setList(tempList);
+    });
+  }
 
   return (
     <>
@@ -392,7 +350,7 @@ export default function Dashboard() {
                 </Avatar>
                 <Box className={classes.wrap}>
                   <Typography className={classes.smallBoxNumber}>{receive}đ </Typography>
-                  <Typography className={classes.smallBoxText}>Tổng thu tháng hiện tại ({moment(now).format("M/YYYY")}) </Typography>
+                  <Typography className={classes.smallBoxText}>Tổng thu tháng hiện tại ({moment(new Date()).format("M/YYYY")}) </Typography>
                 </Box>
               </Box>
             </Grid>
@@ -407,7 +365,7 @@ export default function Dashboard() {
                 </Avatar>
                 <Box className={classes.wrap}>
                   <Typography className={classes.smallBoxNumber}>{spend}đ </Typography>
-                  <Typography className={classes.smallBoxText}>Tổng chi tháng hiện tại ({moment(now).format("M/YYYY")}) </Typography>
+                  <Typography className={classes.smallBoxText}>Tổng chi tháng hiện tại ({moment(new Date()).format("M/YYYY")}) </Typography>
                 </Box>
               </Box>
             </Grid>
@@ -429,7 +387,7 @@ export default function Dashboard() {
 
                 {filterList && filterList.map((i, n) => {
                   return (
-                    <React.Fragment>
+                    <React.Fragment key={i.id}>
                       <TransactionMini transactionData={i} selected={selected === i.id} onClick={() => selectTransaction(i.id)} />
                       <Divider className={classes.divider} />
                     </React.Fragment>
@@ -443,7 +401,7 @@ export default function Dashboard() {
                 boxShadow={3}
                 bgcolor="background.paper"
                 className={classes.transactionBox}>
-                {filterList && <TransactionDetail transactionData={list.find(i => i.id === selected)} updateList={(data) => updateList(data)} deleteList={(data) => deleteList(data)}/>}
+                {filterList && <TransactionDetail transactionData={list.find(i => i.id === selected)} updateList={(data) => updateList(data)} deleteList={(data) => deleteList(data)} />}
               </Box>
             </Grid>
 

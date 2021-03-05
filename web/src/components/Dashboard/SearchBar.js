@@ -189,7 +189,7 @@ export default function SearchBar({ searchInput, setSearchInput, categoryList, s
                     <Divider className={classes.dividerBold} />
                     {categoryList && categoryList.map((i, n) => {
                         return (
-                            <React.Fragment>
+                            <React.Fragment key={i.id}>
                                 <Box className={classes.filterRow}>
                                     <Box className={classes.filterInfo}>
                                         <DefaultIcon
