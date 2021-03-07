@@ -49,7 +49,7 @@ const routes = [
     main: () => <ActivateDestination />
   }, {
     path: '/profile',
-    private: false,
+    private: true,
     main: () => <Profile />
   }
 ];
