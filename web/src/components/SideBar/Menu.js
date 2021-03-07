@@ -7,8 +7,7 @@ import TopBarNotLogin from "./TopBarNotLogIn";
 
 export default function Menu(props) {
   const [open, setOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useContext(MyContext);
-
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
   const handleDrawerOpen = () => {
     setOpen(true);
   };
