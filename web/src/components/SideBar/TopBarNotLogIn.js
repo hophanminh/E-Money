@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import clsx from 'clsx';
 import {
   useHistory,
@@ -13,12 +13,13 @@ import {
   IconButton,
   ListItem,
   ListItemText,
+  Button,
   makeStyles
 } from '@material-ui/core'
+
 import MenuIcon from '@material-ui/icons/Menu';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import NotificationsNoneIcon from '@material-ui/icons/NotificationsNone';
-import MyContext from '../mycontext/MyContext';
 
 const drawerWidth = 240;
 
@@ -93,59 +94,51 @@ const useStyles = makeStyles((theme) => ({
     wight: 52,
     height: 52,
     borderRadius: 50
+  },
+  colorTopBar: {
+    background: "green !important"
+  },
+  brandText: {
+    fontSize: 24,
+  },
+  margin: {
+    margin: theme.spacing(1),
+  },
+  buttonContent: {
+    fontSize: 17,
+    color: "white",
+    borderColor: "white"
   }
 }));
 
-function Topbar(props) {
+function TopbarNotLogin() {
   const classes = useStyles();
-  const history = useHistory();
-  const [isLoggedIn, setIsLoggedIn] = useContext(MyContext);
-  const logOut = (e) => {
-    localStorage.clear();
-    setIsLoggedIn(false);
-  };
-  // sidebar's open
-  const openSidebar = props.open;
-  return (
-    <AppBar position="absolute" className={clsx(classes.appBar, openSidebar && classes.appBarShift)}>
-      <Toolbar className={`${classes.toolbar} ${classes.spaceBetween}`} >
-        <IconButton
-          edge="start"
-          color="inherit"
-          aria-label="open drawer"
-          onClick={() => props.handleDrawerOpen()}
-          className={clsx(classes.menuButton, openSidebar && classes.menuButtonHidden)}
-        >
-          <MenuIcon />
-        </IconButton>
-        <div className={classes.topBarButton}>
-          {(
-            <>
-              <ListItem button component={NavLink} to="/Login" className={classes.button}>
-                {`Name user `}
-                <img src={`https://picsum.photos/200`} className={`${classes.avatarImg}`}></img>
-              </ListItem>
-            </>
-          )}
 
-          {(
-            <>
-              <ListItem button component={NavLink} to="/Login" onClick={(e) => logOut(e)} className={classes.button}>
-                <NotificationsNoneIcon />
-              </ListItem>
-            </>
-          )}
-          {(
-            <>
-              <ListItem button onClick={(e) => logOut(e)} className={classes.button}>
-                <ExitToAppIcon />
-              </ListItem>
-            </>
-          )}
+  return (
+    <AppBar position="absolute" className={clsx(classes.appBar)}>
+      <Toolbar className={`${classes.toolbar} ${classes.spaceBetween} ${classes.colorTopBar}`}>
+        <ListItem button component={NavLink} to="/" className={`${classes.button} ${classes.brandText}`}>
+          {`E-Money`}
+        </ListItem>
+        <div className={`${classes.topBarButton} `}>
+          <Button variant="outlined"
+            size="large"
+            className={`${classes.margin} ${classes.buttonContent}`}
+            href="/signup"
+          >
+            {`Register`}
+          </Button>
+          <Button variant="outlined"
+            size="large"
+            className={`${classes.margin} ${classes.buttonContent}`}
+            href="/signin"
+          >
+            {`Log In`}
+          </Button>
         </div>
       </Toolbar>
     </AppBar>
   )
 }
 
-export default Topbar
+export default TopbarNotLogin

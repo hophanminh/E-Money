@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
@@ -14,6 +14,7 @@ import Palette from '../../constants/palette.json';
 import SnackBar from '../snackbar/SnackBar';
 import * as helper from '../../utils/helper';
 import config from '../../constants/config.json';
+import MyContext from '../mycontext/MyContext';
 
 const API_URL = config.API_LOCAL;
 const styles = {
@@ -50,6 +51,14 @@ export default function SignUp() {
   const [errors, setErrors] = useState({});
   const [showSnackbar, setShowSnackBar] = useState(false);
   const [content, setContent] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useContext(MyContext);
+
+  useEffect(() => {
+    console.log(isLoggedIn);
+    if (isLoggedIn) {
+      history.push('/');
+    }
+  }, [isLoggedIn]);
 
   const signInClicked = () => {
     history.push('/signin');
@@ -57,37 +66,39 @@ export default function SignUp() {
 
   const handleSubmit = async () => {
 
-    const errorObjs = {
+    const errorObj = {
     };
 
     if (helper.isBlankString(username)) {
-      errorObjs.username = "Tên tài khoản không được để trống";
+      errorObj.username = "Tên tài khoản không được để trống";
     } else if (helper.containsBlank(username)) {
-      errorObjs.username = "Tên tài khoản không được chứa khoảng trắng";
+      errorObj.username = "Tên tài khoản không được chứa khoảng trắng";
     }
 
     if (helper.isBlankString(displayedName)) {
-      errorObjs.displayedName = "Tên hiển thị không được để trống";
+      errorObj.displayedName = "Tên hiển thị không được để trống";
     }
 
     if (helper.isBlankString(email)) {
-      errorObjs.email = "Email không được để trống";
+      errorObj.email = "Email không được để trống";
     } else if (!helper.isEmailPattern(email)) {
-      errorObjs.email = "Email không hợp lệ";
+      errorObj.email = "Email không hợp lệ";
     }
 
     if (password.length < config.PASSWORDMINLENGTH) {
-      errorObjs.password = "Mật khẩu phải chứa ít nhất 6 ký tự";
+      errorObj.password = "Mật khẩu phải chứa ít nhất 6 ký tự";
+    } else if (helper.containsBlank(password)) {
+      errorObj.password = "Mật khẩu phải chứa ký tự khác khoảng trắng"
     }
 
     if (confirmedPassword.length < config.PASSWORDMINLENGTH) {
-      errorObjs.confirmedPassword = "Mật khẩu phải chứa ít nhất 6 ký tự";
+      errorObj.confirmedPassword = "Mật khẩu phải chứa ít nhất 6 ký tự";
     } else if (password !== confirmedPassword) {
-      errorObjs.confirmedPassword = "Mật khẩu xác nhận không khớp";
+      errorObj.confirmedPassword = "Mật khẩu xác nhận không khớp";
     }
-    setErrors(errorObjs);
+    setErrors(errorObj);
 
-    if (Object.keys(errorObjs).length > 0) {
+    if (Object.keys(errorObj).length > 0) {
       return;
     }
 
@@ -136,7 +147,7 @@ export default function SignUp() {
             <SnackBar open={showSnackbar} setOpen={(isOpen) => setShowSnackBar(isOpen)} content={content} />
             <Grid container spacing={4}>
 
-              <Grid item item xs={2} sm={2} md={2} direction="column" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', marginLeft: '-4%', textAlign: 'left' }}>
+              <Grid item item xs={2} sm={2} md={2} direction="column" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', textAlign: 'left' }}>
                 <div>
                   <Button
                     variant="contained"

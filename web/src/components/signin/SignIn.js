@@ -1,23 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
-import background from '../../resources/images/background1.jpg';
 import { makeStyles } from '@material-ui/core/styles';
-import Fab from '@material-ui/core/Fab';
 import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import Label from '@material-ui/icons/Label';
 import TextField from '@material-ui/core/TextField';
 import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import KeyboardReturnIcon from '@material-ui/icons/KeyboardReturn';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import GoogleIcon from '../../resources/images/google.png';
 import FacebookIcon from '../../resources/images/facebook.png';
+import SnackBar from '../snackbar/SnackBar';
+import MyContext from '../mycontext/MyContext';
 import Palette from '../../constants/palette.json';
 // import ResetPasswordDialog from '../Dialogs/ResetPasswordDialog';
-import SnackBar from '../snackbar/SnackBar';
 import * as helper from '../../utils/helper';
 import config from '../../constants/config.json';
 
@@ -43,8 +39,8 @@ const styles = {
     boxShadow: '2px 2px 4px 2px rgba(0, 0, 0, 0.2), 2px 3px 10px 2px rgba(0, 0, 0, 0.19)',
     borderRadius: '5px',
     padding: '10px 30px 10px',
-    margin: '5px',
-    width: '45%'
+    margin: '20px',
+    width: '60%'
   },
   shadow: {
     boxShadow: '2px 2px 4px 2px rgba(0, 0, 0, 0.2), 2px 3px 10px 2px rgba(0, 0, 0, 0.19)',
@@ -75,7 +71,13 @@ export default function SignIn() {
   const [errors, setErrors] = useState({});
   const [showSnackbar, setShowSnackBar] = useState(false);
   const [content, setContent] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useContext(MyContext);
 
+  useEffect(() => {
+    if (isLoggedIn) {
+      history.push('/');
+    }
+  }, [isLoggedIn]);
 
   const signUpClicked = () => {
     history.push('/signup');
@@ -94,6 +96,8 @@ export default function SignIn() {
 
     if (password.length < config.PASSWORDMINLENGTH) {
       errorObjs.password = "Mật khẩu phải chứa ít nhất 6 ký tự";
+    } else if (helper.containsBlank(password)) {
+      errorObjs.password = "Mật khẩu phải chứa ký tự khác khoảng trắng"
     }
     setErrors(errorObjs);
 
@@ -120,12 +124,13 @@ export default function SignIn() {
       window.localStorage.setItem('jwtToken', result.token);
       window.localStorage.setItem('userID', result.id);
       window.localStorage.setItem('name', result.name);
-      // setIsLoggedIn(true);
+      setIsLoggedIn(true);
       history.push("/games");
     } else {
       // alert(result.mesg);
       setContent(result.msg);
       setShowSnackBar(true);
+      setIsLoggedIn(false);
     }
   }
 
@@ -163,8 +168,7 @@ export default function SignIn() {
           <Container component="main" maxWidth="xl">
             <SnackBar open={showSnackbar} setOpen={(isOpen) => setShowSnackBar(isOpen)} content={content} />
             <Grid container spacing={4}>
-
-              <Grid item item xs={2} sm={2} md={2} direction="column" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', marginLeft: '-5%', textAlign: 'left' }}>
+              <Grid item item xs={2} sm={2} md={2} direction="column" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', textAlign: 'left' }}>
                 <div>
                   <Button
                     variant="contained"
@@ -188,7 +192,7 @@ export default function SignIn() {
               </Grid>
 
               <Grid item xs={4} sm={4} md={4}>
-                <div style={{ ...styles.shadow, ...styles.paper, width: '85%' }}>
+                <div style={{ ...styles.shadow, ...styles.paper, width: '110%' }}>
                   <Typography style={{ color: Palette.primary, fontWeight: 'bold' }} variant='h5'>Đăng nhập tài khoản</Typography>
                   <div style={{ margin: '20px 0 20px' }}>
                     <TextField label="Tên tài khoản" variant="outlined"

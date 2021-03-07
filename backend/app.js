@@ -5,7 +5,9 @@ const config = require("./config/default.json");
 const createError = require('http-errors');
 const passport = require('passport');
 const app = express();
+require('./utils/passport')(passport);
 
+app.use(express.static("public"));
 app.use(express.json());
 app.use(express.urlencoded({
   extended: true
