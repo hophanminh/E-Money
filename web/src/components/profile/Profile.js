@@ -50,12 +50,10 @@ export default function Profile() {
 
   useEffect(() => {
 
-    // console.log(isLoggedIn);
-    // if (!isLoggedIn) {
-    //   history.push('/signin');
-    // }
-
     async function getProfie() {
+      if (!isLoggedIn) {
+        history.push('/signin');
+      }
 
       const res = await fetch(`${API_URL}/users/${userID}`, {
         method: 'GET',
@@ -78,7 +76,7 @@ export default function Profile() {
       }
     }
     getProfie();
-  }, []);
+  }, [isLoggedIn]);
 
   const handleDisplayedNameChange = (name) => {
     setDisplayedName(name);

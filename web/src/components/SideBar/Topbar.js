@@ -102,6 +102,7 @@ const useStyles = makeStyles((theme) => ({
 function Topbar(props) {
   const classes = useStyles();
   const history = useHistory();
+  const displayedName = localStorage.getItem('name');
   const [isLoggedIn, setIsLoggedIn] = useContext(MyContext);
   const logOut = (e) => {
     localStorage.clear();
@@ -126,8 +127,8 @@ function Topbar(props) {
         <div className={classes.topBarButton}>
           {(
             <>
-              <ListItem button component={NavLink} to="/Login" className={classes.button}>
-                {`Name user `}
+              <ListItem button component={NavLink} to="/profile" className={classes.button}>
+                <Typography style={{ marginRight: '10px' }}>{displayedName}</Typography>
                 <img src={`https://picsum.photos/200`} className={`${classes.avatarImg}`}></img>
               </ListItem>
             </>

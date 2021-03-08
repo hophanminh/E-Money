@@ -49,7 +49,7 @@ const routes = [
     main: () => <ActivateDestination />
   }, {
     path: '/profile',
-    private: true,
+    private: false,
     main: () => <Profile />
   }
 ];
@@ -69,26 +69,26 @@ const useStyles = makeStyles((theme) => ({
 function App() {
   const classes = useStyles();
   const [isLoggedIn, setIsLoggedIn] = useContext(MyContext);
+  // const jwtToken = window.localStorage.getItem('jwtToken');
 
-  useEffect(() => {
+  // useEffect(() => {
 
-    async function authen() {
-      const jwtToken = window.localStorage.getItem('jwtToken');
-      const res = await fetch(`${API_URL}/users/authenticate`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${jwtToken}`
-        }
-      });
-      if (res.status === 200) {
-        setIsLoggedIn(true);
-      } else {
-        setIsLoggedIn(false);
-      }
-    }
-    authen();
-  }, [])
+  //   async function authen() {
+  //     const res = await fetch(`${API_URL}/users/authenticate`, {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //         Authorization: `Bearer ${jwtToken}`
+  //       }
+  //     });
+  //     if (res.status === 200) {
+  //       setIsLoggedIn(true);
+  //     } else {
+  //       setIsLoggedIn(false);
+  //     }
+  //   }
+  //   authen();
+  // }, [setIsLoggedIn])
 
   return (
     <Router>

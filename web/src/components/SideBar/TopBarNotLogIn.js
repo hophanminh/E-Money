@@ -126,14 +126,14 @@ function TopbarNotLogin() {
             className={`${classes.margin} ${classes.buttonContent}`}
             href="/signup"
           >
-            {`Register`}
+            {`Đăng ký`}
           </Button>
           <Button variant="outlined"
             size="large"
             className={`${classes.margin} ${classes.buttonContent}`}
             href="/signin"
           >
-            {`Log In`}
+            {`Đăng nhập`}
           </Button>
         </div>
       </Toolbar>
