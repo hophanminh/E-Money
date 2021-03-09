@@ -14,7 +14,7 @@
     "port": 3012,
     "user": "root",
     "password": "root",
-    "database": ""
+    "database": "qlchitieu"
   },
   "API": {
     "LOCAL": "",
