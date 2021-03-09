@@ -74,7 +74,7 @@ export default function SignIn() {
   const { isLoggedIn, setIsLoggedIn } = useContext(MyContext);
 
   useEffect(() => {
-    if (isLoggedIn) {
+    if (isLoggedIn !== null && isLoggedIn) {
       history.push('/');
     }
   }, [isLoggedIn]);

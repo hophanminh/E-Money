@@ -49,7 +49,7 @@ export default function Profile() {
   const [showSnackbar, setShowSnackBar] = useState(false);
 
   useEffect(() => {
-    console.log(isLoggedIn);
+    // console.log(isLoggedIn);
     if (isLoggedIn !== null && isLoggedIn === false) {
       history.push('/');
     }
