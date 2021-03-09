@@ -42,18 +42,19 @@ export default function Profile() {
   const [dateOfBirth, setDateOfBirth] = useState("Bạn chưa chọn ngày sinh");
   const [avatar, setAvatar] = useState(null);
   const [email, setEmail] = useState("");
-  const [isLoggedIn, setIsLoggedIn] = useContext(MyContext);
+  const { isLoggedIn } = useContext(MyContext);
   const [activeDate, setActiveDate] = useState((new Date()).toISOString());
 
   const [content, setContent] = useState("");
   const [showSnackbar, setShowSnackBar] = useState(false);
 
   useEffect(() => {
-
+    console.log(isLoggedIn);
+    if (isLoggedIn !== null && isLoggedIn === false) {
+      history.push('/');
+    }
     async function getProfie() {
-      if (!isLoggedIn) {
-        history.push('/signin');
-      }
+
 
       const res = await fetch(`${API_URL}/users/${userID}`, {
         method: 'GET',

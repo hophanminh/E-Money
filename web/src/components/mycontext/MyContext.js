@@ -2,12 +2,12 @@ import React, { useState, useEffect, createContext } from 'react';
 import config from '../../constants/config.json';
 const API_URL = config.API_LOCAL;
 
-const MyContext = createContext();
+const MyContext = createContext({});
 
 export default MyContext;
 
 export const MyProvider = (props) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(null);
   const jwtToken = window.localStorage.getItem('jwtToken');
 
   useEffect(() => {
@@ -28,10 +28,10 @@ export const MyProvider = (props) => {
       }
     }
     authen();
-  });
+  }, []);
 
   return (
-    <MyContext.Provider value={[isLoggedIn, setIsLoggedIn]}>
+    <MyContext.Provider value={{ isLoggedIn, setIsLoggedIn }}>
       {props.children}
     </MyContext.Provider>
   )

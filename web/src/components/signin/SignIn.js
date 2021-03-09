@@ -71,7 +71,7 @@ export default function SignIn() {
   const [errors, setErrors] = useState({});
   const [showSnackbar, setShowSnackBar] = useState(false);
   const [content, setContent] = useState("");
-  const [isLoggedIn, setIsLoggedIn] = useContext(MyContext);
+  const { isLoggedIn, setIsLoggedIn } = useContext(MyContext);
 
   useEffect(() => {
     if (isLoggedIn) {

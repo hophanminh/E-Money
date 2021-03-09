@@ -103,7 +103,7 @@ function Topbar(props) {
   const classes = useStyles();
   const history = useHistory();
   const displayedName = localStorage.getItem('name');
-  const [isLoggedIn, setIsLoggedIn] = useContext(MyContext);
+  const { isLoggedIn, setIsLoggedIn } = useContext(MyContext);
   const logOut = (e) => {
     localStorage.clear();
     setIsLoggedIn(false);

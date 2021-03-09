@@ -18,6 +18,7 @@ import ActivateDestination from './components/activedestination/ActiveDestinatio
 import Profile from './components/profile/Profile';
 import MyContext from './components/mycontext/MyContext';
 import config from './constants/config.json';
+import { MyProvider } from './components/mycontext/MyContext';
 
 const API_URL = config.API_LOCAL;
 
@@ -47,7 +48,8 @@ const routes = [
     path: '/active/:id',
     private: false,
     main: () => <ActivateDestination />
-  }, {
+  },
+  {
     path: '/profile',
     private: false,
     main: () => <Profile />
@@ -68,61 +70,42 @@ const useStyles = makeStyles((theme) => ({
 
 function App() {
   const classes = useStyles();
-  const [isLoggedIn, setIsLoggedIn] = useContext(MyContext);
-  // const jwtToken = window.localStorage.getItem('jwtToken');
-
-  // useEffect(() => {
-
-  //   async function authen() {
-  //     const res = await fetch(`${API_URL}/users/authenticate`, {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //         Authorization: `Bearer ${jwtToken}`
-  //       }
-  //     });
-  //     if (res.status === 200) {
-  //       setIsLoggedIn(true);
-  //     } else {
-  //       setIsLoggedIn(false);
-  //     }
-  //   }
-  //   authen();
-  // }, [setIsLoggedIn])
 
   return (
     <Router>
       <div>
         <CssBaseline />
-        {/* <MyProvider> */}
         <div className={classes.body}>
-          <Menu />
-          <div className={classes.content}>
-            <Switch>
-              {routes.map((route, index) => {
-                return (route.private ?
-                  <PrivateRoute
-                    key={index}
-                    path={route.path}
-                    exact={route.exact}
-                    children={<route.main />}
-                  />
-                  :
-                  <Route
-                    key={index}
-                    path={route.path}
-                    exact={route.exact}
-                    children={<route.main />}
-                  />
-                )
-              })}
-              <Route path="*">
-                <Home />
-              </Route>
-            </Switch>
-          </div>
+
+          <MyProvider>
+            <Menu />
+            <div className={classes.content}>
+              <Switch>
+                {routes.map((route, index) => {
+                  return (route.private ?
+                    <PrivateRoute
+                      key={index}
+                      path={route.path}
+                      exact={route.exact}
+                      children={<route.main />}
+                    />
+                    :
+                    <Route
+                      key={index}
+                      path={route.path}
+                      exact={route.exact}
+                      children={<route.main />}
+                    />
+                  )
+                })}
+                <Route path="*">
+                  <Home />
+                </Route>
+              </Switch>
+            </div>
+          </MyProvider>
+
         </div>
-        {/* </MyProvider> */}
         <StickyFooter />
       </div>
     </Router>
