@@ -218,6 +218,7 @@ CREATE TABLE `teams` (
   `Description` varchar(1000) DEFAULT NULL,
   `CreatedDate` date DEFAULT NULL,
   `WalletID` varchar(100) DEFAULT NULL,
+  `AvatarURL` varchar(1000) DEFAULT NULL,
   PRIMARY KEY (`ID`),
   KEY `FK_Teams_Wallet` (`WalletID`),
   CONSTRAINT `FK_Teams_Wallet` FOREIGN KEY (`WalletID`) REFERENCES `wallet` (`ID`)
