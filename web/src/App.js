@@ -16,7 +16,7 @@ import SignIn from './components/signin/SignIn';
 import SignUp from './components/signup/SignUp';
 import ActivateDestination from './components/activedestination/ActiveDestination';
 import Profile from './components/profile/Profile';
-import MyContext from './components/mycontext/MyContext';
+import TeamProfile from './components/Team/TeamProfile';
 import config from './constants/config.json';
 import { MyProvider } from './components/mycontext/MyContext';
 
@@ -53,6 +53,11 @@ const routes = [
     path: '/profile',
     private: false,
     main: () => <Profile />
+  },
+  {
+    path: '/team/create',
+    private: true,
+    main: () => <TeamProfile />
   }
 ];
 

@@ -3,6 +3,9 @@ const router = express.Router();
 const WalletModel = require('../models/walletModel');
 const TeamModel = require('../models/teamModel');
 const {convertToRegularDateTime} = require("../utils/helper");
+const { v1: uuidv1 } = require('uuid');
+const v1options = { msecs: Date.now() };
+uuidv1(v1options);
 
 router.get('/', (req, res) => {
     console.log('Get teams belong to user');
@@ -23,13 +26,18 @@ router.post('/', async (req, res) => {
     }
     const teamWallet = await WalletModel.addWallet(newWallet);
 
+    if (teamWallet.affectedRows !== 1) {
+        return res.status(500)
+            .send({ msg: "Please try again" });
+    }
+
     const newTeam = {
         ID: uuidv1(),
         Name,
         MaxUsers,
         Description,
         CreatedDate: convertToRegularDateTime(new Date()),
-        WalletID: teamWallet.ID,
+        WalletID: newWallet.ID,
     };
 
     const team = TeamModel.createTeam(newTeam);

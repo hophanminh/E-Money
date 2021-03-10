@@ -1,20 +1,13 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
-import background from '../../resources/images/background1.jpg';
-import defaultAvatar from '../../resources/images/defaultAvatar.png';
-import ImageUploader from './ImageUploader';
+// import ImageUploader from './ImageUploader';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import SaveIcon from '@material-ui/icons/Save';
-import ChangePasswordDialog from './ChangePasswordDialog';
 import Grid from '@material-ui/core/Grid';
-import DateFnsUtils from '@date-io/date-fns';
-import IconButton from '@material-ui/core/IconButton';
 import * as helper from '../../utils/helper';
-import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
-import ReplayIcon from '@material-ui/icons/Replay';
 import config from '../../constants/config.json';
 import palette from '../../constants/palette.json';
 import MyContext from '../mycontext/MyContext';
@@ -31,7 +24,7 @@ const styles = {
     }
 }
 
-export default function Profile() {
+export default function TeamProfile() {
 
     const userID = localStorage.getItem('userID');
     const token = localStorage.getItem('jwtToken');
@@ -68,8 +61,8 @@ export default function Profile() {
         const errorObjs = {
         };
 
-        if (helper.isBlankString(numberUser)) {
-            errorObjs.displayedName = "Tên hiển thị không được để trống";
+        if (helper.isBlankString(teamName)) {
+            errorObjs.teamName = "Tên hiển thị không được để trống";
         }
 
         setErrors(errorObjs);
@@ -100,10 +93,6 @@ export default function Profile() {
         }
     }
 
-    const handleResetInfo = () => {
-
-    }
-
     return (
         <>
             <SnackBar open={showSnackbar} setOpen={(isOpen) => setShowSnackBar(isOpen)} content={content} />
@@ -127,7 +116,7 @@ export default function Profile() {
                                      }}
                                 >
                                     <div style={{ position: 'absolute', left: '76%', bottom: '0%' }}>
-                                        <ImageUploader setAvatar={setAvatar} setContent={setContent} setShowSnackBar={setShowSnackBar} />
+                                        {/*<ImageUploader setAvatar={setAvatar} setContent={setContent} setShowSnackBar={setShowSnackBar} />*/}
                                     </div>
                                 </div>
                             </div>
@@ -141,7 +130,7 @@ export default function Profile() {
                                 <div style={{ margin: '20px 0 20px' }}>
                                     <div class="container">
                                         <Typography style={{ fontWeight: 'bold' }} variant="h6">Tên nhóm</Typography>
-                                        <div class="input-invalid">{errors.displayedName}</div>
+                                        <div class="input-invalid">{errors.teamName}</div>
                                     </div>
                                     <TextField placeholder="Tên nhóm" variant="outlined"
                                                margin="normal" required fullWidth autoFocus
@@ -151,7 +140,7 @@ export default function Profile() {
 
                                     <div class="container margin-top-10">
                                         <Typography style={{ fontWeight: 'bold' }} variant="h6">Số lượng thành viên</Typography>
-                                        <div class="input-invalid">{errors.userName}</div>
+                                        <div class="input-invalid">{errors.numberUser}</div>
                                     </div>
                                     <TextField placeholder="Số lượng" variant="outlined"
                                                margin="normal" required fullWidth
@@ -160,9 +149,8 @@ export default function Profile() {
 
                                     <div class="container margin-top-10">
                                         <Typography style={{ fontWeight: 'bold' }} variant="h6">Mô tả</Typography>
-                                        <div class="input-invalid">{errors.email}</div>
                                     </div>
-                                    <TextField placeholder="Email"
+                                    <TextField placeholder="Mô tả"
                                                variant="outlined" margin="normal" required fullWidth
                                                onChange={e => handleDescription(e.target.value)}
                                                value={description}
