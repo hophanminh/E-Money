@@ -121,4 +121,21 @@ router.patch('/:id/update', upload.single('avatar'), async (req, res) => {
     res.send(update);
 });
 
+router.delete('/:id', async (req, res) => {
+    const teamId = req.params.id;
+    console.log("delete teams " + teamId)
+    const teamObject = await TeamModel.getTeamById(teamId);
+    const { Name, MaxUsers, Description } = req.body;
+
+    if (teamObject.length === 0) {
+        return res.status(400).send({ msg: "Không tìm thấy người dùng" })
+    }
+
+    const team = teamObject[0];
+    const  a = await TeamModel.deleteTeam(teamId);
+    const b = await WalletModel.deleteWallet(team.WalletID);
+    return res.status(200).send({msg: "success"})
+
+});
+
 module.exports = router;
