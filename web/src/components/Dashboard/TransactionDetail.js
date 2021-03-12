@@ -64,7 +64,7 @@ const useStyles = makeStyles((theme) => ({
         padding: '5px 0px 5px 20px'
     },
     titleText: {
-        fontSize: '32px',
+        fontSize: '28px',
         fontWeight: 'bold'
     },
     iconButton: {
@@ -92,11 +92,11 @@ const useStyles = makeStyles((theme) => ({
         height: '40px',
     },
     transactionText: {
-        fontSize: '26px',
+        fontSize: '16px',
         fontWeight: 'bold'
     },
     transactionSubText: {
-        fontSize: '20px',
+        fontSize: '14px',
     },
     time: {
         display: 'flex',
@@ -112,15 +112,20 @@ const useStyles = makeStyles((theme) => ({
         wordBreak: 'break-all',
         whiteSpace: 'pre-line',
         textAlign: 'justify',
-        fontSize: '20px',
+        fontSize: '28px',
     }
 }));
 
 export default function TransactionDetail({ transactionData, updateList, deleteList }) {
     const classes = useStyles();
     const [data, setData] = useState(null);
+    const [amount, setAmount] = useState(0);
+
     useEffect(() => {
-        setData(transactionData)
+        if (transactionData) {
+            setData(transactionData);
+            setAmount(transactionData.price);
+        }
     }, [transactionData])
 
     // edit transaction dialog
@@ -148,7 +153,7 @@ export default function TransactionDetail({ transactionData, updateList, deleteL
                         <div>
                             <EditTransaction
                                 data={data}
-                                setData={(data) => updateList(data)}
+                                updateList={(data) => updateList(data)}
                                 open={openEditDialog}
                                 setOpen={(open) => setOpenEditDialog(open)} />
                             <DeleteTransaction
@@ -178,10 +183,17 @@ export default function TransactionDetail({ transactionData, updateList, deleteL
                                 className={classes.transactionText}>
                                 {data.categoryName}
                             </Typography>
-                            <Typography
-                                className={`${classes.transactionSubText} ${classes.red}`}>
-                                {data.price}đ
-                   </Typography>
+                            {amount < 0
+                                ?
+                                <Typography className={`${classes.transactionSubText} ${classes.red}`}>
+                                    {amount * -1}đ
+                                </Typography>
+                                :
+                                <Typography className={`${classes.transactionSubText} ${classes.green}`}>
+                                    {amount}đ
+                                </Typography>
+                            }
+
                             <Typography
                                 className={`${classes.transactionSubText}`}>
                                 Sự kiện: <Link href="#">{data.eventName}</Link>

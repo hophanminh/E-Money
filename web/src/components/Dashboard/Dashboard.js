@@ -89,10 +89,10 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: '10px'
   },
   breadcrumb: {
-    fontSize: '30px',
+    fontSize: '24px',
   },
   titleFont: {
-    fontSize: '30px',
+    fontSize: '24px',
   },
   subTitleFont: {
     fontSize: '14px',
@@ -109,7 +109,8 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: '20px',
   },
   wrap: {
-    width: "100%",
+    flexGrow: 3,
+    marginLeft: '15px',
     wordWrap: 'break-word',
     overflow: 'hidden',
   },
@@ -125,20 +126,19 @@ const useStyles = makeStyles((theme) => ({
     paddingLeft: '40px',
     paddingRight: '15px',
   },
-  smallBoxIconBox: {
-    width: '70px',
-    height: '70px',
-    marginRight: '35px',
+  avatar: {
+    width: '50px',
+    height: '50px',
   },
   smallBoxIcon: {
-    width: '40px',
-    height: '40px',
+    width: '30px',
+    height: '30px',
   },
   smallBoxNumber: {
-    fontSize: '28px',
+    fontSize: '18px',
   },
   smallBoxText: {
-    fontSize: '20px',
+    fontSize: '16px',
   },
 
   // 3 button
@@ -227,24 +227,26 @@ export default function Dashboard() {
   const [selected, setSelected] = useState(1);
 
   ////////////////////////////////////////////////////////////////////////////////////// CHƯA LÀM
-  const [spend, setSpend] = useState(14000000);
-  const [receive, setReceive] = useState(9000000);
-  const total = receive - spend;
+  const [spend, setSpend] = useState(0);
+  const [receive, setReceive] = useState(0);
+  const [total, setTotal] = useState(0);
   //////////////////////////////////////////////////////////////////////////////////////
-  
+
   // get initial data
   useEffect(() => {
     console.log(userID);
     socket.emit("get_private_wallet", { userID }, ({ wallet, transactionList, categoryList }) => {
       setWalletID(wallet[0].ID);
+      setTotal(wallet[0].TotalCount);
       //setCategoryList(categoryList);
       setList(transactionList);
+      setSelected(transactionList.length !== 0 ? transactionList[0].id : -1);
     });
 
     socket.on('wait_for_update', ({ wallet, transactionList, categoryList }) => {
+      setTotal(wallet[0].TotalCount);
       //setCategoryList(categoryList);
-      //setList(transactionList);
-
+      setList(transactionList);
     });
 
     return () => {
@@ -252,10 +254,31 @@ export default function Dashboard() {
     }
   }, []);
 
+  // update wallet's info at top of page
+  useEffect(() => {
+    const spendList = list.filter(i => {
+      const month = moment(i.time, 'YYYY-MM-DD HH:mm:ss').format('M');
+      const currentMonth = moment().format('M');
+      return month === currentMonth && i.price < 0;
+    })
+    const receiveList = list.filter(i => {
+      const month = moment(i.time, 'YYYY-MM-DD HH:mm:ss').format('M');
+      const currentMonth = moment().format('M');
+      return month === currentMonth && i.price > 0;
+    })
+
+    let tempSpend = 0;
+    spendList.forEach(i => tempSpend += i.price);
+    let tempReceive = 0;
+    receiveList.forEach(i => tempReceive += i.price);
+
+    setSpend(tempSpend);
+    setReceive(tempReceive);
+  }, [list])
+
 
   // select 1 transaction
   const selectTransaction = (n) => {
-    console.log(n);
     setSelected(n);
   }
 
@@ -266,6 +289,8 @@ export default function Dashboard() {
   const filterCategory = (list) => {
     setCategoryList(list);
   }
+
+  // update filter list
   useEffect(() => {
     let filtered = list;
     if (searchInput !== '') {
@@ -286,8 +311,8 @@ export default function Dashboard() {
       let tempList = list.slice();
       newTransaction.id = ID;
       tempList = [newTransaction].concat(tempList);
-      console.log(tempList)
       setList(tempList);
+      setSelected(ID);
     });
   }
 
@@ -308,6 +333,7 @@ export default function Dashboard() {
       const index = tempList.findIndex(obj => obj.id == id);
       tempList.splice(index, 1);
       setList(tempList);
+      setSelected(tempList.length !== 0 ? tempList[0].id : -1);
     });
   }
 
@@ -325,47 +351,47 @@ export default function Dashboard() {
 
         <div className={classes.body}>
           <Grid container spacing={5} className={classes.grid}>
-            <Grid item lg={3} md={12} >
+            <Grid item lg={3} sm={12} >
               <Box
                 boxShadow={3}
                 bgcolor="background.paper"
                 className={classes.smallBox}>
-                <Avatar className={`${classes.smallBoxIconBox} ${classes.totalBackGround}`}>
+                <Avatar className={`${classes.avatar} ${classes.totalBackGround}`}>
                   <AccountBalanceWalletIcon className={`${classes.smallBoxIcon} ${classes.totalColor}`} />
                 </Avatar>
                 <Box className={classes.wrap}>
                   <Typography className={classes.smallBoxNumber}>{total}đ </Typography>
-                  <Typography className={classes.smallBoxText}>Tổng tiền trong ví </Typography>
+                  <Typography className={classes.smallBoxText}>Tổng tiền </Typography>
                 </Box>
               </Box>
             </Grid>
 
-            <Grid item lg={3} md={12} >
+            <Grid item lg={3} sm={12} >
               <Box
                 boxShadow={3}
                 bgcolor="background.paper"
                 className={classes.smallBox}>
-                <Avatar className={`${classes.smallBoxIconBox} ${classes.inBackGround}`}>
+                <Avatar className={`${classes.avatar} ${classes.inBackGround}`}>
                   <TrendingUpIcon className={`${classes.smallBoxIcon} ${classes.inColor}`} />
                 </Avatar>
                 <Box className={classes.wrap}>
                   <Typography className={classes.smallBoxNumber}>{receive}đ </Typography>
-                  <Typography className={classes.smallBoxText}>Tổng thu tháng hiện tại ({moment(new Date()).format("M/YYYY")}) </Typography>
+                  <Typography className={classes.smallBoxText}>Tiền thu tháng {moment(new Date()).format("M/YYYY")} </Typography>
                 </Box>
               </Box>
             </Grid>
 
-            <Grid item lg={3} md={12} >
+            <Grid item lg={3} sm={12} >
               <Box
                 boxShadow={3}
                 bgcolor="background.paper"
                 className={classes.smallBox}>
-                <Avatar className={`${classes.smallBoxIconBox} ${classes.outBackGround}`}>
+                <Avatar className={`${classes.avatar} ${classes.outBackGround}`}>
                   <TrendingDownIcon className={`${classes.smallBoxIcon} ${classes.outColor}`} />
                 </Avatar>
                 <Box className={classes.wrap}>
                   <Typography className={classes.smallBoxNumber}>{spend}đ </Typography>
-                  <Typography className={classes.smallBoxText}>Tổng chi tháng hiện tại ({moment(new Date()).format("M/YYYY")}) </Typography>
+                  <Typography className={classes.smallBoxText}>Tiền chi tháng {moment(new Date()).format("M/YYYY")} </Typography>
                 </Box>
               </Box>
             </Grid>
@@ -373,7 +399,7 @@ export default function Dashboard() {
           </Grid>
           <Grid container spacing={5} className={classes.grid}>
 
-            <Grid item lg={3} xs={12}>
+            <Grid item lg={3} sm={12}>
               <Box
                 boxShadow={3}
                 bgcolor="background.paper"
@@ -382,7 +408,7 @@ export default function Dashboard() {
                   categoryList={categoryList}
                   setCategoryList={(list) => filterCategory(list)}
                   searchInput={searchInput}
-                  setSearchInput={(input) => setSearchInput(input)} />
+                  setSearchInput={(input) => searchTransaction(input)} />
                 <Divider className={classes.dividerBold} />
 
                 {filterList && filterList.map((i, n) => {
@@ -396,23 +422,24 @@ export default function Dashboard() {
               </Box>
             </Grid>
 
-            <Grid item lg={6} xs={12}>
+            <Grid item lg={6} sm={12}>
               <Box
                 boxShadow={3}
                 bgcolor="background.paper"
                 className={classes.transactionBox}>
-                {filterList && <TransactionDetail transactionData={list.find(i => i.id === selected)} updateList={(data) => updateList(data)} deleteList={(data) => deleteList(data)} />}
+                {filterList && list.find(i => i.id === selected) &&
+                  <TransactionDetail transactionData={list.find(i => i.id === selected)} updateList={(data) => updateList(data)} deleteList={(data) => deleteList(data)} />}
               </Box>
             </Grid>
 
-            <Grid item lg={3} md={12} >
+            <Grid item lg={3} sm={12} >
               <div className={classes.buttonColumn}>
                 <Box
                   boxShadow={3}
                   bgcolor="background.paper">
                   <AddTransaction open={openAddDialog} setOpen={(open) => setOpenAddDialog(open)} addList={(data) => addList(data)} />
                   <Button className={classes.button} style={{ textTransform: 'none' }} onClick={handleOpenAddDialog}>
-                    <Avatar className={`${classes.smallBoxIconBox} ${classes.addBackGround}`}>
+                    <Avatar className={`${classes.avatar} ${classes.addBackGround}`}>
                       <AddCircleOutlineIcon className={`${classes.smallBoxIcon} ${classes.addColor}`} />
                     </Avatar>
                     <Box className={classes.wrap}>
@@ -425,7 +452,7 @@ export default function Dashboard() {
                   boxShadow={3}
                   bgcolor="background.paper">
                   <Button className={classes.button} style={{ textTransform: 'none' }}>
-                    <Avatar className={`${classes.smallBoxIconBox} ${classes.categoryBackGround}`}>
+                    <Avatar className={`${classes.avatar} ${classes.categoryBackGround}`}>
                       <ListIcon className={`${classes.smallBoxIcon} ${classes.categoryColor}`} />
                     </Avatar>
                     <Box className={classes.wrap}>
@@ -438,7 +465,7 @@ export default function Dashboard() {
                   boxShadow={3}
                   bgcolor="background.paper">
                   <Button className={classes.button} style={{ textTransform: 'none' }}>
-                    <Avatar className={`${classes.smallBoxIconBox} ${classes.eventBackGround}`}>
+                    <Avatar className={`${classes.avatar} ${classes.eventBackGround}`}>
                       <EventIcon className={`${classes.smallBoxIcon} ${classes.eventColor}`} />
                     </Avatar>
                     <Box className={classes.wrap}>

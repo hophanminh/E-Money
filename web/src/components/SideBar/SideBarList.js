@@ -16,7 +16,8 @@ export default function SideBarList(props) {
   const [currentUser, setCurrentUser] = useState();
   return (
     <div>
-      <ListItem button component={NavLink} to="/">
+      <ListItem button component={NavLink} to="/Dashboard">
+
         <ListItemIcon>
           <AccountBalanceWalletIcon />
         </ListItemIcon>

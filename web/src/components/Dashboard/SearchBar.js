@@ -59,7 +59,7 @@ const useStyles = makeStyles((theme) => ({
         overflowY: 'auto',
     },
     filterTitleText: {                           // filter header
-        fontSize: '20px',
+        fontSize: '18px',
         fontWeight: 'bold',
         marginLeft: '10px'
     },
@@ -88,7 +88,7 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
     },
     filterText: {
-        fontSize: '20px',
+        fontSize: '16px',
         marginLeft: '10px'
     },
 }));
@@ -194,8 +194,8 @@ export default function SearchBar({ searchInput, setSearchInput, categoryList, s
                                     <Box className={classes.filterInfo}>
                                         <DefaultIcon
                                             avatar={i.avatar}
-                                            backgroundSize={50}
-                                            iconSize={24} />
+                                            backgroundSize={40}
+                                            iconSize={20} />
                                         <Typography
                                             noWrap={true}
                                             className={classes.filterText}>

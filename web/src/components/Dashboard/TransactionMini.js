@@ -46,11 +46,11 @@ const useStyles = makeStyles((selected) => ({
         justifyContent: 'space-between',
     },
     transactionText: {
-        fontSize: '20px',
+        fontSize: '16',
         fontWeight: 'bold'
     },
     transactionSubText: {
-        fontSize: '16px',
+        fontSize: '14px',
     },
     transactionTime: {
         width: '24px',
@@ -62,11 +62,13 @@ const useStyles = makeStyles((selected) => ({
 export default function TransactionMini({ transactionData, selected, onClick }) {
     const classes = useStyles(selected);
     const [data, setData] = useState(transactionData);
-
+    const [amount, setAmount] = useState(0);
     useEffect(() => {
-        setData(transactionData)
+        if (transactionData) {
+            setData(transactionData);
+            setAmount(transactionData.price);
+        }
     }, [transactionData])
-
     return (
         <div className={classes.root} onClick={onClick}>
             <div className={classes.transaction}>
@@ -80,7 +82,12 @@ export default function TransactionMini({ transactionData, selected, onClick }) 
                             className={classes.transactionText}>
                             {data.categoryName}
                         </Typography>
-                        <Typography className={`${classes.transactionText} ${classes.red}`}>{data.price}đ</Typography>
+                        {amount < 0
+                            ?
+                            <Typography className={`${classes.transactionText} ${classes.red}`}>{amount * -1}đ</Typography>
+                            :
+                            <Typography className={`${classes.transactionText} ${classes.green}`}>{amount}đ</Typography>
+                        }
 
                     </Box>
                     <Typography

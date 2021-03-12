@@ -30,7 +30,7 @@ export default function DeleteTransaction({ open, setOpen, data, deleteList }) {
                 <DialogTitle id="alert-dialog-title">Xóa</DialogTitle>
                 <DialogContent>
                     <DialogContentText id="alert-dialog-description">
-                        Bạn có muốn xóa khoản chi tiêu đã chọn ?
+                        Bạn có muốn xóa khoản giao dịch đã chọn ?
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>

@@ -27,9 +27,24 @@ const useStyles = makeStyles({
         fontWeight: 'bold',
         marginBottom: '-10px'
     },
-    textField: {
-        margin: '20px 0px'
+
+    amountRow: {
+        display: 'flex',
     },
+    textField: {
+        margin: '10px 10px 15px 0px'
+    },
+
+    typeBox: {
+        padding: '0px 15px 0px 0px',
+    },
+    type1Text: {
+        color: '#1DAF1A'
+    },
+    type2Text: {
+        color: '#FF2626'
+    },
+
     categoryIconBox: {
         display: 'flex',
         justifyContent: 'flex-start',
@@ -47,7 +62,6 @@ const useStyles = makeStyles({
         borderRadius: '4px',
         color: '#FFFFFF',
         fontWeight: 'bold',
-        fontSize: '20px',
         padding: '5px 40px',
         marginLeft: '20px'
     },
@@ -74,14 +88,19 @@ const fakeCategory = [{
 ]
 const fakeEvent = [];
 
-export default function EditTransaction({ data, setData, open, setOpen }) {
+export default function EditTransaction({ data, updateList, open, setOpen }) {
     const classes = useStyles();
+    const [type, setType] = useState("Chi");
     const [newTransaction, setNewTransaction] = useState(data);
     useEffect(() => {
-        setNewTransaction(data)
+        if (data) {
+            setNewTransaction(data)
+            setType(data.price >= 0 ? "Thu" : "Chi");
+        }
     }, [data])
 
     const clearNewTransaction = () => {
+        setType(data.price >= 0 ? "Thu" : "Chi");
         setNewTransaction(data)
     }
 
@@ -90,27 +109,32 @@ export default function EditTransaction({ data, setData, open, setOpen }) {
         clearNewTransaction();
     }
     const handleEdit = () => {
-
         const newCategory = fakeCategory.find(i => i.id === newTransaction.catID);
         const newEvent = fakeEvent.find(i => i.id === newTransaction.eventID);
 
-        newTransaction.avatar = newCategory.avatar;
-        newTransaction.categoryName = newCategory.categoryName;
-        newTransaction.eventName = newEvent ? newEvent.name : null;
+        const temp = newTransaction;
+        temp.avatar = newCategory.avatar;
+        temp.categoryName = newCategory.categoryName;
+        temp.eventName = newEvent ? newEvent.name : null;
 
-        setData(newTransaction);
+        updateList(temp);
         setOpen(false);
     }
 
     // transaction 
-
+    const handleChangeType = (event) => {
+        setType(event.target.value);
+        setNewTransaction({
+            ...newTransaction,
+            price: newTransaction.price * (-1),
+        });
+    }
 
     const handleChange = (event) => {
         setNewTransaction({
             ...newTransaction,
             [event.target.name]: event.target.value
         });
-        console.log(newTransaction)
     }
     const handleChangeTime = (time) => {
         setNewTransaction({
@@ -120,42 +144,71 @@ export default function EditTransaction({ data, setData, open, setOpen }) {
     }
     const handleChangeMoney = (e) => {
         const max = 999999999;
-        const min = -999999999;
-        let temp = Number(e.target.value) > 999999999 ? 999999999 : e.target.value;
-        temp = Number(e.target.value) < -999999999 ? -999999999 : temp;
+        let temp = e.target.value === '' ? 0 : Number(e.target.value);
+        temp = temp > max ? max : temp;
+        temp = temp < 0 ? 0 : temp;
         setNewTransaction({
             ...newTransaction,
-            price: temp
+            price: type === "Thu" ? temp : temp * -1,
         });
     }
-
     return (
         <Dialog open={open} onClose={handleCloseEditDialog} aria-labelledby="form-dialog-title">
             <DialogTitle id="form-dialog-title" >
                 <Typography className={classes.title}>
-                    Thay đổi khoản chi tiêu
+                    Thay đổi khoản giao dịch
                 </Typography>
             </DialogTitle>
             <DialogContent>
                 <Box>
-                    <TextField
-                        className={classes.textField}
-                        autoFocus
-                        id="price"
-                        name="price"
-                        label="Số tiền *"
-                        type="number"
-                        value={newTransaction.price}
-                        onChange={e => handleChangeMoney(e)}
-                        InputLabelProps={{
-                            shrink: true,
-                        }}
-                        fullWidth
-                        variant="outlined"
-                    />
+                    <Box className={classes.amountRow}>
+                        <TextField
+                            className={classes.textField}
+                            size="small"
+                            id="isNegative"
+                            name="isNegative"
+                            select
+                            label=""
+                            value={type}
+                            onChange={handleChangeType}
+                            variant="outlined"
+                        >
+                            <MenuItem value={"Chi"}>
+                                <Box className={`${classes.typeBox} ${classes.type2Text}`}>
+                                    Chi
+                                </Box>
+                            </MenuItem>
+                            <MenuItem value={"Thu"}>
+                                <Box className={`${classes.typeBox} ${classes.type1Text}`}>
+                                    Thu
+                                </Box>
+                            </MenuItem>
+                        </TextField>
+
+                        <TextField
+                            className={`${classes.textField}`}
+                            size="small"
+                            autoFocus
+                            id="price"
+                            name="price"
+                            label="Số tiền *"
+                            type="number"
+                            value={Math.abs(newTransaction.price)}
+                            onChange={e => handleChangeMoney(e)}
+                            InputLabelProps={{
+                                shrink: true,
+                            }}
+                            InputProps={{
+                                className: type === "Thu" ? classes.type1Text : classes.type2Text
+                            }}
+                            fullWidth
+                            variant="outlined"
+                        />
+                    </Box>
                     <MuiPickersUtilsProvider utils={DateFnsUtils}>
                         <KeyboardDateTimePicker
                             name="time"
+                            size="small"
                             className={classes.textField}
                             value={newTransaction.time}
                             onChange={time => handleChangeTime(time)}
@@ -169,6 +222,7 @@ export default function EditTransaction({ data, setData, open, setOpen }) {
 
                     <TextField
                         className={classes.textField}
+                        size="small"
                         id="category"
                         name="catID"
                         select
@@ -183,8 +237,8 @@ export default function EditTransaction({ data, setData, open, setOpen }) {
                                 <Box className={classes.categoryIconBox}>
                                     <DefaultIcon
                                         avatar={cat.avatar}
-                                        backgroundSize={40}
-                                        iconSize={20} />
+                                        backgroundSize={24}
+                                        iconSize={14} />
                                     <Typography className={classes.iconText}>
                                         {cat.categoryName}
                                     </Typography>
@@ -194,6 +248,7 @@ export default function EditTransaction({ data, setData, open, setOpen }) {
                     </TextField>
                     <TextField
                         className={classes.textField}
+                        size="small"
                         id="event"
                         name="eventID"
                         select
@@ -217,6 +272,7 @@ export default function EditTransaction({ data, setData, open, setOpen }) {
                     <TextField
                         name="description"
                         className={classes.textField}
+                        size="small"
                         value={newTransaction.description}
                         onChange={handleChange}
                         id="outlined-multiline-static"
