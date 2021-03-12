@@ -96,6 +96,9 @@ export default function Teams() {
     }
     const cards = [1,2,3];
 
+    const detailTeam = (teamID) => {
+        history.push(`/team/details/${teamID}`)
+    }
     return (
         <>
             <SnackBar open={showSnackbar} setOpen={(isOpen) => setShowSnackBar(isOpen)} content={content} />
@@ -120,7 +123,7 @@ export default function Teams() {
                                         </Typography>
                                     </CardContent>
                                     <CardActions>
-                                        <Button size="small" color="primary" to = {`/team/details/${card.TeamID}`}>
+                                        <Button size="small" color="primary" onClick={(TeamID) => detailTeam(card.ID)}>
                                             View
                                         </Button>
                                         <Button size="small" color="primary">
