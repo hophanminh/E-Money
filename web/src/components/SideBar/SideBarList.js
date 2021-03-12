@@ -32,7 +32,7 @@ export default function SideBarList(props) {
         </ListItem>
       )}
       {(
-        <ListItem button component={NavLink} to="/Password">
+        <ListItem button component={NavLink} to="/teams">
           <ListItemIcon>
             <PeopleIcon />
           </ListItemIcon>
