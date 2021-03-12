@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const WalletModel = require('../models/walletModel');
 const TeamModel = require('../models/teamModel');
+const TeamHasUserModel = require('../models/TeamHasUserModel');
 const multer = require("multer");
 const fs = require('fs');
 const path = require('path');
@@ -22,16 +23,28 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-router.get('/', (req, res) => {
+router.get('/:userId', async (req, res) => {
     console.log('Get teams belong to user');
-    return res.status(200).send({})
+    console.log(req.params.userId);
+    const userID = req.params.userId;
+    const teams = await TeamModel.getTeamsByUserId(userID);
+    return res.status(200).send({teams});
 })
 
-router.post('/', async (req, res) => {
+router.get('/details/:teamID', async (req, res) => {
+    console.log('Get teams belong to user');
+    console.log(req.params.userId);
+    const teamID = req.params.teamID;
+    const teams = await TeamModel.getTeamById(teamID);
+    return res.status(200).send({teams});
+})
+
+router.post('/:userID', async (req, res) => {
     console.log('Create team');
 
     const { Name, MaxUsers, Description } = req.body;
-
+    const userID = req.params.userID;
+    console.log(userID);
     const newWallet = {
         ID: uuidv1(),
         TotalCount: 0,
@@ -45,6 +58,7 @@ router.post('/', async (req, res) => {
         return res.status(500)
             .send({ msg: "Please try again" });
     }
+    console.log("Created Wallet " + newWallet.ID);
 
     const newTeam = {
         ID: uuidv1(),
@@ -54,10 +68,24 @@ router.post('/', async (req, res) => {
         CreatedDate: convertToRegularDateTime(new Date()),
         WalletID: newWallet.ID,
     };
+    const team = await TeamModel.createTeam(newTeam);
+    console.log(team)
+    if (team.affectedRows !== 1) {
+        return res.status(500)
+            .send({ msg: "Please try again" });
+    }
+    console.log("Created Wallet " + newTeam.ID);
 
-    const team = TeamModel.createTeam(newTeam);
+    const admin = {
+        UserID: userID,
+        TeamID: newTeam.ID,
+        Role: config.PERMISSION.ADMIN,
+        Status: config.STATUS.ACTIVE
+    }
+    const result = await TeamHasUserModel.createTHU(admin);
 
-    if (team.affectedRows === 1) {
+    if (result.affectedRows === 1) {
+        console.log("Created successfully");
         return res.status(201)
             .send({ msg: "Please check your email to active your account." });
     } else {
@@ -106,7 +134,7 @@ router.patch('/:id/avatar', upload.single('avatar'), async (req, res) => {
     )
 });
 
-router.patch('/:id/update', upload.single('avatar'), async (req, res) => {
+router.put('/details/:id', async (req, res) => {
     const teamId = req.params.id;
     console.log("Update teams " + teamId)
     const teamObject = await TeamModel.getTeamById(teamId);

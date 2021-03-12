@@ -19,6 +19,8 @@ import Profile from './components/profile/Profile';
 import TeamProfile from './components/Team/TeamProfile';
 import config from './constants/config.json';
 import { MyProvider } from './components/mycontext/MyContext';
+import Teams from "./components/Team/Teams";
+import UpdateProfile from "./components/Team/UpdateProfile";
 
 const API_URL = config.API_LOCAL;
 
@@ -58,7 +60,17 @@ const routes = [
     path: '/team/create',
     private: true,
     main: () => <TeamProfile />
-  }
+  },
+  {
+    path: '/team/details/:TeamID',
+    private: true,
+    main: () => <UpdateProfile />
+  },
+  {
+    path: '/team',
+    private: true,
+    main: () => <Teams />
+  },
 ];
 
 const useStyles = makeStyles((theme) => ({

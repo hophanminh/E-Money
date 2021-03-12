@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory,useParams  } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 // import ImageUploader from './ImageUploader';
 import TextField from '@material-ui/core/TextField';
@@ -28,6 +28,8 @@ export default function TeamProfile() {
 
     const userID = localStorage.getItem('userID');
     const token = localStorage.getItem('jwtToken');
+    const teamID = useParams().TeamID;
+    console.log(teamID);
     const history = useHistory();
     const [errors, setErrors] = useState({});
     const [teamName, setTeamName] = useState("");
@@ -44,7 +46,31 @@ export default function TeamProfile() {
         if (isLoggedIn !== null && isLoggedIn === false) {
             history.push('/');
         }
+        getTeamDetail();
     }, [isLoggedIn]);
+
+    const getTeamDetail = async () => {
+        const res = await fetch(`${API_URL}/teams/details/${teamID}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        console.log(res.body);
+        if (res.status === 200) {
+            const result = await res.json();
+            console.log(result.teams[0]);
+            const team = result.teams[0];
+            setTeamName(team.Name);
+            setDiscription(team.Description)
+            setNumberUser(team.MaxUsers)
+        } else {
+            // alert("Some error when updating!")
+        }
+    }
+
 
     const handleTeamNameChange = (teamName) => {
         setTeamName(teamName);
@@ -76,8 +102,8 @@ export default function TeamProfile() {
             MaxUsers: numberUser,
             Description: description
         }
-        const res = await fetch(`${API_URL}/teams/${userID}`, {
-            method: 'POST',
+        const res = await fetch(`${API_URL}/teams/details/${teamID}`, {
+            method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${token}`
