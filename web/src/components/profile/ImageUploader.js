@@ -2,23 +2,18 @@ import React, { useState } from 'react'
 import { DropzoneDialog } from 'material-ui-dropzone'
 import Button from '@material-ui/core/Button';
 import AddPhotoAlternateIcon from '@material-ui/icons/AddPhotoAlternate';
-import { makeStyles } from '@material-ui/core/styles';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import config from '../../constants/config.json';
 import palette from '../../constants/palette.json';
+import { Dialog, DialogContent, Typography } from '@material-ui/core';
 const API_URL = config.API_LOCAL;
 
-const useStyles = makeStyles((theme) => ({
-  margin: {
-    margin: '20px 0 40px',
-    alignItems: 'center'
-  }
-}));
 
-export default function ImageUploader() {
-  const classes = useStyles();
+export default function ImageUploader({ setAvatar, setContent, setShowSnackBar }) {
   const userID = localStorage.getItem('userID');
   const token = window.localStorage.getItem('jwtToken');
   const [open, setOpen] = useState(false);
+  const [waiting, setWaiting] = useState(false);
 
   const handleClose = () => {
     setOpen(false);
@@ -28,9 +23,10 @@ export default function ImageUploader() {
 
     const data = new FormData();
     data.append('avatar', files[0]);
+    setWaiting(true);
 
-    const res = await fetch(`${API_URL}/users/profile/updateavatar/${userID}`, {
-      method: 'POST',
+    const res = await fetch(`${API_URL}/users/${userID}/avatar`, {
+      method: 'PATCH',
       headers: {
         // 'content-type': 'multipart/form-data', // no need
         Authorization: `Bearer ${token}`
@@ -38,13 +34,16 @@ export default function ImageUploader() {
       body: data,
     });
 
+    const result = await res.json();
+
     if (res.status === 200) {
-      const result = await res.blob();
-      // setAvatar(URL.createObjectURL(result));
-      // setShowSnackBar(true);
+      setContent("Cập nhật thành công");
+      setAvatar(result.url);
     } else { // 400, etc...
-      // setShowErrorSnackBar(true);
+      setContent(result.msg)
     }
+    setShowSnackBar(true);
+    setWaiting(false)
     setOpen(false);
   }
 
@@ -53,17 +52,30 @@ export default function ImageUploader() {
   }
 
   return (
-    <div className={classes.margin}>
+    <div >
       <Button
-        onClick={handleOpen}
         variant="contained"
-        // class="shadow"
-        style={{ borderRadius: '50%', backgroundColor: '#fafafa', color: palette.secondary, height: '4.5vw', width: '1.5vw' }}>
-        <AddPhotoAlternateIcon style={{ fontSize: '30px' }} />
+        onClick={handleOpen}
+        style={{
+          borderRadius: '50%',
+          height: '45px',
+          width: '45px',
+          color: palette.secondary,
+          backgroundColor: '#fff',
+          border: 'none',
+          cursor: 'pointer'
+        }}
+        class="shadow"
+      >
+        <AddPhotoAlternateIcon style={{ fontSize: '28px' }} />
       </Button>
 
       <DropzoneDialog
         open={open}
+        dialogTitle="Cập nhật ảnh đại diện"
+        submitButtonText="Cập nhật"
+        cancelButtonText="Hủy"
+        dropzoneText="Chọn ảnh từ thiết bị hoặc kéo thả ảnh vào đây"
         onSave={handleSave}
         acceptedFiles={['image/jpeg', 'image/png', 'image/gif']}
         showPreviewsInDropzone={true}
@@ -73,6 +85,12 @@ export default function ImageUploader() {
         maxFileSize={10000000}
         onClose={handleClose}
       />
-    </div>
+      <Dialog style={{ textAlign: 'center' }} open={waiting} >
+        <DialogContent align='center'>
+          <CircularProgress style={{ color: palette.primary }} />
+          <Typography variant='h6'>Đang cập nhật</Typography>
+        </DialogContent>
+      </Dialog>
+    </div >
   );
 }

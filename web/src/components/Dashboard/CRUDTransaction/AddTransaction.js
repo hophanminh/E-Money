@@ -20,7 +20,7 @@ import {
 } from '@material-ui/pickers';
 
 import DefaultIcon from '../../../utils/DefaultIcon'
-import currency from 'currency.js'
+// import currency from 'currency.js'
 
 const useStyles = makeStyles({
   title: {
@@ -28,6 +28,7 @@ const useStyles = makeStyles({
     fontWeight: 'bold',
     marginBottom: '-10px'
   },
+  
   amountRow: {
     display: 'flex',
   },
@@ -44,7 +45,7 @@ const useStyles = makeStyles({
   type2Text: {
     color: '#FF2626'
   },
-
+  
   categoryIconBox: {
     display: 'flex',
     justifyContent: 'flex-start',
@@ -102,7 +103,7 @@ export default function AddTransaction({ open, setOpen, addList }) {
     categoryName: "",
     eventName: "",
   })
-
+  
   const clearNewTransaction = () => {
     setType("Chi");
     setNewTransaction({
@@ -115,7 +116,6 @@ export default function AddTransaction({ open, setOpen, addList }) {
       categoryName: "",
       eventName: "",
     })
-
 
     const handleCloseAddDialog = () => {
       setOpen(false);
@@ -134,8 +134,8 @@ export default function AddTransaction({ open, setOpen, addList }) {
       clearNewTransaction();
     }
 
-    // transaction 
 
+  // transaction 
 
     const handleChangeType = (event) => {
       setType(event.target.value);
@@ -314,3 +314,4 @@ export default function AddTransaction({ open, setOpen, addList }) {
       </Dialog>
     );
   }
+

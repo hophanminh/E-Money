@@ -6,16 +6,15 @@ const createError = require('http-errors');
 const passport = require('passport');
 const http = require("http");
 const socketIO = require('socket.io');
+const app = express();
 require('./utils/passport')(passport);
 
+app.use(express.static("public"));
 const URL = config.HOST.CURRENT;
 const corsOptions = {
   // test
   origin: [URL]
 };
-
-
-const app = express();
 
 // socket
 const server = http.createServer(app);
@@ -27,7 +26,6 @@ const io = socketIO(server, {
 });
 const ioConfig = require('./utils/socket')(io);
 app.use(cors(corsOptions));
-
 app.use(express.json());
 app.use(express.urlencoded({
   extended: true

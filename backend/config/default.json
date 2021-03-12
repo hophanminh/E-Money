@@ -30,5 +30,10 @@
   "PASSPORTKEY": "whatdoyoumean",
   "HASHROUND": 10,
   "APPLOCAL": "http://localhost:3000",
-  "APPPRODUCTION": ""
+  "APPPRODUCTION": "",
+  "CLOUDINARY": {
+    "cloud_name": "minhlaccloud",
+    "api_key": "239485199764345",
+    "api_secret": "nl0LvugzHn9L20T3j4vz55ZIClw"
+  }
 }

@@ -71,7 +71,7 @@ export default function SignIn() {
   const [errors, setErrors] = useState({});
   const [showSnackbar, setShowSnackBar] = useState(false);
   const [content, setContent] = useState("");
-  const [isLoggedIn, setIsLoggedIn] = useContext(MyContext);
+  const { isLoggedIn, setIsLoggedIn } = useContext(MyContext);
 
   useEffect(() => {
     if (isLoggedIn) {
@@ -96,6 +96,8 @@ export default function SignIn() {
 
     if (password.length < config.PASSWORDMINLENGTH) {
       errorObjs.password = "Mật khẩu phải chứa ít nhất 6 ký tự";
+    } else if (helper.containsBlank(password)) {
+      errorObjs.password = "Mật khẩu phải chứa ký tự khác khoảng trắng"
     }
     setErrors(errorObjs);
 
@@ -190,7 +192,7 @@ export default function SignIn() {
               </Grid>
 
               <Grid item xs={4} sm={4} md={4}>
-                <div style={{ ...styles.shadow, ...styles.paper, width: '85%' }}>
+                <div style={{ ...styles.shadow, ...styles.paper, width: '110%' }}>
                   <Typography style={{ color: Palette.primary, fontWeight: 'bold' }} variant='h5'>Đăng nhập tài khoản</Typography>
                   <div style={{ margin: '20px 0 20px' }}>
                     <TextField label="Tên tài khoản" variant="outlined"
