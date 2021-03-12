@@ -13,31 +13,31 @@ import {
 
 
 export default function SideBarList(props) {
-    const [currentUser, setCurrentUser] = useState();
-    return (
-        <div>
-            <ListItem button component={NavLink} to="/">
-                <ListItemIcon>
-                    <AccountBalanceWalletIcon/>
-                </ListItemIcon>
-                <ListItemText primary="Ví cá nhân"/>
-            </ListItem>
-            {(
-                <ListItem button component={NavLink} to="/Account">
-                    <ListItemIcon>
-                        <BsFillBarChartFill/>
-                    </ListItemIcon>
-                    <ListItemText primary="Thống kê"/>
-                </ListItem>
-            )}
-            {(
-                <ListItem button component={NavLink} to="/Password">
-                    <ListItemIcon>
-                        <PeopleIcon/>
-                    </ListItemIcon>
-                    <ListItemText primary="Nhóm"/>
-                </ListItem>
-            )}
-        </div>
-    )
+  const [currentUser, setCurrentUser] = useState();
+  return (
+    <div>
+      <ListItem button component={NavLink} to="/Dashboard">
+        <ListItemIcon>
+          <AccountBalanceWalletIcon />
+        </ListItemIcon>
+        <ListItemText primary="Ví cá nhân" />
+      </ListItem>
+      {(
+        <ListItem button component={NavLink} to="/Account">
+          <ListItemIcon>
+            <BsFillBarChartFill />
+          </ListItemIcon>
+          <ListItemText primary="Thống kê" />
+        </ListItem>
+      )}
+      {(
+        <ListItem button component={NavLink} to="/Password">
+          <ListItemIcon>
+            <PeopleIcon />
+          </ListItemIcon>
+          <ListItemText primary="Nhóm" />
+        </ListItem>
+      )}
+    </div>
+  )
 };
