@@ -187,7 +187,7 @@ export default function TeamProfile() {
                                         onClick={handleSaveChange}
                                         startIcon={<SaveIcon />}
                                 >
-                                    Tạo nhóm
+                                    Cập nhật thông tin
                                 </Button>
                             </div>
                         </Grid>

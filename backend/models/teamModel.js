@@ -23,7 +23,7 @@ module.exports = {
         return db.patch('teams', updateContent, {ID: teamId});
     },
     deleteTeam: (id) => {
-        const sql = `DELETE FROM teams WHERE ID = '`+ id + `'`;
-        return db.load(sql);
+
+        return db.delete('teams', {ID: id})
     },
 }

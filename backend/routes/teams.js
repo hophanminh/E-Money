@@ -160,6 +160,9 @@ router.delete('/:id', async (req, res) => {
     }
 
     const team = teamObject[0];
+    console.log(teamId);
+    console.log(team);
+    const c = await TeamHasUserModel.deleteTHU(teamId,team.WalletID)
     const  a = await TeamModel.deleteTeam(teamId);
     const b = await WalletModel.deleteWallet(team.WalletID);
     return res.status(200).send({msg: "success"})

@@ -70,17 +70,17 @@ const routes = [
     main: () => <Profile />
   },
   {
-    path: '/team/create',
+    path: '/teams/create',
     private: true,
     main: () => <TeamProfile />
   },
   {
-    path: '/team/details/:TeamID',
+    path: '/teams/:TeamID/details',
     private: true,
     main: () => <UpdateProfile />
   },
   {
-    path: '/team',
+    path: '/teams',
     private: true,
     main: () => <Teams />
   },

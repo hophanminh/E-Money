@@ -1,14 +1,10 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
-import SaveIcon from '@material-ui/icons/Save';
 import Grid from '@material-ui/core/Grid';
-import * as helper from '../../utils/helper';
 import config from '../../constants/config.json';
-import palette from '../../constants/palette.json';
 import MyContext from '../mycontext/MyContext';
 import SnackBar from '../snackbar/SnackBar';
 import { makeStyles } from '@material-ui/core/styles';
@@ -17,6 +13,7 @@ import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
+import AddIcon from '@material-ui/icons/Add';
 
 const API_URL = config.API_LOCAL;
 const useStyles = makeStyles((theme) => ({
@@ -49,6 +46,11 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: theme.palette.background.paper,
         padding: theme.spacing(6),
     },
+    centerCard: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
+    }
 }));
 
 export default function Teams() {
@@ -94,10 +96,22 @@ export default function Teams() {
             // alert("Some error when updating!")
         }
     }
-    const cards = [1,2,3];
 
     const detailTeam = (teamID) => {
-        history.push(`/team/details/${teamID}`)
+        history.push(`/teams/${teamID}/details`)
+    }
+    const createTeam = () => {
+        history.push(`/teams/create`)
+    }
+
+    const deleteTeam = async (TeamID) => {
+        const res = await fetch(`${API_URL}/teams/${TeamID}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            }
+        });
     }
     return (
         <>
@@ -126,13 +140,28 @@ export default function Teams() {
                                         <Button size="small" color="primary" onClick={(TeamID) => detailTeam(card.ID)}>
                                             View
                                         </Button>
-                                        <Button size="small" color="primary">
-                                            Edit
+                                        <Button size="small" color="primary" onClick={(TeamID) => deleteTeam(card.ID)}>
+                                            Delete
                                         </Button>
                                     </CardActions>
                                 </Card>
                             </Grid>
                         ))}
+                        {
+                            <Grid item xs={12} sm={6} md={4}>
+                                <Card className={`${classes.card} ${classes.centerCard}`}>
+                                    <Button size="small"
+                                            color="primary"
+                                            onClick={() => createTeam()}
+
+                                    >
+                                    <CardActions>
+                                            <AddIcon style={{ fontSize: 100 }}/>
+                                    </CardActions>
+                                    </Button>
+                                </Card>
+                            </Grid>
+                        }
                     </Grid>
                 </Container>
             </div>

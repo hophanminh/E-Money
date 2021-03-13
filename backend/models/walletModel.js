@@ -10,7 +10,7 @@ module.exports = {
                 FROM users as u LEFT JOIN wallet as w ON u.WalletID = w.ID
                 WHERE u.ID = ? `, [userID]),
   deleteWallet: (id) => {
-    const sql = `DELETE FROM wallet WHERE ID = '`+ id + `'`;
-    return db.load(sql);
+    return db.delete('wallet', {ID: id})
+
   }
 }
