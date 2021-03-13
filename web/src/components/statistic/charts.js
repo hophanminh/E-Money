@@ -1,67 +1,28 @@
-import React, { useState } from 'react';
-import Paper from '@material-ui/core/Paper';
-import {
-  Chart,
-  BarSeries,
-  Title,
-  ArgumentAxis,
-  ValueAxis,
-  Tooltip
-} from '@devexpress/dx-react-chart-material-ui';
-import { Animation, EventTracker } from '@devexpress/dx-react-chart';
-import { Container } from '@material-ui/core';
+import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
-const data = [
-  { title: 'Chi', spent: 1900000 },
-  { title: 'Thu', earned: 3000000 },
-];
+import BarChart from './barChart';
+import PieChartSpent from './pieChartSpent';
+import PieChartIncome from './pieChartIncome';
 
 const useStyles = makeStyles((theme) => ({
   container: {
     margin: '50px 20px 20px 30px'
-  },
-  paper: {
-    boxShadow: '0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23)',
-    borderRadius: '20px'
   }
 }));
 
-export default function Charts() {
+export default function Charts({ date }) {
   const classes = useStyles();
-
-  const [targetItem, setTargetItem] = useState(null);
-
-  const changeTargetItem = (target) => {
-    setTargetItem(target);
-  }
 
   return (
     <div className={classes.container}>
-      <div>
-        <Paper className={classes.paper} style={{ width: '50%', margin: 'auto' }}>
-          <Chart data={data}>
-            <ArgumentAxis />
-            <ValueAxis />
-            <BarSeries
-              barWidth={0.35}
-              valueField="spent"
-              argumentField="title"
-              color="#ff2626"
-            />
-            <BarSeries
-              barWidth={0.35}
-              valueField="earned"
-              argumentField="title"
-              color="#1daf1a"
-            />
-            <Title text="Thu nhập trong tháng" />
-            <EventTracker />
-            <Tooltip targetItem={targetItem} onTargetItemChange={(target) => changeTargetItem(target)} />
-            <Animation />
-          </Chart>
-        </Paper>
-      </div>
+      <BarChart date={date} />
+
+      {/* Chi */}
+      <PieChartSpent date={date} />
+
+      {/* Tiêu */}
+      <PieChartIncome date={date} />
     </div>
   );
 }

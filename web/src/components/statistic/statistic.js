@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { Container } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
 import HorizontalTimeline from "react-horizontal-timeline";
-import Charts from './charts';
+import Charts from './charts.js';
 
 const EXAMPLE = [
   {
@@ -32,6 +31,11 @@ export default function Statistic() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [preIndex, setPreIndex] = useState(-1);
 
+  const changeDate = (index) => {
+    setPreIndex(currentIndex);
+    setCurrentIndex(index);
+  }
+
   return (
     <>
       <Container component="main" maxWidth="xl">
@@ -46,17 +50,14 @@ export default function Statistic() {
                 foreground: "#1A79AD",
                 outline: "#dfdfdf",
               }}
-              getLabel={(date) => {
+              getLabel={date => {
                 const temp = (new Date(date)).toDateString(); // Thu Jul 01 1999
                 return temp.slice(4, 7) + temp.slice(10);     // Jul 1999
               }}
               minEventPadding={100}
               maxEventPadding={100}
               index={currentIndex}
-              indexClick={(index) => {
-                setPreIndex(currentIndex);
-                setCurrentIndex(index);
-              }}
+              indexClick={index => changeDate(index)}
               values={EXAMPLE.map((x) => x.date)}
             />
           </div>
@@ -64,7 +65,7 @@ export default function Statistic() {
           <div className="text-center">
             {/* any arbitrary component can go here */}
             {EXAMPLE[currentIndex].date}
-            <Charts />
+            <Charts date={new Date(EXAMPLE[currentIndex].date)} />
           </div>
         </div>
       </Container>
