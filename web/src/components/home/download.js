@@ -23,14 +23,16 @@ export default function Download() {
 
   return (
     <div className={classes.container}>
-      <div>
+      <div style={{ textAlign: 'center' }}>
         <Typography style={{ color: '#172755', fontSize: '36px', fontWeight: 'bold' }}>
           Sử dụng ngay trên mọi nền tảng
         </Typography>
         <div style={{ marginTop: '30px' }}>
           <Button className={classes.button}
-            style={{ height: '100px', width: '350px', color: 'white', backgroundColor: '#1daf1a',
-              marginRight: '30px', padding: '0px 15px 0px 15px' }}
+            style={{
+              height: '100px', width: '350px', color: 'white', backgroundColor: '#1daf1a',
+              marginRight: '30px', padding: '0px 15px 0px 15px'
+            }}
           >
             <ComputerIcon style={{ width: '50px', height: '50px', marginRight: '15px' }} />
             <Typography style={{ textAlign: 'left', fontSize: '24px' }}>
@@ -38,8 +40,10 @@ export default function Download() {
             </Typography>
           </Button>
           <Button className={classes.button}
-            style={{ height: '100px', width: '350px', color: 'white', backgroundColor: '#1daf1a',
-              marginRight: '30px', padding: '0px 15px 0px 15px' }}
+            style={{
+              height: '100px', width: '350px', color: 'white', backgroundColor: '#1daf1a',
+              marginRight: '30px', padding: '0px 15px 0px 15px'
+            }}
           >
             <PhoneAndroidIcon style={{ width: '50px', height: '50px', marginRight: '15px' }} />
             <Typography style={{ textAlign: 'left', fontSize: '24px' }}>
@@ -47,8 +51,10 @@ export default function Download() {
             </Typography>
           </Button>
           <Button className={classes.button}
-            style={{ height: '100px', width: '350px', color: 'white', backgroundColor: '#1daf1a',
-              marginRight: '30px', padding: '0px 15px 0px 15px' }}
+            style={{
+              height: '100px', width: '350px', color: 'white', backgroundColor: '#1daf1a',
+              marginRight: '30px', padding: '0px 15px 0px 15px'
+            }}
           >
             <LanguageIcon style={{ width: '50px', height: '50px', marginRight: '15px' }} />
             <Typography style={{ textAlign: 'left', fontSize: '24px' }}>
