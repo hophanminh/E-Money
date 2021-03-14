@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const userModel = require('../models/userModel');
 const bcrypt = require('bcryptjs');
+const moment = require('moment');
 
 const config = require("../config/default.json");
 const cloudinary = require('cloudinary').v2;
@@ -28,7 +29,6 @@ router.post('/authenticate', (req, res) => {
 });
 
 router.get('/:id', async (req, res) => {
-
   const id = req.params.id;
   const users = await userModel.getUserByID(id);
 
@@ -38,6 +38,24 @@ router.get('/:id', async (req, res) => {
   const user = users[0];
   delete user.Password;
   return res.status(200).send({ user });
+});
+
+router.get('/:id/activatedDate', async (req, res) => {
+  const id = req.params.id;
+  const activatedDates = await userModel.getActivatedDateByID(id);
+
+  if (activatedDates.length === 0) {
+    return res.status(400).end();
+  }
+  const activatedDate = activatedDates[0].ActivatedDate;
+  const startDate = moment(activatedDate);
+  const endDate = moment();
+  let dates = [];
+  while (startDate.isBefore(endDate)) {
+    dates.push(startDate.format("YYYY-MM-01"));
+    startDate.add(1, 'month');
+  }
+  return res.status(200).send({ dates });
 });
 
 router.patch('/:id/info', async (req, res) => {

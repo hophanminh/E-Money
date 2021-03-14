@@ -11,18 +11,18 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default function Charts({ date }) {
+export default function Charts({ date, barChartData, pieChartSpentData, pieChartIncomeData }) {
   const classes = useStyles();
 
   return (
     <div className={classes.container}>
-      <BarChart date={date} />
+      <BarChart date={date} chartData={barChartData} />
 
       {/* Chi */}
-      <PieChartSpent date={date} />
+      <PieChartSpent date={date} chartData={pieChartSpentData} />
 
-      {/* Tiêu */}
-      <PieChartIncome date={date} />
+      {/* Thu */}
+      <PieChartIncome date={date} chartData={pieChartIncomeData} />
     </div>
   );
 }

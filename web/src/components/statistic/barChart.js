@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Paper from '@material-ui/core/Paper';
 import {
   Chart,
@@ -12,10 +12,10 @@ import { Animation, EventTracker } from '@devexpress/dx-react-chart';
 import { makeStyles } from '@material-ui/core/styles';
 
 const data = [
-  { title: '', spent: 0 },
-  { title: 'Chi', spent: 1900000 },
-  { title: 'Thu', earned: 3000000 },
-  { title: ' ', earned: 0 },
+  { title: '', spent: 0, earned: 0 },
+  { title: 'Chi', spent: 1900000, earned: 0 },
+  { title: 'Thu', spent: 0, earned: 3000000 },
+  { title: ' ', spent: 0, earned: 0 },
 ];
 
 const useStyles = makeStyles((theme) => ({
@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default function BarChart({ date }) {
+export default function BarChart({ date, chartData }) {
   const classes = useStyles();
 
   const [targetItem, setTargetItem] = useState(null);
@@ -41,26 +41,27 @@ export default function BarChart({ date }) {
     <div className={classes.container}>
       <div>
         <Paper className={classes.paper} style={{ width: '50%', margin: 'auto' }}>
-          <Chart data={data}>
-            <ArgumentAxis />
-            <ValueAxis />
-            <BarSeries
-              barWidth={0.6}
-              valueField="spent"
-              argumentField="title"
-              color="#ff2626"
-            />
-            <BarSeries
-              barWidth={0.6}
-              valueField="earned"
-              argumentField="title"
-              color="#1daf1a"
-            />
-            <Title text={"Thu nhập trong tháng " + (date.getMonth() + 1) + "/" + date.getFullYear()} />
-            <EventTracker />
-            <Tooltip targetItem={targetItem} onTargetItemChange={(target) => changeTargetItem(target)} />
-            <Animation />
-          </Chart>
+          {chartData.length === 2 ?
+            <div style={{ textAlign: 'center' }}>Không có dữ liệu</div> :
+            <Chart data={chartData}>
+              <ArgumentAxis />
+              <ValueAxis />
+              <BarSeries
+                valueField="spent"
+                argumentField="title"
+                color="#ff2626"
+              />
+              <BarSeries
+                valueField="earned"
+                argumentField="title"
+                color="#1daf1a"
+              />
+              <Title text={"Thu nhập trong tháng " + (date.getMonth() + 1) + "/" + date.getFullYear()} />
+              <EventTracker />
+              <Tooltip targetItem={targetItem} onTargetItemChange={(target) => changeTargetItem(target)} />
+              <Animation />
+            </Chart>
+          }
         </Paper>
       </div>
     </div>

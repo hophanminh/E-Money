@@ -22,14 +22,7 @@ const useStyles = makeStyles((theme) => ({
 
 const scheme = ["#9ec98d", "#4d774e", "#eae45a", "#fda92c", "#164a41", "#6df670", "#1b5804", "#1daf1a", "#a0cf1a", "#9fff01"];
 
-const chartData = [
-  { type: 'Học tập', value: 6250000 },
-  { type: 'Ăn uống', value: 1250000 },
-  { type: 'Di chuyển', value: 1250000 },
-  { type: 'Mua sắm', value: 1250000 },
-];
-
-export default function PieChartSpent({ date }) {
+export default function PieChartSpent({ date, chartData }) {
   const classes = useStyles();
 
   const [targetItem, setTargetItem] = useState(null);
@@ -42,15 +35,18 @@ export default function PieChartSpent({ date }) {
     <div className={classes.container}>
       <div>
         <Paper className={classes.paper} style={{ width: '45%', float: 'left' }}>
-          <Chart data={chartData}>
-            <Palette scheme={scheme} />
-            <PieSeries valueField="value" argumentField="type" />
-            <Title text={"Thống kê các khoản chi tháng " + (date.getMonth() + 1) + "/" + date.getFullYear()} />
-            <Legend />
-            <Animation />
-            <EventTracker />
-            <Tooltip targetItem={targetItem} onTargetItemChange={(target) => changeTargetItem(target)} />
-          </Chart>
+          {chartData.length === 0 ?
+            <div style={{ textAlign: 'center' }}>Không có dữ liệu</div> :
+            <Chart data={chartData}>
+              <Palette scheme={scheme} />
+              <PieSeries valueField="value" argumentField="type" />
+              <Title text={"Thống kê các khoản chi tháng " + (date.getMonth() + 1) + "/" + date.getFullYear()} />
+              <Legend />
+              <Animation />
+              <EventTracker />
+              <Tooltip targetItem={targetItem} onTargetItemChange={(target) => changeTargetItem(target)} />
+            </Chart>
+          }
         </Paper>
       </div>
     </div>
