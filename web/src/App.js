@@ -16,9 +16,9 @@ import SignIn from './components/signin/SignIn';
 import SignUp from './components/signup/SignUp';
 import ActivateDestination from './components/activedestination/ActiveDestination';
 import Profile from './components/profile/Profile';
-import MyContext from './components/mycontext/MyContext';
 import config from './constants/config.json';
 import { MyProvider } from './components/mycontext/MyContext';
+import ResetDestination from './components/signin/resetpassword/ResetDestination';
 
 const API_URL = config.API_LOCAL;
 
@@ -53,6 +53,11 @@ const routes = [
     path: '/profile',
     private: false,
     main: () => <Profile />
+  },
+  {
+    path: '/reset',
+    private: false,
+    main: () => <ResetDestination />
   }
 ];
 

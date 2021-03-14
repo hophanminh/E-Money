@@ -8,30 +8,33 @@ export default MyContext;
 
 export const MyProvider = (props) => {
   const [isLoggedIn, setIsLoggedIn] = useState(null);
-  const jwtToken = window.localStorage.getItem('jwtToken');
+  const [info, setInfo] = useState({});
+  const token = window.localStorage.getItem('jwtToken');
+  const userID = localStorage.getItem('userID');
 
   useEffect(() => {
 
-    async function authen() {
-      console.log('cmmmmmm');
-      const res = await fetch(`${API_URL}/users/authenticate`, {
-        method: 'POST',
+    async function fetchInfo() {
+      const res = await fetch(`${API_URL}/users/${userID}`, {
+        method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${jwtToken}`
+          Authorization: `Bearer ${token}`
         }
       });
       if (res.status === 200) {
+        const result = await res.json();
+        setInfo(result.user);
         setIsLoggedIn(true);
       } else {
         setIsLoggedIn(false);
       }
     }
-    authen();
+    fetchInfo();
   }, []);
 
   return (
-    <MyContext.Provider value={{ isLoggedIn, setIsLoggedIn }}>
+    <MyContext.Provider value={{ isLoggedIn, setIsLoggedIn, info, setInfo }}>
       {props.children}
     </MyContext.Provider>
   )

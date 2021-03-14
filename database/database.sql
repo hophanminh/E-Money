@@ -320,6 +320,20 @@ LOCK TABLES `wallet` WRITE;
 INSERT INTO `wallet` VALUES ('976a4670-7d8c-11eb-bf95-73b5fd1e2f13',0,0,0,'2021-03-05 15:27:15');
 /*!40000 ALTER TABLE `wallet` ENABLE KEYS */;
 UNLOCK TABLES;
+
+DROP TABLE IF EXISTS `ResetRequests`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `ResetRequests` (
+  `ID` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `UserID` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `Email` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `IsSuccessful` int(11) NOT NULL,
+  PRIMARY KEY (`ID`),
+  KEY `FK_ResetRequests_Users` (`UserID`),
+  CONSTRAINT `FK_ResetRequests_Users` FOREIGN KEY (`UserID`) REFERENCES `Users` (`ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;

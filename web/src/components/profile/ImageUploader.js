@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import { DropzoneDialog } from 'material-ui-dropzone'
 import Button from '@material-ui/core/Button';
 import AddPhotoAlternateIcon from '@material-ui/icons/AddPhotoAlternate';
@@ -6,14 +6,16 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import config from '../../constants/config.json';
 import palette from '../../constants/palette.json';
 import { Dialog, DialogContent, Typography } from '@material-ui/core';
+import MyContext from '../mycontext/MyContext';
 const API_URL = config.API_LOCAL;
 
 
-export default function ImageUploader({ setAvatar, setContent, setShowSnackBar }) {
+export default function ImageUploader({ setContent, setShowSnackBar }) {
   const userID = localStorage.getItem('userID');
   const token = window.localStorage.getItem('jwtToken');
   const [open, setOpen] = useState(false);
   const [waiting, setWaiting] = useState(false);
+  const { info, setInfo } = useContext(MyContext);
 
   const handleClose = () => {
     setOpen(false);
@@ -33,12 +35,11 @@ export default function ImageUploader({ setAvatar, setContent, setShowSnackBar }
       },
       body: data,
     });
-
     const result = await res.json();
 
     if (res.status === 200) {
       setContent("Cập nhật thành công");
-      setAvatar(result.url);
+      setInfo({ ...info, AvatarURL: result.url });
     } else { // 400, etc...
       setContent(result.msg)
     }
