@@ -105,13 +105,18 @@ export default function Teams() {
     }
 
     const deleteTeam = async (TeamID) => {
-        const res = await fetch(`${API_URL}/teams/${TeamID}`, {
-            method: 'DELETE',
+        const data = {
+            UserID: userID
+        }
+        const res = await fetch(`${API_URL}/teams/${TeamID}/delete`, {
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${token}`,
-            }
+            },
+            body: JSON.stringify(data),
         });
+        history.push("/teams")
     }
     return (
         <>

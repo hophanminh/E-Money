@@ -23,7 +23,6 @@ module.exports = {
         return db.patch('teams', updateContent, {ID: teamId});
     },
     deleteTeam: (id) => {
-
         return db.delete('teams', {ID: id})
     },
 }
