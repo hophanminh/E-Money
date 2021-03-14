@@ -31,8 +31,12 @@ const appointments = [
     endDate: new Date(2021, 1, 26, 1),
   }, {
     title: 'Deadline',
-    startDate: new Date(2021, 2, 5, 20),
-    endDate: new Date(2021, 2, 5, 21),
+    startDate: new Date(2021, 2, 31, 20),
+    endDate: new Date(2021, 2, 31, 21),
+  }, {
+    title: "April's Fool",
+    startDate: new Date(2021, 3, 1, 0, 0, 1),
+    endDate: new Date(2021, 3, 1, 23, 59, 59),
   }
 ];
 const currentDate = Date.now();
@@ -51,7 +55,7 @@ export default function Calendar() {
             Người dùng sẽ không phải quên những chi tiêu cần thiết của mỗi tuần hoặc mỗi tháng. E-Money sẽ lên lịch nhắc nhớ người dùng trước ngày diễn ra các hoạt động này.
           </Typography>
         </div>
-        <div style={{ width: '60%', float: 'right' }}>
+        <div style={{ width: '60%', float: 'right', textAlign: 'center' }}>
           <Paper className={classes.paper}>
             <Scheduler data={appointments}>
               <ViewState currentDate={currentDate} />

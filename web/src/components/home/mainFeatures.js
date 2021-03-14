@@ -12,8 +12,8 @@ export default function MainFeatures() {
   const classes = useStyles();
 
   return (
-    <div className={classes.container}>
-      <div style={{ margin: '0px 200px 0px 200px' }}>
+    <div className={classes.container} style={{ textAlign: 'center' }}>
+      <div style={{ margin: '0px 240px 0px 240px' }}>
         <Typography style={{ color: '#172755', fontSize: '36px', fontWeight: 'bold' }}>
           Chức năng chính
         </Typography>

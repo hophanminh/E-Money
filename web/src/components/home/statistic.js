@@ -31,7 +31,7 @@ export default function Statistic() {
   const classes = useStyles();
 
   const [targetItem, setTargetItem] = useState(null);
-  
+
   const changeTargetItem = (target) => {
     setTargetItem(target);
   }
@@ -47,7 +47,7 @@ export default function Statistic() {
               <Legend />
               <Animation />
               <EventTracker />
-              <Tooltip targetItem={targetItem} onTargetItemChange={(target) => changeTargetItem(target)}/>
+              <Tooltip targetItem={targetItem} onTargetItemChange={(target) => changeTargetItem(target)} />
             </Chart>
           </Paper>
         </div>

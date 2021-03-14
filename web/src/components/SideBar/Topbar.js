@@ -136,8 +136,7 @@ function Topbar(props) {
 
           {(
             <>
-              <ListItem button component={NavLink} to="/Login" onClick={(e) => logOut(e)}
-                className={classes.button}>
+              <ListItem button component={NavLink} to="/Notification" className={classes.button}>
                 <NotificationsNoneIcon />
               </ListItem>
             </>

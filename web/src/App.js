@@ -8,6 +8,8 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Home from './components/home/home';
+import Statistic from './components/statistic/statistic';
+import Notification from './components/Notification/notification';
 import PrivateRoute from './components/PrivateRoute';
 import StickyFooter from './components/stickyFooter/StickyFooter';
 import Dashboard from './components/Dashboard/Dashboard';
@@ -35,6 +37,16 @@ const routes = [
     path: "/dashboard",
     private: true,
     main: () => <Dashboard />
+  },
+  {
+    path: "/statistic",
+    private: true,
+    main: () => <Statistic />
+  },
+  {
+    path: "/notification",
+    private: true,
+    main: () => <Notification />
   },
   {
     path: "/signin",
