@@ -1,23 +1,22 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
-import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import Label from '@material-ui/icons/Label';
 import TextField from '@material-ui/core/TextField';
-import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
 import KeyboardReturnIcon from '@material-ui/icons/KeyboardReturn';
 import Typography from '@material-ui/core/Typography';
+import Dialog from '@material-ui/core/Dialog';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import DialogContent from '@material-ui/core/DialogContent';
 import Container from '@material-ui/core/Container';
-import Palette from '../../constants/palette.json';
+import palette from '../../constants/palette.json';
 import SnackBar from '../snackbar/SnackBar';
 import * as helper from '../../utils/helper';
 import config from '../../constants/config.json';
 import MyContext from '../mycontext/MyContext';
 
 const API_URL = config.API_LOCAL;
-const styles = {
+export const styles = {
   background: {
     width: '100%',
     height: '100%',
@@ -51,11 +50,12 @@ export default function SignUp() {
   const [errors, setErrors] = useState({});
   const [showSnackbar, setShowSnackBar] = useState(false);
   const [content, setContent] = useState("");
+  const [waiting, setWaiting] = useState(false);
   const { isLoggedIn, setIsLoggedIn } = useContext(MyContext);
 
   useEffect(() => {
     console.log(isLoggedIn);
-    if (isLoggedIn) {
+    if (isLoggedIn !== null && isLoggedIn) {
       history.push('/');
     }
   }, [isLoggedIn]);
@@ -102,13 +102,13 @@ export default function SignUp() {
       return;
     }
 
+    setWaiting(true);
     const data = {
       Name: displayedName,
       Username: username,
       Password: password,
       Email: email
     }
-
     // call API here
     const res = await fetch(`${API_URL}/signup`, {
       method: 'POST',
@@ -118,6 +118,7 @@ export default function SignUp() {
       }
     });
     const result = await res.json();
+    setWaiting(false);
     setContent(result.msg);
     setShowSnackBar(true);
   }
@@ -159,7 +160,7 @@ export default function SignUp() {
                       height: '65px',
                       width: '65px',
                       color: '#FFF',
-                      backgroundColor: Palette.primary,
+                      backgroundColor: palette.primary,
                       boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)',
                     }}
                   >
@@ -171,8 +172,14 @@ export default function SignUp() {
               </Grid>
 
               <Grid item xs={8} sm={8} md={8} style={{ padding: 'auto 20px auto', marginLeft: '3%' }}>
+                <Dialog style={{ textAlign: 'center' }} open={waiting} >
+                  <DialogContent align='center'>
+                    <CircularProgress style={{ color: palette.primary }} />
+                    <Typography variant='h6'>Đang xử lý</Typography>
+                  </DialogContent>
+                </Dialog>
                 <div style={{ ...styles.shadow, ...styles.paper, width: '100%' }}>
-                  <Typography style={{ color: Palette.primary, fontWeight: 'bold' }} variant='h4'>Đăng ký tài khoản</Typography>
+                  <Typography style={{ color: palette.primary, fontWeight: 'bold' }} variant='h5'>Đăng ký tài khoản</Typography>
 
                   <Grid container spacing={6}>
 
@@ -210,7 +217,7 @@ export default function SignUp() {
                     <Grid item xs={12} md={6}>
                       <div style={{ margin: '20px 10px 20px' }}>
                         <TextField label="Mật khẩu" variant="outlined" type="password"
-                          margin="normal" required fullWidth autoFocus
+                          margin="normal" required fullWidth
                           onChange={e => handlePasswordChange(e.target.value)}
                           value={password}
                         />
@@ -226,15 +233,10 @@ export default function SignUp() {
                           {errors.confirmedPassword}
                         </div>
                         <Button className={styles.submit} type="submit" fullWidth variant="contained" onClick={() => handleSubmit()}
-                          style={{ backgroundColor: Palette.primary, color: '#fff', fontWeight: 'bold', margin: '25px 0 20px' }}>
+                          style={{ backgroundColor: palette.primary, color: '#fff', fontWeight: 'bold', margin: '25px 0 20px' }}>
                           Đăng ký
                         </Button>
                       </div>
-                    </Grid>
-                  </Grid>
-                  <Grid container justify="flex-end">
-                    <Grid item>
-                      {/* <ResetPasswordDialog /> */}
                     </Grid>
                   </Grid>
 
@@ -245,6 +247,5 @@ export default function SignUp() {
         </div>
       </div>
     </>
-
   );
 }

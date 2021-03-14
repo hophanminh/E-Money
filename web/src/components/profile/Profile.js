@@ -37,47 +37,30 @@ export default function Profile() {
   const token = localStorage.getItem('jwtToken');
   const history = useHistory();
   const [errors, setErrors] = useState({});
-  const [username, setUsername] = useState("");
+  const [username, setUsername] = useState("");// không thay đổi được
   const [displayedName, setDisplayedName] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState("Bạn chưa chọn ngày sinh");
   const [avatar, setAvatar] = useState(null);
   const [email, setEmail] = useState("");
-  const { isLoggedIn } = useContext(MyContext);
+  const { isLoggedIn, info, setInfo } = useContext(MyContext);
   const [activeDate, setActiveDate] = useState((new Date()).toISOString());
-
   const [content, setContent] = useState("");
   const [showSnackbar, setShowSnackBar] = useState(false);
 
   useEffect(() => {
-    console.log(isLoggedIn);
     if (isLoggedIn !== null && isLoggedIn === false) {
       history.push('/');
     }
-    async function getProfie() {
-
-
-      const res = await fetch(`${API_URL}/users/${userID}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        }
-      });
-      if (res.status === 200) {
-        const result = await res.json();
-        const user = result.user;
-        setDisplayedName(user.Name);
-        setUsername(user.Username);
-        setEmail(user.Email);
-        setDateOfBirth(user.DateOfBirth);
-        setActiveDate(user.ActivatedDate);
-        setAvatar(user.AvatarURL ? user.AvatarURL : defaultAvatar);
-      } else {
-        history.push('/');
-      }
-    }
-    getProfie();
   }, [isLoggedIn]);
+
+  useEffect(() => {
+    setDisplayedName(info.Name);
+    setUsername(info.Username);
+    setEmail(info.Email);
+    setDateOfBirth(info.DateOfBirth);
+    setActiveDate(info.ActivatedDate);
+    setAvatar(info.AvatarURL ? info.AvatarURL : defaultAvatar);
+  }, [info])
 
   const handleDisplayedNameChange = (name) => {
     setDisplayedName(name);
@@ -133,6 +116,12 @@ export default function Profile() {
     if (res.status === 200) {
       setContent("Cập nhật thành công");
       setShowSnackBar(true);
+      setInfo({
+        ...info,
+        Name: data.Name,
+        Email: data.Email,
+        DateOfBirth: data.DateOfBirth
+      })
     } else {
       // alert("Some error when updating!")
     }
@@ -145,7 +134,6 @@ export default function Profile() {
   return (
     <>
       <SnackBar open={showSnackbar} setOpen={(isOpen) => setShowSnackBar(isOpen)} content={content} />
-
       <div class="wallpaper" style={{ ...styles.wallpaper }}>
       </div>
       <div style={styles.body}>
@@ -165,7 +153,7 @@ export default function Profile() {
                   }}
                 >
                   <div style={{ position: 'absolute', left: '76%', bottom: '0%' }}>
-                    <ImageUploader setAvatar={setAvatar} setContent={setContent} setShowSnackBar={setShowSnackBar} />
+                    <ImageUploader setContent={setContent} setShowSnackBar={setShowSnackBar} />
                   </div>
                 </div>
 
@@ -198,7 +186,6 @@ export default function Profile() {
                     onChange={e => handleDisplayedNameChange(e.target.value)}
                     value={displayedName}
                   />
-
                   <div class="container margin-top-10">
                     <Typography style={{ fontWeight: 'bold' }} variant="h6">Tên tài khoản</Typography>
                     <div class="input-invalid">{errors.userName}</div>
@@ -207,7 +194,6 @@ export default function Profile() {
                     margin="normal" required fullWidth disabled
                     value={username}
                   />
-
                   <div class="container margin-top-10">
                     <Typography style={{ fontWeight: 'bold' }} variant="h6">Email</Typography>
                     <div class="input-invalid">{errors.email}</div>
@@ -218,14 +204,12 @@ export default function Profile() {
                     value={email}
                   />
                 </div>
-
                 <div class="container margin-top-10">
                   <Typography style={{ fontWeight: 'bold' }} variant="h6">Ngày sinh</Typography>
                   <div class="input-invalid">{errors.dob}</div>
                 </div>
                 <MuiPickersUtilsProvider utils={DateFnsUtils} >
                   <KeyboardDatePicker
-                    // disableToolbar
                     variant="inline"
                     format="dd/MM/yyyy"
                     margin="normal"
@@ -238,14 +222,12 @@ export default function Profile() {
                     placeholder="Date of Birth"
                   />
                 </MuiPickersUtilsProvider>
-
                 <Button type="submit" fullWidth variant="contained" style={{ backgroundColor: palette.primary, color: 'white', fontWeight: 'bold', marginTop: '20px' }}
                   onClick={handleSaveChange}
                   startIcon={<SaveIcon />}
                 >
                   Cập nhật thông tin
                 </Button>
-
                 <div class="container margin-top-20">
                   <Typography style={{ fontWeight: 'bold' }} variant="h6">Mật khẩu</Typography>
                 </div>

@@ -24,6 +24,7 @@ const { convertToRegularDate } = require('../utils/helper');
 router.use(express.static('public'));
 
 router.post('/authenticate', (req, res) => {
+  // console.log(req.user);
   console.log("authenticated");
   return res.status(200).end();
 });
@@ -68,7 +69,7 @@ router.patch('/:id/info', async (req, res) => {
 
   if (result.affectedRows === 1) {
     res.status(200).end();
-  } else res.status(400).end();
+  } else res.status(500).end();
 
 });
 
@@ -95,10 +96,6 @@ router.patch('/:id/password', async (req, res) => {
   } else {
     res.status(400).send({ msg: "Mật khẩu hiện tại không đúng" });
   }
-
-  // } else {
-  //   res.status(400).send({ mesg: "Something wrong when changing password" });
-  // }
 });
 
 router.patch('/:id/avatar', upload.single('avatar'), async (req, res) => {

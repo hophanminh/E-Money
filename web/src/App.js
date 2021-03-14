@@ -23,6 +23,7 @@ import config from './constants/config.json';
 import { MyProvider } from './components/mycontext/MyContext';
 import Teams from "./components/Team/Teams";
 import UpdateProfile from "./components/Team/UpdateProfile";
+import ResetDestination from './components/signin/resetpassword/ResetDestination';
 
 const API_URL = config.API_LOCAL;
 
@@ -83,6 +84,11 @@ const routes = [
     private: true,
     main: () => <Teams />
   },
+  {
+    path: '/reset',
+    private: false,
+    main: () => <ResetDestination />
+  }
 ];
 
 const useStyles = makeStyles((theme) => ({

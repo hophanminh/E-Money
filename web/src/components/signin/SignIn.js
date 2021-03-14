@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
-import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Link from '@material-ui/core/Link';
@@ -13,12 +12,13 @@ import FacebookIcon from '../../resources/images/facebook.png';
 import SnackBar from '../snackbar/SnackBar';
 import MyContext from '../mycontext/MyContext';
 import Palette from '../../constants/palette.json';
-// import ResetPasswordDialog from '../Dialogs/ResetPasswordDialog';
+import ResetPassword from './resetpassword/RequestGenerator';
 import * as helper from '../../utils/helper';
 import config from '../../constants/config.json';
 
 const API_URL = config.API_LOCAL;
-const styles = {
+
+export const styles = {
   background: {
     width: '100%',
     height: '100%',
@@ -71,10 +71,10 @@ export default function SignIn() {
   const [errors, setErrors] = useState({});
   const [showSnackbar, setShowSnackBar] = useState(false);
   const [content, setContent] = useState("");
-  const { isLoggedIn, setIsLoggedIn } = useContext(MyContext);
+  const { isLoggedIn, setIsLoggedIn, setInfo } = useContext(MyContext);
 
   useEffect(() => {
-    if (isLoggedIn) {
+    if (isLoggedIn !== null && isLoggedIn) {
       history.push('/');
     }
   }, [isLoggedIn]);
@@ -85,23 +85,23 @@ export default function SignIn() {
 
   const handleSubmit = async (e) => {
 
-    const errorObjs = {
+    const errorObj = {
     };
 
     if (helper.isBlankString(username)) {
-      errorObjs.username = "Tên tài khoản không được để trống";
+      errorObj.username = "Tên tài khoản không được để trống";
     } else if (helper.containsBlank(username)) {
-      errorObjs.username = "Tên tài khoản không được chứa khoảng trắng";
+      errorObj.username = "Tên tài khoản không được chứa khoảng trắng";
     }
 
     if (password.length < config.PASSWORDMINLENGTH) {
-      errorObjs.password = "Mật khẩu phải chứa ít nhất 6 ký tự";
+      errorObj.password = "Mật khẩu phải chứa ít nhất 6 ký tự";
     } else if (helper.containsBlank(password)) {
-      errorObjs.password = "Mật khẩu phải chứa ký tự khác khoảng trắng"
+      errorObj.password = "Mật khẩu phải chứa ký tự khác khoảng trắng"
     }
-    setErrors(errorObjs);
+    setErrors(errorObj);
 
-    if (Object.keys(errorObjs).length > 0) {
+    if (Object.keys(errorObj).length > 0) {
       return;
     }
 
@@ -109,7 +109,6 @@ export default function SignIn() {
       Username: username,
       Password: password
     };
-
     // call API here
     const res = await fetch(`${API_URL}/signin`, {
       method: 'POST',
@@ -122,12 +121,11 @@ export default function SignIn() {
 
     if (res.status === 200) {
       window.localStorage.setItem('jwtToken', result.token);
-      window.localStorage.setItem('userID', result.id);
-      window.localStorage.setItem('name', result.name);
+      window.localStorage.setItem('userID', result.user.ID);
+      setInfo(result.user);
       setIsLoggedIn(true);
-      history.push("/games");
+      history.push("/");
     } else {
-      // alert(result.mesg);
       setContent(result.msg);
       setShowSnackBar(true);
       setIsLoggedIn(false);
@@ -168,7 +166,7 @@ export default function SignIn() {
           <Container component="main" maxWidth="xl">
             <SnackBar open={showSnackbar} setOpen={(isOpen) => setShowSnackBar(isOpen)} content={content} />
             <Grid container spacing={4}>
-              <Grid item item xs={2} sm={2} md={2} direction="column" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', textAlign: 'left' }}>
+              <Grid item xs={2} sm={2} md={2} direction="column" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', textAlign: 'left' }}>
                 <div>
                   <Button
                     variant="contained"
@@ -211,8 +209,9 @@ export default function SignIn() {
                     <div class="input-invalid">
                       {errors.password}
                     </div>
-                    <Link onClick={signUpClicked} variant="body2" >
-                      <div style={{ cursor: 'pointer', margin: '10px 0 10px', textAlign: 'left' }}>Quên mật khẩu?</div>
+                    <Link variant="body2" >
+                      <ResetPassword setContent={setContent} setShowSnackBar={setShowSnackBar} />
+                      {/* <div style={{ cursor: 'pointer', margin: '10px 0 10px', textAlign: 'left' }}>Quên mật khẩu?</div> */}
                     </Link>
                   </div>
 
@@ -221,11 +220,11 @@ export default function SignIn() {
                     style={{ backgroundColor: Palette.primary, color: '#fff', fontWeight: 'bold', margin: '5px 0 20px' }}>
                     Đăng nhập
                   </Button>
-                  <Grid container justify="flex-end">
+                  {/* <Grid container justify="flex-end">
                     <Grid item>
-                      {/* <ResetPasswordDialog /> */}
+                      <ResetPasswordDialog />
                     </Grid>
-                  </Grid>
+                  </Grid> */}
 
                 </div>
               </Grid>
