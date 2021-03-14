@@ -16,8 +16,10 @@ module.exports = {
     updateTHU(teamId, userId, updateContent) {
         return db.patch('teams_has_users', updateContent, {TeamID: teamId, UserId: userId});
     },
-    deleteTHU: (id) => {
-        const sql = `DELETE FROM teams_has_users WHERE ID = '`+ id + `'`;
+    deleteTHU: (TeamID, UserID) => {
+        const sql = `DELETE from teams_has_users WHERE TeamID = '` + TeamID + `' AND UserID = '` + UserID + `'`
+        console.log(sql)
         return db.load(sql);
+
     }
 }

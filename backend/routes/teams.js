@@ -149,19 +149,21 @@ router.put('/details/:id', async (req, res) => {
     res.send(update);
 });
 
-router.delete('/:id', async (req, res) => {
+router.post('/:id/delete', async (req, res) => {
     const teamId = req.params.id;
     console.log("delete teams " + teamId)
     const teamObject = await TeamModel.getTeamById(teamId);
-    const { Name, MaxUsers, Description } = req.body;
+    const { UserID } = req.body;
 
     if (teamObject.length === 0) {
         return res.status(400).send({ msg: "Không tìm thấy người dùng" })
     }
 
     const team = teamObject[0];
-    const  a = await TeamModel.deleteTeam(teamId);
-    const b = await WalletModel.deleteWallet(team.WalletID);
+    console.log(teamId);
+    console.log(team);
+    console.log("Start delete thu")
+    const c = await TeamHasUserModel.deleteTHU(team.ID, UserID)
     return res.status(200).send({msg: "success"})
 
 });
