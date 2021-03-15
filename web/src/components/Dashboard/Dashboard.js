@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from "react-router-dom";
 import {
   Container,
   Breadcrumbs,
   Typography,
-  Link,
   Grid,
   Box,
   Avatar,
@@ -25,7 +25,7 @@ import TransactionDetail from './TransactionDetail'
 
 import moment from 'moment'
 import AddTransaction from './CRUDTransaction/AddTransaction';
-import socket from "../../utils/socket";
+import { getSocket } from "../../utils/socket";
 
 const useStyles = makeStyles((theme) => ({
   root: (theme) => ({
@@ -92,6 +92,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: '24px',
   },
   titleFont: {
+    fontWeight: 'bold',
     fontSize: '24px',
   },
   subTitleFont: {
@@ -150,7 +151,7 @@ const useStyles = makeStyles((theme) => ({
   },
   button: {
     width: '100%',
-    minHeight: '155px',
+    minHeight: '130px',
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'flex-start',
@@ -192,21 +193,6 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
-
-const fakeCategory = [{
-  id: '1',
-  avatar: "food",
-  categoryName: 'Ăn uống',
-  check: true
-},
-{
-  id: '2',
-  avatar: "book",
-  categoryName: 'Học tập',
-  check: true
-},
-]
-
 const fakeEvent = [{
   id: 0,
   name: "Không có"
@@ -215,37 +201,39 @@ const fakeEvent = [{
 
 export default function Dashboard() {
   const classes = useStyles();
+  const socket = getSocket();
 
   const userID = localStorage.getItem('userID');
   const [walletID, setWalletID] = useState();
 
-  const [categoryList, setCategoryList] = useState(fakeCategory);
+  const [categoryList, setCategoryList] = useState([]);
   const [list, setList] = useState([]);
   const [searchInput, setSearchInput] = useState('');
   const [filterList, setFilterList] = useState(list);
 
   const [selected, setSelected] = useState(1);
 
-  ////////////////////////////////////////////////////////////////////////////////////// CHƯA LÀM
   const [spend, setSpend] = useState(0);
   const [receive, setReceive] = useState(0);
   const [total, setTotal] = useState(0);
-  //////////////////////////////////////////////////////////////////////////////////////
 
   // get initial data
   useEffect(() => {
-    console.log(userID);
-    socket.emit("get_private_wallet", { userID }, ({ wallet, transactionList, categoryList }) => {
+    socket.emit("get_private_wallet", {}, ({ wallet, transactionList, categoryList }) => {
       setWalletID(wallet[0].ID);
       setTotal(wallet[0].TotalCount);
-      //setCategoryList(categoryList);
+
+      categoryList.forEach(cat => cat['check'] = true);
+      setCategoryList(categoryList);
       setList(transactionList);
+
       setSelected(transactionList.length !== 0 ? transactionList[0].id : -1);
     });
 
     socket.on('wait_for_update', ({ wallet, transactionList, categoryList }) => {
       setTotal(wallet[0].TotalCount);
-      //setCategoryList(categoryList);
+      categoryList.forEach(cat => cat['check'] = true);
+      setCategoryList(categoryList);
       setList(transactionList);
     });
 
@@ -296,7 +284,7 @@ export default function Dashboard() {
     if (searchInput !== '') {
       filtered = filtered.filter(i => i.description.toLowerCase().includes(searchInput) || i.categoryName.toLowerCase().includes(searchInput));
     }
-    setFilterList(filtered.filter(i => categoryList.filter(cat => cat.id === i.catID && cat.check === true).length !== 0))
+    setFilterList(filtered.filter(i => categoryList.filter(cat => cat.ID === i.catID && cat.check === true).length !== 0))
   }, [list, categoryList, searchInput])
 
   // add transaction dialog
@@ -307,7 +295,7 @@ export default function Dashboard() {
 
   // add 
   const addList = (newTransaction) => {
-    socket.emit("add_transaction", { walletID, userID, newTransaction }, ({ ID }) => {
+    socket.emit("add_transaction", { walletID, newTransaction }, ({ ID }) => {
       let tempList = list.slice();
       newTransaction.id = ID;
       tempList = [newTransaction].concat(tempList);
@@ -318,7 +306,7 @@ export default function Dashboard() {
 
   // update
   const updateList = (newTransaction) => {
-    socket.emit("update_transaction", { userID, transactionID: newTransaction.id, newTransaction }, () => {
+    socket.emit("update_transaction", { transactionID: newTransaction.id, newTransaction }, () => {
       let tempList = list.slice();
       const index = tempList.findIndex(obj => obj.id == newTransaction.id);
       tempList[index] = newTransaction;
@@ -328,7 +316,7 @@ export default function Dashboard() {
   }
   // delete
   const deleteList = (id) => {
-    socket.emit("delete_transaction", { userID, id }, () => {
+    socket.emit("delete_transaction", { id }, () => {
       const tempList = list.slice();
       const index = tempList.findIndex(obj => obj.id == id);
       tempList.splice(index, 1);
@@ -341,9 +329,9 @@ export default function Dashboard() {
     <>
       <Container className={classes.root} maxWidth={null}>
         <div className={classes.title}>
-          <Breadcrumbs className={classes.breadcrumb} separator={<NavigateNextIcon fontSize="30px" />} aria-label="breadcrumb">
+          <Breadcrumbs className={classes.breadcrumb} separator={<NavigateNextIcon fontSize="large" />} aria-label="breadcrumb">
             <Typography className={classes.titleFont} color="textPrimary">
-              <Box fontWeight="fontWeightBold" >Ví cá nhân</Box>
+              Ví cá nhân
             </Typography>
           </Breadcrumbs>
           <Typography className={classes.subTitleFont} color="textSecondary">Quản lý các khoản giao dịch tiền tệ cá nhân </Typography>
@@ -428,7 +416,11 @@ export default function Dashboard() {
                 bgcolor="background.paper"
                 className={classes.transactionBox}>
                 {filterList && list.find(i => i.id === selected) &&
-                  <TransactionDetail transactionData={list.find(i => i.id === selected)} updateList={(data) => updateList(data)} deleteList={(data) => deleteList(data)} />}
+                  <TransactionDetail
+                    categoryList={categoryList}
+                    transactionData={list.find(i => i.id === selected)}
+                    updateList={(data) => updateList(data)}
+                    deleteList={(data) => deleteList(data)} />}
               </Box>
             </Grid>
 
@@ -437,7 +429,11 @@ export default function Dashboard() {
                 <Box
                   boxShadow={3}
                   bgcolor="background.paper">
-                  <AddTransaction open={openAddDialog} setOpen={(open) => setOpenAddDialog(open)} addList={(data) => addList(data)} />
+                  <AddTransaction
+                    categoryList={categoryList}
+                    open={openAddDialog}
+                    setOpen={(open) => setOpenAddDialog(open)}
+                    addList={(data) => addList(data)} />
                   <Button className={classes.button} style={{ textTransform: 'none' }} onClick={handleOpenAddDialog}>
                     <Avatar className={`${classes.avatar} ${classes.addBackGround}`}>
                       <AddCircleOutlineIcon className={`${classes.smallBoxIcon} ${classes.addColor}`} />
@@ -451,14 +447,16 @@ export default function Dashboard() {
                 <Box
                   boxShadow={3}
                   bgcolor="background.paper">
-                  <Button className={classes.button} style={{ textTransform: 'none' }}>
-                    <Avatar className={`${classes.avatar} ${classes.categoryBackGround}`}>
-                      <ListIcon className={`${classes.smallBoxIcon} ${classes.categoryColor}`} />
-                    </Avatar>
-                    <Box className={classes.wrap}>
-                      <Typography className={classes.smallBoxNumber}>Quản lý loại giao dịch </Typography>
-                    </Box>
-                  </Button>
+                  <Link to={`/category/${walletID}`} style={{ textDecoration: 'none' }} >
+                    <Button className={classes.button} style={{ textTransform: 'none' }}>
+                      <Avatar className={`${classes.avatar} ${classes.categoryBackGround}`}>
+                        <ListIcon className={`${classes.smallBoxIcon} ${classes.categoryColor}`} />
+                      </Avatar>
+                      <Box className={classes.wrap}>
+                        <Typography className={classes.smallBoxNumber}>Quản lý loại giao dịch </Typography>
+                      </Box>
+                    </Button>
+                  </Link>
                 </Box>
 
                 <Box

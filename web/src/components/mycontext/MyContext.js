@@ -10,10 +10,11 @@ export const MyProvider = (props) => {
   const [isLoggedIn, setIsLoggedIn] = useState(null);
   const jwtToken = window.localStorage.getItem('jwtToken');
 
+  const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
 
     async function authen() {
-      console.log('cmmmmmm');
       const res = await fetch(`${API_URL}/users/authenticate`, {
         method: 'POST',
         headers: {
@@ -23,15 +24,17 @@ export const MyProvider = (props) => {
       });
       if (res.status === 200) {
         setIsLoggedIn(true);
+        setIsLoading(false);
       } else {
         setIsLoggedIn(false);
+        setIsLoading(false);
       }
     }
     authen();
   }, []);
 
   return (
-    <MyContext.Provider value={{ isLoggedIn, setIsLoggedIn }}>
+    <MyContext.Provider value={{ isLoggedIn, setIsLoggedIn, isLoading }}>
       {props.children}
     </MyContext.Provider>
   )

@@ -24,7 +24,8 @@ const io = socketIO(server, {
     methods: ["GET", "POST"]
   }
 });
-const ioConfig = require('./utils/socket')(io);
+const ioConfig = require('./utils/socket')(io, passport);
+
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({

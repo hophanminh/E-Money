@@ -7,4 +7,5 @@ module.exports = {
     db.loadSafe(`SELECT w.*
                 FROM users as u LEFT JOIN wallet as w ON u.WalletID = w.ID
                 WHERE u.ID = ? `, [userID]),
+
 }

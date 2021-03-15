@@ -73,31 +73,24 @@ const useStyles = makeStyles({
     },
 });
 
-const fakeCategory = [{
-    id: '1',
-    avatar: "food",
-    categoryName: 'Ăn uống',
-    check: true
-},
-{
-    id: '2',
-    avatar: "book",
-    categoryName: 'Học tập',
-    check: true
-},
-]
 const fakeEvent = [];
 
-export default function EditTransaction({ data, updateList, open, setOpen }) {
+export default function EditTransaction({ categoryList, data, updateList, open, setOpen }) {
     const classes = useStyles();
+    const [list, setList] = useState(categoryList);
     const [type, setType] = useState("Chi");
     const [newTransaction, setNewTransaction] = useState(data);
+
     useEffect(() => {
         if (data) {
             setNewTransaction(data)
             setType(data.price >= 0 ? "Thu" : "Chi");
         }
     }, [data])
+
+    useEffect(() => {
+        setList(categoryList);
+    }, [categoryList]);
 
     const clearNewTransaction = () => {
         setType(data.price >= 0 ? "Thu" : "Chi");
@@ -109,12 +102,12 @@ export default function EditTransaction({ data, updateList, open, setOpen }) {
         clearNewTransaction();
     }
     const handleEdit = () => {
-        const newCategory = fakeCategory.find(i => i.id === newTransaction.catID);
+        const newCategory = list.find(i => i.ID === newTransaction.catID);
         const newEvent = fakeEvent.find(i => i.id === newTransaction.eventID);
 
         const temp = newTransaction;
-        temp.avatar = newCategory.avatar;
-        temp.categoryName = newCategory.categoryName;
+        temp.avatar = newCategory.IconName;
+        temp.categoryName = newCategory.Name;
         temp.eventName = newEvent ? newEvent.name : null;
 
         updateList(temp);
@@ -232,15 +225,15 @@ export default function EditTransaction({ data, updateList, open, setOpen }) {
                         fullWidth
                         variant="outlined"
                     >
-                        {fakeCategory.map((cat) => (
-                            <MenuItem key={cat.id} value={cat.id}>
+                        {list.map((cat) => (
+                            <MenuItem key={cat.ID} value={cat.ID}>
                                 <Box className={classes.categoryIconBox}>
                                     <DefaultIcon
-                                        avatar={cat.avatar}
+                                        IconName={cat.IconName}
                                         backgroundSize={24}
                                         iconSize={14} />
                                     <Typography className={classes.iconText}>
-                                        {cat.categoryName}
+                                        {cat.Name}
                                     </Typography>
                                 </Box>
                             </MenuItem>

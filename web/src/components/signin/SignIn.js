@@ -124,6 +124,7 @@ export default function SignIn() {
       window.localStorage.setItem('jwtToken', result.token);
       window.localStorage.setItem('userID', result.id);
       window.localStorage.setItem('name', result.name);
+      console.log(localStorage.getItem('jwtToken'))
       setIsLoggedIn(true);
       history.push("/games");
     } else {

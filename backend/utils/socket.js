@@ -3,17 +3,35 @@ const walletModel = require('../models/walletModel');
 const transactionModel = require('../models/transactionModel');
 const { v4: uuidv4 } = require('uuid');
 const { convertToRegularDate, convertToRegularDateTime } = require('../utils/helper');
+const config = require("../config/default.json");
+const jwt = require('jsonwebtoken');
+const socketHelper = require("./socketHelper");
+const categoryModel = require('../models/categoryModel');
 
 module.exports = function (io) {
-    io.on("connection", (socket) => {
-        // get Room data from server
-        socket.on('get_private_wallet', async ({ userID }, callback) => {
-            socket.join(userID);
-            try {
-                const wallet = await walletModel.getPrivateWallet(userID);
-                const transactionList = await transactionModel.getTransactionFromWalletID(wallet[0].ID);
+    // authenticate
+    io.use(function (socket, next) {
+        if (socket.handshake.query && socket.handshake.query.token) {
+            jwt.verify(socket.handshake.query.token, config.PASSPORTKEY, function (err, decoded) {
+                if (err) return next(new Error('Authentication error'));
+                socket.decoded_userID = decoded;
+                next();
+            });
+        }
+        else {
+            next(new Error('Authentication error'));
+        }
+    })
 
-                const categoryList = null;
+    io.on("connection", (socket) => {
+        const decoded_userID = socket.decoded_userID.id;
+        console.log('hello!', decoded_userID);
+
+        // get private wallet data from server
+        socket.on('get_private_wallet', async ({ }, callback) => {
+            socket.join(decoded_userID);
+            try {
+                const { wallet, transactionList, categoryList } = await socketHelper.getPrivateWallet(decoded_userID);
                 callback({ wallet, transactionList, categoryList });
             } catch (error) {
                 console.log(error);
@@ -21,26 +39,8 @@ module.exports = function (io) {
 
         });
 
-        // update other instance
-        socket.on('update_private_wallet', async ({ userID }) => {
-
-            // save to database
-            try {
-                const wallet = await walletModel.getPrivateWallet(userID);
-                const transaction = await transactionModel.getTransactionFromWalletID(wallet.ID);
-
-                const transactionList = null;
-                const categoryList = null;
-
-                // annouce to other players
-                socket.broadcast.to(userID).emit('wait_for_update', { wallet, transactionList, categoryList });
-            } catch (error) {
-                console.log(error);
-            }
-        });
-
         // add Transaction
-        socket.on('add_transaction', async ({ walletID, userID, newTransaction }, callback) => {
+        socket.on('add_transaction', async ({ walletID, newTransaction }, callback) => {
             try {
                 const ID = uuidv4();
                 const temp = {
@@ -52,20 +52,22 @@ module.exports = function (io) {
                     EventID: newTransaction.eventID === 0 ? null : newTransaction.eventID,
                     ExchangeTypeID: newTransaction.catID,
                     WalletID: walletID,
-                    UserID: userID,
+                    UserID: decoded_userID,
                 }
                 await transactionModel.addTransaction(temp);
                 callback({ ID });
 
                 // annouce to other players
-                socket.emit('update_private_wallet', { userID });
+                const { wallet, transactionList, categoryList } = await socketHelper.getPrivateWallet(decoded_userID);
+                socket.broadcast.to(decoded_userID).emit('wait_for_update', { wallet, transactionList, categoryList });
+
             } catch (error) {
                 console.log(error);
             }
         });
 
         // update Transaction
-        socket.on('update_transaction', async ({ userID, transactionID, newTransaction }, callback) => {
+        socket.on('update_transaction', async ({ transactionID, newTransaction }, callback) => {
             try {
                 const temp = {
                     Money: newTransaction.price,
@@ -80,20 +82,36 @@ module.exports = function (io) {
                 callback();
 
                 // annouce to other players
-                socket.emit('update_private_wallet', { userID });
+                const { wallet, transactionList, categoryList } = await socketHelper.getPrivateWallet(decoded_userID);
+                socket.broadcast.to(decoded_userID).emit('wait_for_update', { wallet, transactionList, categoryList });
             } catch (error) {
                 console.log(error);
             }
         });
 
         // delete Transaction
-        socket.on('delete_transaction', async ({ userID, id }, callback) => {
+        socket.on('delete_transaction', async ({ id }, callback) => {
             try {
                 await transactionModel.deleteTransaction(id);
                 callback();
 
                 // annouce to other players
-                socket.emit('update_private_wallet', { userID });
+                const { wallet, transactionList, categoryList } = await socketHelper.getPrivateWallet(decoded_userID);
+                socket.broadcast.to(decoded_userID).emit('wait_for_update', { wallet, transactionList, categoryList });
+            } catch (error) {
+                console.log(error);
+            }
+
+        });
+
+        // get category of wallet
+        socket.on('get_category', async ({ walletID }, callback) => {
+            socket.join(walletID);
+            try {
+                const defaultList = await categoryModel.getDefaultCategory();
+                const customList = await categoryModel.getCustomCategoryFromWalletID(walletID);
+                console.log(defaultList, customList);
+                callback({ defaultList, customList });
             } catch (error) {
                 console.log(error);
             }

@@ -12,10 +12,6 @@ import {
     IconButton,
     makeStyles,
 } from '@material-ui/core/';
-import NavigateNextIcon from '@material-ui/icons/NavigateNext';
-import AccountBalanceWalletIcon from '@material-ui/icons/AccountBalanceWallet';
-import TrendingUpIcon from '@material-ui/icons/TrendingUp';
-import TrendingDownIcon from '@material-ui/icons/TrendingDown';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 
@@ -116,7 +112,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export default function TransactionDetail({ transactionData, updateList, deleteList }) {
+export default function TransactionDetail({ categoryList, transactionData, updateList, deleteList }) {
     const classes = useStyles();
     const [data, setData] = useState(null);
     const [amount, setAmount] = useState(0);
@@ -152,6 +148,7 @@ export default function TransactionDetail({ transactionData, updateList, deleteL
                         </Typography>
                         <div>
                             <EditTransaction
+                                categoryList={categoryList}
                                 data={data}
                                 updateList={(data) => updateList(data)}
                                 open={openEditDialog}
@@ -175,7 +172,7 @@ export default function TransactionDetail({ transactionData, updateList, deleteL
 
                     <div className={classes.transaction}>
                         <DefaultIcon
-                            avatar={data.avatar}
+                            IconName={data.avatar}
                             backgroundSize={75}
                             iconSize={40} />
                         <Box className={classes.wrap} >

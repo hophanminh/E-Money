@@ -11,12 +11,12 @@ import Home from './components/home/home';
 import PrivateRoute from './components/PrivateRoute';
 import StickyFooter from './components/stickyFooter/StickyFooter';
 import Dashboard from './components/Dashboard/Dashboard';
+import Category from './components/Category/Category';
 import Menu from "./components/SideBar/Menu";
 import SignIn from './components/signin/SignIn';
 import SignUp from './components/signup/SignUp';
 import ActivateDestination from './components/activedestination/ActiveDestination';
 import Profile from './components/profile/Profile';
-import MyContext from './components/mycontext/MyContext';
 import config from './constants/config.json';
 import { MyProvider } from './components/mycontext/MyContext';
 
@@ -30,9 +30,14 @@ const routes = [
     main: () => <Home />
   },
   {
-    path: "/dashboard",
+    path: "/Dashboard/Wallet",
     private: true,
     main: () => <Dashboard />
+  },
+  {
+    path: "/category/:id",
+    private: true,
+    main: () => <Category />
   },
   {
     path: "/signin",
@@ -70,7 +75,7 @@ const useStyles = makeStyles((theme) => ({
 
 function App() {
   const classes = useStyles();
-
+  
   return (
     <Router>
       <div>
