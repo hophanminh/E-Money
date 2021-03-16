@@ -63,7 +63,6 @@ DROP TABLE IF EXISTS `Categories`;
 CREATE TABLE Categories(
     ID VARCHAR(100) NOT NULL, -- will store as UUID()
     Name VARCHAR(1000) NOT NULL,
-    IconName VARCHAR(100),
     IsDefault BOOLEAN NOT NULL,
     WalletID VARCHAR(100),
     IconID VARCHAR(100),
