@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Container } from '@material-ui/core';
 import HorizontalTimeline from "react-horizontal-timeline";
+import moment from 'moment';
 
+import MyContext from '../mycontext/MyContext';
 import Charts from './charts.js';
 import config from '../../constants/config.json';
 
@@ -12,6 +14,7 @@ const API_URL = config.API_LOCAL;
 export default function Statistic() {
   const userID = localStorage.getItem('userID');
   const jwtToken = localStorage.getItem('jwtToken');
+  const { info } = useContext(MyContext);
   const [dates, setDates] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [preIndex, setPreIndex] = useState(-1);
@@ -22,28 +25,19 @@ export default function Statistic() {
   const [pieChartSpentData, setPieChartSpentData] = useState([]);
   const [pieChartIncomeData, setPieChartIncomeData] = useState([]);
 
-  useEffect(() => {
-    // call API here
-    async function getActivatedDate() {
-      const res = await fetch(`${API_URL}/users/${userID}/activatedDate`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${jwtToken}`
-        }
-      });
-      if (res.status === 200) {
-        const result = await res.json();
-        //console.log(result.dates);
-        setDates(result.dates);
-        setPreIndex(result.dates.length - 2);
-        setCurrentIndex(result.dates.length - 1);
-      } else {
-        // alert(result.mesg);
-
-      }
+  const calculateDates = (activatedDate) => {
+    const startDate = moment(activatedDate);
+    const endDate = moment();
+    let list = [];
+    while (startDate.isBefore(endDate)) {
+      list.push(startDate.format("YYYY-MM-01"));
+      startDate.add(1, 'month');
     }
-    getActivatedDate();
+    setDates(list);
+  }
+
+  useEffect(() => {
+    calculateDates(info.ActivatedDate);
   }, []);
 
   const getBarChartData = async (date) => {

@@ -41,24 +41,6 @@ router.get('/:id', async (req, res) => {
   return res.status(200).send({ user });
 });
 
-router.get('/:id/activatedDate', async (req, res) => {
-  const id = req.params.id;
-  const activatedDates = await userModel.getActivatedDateByID(id);
-
-  if (activatedDates.length === 0) {
-    return res.status(400).end();
-  }
-  const activatedDate = activatedDates[0].ActivatedDate;
-  const startDate = moment(activatedDate);
-  const endDate = moment();
-  let dates = [];
-  while (startDate.isBefore(endDate)) {
-    dates.push(startDate.format("YYYY-MM-01"));
-    startDate.add(1, 'month');
-  }
-  return res.status(200).send({ dates });
-});
-
 router.patch('/:id/info', async (req, res) => {
 
   const userID = req.params.id;
