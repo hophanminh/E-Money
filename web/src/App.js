@@ -8,6 +8,8 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Home from './components/home/home';
+import Statistic from './components/statistic/statistic';
+import Notification from './components/Notification/notification';
 import PrivateRoute from './components/PrivateRoute';
 import StickyFooter from './components/stickyFooter/StickyFooter';
 import Dashboard from './components/Dashboard/Dashboard';
@@ -17,8 +19,12 @@ import SignIn from './components/signin/SignIn';
 import SignUp from './components/signup/SignUp';
 import ActivateDestination from './components/activedestination/ActiveDestination';
 import Profile from './components/profile/Profile';
+import TeamProfile from './components/Team/TeamProfile';
 import config from './constants/config.json';
 import { MyProvider } from './components/mycontext/MyContext';
+import Teams from "./components/Team/Teams";
+import UpdateProfile from "./components/Team/UpdateProfile";
+import ResetDestination from './components/signin/resetpassword/ResetDestination';
 
 const API_URL = config.API_LOCAL;
 
@@ -40,6 +46,16 @@ const routes = [
     main: () => <Category />
   },
   {
+    path: "/statistic",
+    private: true,
+    main: () => <Statistic />
+  },
+  {
+    path: "/notification",
+    private: true,
+    main: () => <Notification />
+  },
+  {
     path: "/signin",
     private: false,
     main: () => <SignIn />
@@ -58,6 +74,26 @@ const routes = [
     path: '/profile',
     private: false,
     main: () => <Profile />
+  },
+  {
+    path: '/teams/create',
+    private: true,
+    main: () => <TeamProfile />
+  },
+  {
+    path: '/teams/:TeamID/details',
+    private: true,
+    main: () => <UpdateProfile />
+  },
+  {
+    path: '/teams',
+    private: true,
+    main: () => <Teams />
+  },
+  {
+    path: '/reset',
+    private: false,
+    main: () => <ResetDestination />
   }
 ];
 
@@ -75,7 +111,7 @@ const useStyles = makeStyles((theme) => ({
 
 function App() {
   const classes = useStyles();
-  
+
   return (
     <Router>
       <div>

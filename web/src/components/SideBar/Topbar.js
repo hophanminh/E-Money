@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import clsx from 'clsx';
 import {
   useHistory,
@@ -19,7 +19,10 @@ import MenuIcon from '@material-ui/icons/Menu';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import NotificationsNoneIcon from '@material-ui/icons/NotificationsNone';
 import MyContext from '../mycontext/MyContext';
+import config from '../../constants/config.json';
+import defaultAvatar from '../../resources/images/defaultAvatar.png';
 
+const API_URL = config.API_LOCAL;
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
@@ -90,9 +93,10 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "space-between"
   },
   avatarImg: {
-    wight: 52,
+    width: 52,
     height: 52,
-    borderRadius: 50
+    borderRadius: 50,
+
   },
   colorTopBar: {
     background: "green !important"
@@ -102,14 +106,13 @@ const useStyles = makeStyles((theme) => ({
 function Topbar(props) {
   const classes = useStyles();
   const history = useHistory();
-  const displayedName = localStorage.getItem('name');
-  const { isLoggedIn, setIsLoggedIn } = useContext(MyContext);
+  const { setIsLoggedIn, info } = useContext(MyContext);
   const logOut = (e) => {
     localStorage.clear();
     setIsLoggedIn(false);
   };
-  // sidebar's open
-  const openSidebar = props.open;
+  const openSidebar = props.open;  // sidebar's open
+
   return (
     <AppBar position="absolute" className={clsx(classes.appBar, openSidebar && classes.appBarShift)}>
       <Toolbar className={`${classes.toolbar} ${classes.spaceBetween} ${classes.colorTopBar}`}>
@@ -128,16 +131,15 @@ function Topbar(props) {
           {(
             <>
               <ListItem button component={NavLink} to="/profile" className={classes.button}>
-                <Typography style={{ marginRight: '10px' }}>{displayedName}</Typography>
-                <img src={`https://picsum.photos/200`} className={`${classes.avatarImg}`}></img>
+                <Typography style={{ marginRight: '10px' }}>{info.Name}</Typography>
+                <img src={info.AvatarURL ? info.AvatarURL : defaultAvatar} className={`${classes.avatarImg}`}></img>
               </ListItem>
             </>
           )}
 
           {(
             <>
-              <ListItem button component={NavLink} to="/Login" onClick={(e) => logOut(e)}
-                className={classes.button}>
+              <ListItem button component={NavLink} to="/Notification" className={classes.button}>
                 <NotificationsNoneIcon />
               </ListItem>
             </>

@@ -49,6 +49,8 @@
   #fafafa), url('/src/resources/images/background1.jpg');
   background-repeat: no-repeat;
   background-size: cover;
+  background-position: center; 
+
 }
 
 .avatar {
@@ -58,6 +60,8 @@
   border: white solid 5px;
   background-repeat: no-repeat;
   background-size: cover;
+  background-position: center;
+
 }
 
 .trap-container {
@@ -71,7 +75,7 @@
 .trap-content {
   display: inline-block;
   position: relative;
-  padding-top: 11%;
+  padding-top: 9.5%;
   height: 80%;
   width: 90%;
   bottom: 10%;

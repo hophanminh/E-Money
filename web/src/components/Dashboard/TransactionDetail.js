@@ -15,7 +15,7 @@ import {
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 
-import moment from 'moment'
+import moment from 'moment';
 import DefaultIcon from '../../utils/DefaultIcon'
 import EditTransaction from './CRUDTransaction/EditTransaction';
 import DeleteTransaction from './CRUDTransaction/DeleteTransaction';

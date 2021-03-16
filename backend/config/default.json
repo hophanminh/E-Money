@@ -14,7 +14,7 @@
     "port": 3012,
     "user": "root",
     "password": "root",
-    "database": ""
+    "database": "qlchitieu"
   },
   "API": {
     "LOCAL": "",
@@ -39,5 +39,13 @@
     "cloud_name": "minhlaccloud",
     "api_key": "239485199764345",
     "api_secret": "nl0LvugzHn9L20T3j4vz55ZIClw"
+  },
+  "PERMISSION":  {
+    "ADMIN": 1,
+    "MEMBER": 0
+  },
+  "STATUS": {
+    "ACTIVE": 1,
+    "INACTIVE": 0
   }
 }

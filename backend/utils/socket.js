@@ -50,7 +50,7 @@ module.exports = function (io) {
                     DateAdded: convertToRegularDateTime(newTransaction.time),
                     DateModified: convertToRegularDateTime(newTransaction.time),
                     EventID: newTransaction.eventID === 0 ? null : newTransaction.eventID,
-                    ExchangeTypeID: newTransaction.catID,
+                    CategoryID: newTransaction.catID,
                     WalletID: walletID,
                     UserID: decoded_userID,
                 }
@@ -75,7 +75,7 @@ module.exports = function (io) {
                     DateAdded: convertToRegularDateTime(newTransaction.time),
                     DateModified: convertToRegularDateTime(new Date()),
                     EventID: newTransaction.eventID === 0 ? null : newTransaction.eventID,
-                    ExchangeTypeID: newTransaction.catID,
+                    CategoryID: newTransaction.catID,
                 }
                 console.log(newTransaction.price);
                 await transactionModel.updateTransaction(transactionID, temp);

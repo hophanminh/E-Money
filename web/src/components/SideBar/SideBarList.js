@@ -23,7 +23,7 @@ export default function SideBarList(props) {
         <ListItemText primary="Ví cá nhân" />
       </ListItem>
       {(
-        <ListItem button component={NavLink} to="/Account">
+        <ListItem button component={NavLink} to="/Statistic">
           <ListItemIcon>
             <BsFillBarChartFill />
           </ListItemIcon>
@@ -31,7 +31,7 @@ export default function SideBarList(props) {
         </ListItem>
       )}
       {(
-        <ListItem button component={NavLink} to="/Password">
+        <ListItem button component={NavLink} to="/teams">
           <ListItemIcon>
             <PeopleIcon />
           </ListItemIcon>
