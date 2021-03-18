@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext } from 'react';
 import clsx from 'clsx';
 import {
   useHistory,
@@ -12,9 +12,13 @@ import {
   Popover,
   IconButton,
   ListItem,
-  ListItemText,
-  makeStyles
-} from '@material-ui/core'
+  makeStyles,
+  Divider,
+  Card
+} from '@material-ui/core';
+
+import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
+
 import MenuIcon from '@material-ui/icons/Menu';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import NotificationsNoneIcon from '@material-ui/icons/NotificationsNone';
@@ -103,6 +107,13 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
+const notifications = [
+  { id: 1, content: 'Hello' },
+  { id: 2, content: 'World' },
+  { id: 3, content: 'FIT' },
+  { id: 4, content: 'HCMUS' }
+]
+
 function Topbar(props) {
   const classes = useStyles();
   const history = useHistory();
@@ -139,9 +150,44 @@ function Topbar(props) {
 
           {(
             <>
-              <ListItem button component={NavLink} to="/Notification" className={classes.button}>
-                <NotificationsNoneIcon />
-              </ListItem>
+              <PopupState variant="popover" popupId="demo-popup-popover">
+                {(popupState) => (
+                  <div>
+                    <ListItem button {...bindTrigger(popupState)} className={classes.button} style={{ height: '100%' }}>
+                      <Badge badgeContent={notifications.length} color="error">
+                        <NotificationsNoneIcon />
+                      </Badge>
+                    </ListItem>
+
+                    <Popover
+                      {...bindPopover(popupState)}
+                      anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'right',
+                      }}
+                      transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'right',
+                      }}
+                    >
+                      <div>
+                        {notifications.map(notification => {
+                          return (
+                            <div key={notification.id}>
+                              <Card key={notification.id} style={{ padding: '10px', borderRadius: '0px' }}>
+                                <Typography>
+                                  {notification.id + " - " + notification.content}
+                                </Typography>
+                              </Card>
+                              <Divider></Divider>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </Popover>
+                  </div>
+                )}
+              </PopupState>
             </>
           )}
           {(
