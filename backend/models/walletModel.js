@@ -19,7 +19,6 @@ module.exports = {
                 WHERE u.ID = ? `, [userID]),
 
   deleteWallet: (id) => {
-    return db.delete('wallet', { ID: id })
-
+    return db.delete('wallets', {ID: id})
   }
 }
