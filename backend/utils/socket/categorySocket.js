@@ -10,7 +10,7 @@ module.exports = function (socket, decoded_userID) {
         try {
             const defaultList = await categoryModel.getDefaultCategory();
             const customList = await categoryModel.getCustomCategoryFromWalletID(walletID);
-            callback({ defaultList, customList, abc: customList[1].ID });
+            callback({ defaultList, customList });
         } catch (error) {
             console.log(error);
         }
