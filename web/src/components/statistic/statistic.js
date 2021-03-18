@@ -138,9 +138,10 @@ export default function Statistic() {
       <Container component="main" maxWidth="xl">
         <div>
           {/* Bounding box for the Timeline */}
-          <div
-            style={{ width: "80%", height: "100px", margin: "0 auto", marginTop: "20px", display: 'flex', alignItems: 'stretch' }}
-          >
+          <div style={{
+            width: "80%", height: "100px", margin: "0 auto", marginTop: "20px",
+            display: 'flex', alignItems: 'stretch'
+          }}>
             <HorizontalTimeline
               styles={{
                 background: "#f8f8f8",
