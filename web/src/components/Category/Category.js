@@ -23,7 +23,9 @@ import SearchIcon from '@material-ui/icons/Search';
 import ClearIcon from '@material-ui/icons/Clear';
 
 import { getSocket } from "../../utils/socket";
-import AddCategory from '../Dashboard/CRUDTransaction/AddTransaction';
+import AddCategory from './CRUDCategory/AddCategory';
+import EditCategory from './CRUDCategory/EditCategory';
+import DeleteCategory from './CRUDCategory/DeleteCategory';
 
 const useStyles = makeStyles((theme) => ({
   root: (theme) => ({
@@ -276,7 +278,7 @@ export default function Category() {
         updateList={(data) => updateList(data)}
         open={openEditDialog}
         setOpen={(open) => setOpenEditDialog(open)} />
-      <DeleteTransaction
+      <DeleteCategory
         data={customList.find(cat => cat.ID = anchorEl.id)}
         deleteList={(data) => deleteList(data)}
         open={openDeleteDialog}
