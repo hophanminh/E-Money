@@ -13,6 +13,7 @@ import Notification from './components/Notification/notification';
 import PrivateRoute from './components/PrivateRoute';
 import StickyFooter from './components/stickyFooter/StickyFooter';
 import Dashboard from './components/Dashboard/Dashboard';
+import Category from './components/Category/Category';
 import Menu from "./components/SideBar/Menu";
 import SignIn from './components/signin/SignIn';
 import SignUp from './components/signup/SignUp';
@@ -35,9 +36,14 @@ const routes = [
     main: () => <Home />
   },
   {
-    path: "/dashboard",
+    path: "/Dashboard/Wallet",
     private: true,
     main: () => <Dashboard />
+  },
+  {
+    path: "/category/:id",
+    private: true,
+    main: () => <Category />
   },
   {
     path: "/statistic",

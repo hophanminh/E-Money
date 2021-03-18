@@ -35,6 +35,7 @@ export default function Profile() {
 
   const userID = localStorage.getItem('userID');
   const token = localStorage.getItem('jwtToken');
+  console.log(token)
   const history = useHistory();
   const [errors, setErrors] = useState({});
   const [username, setUsername] = useState("");// không thay đổi được

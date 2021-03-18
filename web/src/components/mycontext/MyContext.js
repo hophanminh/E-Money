@@ -12,6 +12,8 @@ export const MyProvider = (props) => {
   const token = window.localStorage.getItem('jwtToken');
   const userID = localStorage.getItem('userID');
 
+  const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
 
     async function fetchInfo() {
@@ -26,15 +28,17 @@ export const MyProvider = (props) => {
         const result = await res.json();
         setInfo(result.user);
         setIsLoggedIn(true);
+        setIsLoading(false);
       } else {
         setIsLoggedIn(false);
+        setIsLoading(false);
       }
     }
     fetchInfo();
   }, []);
 
   return (
-    <MyContext.Provider value={{ isLoggedIn, setIsLoggedIn, info, setInfo }}>
+    <MyContext.Provider value={{ isLoggedIn, setIsLoggedIn, isLoading, info, setInfo }}>
       {props.children}
     </MyContext.Provider>
   )

@@ -29,6 +29,10 @@
   "PORT": 9000,
   "PASSPORTKEY": "whatdoyoumean",
   "HASHROUND": 10,
+  "CATEGORY": {
+    "DEFAULT": 1,
+    "CUSTOM": 0
+  },
   "APPLOCAL": "http://localhost:3000",
   "APPPRODUCTION": "",
   "CLOUDINARY": {

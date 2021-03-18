@@ -1,59 +1,66 @@
 import React, { useState, useEffect } from 'react';
 import {
-    Typography,
+    Icon,
     Box,
     Avatar,
     makeStyles,
 } from '@material-ui/core/';
-import TrendingDownIcon from '@material-ui/icons/TrendingDown';
-import SchoolIcon from '@material-ui/icons/School';
-import FastfoodIcon from '@material-ui/icons/Fastfood';
+import config from '../constants/config.json';
 
-
-const IconColor = {
-    book: {
-        backgroundColor: '#1DAF1A',
-        color: '#FFFFFF'
-    },
-    food: {
-        backgroundColor: '#FF2626',
-        color: '#FFFFFF'
+let list = null;
+const jwtToken = localStorage.getItem('jwtToken');
+const API_URL = config.API_LOCAL;
+const getListIcon = async () => {
+    if (!list) {
+        try {
+            const res = await fetch(`${API_URL}/icons/list`, {
+                method: 'POST',
+                body: '',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${jwtToken}`
+                }
+            });
+            return res.json()
+        } catch (error) {
+            return [];
+        }
     }
+
+    return list;
 }
 
+export default function DefaultIcon({ IconID, backgroundSize, iconSize }) {
+    const [icon, setIcon] = useState();
+
+    // get initial list of icon
+    useEffect(async () => {
+        const temp = await getListIcon();
+        const selected = temp.find(icon => icon.ID === IconID);
+        setIcon(selected);
+    }, []);
 
 
-export default function DefaultIcon({ avatar, backgroundSize, iconSize }) {
+    console.log(icon)
+    // Set name, color and background color for icon
     const styleBackground = {
         width: backgroundSize + 'px',
         height: backgroundSize + 'px',
-        backgroundColor: IconColor[avatar].backgroundColor,
+        backgroundColor: icon ? icon.BackgroundColor : '#1DAF1A',
+        fontSize: iconSize + 'px',
     }
     const styleIcon = {
-        width: iconSize + 'px',
-        height: iconSize + 'px',
-        color: IconColor[avatar].color,
+        color: icon ? icon.Color : '#FFFFFF',
+        fontSize: 'inherit',
     }
+    const iconName = icon ? icon.Name : 'school';
 
-    let icon;
-    switch (avatar) {
-        case "book": icon =
-            <Avatar style={styleBackground}>
-                <SchoolIcon style={styleIcon} />
-            </Avatar>
-            break;
-        case "food": icon =
-            <Avatar style={styleBackground}>
-                <FastfoodIcon style={styleIcon} />
-            </Avatar>
-            break;
-
-        default: icon =
-            <Avatar style={styleBackground}>
-                <SchoolIcon style={styleIcon} />
-            </Avatar>
-    }
     return (
-        icon
+        <React.Fragment>
+            <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+            <Avatar style={styleBackground}>
+                <Icon style={styleIcon}>{iconName}</Icon>
+            </Avatar>
+        </React.Fragment>
     );
 }
