@@ -10,7 +10,7 @@ import config from '../constants/config.json';
 let list = null;
 const jwtToken = localStorage.getItem('jwtToken');
 const API_URL = config.API_LOCAL;
-const getListIcon = async () => {
+export const getListIcon = async () => {
     if (!list) {
         try {
             const res = await fetch(`${API_URL}/icons/list`, {
@@ -21,27 +21,23 @@ const getListIcon = async () => {
                     Authorization: `Bearer ${jwtToken}`
                 }
             });
-            return res.json()
+            list = res.json()
         } catch (error) {
-            return [];
+            list = [];
         }
     }
-
     return list;
 }
 
 export default function DefaultIcon({ IconID, backgroundSize, iconSize }) {
     const [icon, setIcon] = useState();
-
     // get initial list of icon
     useEffect(async () => {
         const temp = await getListIcon();
         const selected = temp.find(icon => icon.ID === IconID);
         setIcon(selected);
-    }, []);
+    }, [IconID]);
 
-
-    console.log(icon)
     // Set name, color and background color for icon
     const styleBackground = {
         width: backgroundSize + 'px',

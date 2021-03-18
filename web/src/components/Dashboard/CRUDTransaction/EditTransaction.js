@@ -109,7 +109,6 @@ export default function EditTransaction({ categoryList, data, updateList, open, 
         temp.IconID = newCategory.IconID;
         temp.categoryName = newCategory.Name;
         temp.eventName = newEvent ? newEvent.name : null;
-
         updateList(temp);
         setOpen(false);
     }

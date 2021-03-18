@@ -287,13 +287,11 @@ export default function Dashboard() {
     setFilterList(filtered.filter(i => categoryList.filter(cat => cat.ID === i.catID && cat.check === true).length !== 0))
   }, [list, categoryList, searchInput])
 
-  // add transaction dialog
+  // add transaction
   const [openAddDialog, setOpenAddDialog] = useState(false);
   const handleOpenAddDialog = () => {
     setOpenAddDialog(true);
   }
-
-  // add 
   const addList = (newTransaction) => {
     socket.emit("add_transaction", { walletID, newTransaction }, ({ ID }) => {
       let tempList = list.slice();
@@ -306,7 +304,7 @@ export default function Dashboard() {
     });
   }
 
-  // update
+  // update transaction
   const updateList = (newTransaction) => {
     socket.emit("update_transaction", { transactionID: newTransaction.id, newTransaction }, () => {
       let tempList = list.slice();
@@ -318,7 +316,7 @@ export default function Dashboard() {
     });
 
   }
-  // delete
+  // delete transaction
   const deleteList = (id) => {
     socket.emit("delete_transaction", { id }, () => {
       const tempList = list.slice();
