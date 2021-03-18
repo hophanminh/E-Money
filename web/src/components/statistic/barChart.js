@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Paper from '@material-ui/core/Paper';
 import {
   Chart,
@@ -10,13 +10,6 @@ import {
 } from '@devexpress/dx-react-chart-material-ui';
 import { Animation, EventTracker } from '@devexpress/dx-react-chart';
 import { makeStyles } from '@material-ui/core/styles';
-
-const data = [
-  { title: '', spent: 0, earned: 0 },
-  { title: 'Chi', spent: 1900000, earned: 0 },
-  { title: 'Thu', spent: 0, earned: 3000000 },
-  { title: ' ', spent: 0, earned: 0 },
-];
 
 const useStyles = makeStyles((theme) => ({
   container: {

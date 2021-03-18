@@ -38,6 +38,9 @@ export default function Statistic() {
 
   useEffect(() => {
     calculateDates(info.ActivatedDate);
+    getBarChartData(info.ActivatedDate);
+    getPieChartData(info.ActivatedDate, true);
+    getPieChartData(info.ActivatedDate, false);
   }, []);
 
   const getBarChartData = async (date) => {
