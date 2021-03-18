@@ -121,7 +121,6 @@ export default function AddCategory({ categoryList, open, setOpen, addList }) {
     newTransaction.IconID = newCategory.IconID;
     newTransaction.categoryName = newCategory.Name;
     newTransaction.eventName = newEvent ? newEvent.name : null;
-    console.log(newCategory)
     addList(newTransaction);
     setOpen(false);
     clearNewTransaction();

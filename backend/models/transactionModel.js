@@ -16,7 +16,7 @@ module.exports = {
                 WHERE t.WalletID = ? 
                 ORDER BY t.DateAdded DESC`, [walletID]),
 
-  getTransactionID: (transactionID) =>
+  getTransactionByID: (transactionID) =>
     db.loadSafe(`SELECT t.*
                 FROM Transactions as t
                 WHERE t.ID = ?`, [transactionID]),

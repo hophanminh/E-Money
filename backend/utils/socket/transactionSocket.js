@@ -45,7 +45,7 @@ module.exports = function (socket, decoded_userID) {
                 EventID: newTransaction.eventID === 0 ? null : newTransaction.eventID,
                 CategoryID: newTransaction.catID,
             }
-            const updated = await transactionModel.getTransactionID(transactionID);
+            const updated = await transactionModel.getTransactionByID(transactionID);
             if (updated.length === 1) {
                 await transactionModel.updateTransaction(transactionID, temp);
                 await walletModel.updateTotalWallet(newTransaction.price - updated[0].Money, updated[0].WalletID);
@@ -63,7 +63,7 @@ module.exports = function (socket, decoded_userID) {
     // delete Transaction
     socket.on('delete_transaction', async ({ id }, callback) => {
         try {
-            const deleted = await transactionModel.getTransactionID(id);
+            const deleted = await transactionModel.getTransactionByID(id);
             if (deleted.length === 1) {
                 await walletModel.updateTotalWallet(0 - deleted[0].Money, deleted[0].WalletID);
                 await transactionModel.deleteTransaction(id);

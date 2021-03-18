@@ -25,6 +25,7 @@ import { MyProvider } from './components/mycontext/MyContext';
 import Teams from "./components/Team/Teams";
 import UpdateProfile from "./components/Team/UpdateProfile";
 import ResetDestination from './components/signin/resetpassword/ResetDestination';
+import { getListIcon } from './utils/DefaultIcon'
 
 const API_URL = config.API_LOCAL;
 
@@ -111,7 +112,8 @@ const useStyles = makeStyles((theme) => ({
 
 function App() {
   const classes = useStyles();
-
+  getListIcon();
+  
   return (
     <Router>
       <div>
