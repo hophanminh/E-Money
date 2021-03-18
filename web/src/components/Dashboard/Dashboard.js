@@ -297,6 +297,8 @@ export default function Dashboard() {
   const addList = (newTransaction) => {
     socket.emit("add_transaction", { walletID, newTransaction }, ({ ID }) => {
       let tempList = list.slice();
+      setTotal(total + newTransaction.price);
+
       newTransaction.id = ID;
       tempList = [newTransaction].concat(tempList);
       setList(tempList);
@@ -309,6 +311,8 @@ export default function Dashboard() {
     socket.emit("update_transaction", { transactionID: newTransaction.id, newTransaction }, () => {
       let tempList = list.slice();
       const index = tempList.findIndex(obj => obj.id == newTransaction.id);
+      setTotal(total + newTransaction.price - tempList[index].price);
+
       tempList[index] = newTransaction;
       setList(tempList);
     });
@@ -319,6 +323,8 @@ export default function Dashboard() {
     socket.emit("delete_transaction", { id }, () => {
       const tempList = list.slice();
       const index = tempList.findIndex(obj => obj.id == id);
+      setTotal(total - tempList[index].price);
+
       tempList.splice(index, 1);
       setList(tempList);
       setSelected(tempList.length !== 0 ? tempList[0].id : -1);

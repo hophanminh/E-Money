@@ -172,7 +172,7 @@ export default function TransactionDetail({ categoryList, transactionData, updat
 
                     <div className={classes.transaction}>
                         <DefaultIcon
-                            IconName={data.avatar}
+                            IconID={data.IconID}
                             backgroundSize={75}
                             iconSize={40} />
                         <Box className={classes.wrap} >

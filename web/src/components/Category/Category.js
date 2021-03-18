@@ -23,6 +23,7 @@ import SearchIcon from '@material-ui/icons/Search';
 import ClearIcon from '@material-ui/icons/Clear';
 
 import { getSocket } from "../../utils/socket";
+import AddCategory from '../Dashboard/CRUDTransaction/AddTransaction';
 
 const useStyles = makeStyles((theme) => ({
   root: (theme) => ({
@@ -202,17 +203,43 @@ export default function Category() {
   const handleOpenAddDialog = () => {
     setOpenAddDialog(true);
   }
+  const addList = (newCategory) => {
+    socket.emit("add_category", { walletID, newCategory }, ({ ID }) => {
+      let tempList = customList.slice();
+      newCategory.ID = ID;
+      tempList = tempList.concat([newCategory]);
+      setCustomList(tempList);
+    });
+  }
 
   // edit transaction dialog
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const handleOpenEditDialog = (event) => {
-    console.log(anchorEl.id)
     setOpenEditDialog(true);
   }
+  const updateList = (newCategory) => {
+    socket.emit("update_category", { categoryID: newCategory.ID, newCategory }, () => {
+      let tempList = customList.slice();
+      const index = tempList.findIndex(obj => obj.ID == newCategory.id);
+
+      tempList[index] = newCategory;
+      setCustomList(tempList);
+    });
+
+  }
+
   // delete transaction dialog
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const handleOpenDeleteDialog = () => {
     setOpenDeleteDialog(true);
+  }
+  const deleteList = (id) => {
+    socket.emit("delete_category", { id }, () => {
+      const tempList = customList.slice();
+      const index = tempList.findIndex(obj => obj.ID == id);
+      tempList.splice(index, 1);
+      setCustomList(tempList);
+    });
   }
 
   return (
@@ -244,6 +271,17 @@ export default function Category() {
           </IconButton>
         </div>
       </Popover>
+      <EditCategory
+        data={customList.find(cat => cat.ID = anchorEl.id)}
+        updateList={(data) => updateList(data)}
+        open={openEditDialog}
+        setOpen={(open) => setOpenEditDialog(open)} />
+      <DeleteTransaction
+        data={customList.find(cat => cat.ID = anchorEl.id)}
+        deleteList={(data) => deleteList(data)}
+        open={openDeleteDialog}
+        setOpen={(open) => setOpenDeleteDialog(open)}
+      />
 
       <Container className={classes.root} maxWidth={null}>
         <div className={classes.title}>
@@ -271,7 +309,7 @@ export default function Category() {
                 <Card key={i.ID} className={classes.categoryCard}>
                   <Box className={classes.categoryInfo}>
                     <DefaultIcon
-                      IconName={i.IconName}
+                      IconID={i.IconID}
                       backgroundSize={40}
                       iconSize={20} />
                     <Typography
@@ -297,7 +335,11 @@ export default function Category() {
               Loại tự chọn
               </Typography>
             <Box className={classes.actionBox}>
-              <Button className={classes.addButton} variant="outlined">
+              <AddCategory
+                open={openAddDialog}
+                setOpen={(open) => setOpenAddDialog(open)}
+                addList={(data) => addList(data)} />
+              <Button className={classes.addButton} variant="outlined" onClick={handleOpenAddDialog}>
                 <AddIcon className={classes.green} />
                 Thêm loại
               </Button>
@@ -311,12 +353,12 @@ export default function Category() {
                 InputProps={{
                   startAdornment:
                     <InputAdornment position="start" >
-                      <SearchIcon />
+                      <SearchIcon onClick={openEditDialog} />
                     </InputAdornment>,
                   endAdornment:
                     <InputAdornment position="end">
                       <IconButton size='small' aria-label="clear" onClick=''>
-                        <ClearIcon />
+                        <ClearIcon onClick={openDeleteDialog} />
                       </IconButton>
                     </InputAdornment>
                 }}
@@ -336,7 +378,7 @@ export default function Category() {
                   onMouseLeave={handlePopoverClose}>
                   <Box className={classes.categoryInfo}>
                     <DefaultIcon
-                      IconName={i.IconName}
+                      IconID={i.IconID}
                       backgroundSize={40}
                       iconSize={20} />
                     <Typography

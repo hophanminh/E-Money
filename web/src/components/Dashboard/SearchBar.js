@@ -193,7 +193,7 @@ export default function SearchBar({ searchInput, setSearchInput, categoryList, s
                                 <Box className={classes.filterRow}>
                                     <Box className={classes.filterInfo}>
                                         <DefaultIcon
-                                            IconName={i.IconName}
+                                            IconID={i.IconID}
                                             backgroundSize={40}
                                             iconSize={20} />
                                         <Typography

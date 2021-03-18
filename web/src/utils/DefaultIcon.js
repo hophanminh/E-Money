@@ -5,36 +5,61 @@ import {
     Avatar,
     makeStyles,
 } from '@material-ui/core/';
+import config from '../constants/config.json';
 
-
-export default function DefaultIcon({ IconName, backgroundSize, iconSize }) {
-    const IconColor = {
-        school: {
-            backgroundColor: '#1DAF1A',
-            color: '#FFFFFF'
-        },
-        fastfood: {
-            backgroundColor: '#FF2626',
-            color: '#FFFFFF'
+let list = null;
+const jwtToken = localStorage.getItem('jwtToken');
+const API_URL = config.API_LOCAL;
+const getListIcon = async () => {
+    if (!list) {
+        try {
+            const res = await fetch(`${API_URL}/icons/list`, {
+                method: 'POST',
+                body: '',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${jwtToken}`
+                }
+            });
+            return res.json()
+        } catch (error) {
+            return [];
         }
     }
 
+    return list;
+}
+
+export default function DefaultIcon({ IconID, backgroundSize, iconSize }) {
+    const [icon, setIcon] = useState();
+
+    // get initial list of icon
+    useEffect(async () => {
+        const temp = await getListIcon();
+        const selected = temp.find(icon => icon.ID === IconID);
+        setIcon(selected);
+    }, []);
+
+
+    console.log(icon)
+    // Set name, color and background color for icon
     const styleBackground = {
         width: backgroundSize + 'px',
         height: backgroundSize + 'px',
-        backgroundColor: IconColor[IconName] ? IconColor[IconName].backgroundColor : '#1DAF1A',
+        backgroundColor: icon ? icon.BackgroundColor : '#1DAF1A',
         fontSize: iconSize + 'px',
     }
     const styleIcon = {
-        color: IconColor[IconName] ? IconColor[IconName].color : '#FFFFFF',
+        color: icon ? icon.Color : '#FFFFFF',
         fontSize: 'inherit',
     }
+    const iconName = icon ? icon.Name : 'school';
 
     return (
         <React.Fragment>
             <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
             <Avatar style={styleBackground}>
-                <Icon style={styleIcon}>{IconName}</Icon>
+                <Icon style={styleIcon}>{iconName}</Icon>
             </Avatar>
         </React.Fragment>
     );

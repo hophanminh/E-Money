@@ -76,7 +76,7 @@ const useStyles = makeStyles({
 
 const fakeEvent = []
 
-export default function AddTransaction({ categoryList, open, setOpen, addList }) {
+export default function AddCategory({ categoryList, open, setOpen, addList }) {
   const classes = useStyles();
   const [list, setList] = useState(categoryList);
   const [type, setType] = useState("Chi");
@@ -86,7 +86,7 @@ export default function AddTransaction({ categoryList, open, setOpen, addList })
     catID: '1',
     eventID: 0,
     description: "",
-    avatar: "",
+    IconID: "",
     categoryName: "",
     eventName: "",
   })
@@ -103,7 +103,7 @@ export default function AddTransaction({ categoryList, open, setOpen, addList })
       catID: '1',
       eventID: 0,
       description: "",
-      avatar: "",
+      IconID: "",
       categoryName: "",
       eventName: "",
     })
@@ -113,11 +113,12 @@ export default function AddTransaction({ categoryList, open, setOpen, addList })
     setOpen(false);
     clearNewTransaction();
   }
+
   const handleAdd = () => {
     const newCategory = list.find(i => i.ID === newTransaction.catID);
     const newEvent = fakeEvent.find(i => i.id === newTransaction.eventID);
 
-    newTransaction.avatar = newCategory.IconName;
+    newTransaction.IconID = newCategory.IconID;
     newTransaction.categoryName = newCategory.Name;
     newTransaction.eventName = newEvent ? newEvent.name : null;
     console.log(newCategory)
@@ -245,7 +246,7 @@ export default function AddTransaction({ categoryList, open, setOpen, addList })
               <MenuItem key={cat.ID} value={cat.ID}>
                 <Box className={classes.categoryIconBox}>
                   <DefaultIcon
-                    IconName={cat.IconName}
+                    IconID={cat.IconID}
                     backgroundSize={24}
                     iconSize={14} />
                   <Typography className={classes.iconText}>
@@ -295,7 +296,7 @@ export default function AddTransaction({ categoryList, open, setOpen, addList })
             <Button className={`${classes.button} ${classes.closeButton}`} onClick={handleCloseAddDialog} variant="contained" >
               Hủy
                         </Button>
-            <Button className={`${classes.button} ${classes.addButton}`} onClick={handleAdd} variant="contained">
+            <Button className={`${classes.button} ${classes.addButton}`} disabled={!open} onClick={handleAdd} variant="contained">
               Thêm
                         </Button>
           </Box>

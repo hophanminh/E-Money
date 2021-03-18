@@ -73,7 +73,7 @@ export default function TransactionMini({ transactionData, selected, onClick }) 
         <div className={classes.root} onClick={onClick}>
             <div className={classes.transaction}>
                 <DefaultIcon
-                    IconName={data.avatar}
+                    IconID={data.IconID}
                     backgroundSize={50}
                     iconSize={24} />
                 <Box className={classes.wrap}>

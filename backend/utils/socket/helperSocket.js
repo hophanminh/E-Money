@@ -1,8 +1,7 @@
-const userModel = require('../models/userModel');
-const walletModel = require('../models/walletModel');
-const transactionModel = require('../models/transactionModel');
-const config = require("../config/default.json");
-const categoryModel = require('../models/categoryModel');
+const walletModel = require('../../models/walletModel');
+const transactionModel = require('../../models/transactionModel');
+const config = require("../../config/default.json");
+const categoryModel = require('../../models/categoryModel');
 
 getPrivateWallet = async (decoded_userID) => {
     // annouce to other players

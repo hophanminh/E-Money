@@ -106,7 +106,7 @@ export default function EditTransaction({ categoryList, data, updateList, open, 
         const newEvent = fakeEvent.find(i => i.id === newTransaction.eventID);
 
         const temp = newTransaction;
-        temp.avatar = newCategory.IconName;
+        temp.IconID = newCategory.IconID;
         temp.categoryName = newCategory.Name;
         temp.eventName = newEvent ? newEvent.name : null;
 
@@ -229,7 +229,7 @@ export default function EditTransaction({ categoryList, data, updateList, open, 
                             <MenuItem key={cat.ID} value={cat.ID}>
                                 <Box className={classes.categoryIconBox}>
                                     <DefaultIcon
-                                        IconName={cat.IconName}
+                                        IconID={cat.IconID}
                                         backgroundSize={24}
                                         iconSize={14} />
                                     <Typography className={classes.iconText}>
@@ -280,7 +280,7 @@ export default function EditTransaction({ categoryList, data, updateList, open, 
                         <Button className={`${classes.button} ${classes.closeButton}`} onClick={handleCloseEditDialog} variant="contained" >
                             Hủy
                         </Button>
-                        <Button className={`${classes.button} ${classes.editButton}`} onClick={handleEdit} variant="contained">
+                        <Button className={`${classes.button} ${classes.editButton}`} disabled={!open} onClick={handleEdit} variant="contained">
                             Thay đổi
                         </Button>
                     </Box>
