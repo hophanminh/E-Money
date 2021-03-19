@@ -9,7 +9,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Home from './components/home/home';
 import Statistic from './components/statistic/statistic';
-import Notification from './components/Notification/notification';
 import PrivateRoute from './components/PrivateRoute';
 import StickyFooter from './components/stickyFooter/StickyFooter';
 import Dashboard from './components/Dashboard/Dashboard';
@@ -25,6 +24,7 @@ import { MyProvider } from './components/mycontext/MyContext';
 import Teams from "./components/Team/Teams";
 import UpdateProfile from "./components/Team/UpdateProfile";
 import ResetDestination from './components/signin/resetpassword/ResetDestination';
+import { getListIcon } from './utils/DefaultIcon'
 
 const API_URL = config.API_LOCAL;
 
@@ -49,11 +49,6 @@ const routes = [
     path: "/statistic",
     private: true,
     main: () => <Statistic />
-  },
-  {
-    path: "/notification",
-    private: true,
-    main: () => <Notification />
   },
   {
     path: "/signin",
@@ -111,6 +106,7 @@ const useStyles = makeStyles((theme) => ({
 
 function App() {
   const classes = useStyles();
+  getListIcon();
 
   return (
     <Router>

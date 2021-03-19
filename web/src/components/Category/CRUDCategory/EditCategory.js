@@ -19,7 +19,7 @@ import {
     MuiPickersUtilsProvider,
 } from '@material-ui/pickers';
 
-import DefaultIcon from '../../../utils/DefaultIcon'
+import DefaultIcon, { getListIcon } from '../../../utils/DefaultIcon'
 
 const useStyles = makeStyles({
     title: {
@@ -47,12 +47,9 @@ const useStyles = makeStyles({
 
     categoryIconBox: {
         display: 'flex',
-        justifyContent: 'flex-start',
-        alignItems: 'center',
-        padding: '0px 10px 0px 10px',
-    },
-    iconText: {
-        marginLeft: '10px',
+        justifyContent: 'center',
+        width: '100%',
+        paddingRight: '20px'
     },
     buttonBox: {
         display: 'flex',
@@ -77,18 +74,21 @@ const fakeEvent = [];
 
 export default function EditCategory({ data, updateList, open, setOpen }) {
     const classes = useStyles();
-    const [list, setList] = useState([]);
+    const [list, setList] = useState();
     const [newCategory, setNewCategory] = useState(data);
 
+    // get list of icon
+    useEffect(async () => {
+        const temp = await getListIcon();
+        setList(temp);
+    }, []);
+
+    // set data
     useEffect(() => {
         if (data) {
             setNewCategory(data)
         }
     }, [data])
-
-    useEffect(() => {
-
-    }, []);
 
     const clearNewCategory = () => {
         setNewCategory(data)
@@ -98,12 +98,22 @@ export default function EditCategory({ data, updateList, open, setOpen }) {
         setOpen(false);
         clearNewCategory();
     }
+
+    const [error, setError] = useState(false);
+    const [helperText, setHelperText] = useState('');
     const handleEdit = () => {
-        updateList(newCategory);
-        setOpen(false);
+        if (!newCategory.Name || newCategory.Name.trim() === '') {
+            setHelperText("Tên không được để trống");
+            setError(true);
+        }
+        else {
+            newCategory.Name = newCategory.Name.trim();
+            updateList(newCategory);
+            setOpen(false);
+        }
     }
 
-    // transaction 
+    // category 
     const handleChange = (event) => {
         setNewCategory({
             ...newCategory,
@@ -112,72 +122,77 @@ export default function EditCategory({ data, updateList, open, setOpen }) {
     }
 
     return (
-        <Dialog open={open} onClose={handleCloseEditDialog} aria-labelledby="form-dialog-title">
-            <DialogTitle id="form-dialog-title" >
-                <Typography className={classes.title}>
-                    Thay đổi khoản giao dịch
+        <React.Fragment>
+            { newCategory &&
+                <Dialog open={open} onClose={handleCloseEditDialog} aria-labelledby="form-dialog-title">
+
+                    <DialogTitle id="form-dialog-title" >
+                        <Typography className={classes.title}>
+                            Thay đổi loại giao dịch
                 </Typography>
-            </DialogTitle>
-            <DialogContent>
-                <Box>
-                    <Box className={classes.amountRow}>
-                        <TextField
-                            className={classes.textField}
-                            size="small"
-                            id="category"
-                            name="catID"
-                            select
-                            label="Hạng mục"
-                            value={newCategory.IconID}
-                            onChange={handleChange}
-                            variant="outlined"
-                        >
-                            {list.map((icon) => (
-                                <MenuItem key={icon.ID} value={icon.ID}>
-                                    <Box className={classes.categoryIconBox}>
-                                        <DefaultIcon
-                                            IconID={icon.IconID}
-                                            backgroundSize={24}
-                                            iconSize={14} />
-                                        <Typography className={classes.iconText}>
-                                            {}
-                                        </Typography>
-                                    </Box>
-                                </MenuItem>
-                            ))}
-                        </TextField>
+                    </DialogTitle>
+                    <DialogContent>
+                        <Box>
+                            <Box className={classes.amountRow}>
+                                <TextField
+                                    className={classes.textField}
+                                    size="small"
+                                    id="IconID"
+                                    name="IconID"
+                                    select
+                                    label="Icon"
+                                    value={newCategory.IconID}
+                                    onChange={handleChange}
+                                    variant="outlined"
+                                >
+                                    {list && list.map((icon) => (
+                                        <MenuItem key={icon.ID} value={icon.ID}>
+                                            <Box className={classes.categoryIconBox}>
+                                                <DefaultIcon
+                                                    IconID={icon.ID}
+                                                    backgroundSize={24}
+                                                    iconSize={14} />
+                                            </Box>
+                                        </MenuItem>
+                                    ))}
+                                </TextField>
 
-                        <TextField
-                            className={`${classes.textField}`}
-                            size="small"
-                            autoFocus
-                            id="price"
-                            name="price"
-                            label="Số tiền *"
-                            type="number"
-                            value={newCategory.Name}
-                            onChange={handleChange}
-                            InputLabelProps={{
-                                shrink: true,
-                            }}
-                            fullWidth
-                            variant="outlined"
-                        />
-                    </Box>
+                                <TextField
+                                    className={`${classes.textField}`}
+                                    size="small"
+                                    autoFocus
+                                    id="Name"
+                                    name="Name"
+                                    label="Tên *"
+                                    value={newCategory.Name}
+                                    onChange={handleChange}
+                                    InputLabelProps={{
+                                        shrink: true,
+                                    }}
+                                    fullWidth
+                                    variant="outlined"
+                                    error={error}
+                                    helperText={error ? helperText : ''}
+                                />
+
+                            </Box>
 
 
-                    <Box className={classes.buttonBox}>
-                        <Button className={`${classes.button} ${classes.closeButton}`} onClick={handleCloseEditDialog} variant="contained" >
-                            Hủy
+                            <Box className={classes.buttonBox}>
+                                <Button className={`${classes.button} ${classes.closeButton}`} onClick={handleCloseEditDialog} variant="contained" >
+                                    Hủy
                         </Button>
-                        <Button className={`${classes.button} ${classes.editButton}`} disabled={!open} onClick={handleEdit} variant="contained">
-                            Thay đổi
+                                <Button className={`${classes.button} ${classes.editButton}`} disabled={!open} onClick={handleEdit} variant="contained">
+                                    Thay đổi
                         </Button>
-                    </Box>
-                </Box>
-            </DialogContent>
-            <DialogActions>
-            </DialogActions>
-        </Dialog>
+                            </Box>
+                        </Box>
+                    </DialogContent>
+                    <DialogActions>
+                    </DialogActions>
+
+                </Dialog>
+            }
+        </React.Fragment>
     );
 }

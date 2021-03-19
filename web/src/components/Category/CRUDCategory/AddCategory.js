@@ -19,7 +19,7 @@ import {
   MuiPickersUtilsProvider,
 } from '@material-ui/pickers';
 
-import DefaultIcon from '../../../utils/DefaultIcon'
+import DefaultIcon, { getListIcon } from '../../../utils/DefaultIcon'
 
 const useStyles = makeStyles({
   title: {
@@ -32,7 +32,7 @@ const useStyles = makeStyles({
     display: 'flex',
   },
   textField: {
-    margin: '10px 10px 15px 0px'
+    margin: '15px 10px 30px 15px'
   },
 
   typeBox: {
@@ -47,14 +47,10 @@ const useStyles = makeStyles({
 
   categoryIconBox: {
     display: 'flex',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    padding: '0px 10px 0px 10px',
+    justifyContent: 'center',
+    width: '100%',
+    paddingRight: '20px'
   },
-  iconText: {
-    marginLeft: '10px',
-  },
-
   buttonBox: {
     display: 'flex',
     justifyContent: 'flex-end'
@@ -76,21 +72,23 @@ const useStyles = makeStyles({
 
 const fakeEvent = []
 
-export default function AddTransaction({ open, setOpen, addList }) {
+export default function AddCategory({ open, setOpen, addList }) {
   const classes = useStyles();
-  const [list, setList] = useState([]);
+  const [list, setList] = useState();
   const [newCategory, setNewCategory] = useState({
-    IconID: 1,
+    IconID: '1',
     Name: "",
   })
 
-  useEffect(() => {
-
+  // get list of icon
+  useEffect(async () => {
+    const temp = await getListIcon();
+    setList(temp);
   }, []);
 
   const clearNewCategory = () => {
     setNewCategory({
-      IconID: 1,
+      IconID: '1',
       Name: "",
     })
   }
@@ -100,10 +98,20 @@ export default function AddTransaction({ open, setOpen, addList }) {
     clearNewCategory();
   }
 
+  const [error, setError] = useState(false);
+  const [helperText, setHelperText] = useState('');
+
   const handleAdd = () => {
-    addList(newCategory);
-    setOpen(false);
-    clearNewCategory();
+    if (!newCategory.Name || newCategory.Name.trim() === '') {
+      setHelperText("Tên không được để trống");
+      setError(true);
+    }
+    else {
+      newCategory.Name = newCategory.Name.trim();
+      addList(newCategory);
+      setOpen(false);
+      clearNewCategory();
+    }
   }
 
 
@@ -127,24 +135,21 @@ export default function AddTransaction({ open, setOpen, addList }) {
             <TextField
               className={classes.textField}
               size="small"
-              id="category"
-              name="catID"
+              id="IconID"
+              name="IconID"
               select
-              label="Hạng mục"
+              label="Icon"
               value={newCategory.IconID}
               onChange={handleChange}
               variant="outlined"
             >
-              {list.map((icon) => (
+              {list && list.map((icon) => (
                 <MenuItem key={icon.ID} value={icon.ID}>
                   <Box className={classes.categoryIconBox}>
                     <DefaultIcon
-                      IconID={icon.IconID}
+                      IconID={icon.ID}
                       backgroundSize={24}
                       iconSize={14} />
-                    <Typography className={classes.iconText}>
-                      {}
-                    </Typography>
                   </Box>
                 </MenuItem>
               ))}
@@ -154,10 +159,9 @@ export default function AddTransaction({ open, setOpen, addList }) {
               className={`${classes.textField}`}
               size="small"
               autoFocus
-              id="price"
-              name="price"
-              label="Số tiền *"
-              type="number"
+              id="Name"
+              name="Name"
+              label="Tên *"
               value={newCategory.Name}
               onChange={handleChange}
               InputLabelProps={{
@@ -165,6 +169,8 @@ export default function AddTransaction({ open, setOpen, addList }) {
               }}
               fullWidth
               variant="outlined"
+              error={error}
+              helperText={error ? helperText : ''}
             />
           </Box>
 

@@ -15,7 +15,7 @@ export default function DeleteCategory({ open, setOpen, data, deleteList }) {
     };
 
     const handleDelete = () => {
-        deleteList(data.id)
+        deleteList(data.ID)
         setOpen(false);
     };
 

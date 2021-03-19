@@ -23,7 +23,9 @@ import SearchIcon from '@material-ui/icons/Search';
 import ClearIcon from '@material-ui/icons/Clear';
 
 import { getSocket } from "../../utils/socket";
-import AddCategory from '../Dashboard/CRUDTransaction/AddTransaction';
+import AddCategory from './CRUDCategory/AddCategory';
+import EditCategory from './CRUDCategory/EditCategory';
+import DeleteCategory from './CRUDCategory/DeleteCategory';
 
 const useStyles = makeStyles((theme) => ({
   root: (theme) => ({
@@ -160,8 +162,8 @@ export default function Category() {
   const socket = getSocket();
 
   const [walletID, setWalletID] = useState(id);
-  const [defaultList, setDefaultList] = useState([]);
-  const [customList, setCustomList] = useState([]);
+  const [defaultList, setDefaultList] = useState();
+  const [customList, setCustomList] = useState();
 
   // get initial data
   useEffect(() => {
@@ -183,7 +185,14 @@ export default function Category() {
 
   // popover button
   const [openedPopover, setOpenedPopover] = useState(false)
-  const [anchorEl, setAnchorEl] = useState(null);
+  const [anchorEl, setAnchorEl] = useState();
+  const [selected, setSelected] = useState();
+  useEffect(() => {
+    if (anchorEl) {
+      const temp = customList.find(i => i.ID === anchorEl.id)
+      setSelected(temp);
+    }
+  }, [anchorEl]);
 
   const handlePopoverOpenParent = (event) => {
     setAnchorEl(event.currentTarget);
@@ -207,7 +216,10 @@ export default function Category() {
     socket.emit("add_category", { walletID, newCategory }, ({ ID }) => {
       let tempList = customList.slice();
       newCategory.ID = ID;
+      newCategory.count = 0;
       tempList = tempList.concat([newCategory]);
+
+      tempList.sort((a, b) => a.Name.localeCompare(b.Name));
       setCustomList(tempList);
     });
   }
@@ -220,9 +232,10 @@ export default function Category() {
   const updateList = (newCategory) => {
     socket.emit("update_category", { categoryID: newCategory.ID, newCategory }, () => {
       let tempList = customList.slice();
-      const index = tempList.findIndex(obj => obj.ID == newCategory.id);
+      const index = tempList.findIndex(obj => obj.ID == newCategory.ID);
 
       tempList[index] = newCategory;
+      tempList.sort((a, b) => a.Name.localeCompare(b.Name));
       setCustomList(tempList);
     });
 
@@ -241,6 +254,26 @@ export default function Category() {
       setCustomList(tempList);
     });
   }
+
+  // search category
+  const [filterList, setFilterList] = useState(customList);
+  const [searchInput, setSearchInput] = useState('');
+
+  const changeSearchInput = (e) => {
+    setSearchInput(e.target.value);
+  }
+  const clearSearchInput = () => {
+    setSearchInput('');
+  }
+
+  useEffect(() => {
+    let filtered = customList;
+    if (searchInput !== '') {
+      filtered = filtered.filter(i => i.Name.toLowerCase().includes(searchInput));
+    }
+    setFilterList(filtered)
+  }, [customList, searchInput])
+
 
   return (
     <React.Fragment>
@@ -272,12 +305,12 @@ export default function Category() {
         </div>
       </Popover>
       <EditCategory
-        data={customList.find(cat => cat.ID = anchorEl.id)}
+        data={selected}
         updateList={(data) => updateList(data)}
         open={openEditDialog}
         setOpen={(open) => setOpenEditDialog(open)} />
-      <DeleteTransaction
-        data={customList.find(cat => cat.ID = anchorEl.id)}
+      <DeleteCategory
+        data={selected}
         deleteList={(data) => deleteList(data)}
         open={openDeleteDialog}
         setOpen={(open) => setOpenDeleteDialog(open)}
@@ -346,19 +379,20 @@ export default function Category() {
               <TextField
                 className={classes.searchField}
                 value=''
-                onChange=''
                 size="small"
                 variant="outlined"
                 placeholder="Tìm kiếm"
+                value={searchInput}
+                onChange={changeSearchInput}
                 InputProps={{
                   startAdornment:
                     <InputAdornment position="start" >
-                      <SearchIcon onClick={openEditDialog} />
+                      <SearchIcon />
                     </InputAdornment>,
                   endAdornment:
                     <InputAdornment position="end">
-                      <IconButton size='small' aria-label="clear" onClick=''>
-                        <ClearIcon onClick={openDeleteDialog} />
+                      <IconButton size='small' aria-label="clear" onClick={clearSearchInput}>
+                        <ClearIcon />
                       </IconButton>
                     </InputAdornment>
                 }}
@@ -366,11 +400,11 @@ export default function Category() {
             </Box>
           </Box>
           <Box className={classes.categoryBox}>
-            {customList && customList.map((i, n) => {
+            {filterList && filterList.map((i, n) => {
               return (
                 <Card
-                  key={i.ID}
                   id={i.ID}
+                  key={i.ID}
                   className={classes.categoryCard}
                   aria-owns="mouse-over-popover"
                   aria-haspopup="true"

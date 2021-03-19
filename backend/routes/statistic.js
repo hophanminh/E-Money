@@ -2,9 +2,7 @@ const express = require("express");
 const moment = require('moment');
 
 const router = express.Router();
-const userModel = require('../models/userModel');
 const statisticModel = require('../models/statisticModel');
-const config = require("../config/default.json");
 router.use(express.static('public'));
 
 router.post('/barChart', async (req, res) => {
@@ -12,8 +10,6 @@ router.post('/barChart', async (req, res) => {
   const month = moment(date).format("M");
   const year = moment(date).format("YYYY");
   const chartData = await statisticModel.getDataForBarChart(userID, month, year);
-
-  console.log(req.body);
 
   if (chartData.length === 0) {
     return res.status(400).end();
@@ -37,8 +33,6 @@ router.post('/pieChart', async (req, res) => {
   const month = moment(date).format("M");
   const year = moment(date).format("YYYY");
   const chartData = await statisticModel.getDataForPieChart(userID, month, year, isSpent);
-
-  console.log(req.body);
 
   if (chartData.length === 0) {
     return res.status(400).end();

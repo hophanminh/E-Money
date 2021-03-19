@@ -6,7 +6,6 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 function PrivateRoute({ children, ...rest }) {
   const { isLoggedIn, isLoading } = useContext(MyContext);
 
-  console.log(isLoading);
   return (
     <Route
       {...rest}

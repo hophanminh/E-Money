@@ -38,6 +38,9 @@ export default function Statistic() {
 
   useEffect(() => {
     calculateDates(info.ActivatedDate);
+    getBarChartData(info.ActivatedDate);
+    getPieChartData(info.ActivatedDate, true);
+    getPieChartData(info.ActivatedDate, false);
   }, []);
 
   const getBarChartData = async (date) => {
@@ -138,9 +141,10 @@ export default function Statistic() {
       <Container component="main" maxWidth="xl">
         <div>
           {/* Bounding box for the Timeline */}
-          <div
-            style={{ width: "80%", height: "100px", margin: "0 auto", marginTop: "20px", display: 'flex', alignItems: 'stretch' }}
-          >
+          <div style={{
+            width: "80%", height: "100px", margin: "0 auto", marginTop: "20px",
+            display: 'flex', alignItems: 'stretch'
+          }}>
             <HorizontalTimeline
               styles={{
                 background: "#f8f8f8",
