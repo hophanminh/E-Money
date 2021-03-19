@@ -25,9 +25,11 @@
     "react-dom": "^17.0.1",
     "react-horizontal-timeline": "^1.5.3",
     "react-icons": "^4.2.0",
+    "react-material-ui-carousel": "^2.2.1",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.2",
     "socket.io-client": "^3.1.2",
+    "socketio-jwt": "^4.6.2",
     "web-vitals": "^1.1.0"
   },
   "scripts": {

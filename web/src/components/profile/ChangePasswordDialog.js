@@ -97,7 +97,7 @@ export default function ChangePasswordDialog({ setShowSnackBar, setContent }) {
 
 
   return (
-    <div class="margin-top-10">
+    <div className="margin-top-10">
       {/* <SimpleSnackbar open={showSnackbar} setOpen={(isOpen) => setShowSnackBar(isOpen)} contents={contents} /> */}
 
       <Button fullWidth variant="contained" style={{ backgroundColor: palette.secondary, color: 'white', fontWeight: 'bold', marginTop: '10px' }} onClick={handleClickOpen} startIcon={<SaveIcon />}>
@@ -108,25 +108,25 @@ export default function ChangePasswordDialog({ setShowSnackBar, setContent }) {
           <Typography variant="h5" style={{ fontWeight: 'bold', textAlign: 'center' }}>Đổi mật khẩu</Typography>
         </DialogTitle>
         <DialogContent >
-          <div class="container margin-top-10">
+          <div className="container margin-top-10">
             <Typography style={{ fontWeight: 'bold' }} variant="h6">Mật khẩu hiện tại</Typography>
-            <div class="input-invalid">{errors.currentPassword}</div>
+            <div className="input-invalid">{errors.currentPassword}</div>
           </div>
           <TextField variant="outlined" autoFocus margin="normal" type="password" fullWidth
             onChange={(event) => { handleCurrentPasswordChange(event.target.value); }} placeholder="Mật khẩu hiện tại"
           />
 
-          <div class="container margin-top-10">
+          <div className="container margin-top-10">
             <Typography style={{ fontWeight: 'bold' }} variant="h6">Mật khẩu mới</Typography>
-            <div class="input-invalid">{errors.newPassword}</div>
+            <div className="input-invalid">{errors.newPassword}</div>
           </div>
           <TextField variant="outlined" margin="normal" type="password" fullWidth placeholder="Mật khẩu mới"
             onChange={(event) => { handleNewPasswordChange(event.target.value); }}
           />
 
-          <div class="container margin-top-10">
+          <div className="container margin-top-10">
             <Typography style={{ fontWeight: 'bold' }} variant="h6">Xác nhận mật khẩu mới</Typography>
-            <div class="input-invalid">{errors.confirmedPassword}</div>
+            <div className="input-invalid">{errors.confirmedPassword}</div>
           </div>
           <TextField variant="outlined" margin="normal" type="password" fullWidth placeholder="Xác nhận mật khẩu mới"
             onChange={(event) => { handleConfirmedPasswordChange(event.target.value); }}

@@ -23,14 +23,12 @@ function ContactInfo() {
   const classes = useStyles();
 
   return (
-    <Typography className={`${classes.flexColumn} ${classes.flexStart}`}>
+    <Typography className={`${classes.flexColumn} ${classes.flexStart}`} component={'span'}>
       <h4>
         {`Thông tin liên hệ`}
       </h4>
       <PhoneInfo />
       <MailInfo />
-
-
     </Typography>
   )
 }
@@ -83,7 +81,7 @@ function MailInfo() {
 
 function SocialConnect() {
   return (
-    <Typography>
+    <Typography component={'span'}>
       <h4>
         {`Kết nối với chúng tôi`}
       </h4>
@@ -99,7 +97,7 @@ function FastConnect() {
   const classes = useStyles();
 
   return (
-    <Typography>
+    <Typography component={'span'}>
       <h4>
         {`Truy cập nhanh`}
       </h4>
@@ -188,10 +186,10 @@ export default function StickyFooter() {
                           ${classes.paperLikeShadow} 
                           ${classes.textFormat}`}>
         <div className={`${classes.align}  ${classes.flexSpaceBetween}`}>
-          <p>
+          <span>
             <p style={{ fontSize: '30px' }}> E-MONEY</p>
             <Description style={{ margin: '10px' }} />
-          </p>
+          </span>
           <FastConnect />
           <SocialConnect />
           <ContactInfo />

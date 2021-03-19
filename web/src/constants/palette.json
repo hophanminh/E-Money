@@ -1,5 +1,6 @@
 {
   "primary": "#1DAF1A",
   "secondary": "#FDA92C",
-  "faded_primary": "#9EC98D"
+  "faded_primary": "#9EC98D",
+  "dark_grey": "#919190"
 }

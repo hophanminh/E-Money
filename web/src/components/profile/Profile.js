@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
-import background from '../../resources/images/background1.jpg';
 import defaultAvatar from '../../resources/images/defaultAvatar.png';
 import ImageUploader from './ImageUploader';
 import TextField from '@material-ui/core/TextField';
@@ -19,6 +18,7 @@ import config from '../../constants/config.json';
 import palette from '../../constants/palette.json';
 import MyContext from '../mycontext/MyContext';
 import SnackBar from '../snackbar/SnackBar';
+import TransactionImages from '../Dashboard/TransactionImages';
 
 const API_URL = config.API_LOCAL;
 const styles = {
@@ -35,6 +35,7 @@ export default function Profile() {
 
   const userID = localStorage.getItem('userID');
   const token = localStorage.getItem('jwtToken');
+  console.log(token)
   const history = useHistory();
   const [errors, setErrors] = useState({});
   const [username, setUsername] = useState("");// không thay đổi được
@@ -133,19 +134,21 @@ export default function Profile() {
 
   return (
     <>
+      <TransactionImages transactionID={1} />
+
       <SnackBar open={showSnackbar} setOpen={(isOpen) => setShowSnackBar(isOpen)} content={content} />
-      <div class="wallpaper" style={{ ...styles.wallpaper }}>
+      <div className="wallpaper" style={{ ...styles.wallpaper }}>
       </div>
       <div style={styles.body}>
-        <Container component="main" maxWidth="lg">
+        <Container component="main" /*maxWidth="lg"*/>
           <Grid container spacing={2}>
-            <Grid item item xs={12} sm={12} md={6} direction="column" style={{ textAlign: 'center', marginTop: '5%' }}>
+            <Grid item item xs={12} sm={12} md={6} style={{ textAlign: 'center', marginTop: '5%' }}>
               <div style={{
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center'
               }}>
-                <div class="shadow avatar"
+                <div className="shadow avatar"
                   style={{
                     position: 'relative',
                     marginTop: '-200px',
@@ -157,7 +160,7 @@ export default function Profile() {
                   </div>
                 </div>
 
-                <div class="margin-top-20">
+                <div className="margin-top-20">
                   <Typography variant='h4' style={{ fontWeight: 'bold', marginBottom: '20px' }}>
                     {displayedName}
                   </Typography>
@@ -168,7 +171,7 @@ export default function Profile() {
               </div>
             </Grid>
 
-            <Grid item xs={12} sm={12} md={6} maxWidth='md' align="center">
+            <Grid item xs={12} sm={12} md={6} /*maxWidth='md'*/ align="center">
               <div style={{ textAlign: 'center', width: '80%' }}>
                 <Typography component="h2" variant="h5" style={{ fontWeight: 'bold' }}>
                   Thông tin tài khoản
@@ -177,26 +180,26 @@ export default function Profile() {
                   </IconButton>
                 </Typography>
                 <div style={{ margin: '20px 0 20px' }}>
-                  <div class="container">
+                  <div className="container">
                     <Typography style={{ fontWeight: 'bold' }} variant="h6">Tên hiển thị</Typography>
-                    <div class="input-invalid">{errors.displayedName}</div>
+                    <div className="input-invalid">{errors.displayedName}</div>
                   </div>
                   <TextField placeholder="Tên hiển thị" variant="outlined"
                     margin="normal" required fullWidth autoFocus
                     onChange={e => handleDisplayedNameChange(e.target.value)}
                     value={displayedName}
                   />
-                  <div class="container margin-top-10">
+                  <div className="container margin-top-10">
                     <Typography style={{ fontWeight: 'bold' }} variant="h6">Tên tài khoản</Typography>
-                    <div class="input-invalid">{errors.userName}</div>
+                    <div className="input-invalid">{errors.userName}</div>
                   </div>
                   <TextField placeholder="Tên tài khoản" variant="outlined"
                     margin="normal" required fullWidth disabled
                     value={username}
                   />
-                  <div class="container margin-top-10">
+                  <div className="container margin-top-10">
                     <Typography style={{ fontWeight: 'bold' }} variant="h6">Email</Typography>
-                    <div class="input-invalid">{errors.email}</div>
+                    <div className="input-invalid">{errors.email}</div>
                   </div>
                   <TextField placeholder="Email"
                     variant="outlined" margin="normal" required fullWidth
@@ -204,9 +207,9 @@ export default function Profile() {
                     value={email}
                   />
                 </div>
-                <div class="container margin-top-10">
+                <div className="container margin-top-10">
                   <Typography style={{ fontWeight: 'bold' }} variant="h6">Ngày sinh</Typography>
-                  <div class="input-invalid">{errors.dob}</div>
+                  <div className="input-invalid">{errors.dob}</div>
                 </div>
                 <MuiPickersUtilsProvider utils={DateFnsUtils} >
                   <KeyboardDatePicker
@@ -214,6 +217,7 @@ export default function Profile() {
                     format="dd/MM/yyyy"
                     margin="normal"
                     id="date-picker-inline"
+                    placeholder="chh"
                     fullWidth value={dateOfBirth}
                     onChange={handleDateChange}
                     KeyboardButtonProps={{
@@ -228,7 +232,7 @@ export default function Profile() {
                 >
                   Cập nhật thông tin
                 </Button>
-                <div class="container margin-top-20">
+                <div className="container margin-top-20">
                   <Typography style={{ fontWeight: 'bold' }} variant="h6">Mật khẩu</Typography>
                 </div>
                 <ChangePasswordDialog setShowSnackBar={setShowSnackBar} setContent={setContent} />

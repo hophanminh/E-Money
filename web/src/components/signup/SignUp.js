@@ -148,14 +148,13 @@ export default function SignUp() {
             <SnackBar open={showSnackbar} setOpen={(isOpen) => setShowSnackBar(isOpen)} content={content} />
             <Grid container spacing={4}>
 
-              <Grid item item xs={2} sm={2} md={2} direction="column" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', textAlign: 'left' }}>
+              <Grid item item xs={2} sm={2} md={2} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', textAlign: 'left' }}>
                 <div>
                   <Button
                     variant="contained"
                     onClick={() => signInClicked()}
+                    // className="shadow"
                     style={{
-                      alignContent: 'center',
-                      fontSize: '4',
                       borderRadius: '50%',
                       height: '65px',
                       width: '65px',
