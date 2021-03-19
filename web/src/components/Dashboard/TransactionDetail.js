@@ -19,6 +19,7 @@ import moment from 'moment';
 import DefaultIcon from '../../utils/DefaultIcon'
 import EditTransaction from './CRUDTransaction/EditTransaction';
 import DeleteTransaction from './CRUDTransaction/DeleteTransaction';
+import { getSocket } from "../../utils/socket";
 
 const useStyles = makeStyles((theme) => ({
     red: {
@@ -114,13 +115,22 @@ const useStyles = makeStyles((theme) => ({
 
 export default function TransactionDetail({ categoryList, transactionData, updateList, deleteList }) {
     const classes = useStyles();
+    const socket = getSocket();
+
     const [data, setData] = useState(null);
     const [amount, setAmount] = useState(0);
 
+    ///////////////////////////////////////////////////// imageList[0].URL to access
+    const [imageList, setImageList] = useState(); 
+
+    // update data from parent and get list of images
     useEffect(() => {
         if (transactionData) {
             setData(transactionData);
             setAmount(transactionData.price);
+            socket.emit("get_transaction_image", { TransactionID: transactionData.id }, ({ imageList }) => {
+                setImageList(imageList);
+            });
         }
     }, [transactionData])
 
@@ -134,7 +144,6 @@ export default function TransactionDetail({ categoryList, transactionData, updat
     const handleOpenDeleteDialog = () => {
         setOpenDeleteDialog(true);
     }
-
 
     return (
         <div className={classes.root}>
@@ -193,7 +202,7 @@ export default function TransactionDetail({ categoryList, transactionData, updat
 
                             <Typography
                                 className={`${classes.transactionSubText}`}>
-                                Sự kiện: <Link href="#">{data.eventName}</Link>
+                                Sự kiện: <Link to="/">{data.eventName ? data.eventName : ''}</Link>
                             </Typography>
                         </Box>
                     </div>

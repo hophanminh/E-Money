@@ -171,7 +171,7 @@ export default function Category() {
       setDefaultList(defaultList);
       setCustomList(customList);
     });
-
+    /*
     socket.on('wait_for_update_category', ({ defaultList, customList }) => {
       setDefaultList(defaultList);
       setCustomList(customList);
@@ -180,6 +180,8 @@ export default function Category() {
     return () => {
       socket.off("wait_for_update_category");
     }
+    */
+
 
   }, []);
 
