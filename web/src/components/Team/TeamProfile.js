@@ -56,6 +56,7 @@ export default function TeamProfile() {
         setDiscription(des);
     }
 
+
     const handleSaveChange = async () => {
 
         const errorObjs = {
@@ -91,6 +92,8 @@ export default function TeamProfile() {
         } else {
             // alert("Some error when updating!")
         }
+
+        history.push("/teams");
     }
 
     return (
@@ -145,6 +148,7 @@ export default function TeamProfile() {
                                     <TextField placeholder="Số lượng" variant="outlined"
                                                margin="normal" required fullWidth
                                                value={numberUser}
+                                               onChange={e => handleNumberUsers(e.target.value)}
                                     />
 
                                     <div class="container margin-top-10">
