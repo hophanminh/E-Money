@@ -13,7 +13,9 @@ module.exports = {
         return db.load(sql);
     },
     getTeamById: (id) => {
-        const sql = `SELECT * from teams t WHERE t.ID = '` + id + `'`;
+        console.log("ID: ", id);
+        const sql = `SELECT * from teams WHERE ID = '` + id + `'`;
+        console.log(sql);
         return db.load(sql);
     },
     createTeam(newTeam) {
