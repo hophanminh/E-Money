@@ -15,6 +15,18 @@ import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import AddIcon from '@material-ui/icons/Add';
 
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Slide from '@material-ui/core/Slide';
+import TextField from '@material-ui/core/TextField';
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+    return <Slide direction="up" ref={ref} {...props} />;
+});
+
 const API_URL = config.API_LOCAL;
 const useStyles = makeStyles((theme) => ({
     icon: {
@@ -101,7 +113,28 @@ export default function Teams() {
         history.push(`/teams/${teamID}/details`)
     }
     const createTeam = () => {
+        setOpen(false);
         history.push(`/teams/create`)
+    }
+
+    const [joinID, setJoinID] = useState("");
+    const handleJoinTeam = (joinID) => {
+        setJoinID(joinID);
+    }
+    const joinTeam = async () => {
+        const data = {
+            teamID: joinID
+        }
+        const res = await fetch(`${API_URL}/teams/join/${userID}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(data),
+        });
+        history.push("/teams")
+        handleCloseDiaForm();
     }
 
     const deleteTeam = async (TeamID) => {
@@ -118,6 +151,25 @@ export default function Teams() {
         });
         history.push("/teams")
     }
+
+    const [open, setOpen] = React.useState(false);
+    const handleClickOpen = () => {
+        setOpen(true);
+    };
+    const handleClose = () => {
+        setOpen(false);
+    };
+
+    const [openDiaForm, setOpenDiaForm] = React.useState(false);
+    const handleClickOpenDiaForm = () => {
+        setOpenDiaForm(true);
+    };
+    const handleCloseDiaForm = () => {
+        setOpenDiaForm(false);
+        handleClose()
+    };
+
+
     return (
         <>
             <SnackBar open={showSnackbar} setOpen={(isOpen) => setShowSnackBar(isOpen)} content={content} />
@@ -157,13 +209,63 @@ export default function Teams() {
                                 <Card className={`${classes.card} ${classes.centerCard}`}>
                                     <Button size="small"
                                             color="primary"
-                                            onClick={() => createTeam()}
+                                            onClick={handleClickOpen}
 
                                     >
                                     <CardActions>
                                             <AddIcon style={{ fontSize: 100 }}/>
                                     </CardActions>
                                     </Button>
+                                    <Dialog
+                                        open={open}
+                                        TransitionComponent={Transition}
+                                        keepMounted
+                                        onClose={handleClose}
+                                        aria-labelledby="alert-dialog-slide-title"
+                                        aria-describedby="alert-dialog-slide-description"
+                                    >
+                                        <DialogTitle id="alert-dialog-slide-title">{"Use Google's location service?"}</DialogTitle>
+                                        <DialogContent>
+                                            <DialogContentText id="alert-dialog-slide-description">
+                                                Bạn muốn thực hiện hành động gì ???
+                                            </DialogContentText>
+                                        </DialogContent>
+                                        <DialogActions>
+                                            <Button onClick={createTeam} color="primary">
+                                                Tạo nhóm
+                                            </Button>
+                                            <Button onClick={handleClickOpenDiaForm} color="primary">
+                                                Tham gia nhóm
+                                            </Button>
+                                        </DialogActions>
+                                    </Dialog>
+
+
+                                    <Dialog open={openDiaForm} onClose={handleCloseDiaForm} aria-labelledby="form-dialog-title">
+                                        <DialogTitle id="form-dialog-title">Subscribe</DialogTitle>
+                                        <DialogContent>
+                                            <DialogContentText>
+                                                To subscribe to this website, please enter your email address here. We will send updates
+                                                occasionally.
+                                            </DialogContentText>
+                                            <TextField
+                                                autoFocus
+                                                margin="dense"
+                                                id="teamCode"
+                                                label="Team Code"
+                                                fullWidth
+                                                onChange={e => handleJoinTeam(e.target.value)}
+                                            />
+                                        </DialogContent>
+                                        <DialogActions>
+                                            <Button onClick={handleCloseDiaForm} color="primary">
+                                                Hủy
+                                            </Button>
+                                            <Button onClick={joinTeam} color="primary">
+                                                Tham gia
+                                            </Button>
+                                        </DialogActions>
+                                    </Dialog>
                                 </Card>
                             </Grid>
                         }

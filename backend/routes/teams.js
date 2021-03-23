@@ -168,4 +168,32 @@ router.post('/:id/delete', async (req, res) => {
 
 });
 
+router.post('/join/:userId', async (req, res) => {
+    const userID = req.params.userId;
+    const { teamID } = req.body
+    console.log(`Invite user ${userID} joins team ${teamID}`);
+
+    const team = await TeamModel.getTeamById(teamID);
+
+    if(team.length === 0) {
+        return res.status(404).send({msg: "Not found team"});
+    }
+    const thuObject = {
+        TeamID: teamID,
+        UserID: userID,
+        Role: config.PERMISSION.MEMBER,
+        Status: config.STATUS.ACTIVE
+    }
+    const result = await TeamHasUserModel.createTHU(thuObject);
+    console.log(result.affectedRows)
+    if (result.affectedRows === 1) {
+        console.log("Joined successfully");
+        return res.status(201)
+            .send({ msg: "You are now a member of a team." });
+    } else {
+        return res.status(500)
+            .send({ msg: "Please try again" });
+    }
+})
+
 module.exports = router;
