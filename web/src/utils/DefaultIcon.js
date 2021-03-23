@@ -8,9 +8,10 @@ import {
 import config from '../constants/config.json';
 
 let list = null;
-const jwtToken = localStorage.getItem('jwtToken');
 const API_URL = config.API_LOCAL;
+
 export const getListIcon = async () => {
+    const jwtToken = localStorage.getItem('jwtToken');
     if (!list) {
         try {
             const res = await fetch(`${API_URL}/icons/list`, {

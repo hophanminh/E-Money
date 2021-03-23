@@ -19,6 +19,7 @@ import moment from 'moment';
 import DefaultIcon from '../../utils/DefaultIcon'
 import EditTransaction from './CRUDTransaction/EditTransaction';
 import DeleteTransaction from './CRUDTransaction/DeleteTransaction';
+import { formatMoney } from '../../utils/currency'
 
 const useStyles = makeStyles((theme) => ({
     red: {
@@ -183,17 +184,17 @@ export default function TransactionDetail({ categoryList, transactionData, updat
                             {amount < 0
                                 ?
                                 <Typography className={`${classes.transactionSubText} ${classes.red}`}>
-                                    {amount * -1}đ
+                                    {formatMoney(amount * -1)}
                                 </Typography>
                                 :
                                 <Typography className={`${classes.transactionSubText} ${classes.green}`}>
-                                    {amount}đ
+                                    {formatMoney(amount)}
                                 </Typography>
                             }
 
                             <Typography
                                 className={`${classes.transactionSubText}`}>
-                                Sự kiện: <Link href="#">{data.eventName}</Link>
+                                Sự kiện: <Link to="/">{data.eventName ? data.eventName : ''}</Link>
                             </Typography>
                         </Box>
                     </div>

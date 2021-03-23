@@ -9,6 +9,7 @@ import TrendingDownIcon from '@material-ui/icons/TrendingDown';
 import moment from 'moment'
 
 import DefaultIcon from '../../utils/DefaultIcon'
+import { formatMoney } from '../../utils/currency'
 
 const useStyles = makeStyles((selected) => ({
     red: {
@@ -84,9 +85,9 @@ export default function TransactionMini({ transactionData, selected, onClick }) 
                         </Typography>
                         {amount < 0
                             ?
-                            <Typography className={`${classes.transactionText} ${classes.red}`}>{amount * -1}đ</Typography>
+                            <Typography className={`${classes.transactionText} ${classes.red}`}>{formatMoney(amount * -1)}</Typography>
                             :
-                            <Typography className={`${classes.transactionText} ${classes.green}`}>{amount}đ</Typography>
+                            <Typography className={`${classes.transactionText} ${classes.green}`}>{formatMoney(amount)}</Typography>
                         }
 
                     </Box>
