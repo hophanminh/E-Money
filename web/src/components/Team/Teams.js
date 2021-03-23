@@ -135,6 +135,7 @@ export default function Teams() {
         });
         history.push("/teams")
         handleCloseDiaForm();
+        handleClose();
     }
 
     const deleteTeam = async (TeamID) => {
@@ -166,7 +167,6 @@ export default function Teams() {
     };
     const handleCloseDiaForm = () => {
         setOpenDiaForm(false);
-        handleClose()
     };
 
 
@@ -224,7 +224,7 @@ export default function Teams() {
                                         aria-labelledby="alert-dialog-slide-title"
                                         aria-describedby="alert-dialog-slide-description"
                                     >
-                                        <DialogTitle id="alert-dialog-slide-title">{"Use Google's location service?"}</DialogTitle>
+                                        <DialogTitle id="alert-dialog-slide-title">{"Tùy chọn"}</DialogTitle>
                                         <DialogContent>
                                             <DialogContentText id="alert-dialog-slide-description">
                                                 Bạn muốn thực hiện hành động gì ???
@@ -242,17 +242,16 @@ export default function Teams() {
 
 
                                     <Dialog open={openDiaForm} onClose={handleCloseDiaForm} aria-labelledby="form-dialog-title">
-                                        <DialogTitle id="form-dialog-title">Subscribe</DialogTitle>
+                                        <DialogTitle id="form-dialog-title">Tham Gia Nhóm </DialogTitle>
                                         <DialogContent>
                                             <DialogContentText>
-                                                To subscribe to this website, please enter your email address here. We will send updates
-                                                occasionally.
+                                                Nhập mã nhóm
                                             </DialogContentText>
                                             <TextField
                                                 autoFocus
                                                 margin="dense"
                                                 id="teamCode"
-                                                label="Team Code"
+                                                label="Mã nhóm"
                                                 fullWidth
                                                 onChange={e => handleJoinTeam(e.target.value)}
                                             />
