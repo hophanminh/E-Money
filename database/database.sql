@@ -152,6 +152,8 @@ CREATE TABLE TransactionImages(
     ID VARCHAR(100) NOT NULL, -- will store as UUID()
     URL VARCHAR(1000),
     TransactionID VARCHAR(100),
+	DateAdded DATETIME,
+	PublicID VARCHAR(100),
     PRIMARY KEY(ID)
 );
 

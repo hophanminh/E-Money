@@ -2,42 +2,27 @@ import React, { useState, useEffect, forwardRef } from 'react';
 import Carousel from 'react-material-ui-carousel';
 import { Button, Grid, Container, IconButton, DialogActions, DialogContentText, DialogContent, DialogTitle, Dialog } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-import CloseIcon from '@material-ui/icons/Close';
-import AddIcon from '@material-ui/icons/Add';
-import GalleryDialog from '@material-ui/core/Dialog';
 import Typography from '@material-ui/core/Typography';
 import Badge from '@material-ui/core/Badge';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import CheckCircleOutlineSharpIcon from '@material-ui/icons/CheckCircleOutlineSharp';
 import Slide from '@material-ui/core/Slide';
-import { DropzoneDialog, AlertType } from 'material-ui-dropzone'
+import Tooltip from '@material-ui/core/Tooltip';
+import CloseIcon from '@material-ui/icons/Close';
+import AddIcon from '@material-ui/icons/Add';
+import AddAPhotoIcon from '@material-ui/icons/AddAPhoto';
+import { DropzoneDialog } from 'material-ui-dropzone'
+import { getSocket } from '../../utils/socket';
 import config from '../../constants/config.json';
 import palette from '../../constants/palette.json';
-const API_URL = config.API_LOCAL;
-const fakeUrls = [
-  "https://www.theweek.in/content/dam/week/news/india/images/2020/5/5/liquor-bill.jpeg",
-  "https://pbs.twimg.com/media/DEVtWyoUwAAZPTY.jpg",
-  "https://www.cityofalbany.net/images/stories/publicworks/utility-billing/ub-bill.jpg",
-  "https://www.theweek.in/content/dam/week/news/india/images/2020/5/5/liquor-bill.jpeg",
-  "https://pbs.twimg.com/media/DEVtWyoUwAAZPTY.jpg",
-  "https://www.cityofalbany.net/images/stories/publicworks/utility-billing/ub-bill.jpg"
-  , "https://www.theweek.in/content/dam/week/news/india/images/2020/5/5/liquor-bill.jpeg",
-  "https://pbs.twimg.com/media/DEVtWyoUwAAZPTY.jpg",
-  "https://www.cityofalbany.net/images/stories/publicworks/utility-billing/ub-bill.jpg"
-  , "https://www.theweek.in/content/dam/week/news/india/images/2020/5/5/liquor-bill.jpeg",
-  "https://pbs.twimg.com/media/DEVtWyoUwAAZPTY.jpg",
-  "https://www.cityofalbany.net/images/stories/publicworks/utility-billing/ub-bill.jpg"
-  , "https://www.theweek.in/content/dam/week/news/india/images/2020/5/5/liquor-bill.jpeg",
-  // "https://pbs.twimg.com/media/DEVtWyoUwAAZPTY.jpg",
-  // "https://www.cityofalbany.net/images/stories/publicworks/utility-billing/ub-bill.jpg"
-  // , "https://www.theweek.in/content/dam/week/news/india/images/2020/5/5/liquor-bill.jpeg",
-  // "https://pbs.twimg.com/media/DEVtWyoUwAAZPTY.jpg",
-  // "https://www.cityofalbany.net/images/stories/publicworks/utility-billing/ub-bill.jpg"
-  // , "https://www.theweek.in/content/dam/week/news/india/images/2020/5/5/liquor-bill.jpeg",
-]
+import moment from 'moment';
 
+const API_URL = config.API_LOCAL;
 const styles = {
-  imageItem: { width: '7vw', height: '7vw', cursor: 'pointer' },
-  itemSpace: { margin: '10px 7px' },
+  smallImageItem: { width: '75px', height: '75px', cursor: 'pointer' },
+  largeImageItem: { width: '7vw', height: '7vw', cursor: 'pointer' },
+  smallItemSpace: { margin: '3px 3px' },
+  largeItemSpace: { margin: '10px 7px' },
   roundedCorner: { borderRadius: '5px' }
 }
 
@@ -57,21 +42,29 @@ const Transition = forwardRef(function Transition(props, ref) {
   return <Slide direction="right" ref={ref} {...props} />;
 });
 
-function Item({ url }) {
+const Item = ({ image }) => {
   return (
-    <div style={{ textAlign: 'center' }}>
-      <img src={url} style={{ height: '75vh', maxHeight: '75vh', width: 'auto' }} />
-    </div>
+    <>
+      {/* */}<Typography>Đăng vào lúc: {moment(image.DateAdded).format('DD/MM/YYYY HH:mm')}</Typography>
+      <div className="carousel" style={{ backgroundImage: `url('${image.URL}')`, height: '72vh', maxHeight: '72vh', width: 'auto', backgroundColor: 'black' }}>
+      </div>
+    </>
+
   );
 }
 
-export default function TransactionImages({ transactionID }) {
-  const [open, setOpen] = useState(false);
-  const [images, setImages] = useState(fakeUrls);
+export default function TransactionImages({ transactionID, images, setImages }) {
+  const [open, setOpen] = useState(false); // this dialog
   const [displayedImage, setDisplayedImage] = useState(0);
-  const [removeImageDialog, setRemoveImageDialog] = useState(false);
+  const [removeImageDialog, setRemoveImageDialog] = useState(false); // child dialog
   const [imageToRemove, setImageToRemove] = useState("");
-  const [addImageDialog, setAddImageDialog] = useState(false);
+  const [addImageDialog, setAddImageDialog] = useState(false); // child dialog
+
+  useEffect(() => {
+    if (!addImageDialog && images.length === 0) {
+      handleClose()
+    }
+  }, [open, images])
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -83,49 +76,63 @@ export default function TransactionImages({ transactionID }) {
 
   const handleChangeSelectedUrl = (i) => {
     setDisplayedImage(i);
-  }
+  };
 
   const handleRemoveImage = (i) => {
     setImageToRemove(i);
     setRemoveImageDialog(true);
-  }
+  };
 
   const handleAddImage = () => {
-    setOpen(false);
     setAddImageDialog(true);
-  }
+  };
 
   const prevViewUI = () => {
     return (
       <>
         {
-          images.length <= 3 ?
-            (images.map((item, i) =>
-              <img key={i} src={item} onClick={() => { setDisplayedImage(i); handleClickOpen() }}
-                style={{ ...styles.imageItem, ...styles.itemSpace, ...styles.roundedCorner }}
-              />
-            ))
-            :
+          images.length === 0 ?
             <div style={{ display: 'inline-block' }}>
-              <div style={{ display: 'inline-block' }} onClick={() => { setDisplayedImage(0); handleClickOpen() }}>
-                <img key={0} src={images[0]}
-                  style={{ ...styles.imageItem, ...styles.itemSpace, ...styles.roundedCorner }}
-                />
-              </div>
-              <div style={{ display: 'inline-block' }} onClick={() => { setDisplayedImage(1); handleClickOpen() }}>
-                <img key={1} src={images[1]}
-                  style={{ ...styles.imageItem, ...styles.itemSpace, ...styles.roundedCorner }}
-                />
-              </div>
-              <div style={{ display: 'inline-block', position: 'relative', cursor: 'pointer' }} onClick={() => { setDisplayedImage(2); handleClickOpen() }}>
-                <img key={2} src={images[2]}
-                  style={{ filter: 'brightness(50%)', ...styles.imageItem, ...styles.itemSpace, ...styles.roundedCorner }}
-                />
-                <div style={{ position: 'absolute', top: '35%', width: '100%', textAlign: 'center', color: '#fff', fontSize: '2vw' }}>
-                  +{images.length - 2}
+              <Tooltip arrow fontSize="40" title={<Typography>Thêm hình ảnh minh chứng cho giao dịch này</Typography>} placement="right">
+                <div className="container shadow" style={{ justifyContent: 'center', ...styles.smallImageItem, ...styles.smallItemSpace, ...styles.roundedCorner, backgroundColor: '#f0f0f0' }} onClick={handleAddImage}>
+                  <AddAPhotoIcon fontSize="large" style={{ color: "#727375" }} />
                 </div>
-              </div>
+              </Tooltip>
             </div>
+            :
+            <Tooltip arrow title={<Typography>Hình ảnh minh chứng giao dịch</Typography>} placement="right">
+              {
+                images.length <= 3 ?
+                  <div style={{ display: 'inline-block' }}>
+                    {images.map((item, i) =>
+                      <img key={i} className="shadow" src={item.URL} onClick={() => { setDisplayedImage(i); handleClickOpen() }}
+                        style={{ ...styles.smallImageItem, ...styles.smallItemSpace, ...styles.roundedCorner }}
+                      />
+                    )}
+                  </div>
+                  :
+                  <div style={{ display: 'inline-block' }}>
+                    <div style={{ display: 'inline-block' }} onClick={() => { setDisplayedImage(0); handleClickOpen() }}>
+                      <img key={0} src={images[0].URL} className="shadow"
+                        style={{ ...styles.smallImageItem, ...styles.smallItemSpace, ...styles.roundedCorner }}
+                      />
+                    </div>
+                    <div style={{ display: 'inline-block' }} onClick={() => { setDisplayedImage(1); handleClickOpen() }}>
+                      <img key={1} src={images[1].URL} className="shadow"
+                        style={{ ...styles.smallImageItem, ...styles.smallItemSpace, ...styles.roundedCorner }}
+                      />
+                    </div>
+                    <div style={{ display: 'inline-block', position: 'relative', cursor: 'pointer' }} onClick={() => { setDisplayedImage(2); handleClickOpen() }}>
+                      <img key={2} src={images[2].URL} className="shadow"
+                        style={{ filter: 'brightness(50%)', ...styles.smallImageItem, ...styles.smallItemSpace, ...styles.roundedCorner }}
+                      />
+                      <div style={{ position: 'absolute', top: '30%', width: '100%', textAlign: 'center', color: '#fff', fontSize: '25px' }}>
+                        +{images.length - 2}
+                      </div>
+                    </div>
+                  </div>
+              }
+            </Tooltip>
         }
       </>
     );
@@ -134,31 +141,34 @@ export default function TransactionImages({ transactionID }) {
   return (
     <>
       {prevViewUI()}
-      <GalleryDialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title" fullWidth maxWidth="xl" TransitionComponent={Transition}>
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <Typography component={'span'} style={{ marginLeft: '20px' }}><h4>Hình ảnh giao dịch</h4></Typography>
-          <IconButton onClick={handleClose}>
-            <CloseIcon />
-          </IconButton>
-        </div>
+      <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title" fullWidth maxWidth="xl" TransitionComponent={Transition}>
+        <DialogTitle >
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <Typography component={'span'} style={{ fontSize: '30px' }}>Hình ảnh giao dịch</Typography>
+            <IconButton onClick={handleClose}>
+              <CloseIcon />
+            </IconButton>
+          </div>
+
+        </DialogTitle>
         <Container component="main" maxWidth="xl" >
-          <Grid container spacing={6}>
-            <Grid item sm={12} md={7}>
+          <Grid container spacing={4}>
+            <Grid item sm={12} md={7} >
               <Carousel
-                autoPlay={false} indicators={false} animation={'slide'} index={displayedImage}
+                interval={"1000"} autoPlay={false} indicators={false} animation={'slide'} index={displayedImage}
                 next={(next, active) => { handleChangeSelectedUrl(next) }}
                 prev={(prev, active) => { handleChangeSelectedUrl(prev) }}
               >
-                {images.map((item, i) => <Item key={i} url={item} />)}
+                {images.map((image, i) => <Item key={i} image={image} />)}
               </Carousel>
             </Grid>
-            <Grid item sm={12} md={5}>
+            <Grid item sm={12} md={5} >
               <div style={{ display: 'flex', justifyContent: 'flex-start', flexWrap: 'wrap' }}>
-                <div class="container"
-                  style={{ ...styles.imageItem, justifyContent: 'center', ...styles.itemSpace }} >
+                <div className="container"
+                  style={{ ...styles.largeImageItem, justifyContent: 'center', ...styles.largeItemSpace }} >
                   <Button
                     variant="contained"
-                    onClick={handleAddImage}
+                    onClick={() => { handleClose(); handleAddImage(); }}
                     style={{
                       justifyContent: 'center',
                       borderRadius: '50%',
@@ -173,10 +183,11 @@ export default function TransactionImages({ transactionID }) {
                   </Button>
                 </div>
                 {
-                  images.map((url, i) =>
-                    <StyledBadge badgeContent={<CloseIcon style={{ fontSize: '1.5vw' }} onClick={() => handleRemoveImage(i)} />} color="secondary" >
-                      <div key={i} src={url} onClick={() => handleChangeSelectedUrl(i)} className="wallpaper"
-                        style={{ ...styles.imageItem, ...styles.itemSpace, ...styles.roundedCorner, backgroundImage: `url('${url}')`, ...(i === displayedImage ? { border: `3px solid ${palette.primary}` } : { filter: 'brightness(60%)' }) }} />
+                  images.map((image, i) =>
+                    <StyledBadge key={i} badgeContent={<CloseIcon style={{ fontSize: '1.5vw' }} onClick={() => handleRemoveImage(image.ID)} />} color="secondary" >
+                      <div onClick={() => handleChangeSelectedUrl(i)} className="wallpaper"
+                        style={{ ...styles.largeImageItem, ...styles.largeItemSpace, ...styles.roundedCorner, backgroundImage: `url('${image.URL}')`, ...(i === displayedImage ? { border: `3px solid ${palette.primary}` } : { filter: 'brightness(60%)' }) }}>
+                      </div>
                     </StyledBadge>
                   )
                 }
@@ -184,22 +195,45 @@ export default function TransactionImages({ transactionID }) {
             </Grid>
           </Grid>
         </Container>
-      </GalleryDialog>
-      <RemoveImageDialog open={removeImageDialog} setOpen={setRemoveImageDialog} imageID={imageToRemove} />
-      <ImagesUploader open={addImageDialog} setOpen={setAddImageDialog} setParentOpen={setOpen} />
+      </Dialog>
+      <RemoveImageDialog open={removeImageDialog} images={images} setImages={setImages} setOpen={setRemoveImageDialog} imageID={imageToRemove} />
+      <ImagesUploader open={addImageDialog} setOpen={setAddImageDialog} transactionID={transactionID} images={images} setImages={setImages} />
     </>
   );
 }
 
-function RemoveImageDialog({ open, setOpen, imageID }) {
+function RemoveImageDialog({ imageID, images, setImages, open, setOpen }) {
 
+  const token = window.localStorage.getItem('jwtToken');
+  const [isWaiting, setIsWaiting] = useState(false);
   const handleClose = () => {
     setOpen(false);
   };
 
+  const handleRemove = async () => {
+
+    setOpen(false);
+    setIsWaiting(true);
+    const res = await fetch(`${API_URL}/transaction-images/${imageID}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    if (res.status === 200) {
+      setIsWaiting(false);
+      setImages(images.slice().filter(image => image.ID !== imageID));
+    }
+
+
+
+  }
+
   return (
     <div>
-      <GalleryDialog
+      <Dialog
         open={open}
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
@@ -215,76 +249,113 @@ function RemoveImageDialog({ open, setOpen, imageID }) {
           <Button onClick={handleClose} color="primary">
             Hủy
           </Button>
-          <Button onClick={handleClose} color="primary" autoFocus variant="outlined">
+          <Button onClick={handleRemove} color="primary" variant="outlined">
             Xác nhận
           </Button>
         </DialogActions>
-      </GalleryDialog>
+      </Dialog>
+
+      <Dialog open={isWaiting}>
+        <DialogContent style={{ width: '20vw', textAlign: 'center' }}>
+          <div>
+            <CircularProgress style={{ color: palette.primary }} />
+            <Typography variant='h6'>Đang xử lý</Typography>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
 
-function ImagesUploader({ open, setOpen, setParentOpen }) {
-  const userID = localStorage.getItem('userID');
+function ImagesUploader({ transactionID, open, setOpen, images, setImages }) {
   const token = window.localStorage.getItem('jwtToken');
-  const [waiting, setWaiting] = useState(false);
+  const socket = getSocket();
+  const [isWaiting, setIsWaiting] = useState(false); // child
+  const [isDone, setIsDone] = useState(false); // child
 
-  const handleBack = () => {
+  const handleCloseInformationDialog = () => {
+    setIsDone(false);
+  }
+
+  const handleCloseUploadDialog = () => {
     setOpen(false);
-    setParentOpen(true);
   }
 
   const handleSave = async (files) => {
 
     const data = new FormData();
-    data.append('avatar', files[0]);
-    setWaiting(true);
+    files.forEach(file => {
+      data.append('images', file);
+    });
 
-    const res = await fetch(`${API_URL}/users/${userID}/avatar`, {
-      method: 'PATCH',
+    setOpen(false);
+    setIsWaiting(true);
+
+    const res = await fetch(`${API_URL}/transaction-images?transactionID=${transactionID}`, {
+      method: 'POST',
       headers: {
         // 'content-type': 'multipart/form-data', // no need
         Authorization: `Bearer ${token}`
       },
       body: data,
     });
-    const result = await res.json();
 
     if (res.status === 200) {
-      // setContent("Cập nhật thành công");
-      // setInfo({ ...info, AvatarURL: result.url });
-    } else { // 400, etc...
-      // setContent(result.msg)
+      const result = await res.json();
+      setImages(images.slice().concat(result.urls));
+      setIsDone(true);
     }
-    // setShowSnackBar(true);
-    // setWaiting(false)
-    // setOpen(false);
+    // else { // 400, etc...
+    // setContent(result.msg)
+    // }
+    // setShowSnackBar(true);      
+    setIsWaiting(false)
   }
-
 
   return (
     <>
       <DropzoneDialog
         open={open}
         dialogTitle="Thêm hình ảnh giao dịch"
-        submitButtonText="Thêm"
-        cancelButtonText="Trở về"
+        submitButtonText="Thêm ảnh"
+        cancelButtonText="Hủy"
         dropzoneText="Chọn ảnh từ thiết bị hoặc kéo thả ảnh vào đây"
         onSave={handleSave}
         acceptedFiles={['image/jpeg', 'image/png', 'image/gif']}
         showPreviewsInDropzone={true}
         showPreviews={false}
         showAlerts={true}
-        // showFileNames={true}
         filesLimit={5}
         maxFileSize={10000000}
-        onClose={handleBack}
+        onClose={handleCloseUploadDialog}
       />
-
-      <Dialog style={{ textAlign: 'center' }} open={waiting} >
-        <DialogContent align='center'>
-          <CircularProgress style={{ color: palette.primary }} />
-          <Typography variant='h6'>Đang cập nhật</Typography>
+      <Dialog open={isWaiting || isDone} onClick={isDone ? () => handleCloseInformationDialog() : null}>
+        {
+          isDone ? <div style={{ textAlign: 'right' }}>
+            <IconButton onClick={handleCloseInformationDialog}>
+              <CloseIcon />
+            </IconButton>
+          </div> : null
+        }
+        <DialogContent style={{ width: '20vw', textAlign: 'center' }}>
+          {
+            isWaiting ?
+              <div>
+                <CircularProgress style={{ color: palette.primary }} />
+                <Typography variant='h6'>Đang xử lý</Typography>
+              </div>
+              :
+              null
+          }
+          {
+            isDone ?
+              <div>
+                <CheckCircleOutlineSharpIcon style={{ color: palette.primary, fontSize: 60 }} />
+                <Typography variant='h6'>Hoàn tất</Typography>
+              </div>
+              :
+              null
+          }
         </DialogContent>
       </Dialog>
     </>

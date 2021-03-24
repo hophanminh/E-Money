@@ -62,6 +62,12 @@
   background-position: center;
 }
 
+.carousel {
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+}
+
 .trap-container {
   position: relative;
   /*Change this to test responsive*/

@@ -133,12 +133,13 @@ export default function ChangePasswordDialog({ setShowSnackBar, setContent }) {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleChangePassword} color='primary' variant='outlined'>
-            Cập nhật
-            </Button>
           <Button onClick={handleClose} color='primary'>
             Hủy
            </Button>
+          <Button onClick={handleChangePassword} color='primary' variant='outlined'>
+            Cập nhật
+            </Button>
+
         </DialogActions>
       </Dialog>
     </div>

@@ -18,7 +18,6 @@ import config from '../../constants/config.json';
 import palette from '../../constants/palette.json';
 import MyContext from '../mycontext/MyContext';
 import SnackBar from '../snackbar/SnackBar';
-import TransactionImages from '../Dashboard/TransactionImages';
 
 const API_URL = config.API_LOCAL;
 const styles = {
@@ -134,8 +133,6 @@ export default function Profile() {
 
   return (
     <>
-      <TransactionImages transactionID={1} />
-
       <SnackBar open={showSnackbar} setOpen={(isOpen) => setShowSnackBar(isOpen)} content={content} />
       <div className="wallpaper" style={{ ...styles.wallpaper }}>
       </div>
