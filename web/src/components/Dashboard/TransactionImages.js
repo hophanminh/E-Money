@@ -191,19 +191,20 @@ export default function TransactionImages({ transactionID, images, setImages }) 
                     </StyledBadge>
                   )
                 }
+
               </div>
             </Grid>
           </Grid>
         </Container>
       </Dialog>
-      <RemoveImageDialog open={removeImageDialog} images={images} setImages={setImages} setOpen={setRemoveImageDialog} imageID={imageToRemove} />
+      <RemoveImageDialog transactionID={transactionID} open={removeImageDialog} images={images} setImages={setImages} setOpen={setRemoveImageDialog} imageID={imageToRemove} />
       <ImagesUploader open={addImageDialog} setOpen={setAddImageDialog} transactionID={transactionID} images={images} setImages={setImages} />
     </>
   );
 }
 
-function RemoveImageDialog({ imageID, images, setImages, open, setOpen }) {
-
+function RemoveImageDialog({ transactionID, imageID, images, setImages, open, setOpen }) {
+  const socket = getSocket();
   const token = window.localStorage.getItem('jwtToken');
   const [isWaiting, setIsWaiting] = useState(false);
   const handleClose = () => {
@@ -214,21 +215,13 @@ function RemoveImageDialog({ imageID, images, setImages, open, setOpen }) {
 
     setOpen(false);
     setIsWaiting(true);
-    const res = await fetch(`${API_URL}/transaction-images/${imageID}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
+
+    socket.emit(`remove_transaction_image`, { imageID, transactionID }, (status) => {
+      if (status === 200) {
+        setIsWaiting(false);
+        setImages(images.slice().filter(image => image.ID !== imageID));
       }
     });
-
-    if (res.status === 200) {
-      setIsWaiting(false);
-      setImages(images.slice().filter(image => image.ID !== imageID));
-    }
-
-
-
   }
 
   return (
@@ -304,6 +297,7 @@ function ImagesUploader({ transactionID, open, setOpen, images, setImages }) {
       const result = await res.json();
       setImages(images.slice().concat(result.urls));
       setIsDone(true);
+      socket.emit('add_transaction_image', { transactionID, urls: result.urls });
     }
     // else { // 400, etc...
     // setContent(result.msg)

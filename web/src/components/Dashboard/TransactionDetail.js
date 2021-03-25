@@ -125,12 +125,11 @@ export default function TransactionDetail({ categoryList, transactionData, updat
   ///////////////////////////////////////////////////// imageList[0].URL to access
   const [imageList, setImageList] = useState([]);
 
-  // update data from parent and get list of images
   const handleSetImageList = (imageList) => {
-    const sorted = imageList.slice().sort((img1, img2) => moment(img1.DateAdded).isBefore(moment(img2.DateAdded)) ? 1 : -1);
-    setImageList(sorted);
+    const sortedList = imageList.sort((img1, img2) => moment(img1.DateAdded).isBefore(moment(img2.DateAdded)) ? 1 : -1);
+    setImageList(sortedList);
   }
-
+  // update data from parent and get list of images
   useEffect(() => {
     if (transactionData) {
       setData(transactionData);
@@ -138,8 +137,26 @@ export default function TransactionDetail({ categoryList, transactionData, updat
       socket.emit("get_transaction_image", { TransactionID: transactionData.id }, ({ imageList }) => {
         handleSetImageList(imageList);
       });
+
+
     }
   }, [transactionData]);
+
+  useEffect(() => {
+    socket.on(`wait_for_add_transaction_image_${transactionData.id}`, ({ urls }) => {
+      // if (transactionData.id === transactionID) {
+      const concatenatedList = JSON.parse(JSON.stringify(imageList)).concat(urls);
+      handleSetImageList(concatenatedList);
+      // }
+    });
+    socket.on(`wait_for_remove_transaction_image_${transactionData.id}`, ({ imageID }) => {
+      // if (transactionData.id === transactionID) {
+      const filteredList = JSON.parse(JSON.stringify(imageList)).filter(image => image.ID !== imageID);
+      handleSetImageList(filteredList);
+      // }
+    });
+  }, [imageList]);
+
 
   // edit transaction dialog
   const [openEditDialog, setOpenEditDialog] = useState(false);

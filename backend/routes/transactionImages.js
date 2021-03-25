@@ -39,7 +39,7 @@ router.post('/', upload.array('images', 5), async (req, res) => {
       await cloudinary.uploader.upload(
         filePath,
         {
-          quality: 50,
+          quality: 10,
           timeout: 60000,
           public_id: publicID,
           tags: 'transactionImages',
@@ -47,7 +47,7 @@ router.post('/', upload.array('images', 5), async (req, res) => {
         (err, image) => {
 
           if (err) { return res.status(500).send({ msg: "Đã xảy ra sự cố khi tải lên ảnh của bạn. Hãy thử lại!" }); }
-          console.log('uploaded to cloudinary');
+          // console.log('uploaded to cloudinary');
           const newImage = {
             ID: uuidv1(),
             URL: image.secure_url,
@@ -87,7 +87,7 @@ router.post('/', upload.array('images', 5), async (req, res) => {
 
 });
 
-router.post('/:id', async (req, res) => {
+router.delete('/:id', async (req, res) => {
 
   const imageID = req.params.id;
 
@@ -109,7 +109,6 @@ router.post('/:id', async (req, res) => {
     console.log(err);
     return res.status(500).send({ msg: 'Đã xảy ra sự cố. Hãy thử lại!' });
   }
-
   return res.status(200).end();
 })
 

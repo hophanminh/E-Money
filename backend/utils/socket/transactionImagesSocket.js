@@ -1,7 +1,9 @@
 const helperSocket = require("./helperSocket");
 const transactionImagesModel = require('../../models/transactionImagesModel');
 const { v4: uuidv4 } = require('uuid');
-
+const config = require("../../config/default.json");
+const cloudinary = require('cloudinary').v2;
+cloudinary.config(config.CLOUDINARY);
 module.exports = function (socket, decoded_userID) {
 
   // get image from 1 transaction
@@ -12,39 +14,35 @@ module.exports = function (socket, decoded_userID) {
     } catch (error) {
       console.log(error);
     }
-
   });
 
-  socket.on('post_transaction_image', async (data) => {
-    console.log('up hinh2 ne2');
-    console.log(data);
+  socket.on('add_transaction_image', ({ transactionID, urls }) => {
+    socket.broadcast.to(decoded_userID).emit(`wait_for_add_transaction_image_${transactionID}`, { urls });
+  });
 
-    const express = require("express");
-    const app = express();
-    const fs = require('fs');
-    const path = require('path');
-    const moment = require('moment');
-    const cloudinary = require('cloudinary').v2;
-    const config = require('../../config/default.json');
-    cloudinary.config(config.CLOUDINARY);
-    const multer = require('multer');
-    const storage = multer.diskStorage({
-      filename: function (req, file, cb) {
-        cb(null, Date.now() + path.extname(file.originalname));// make filename unique in images folder (if happen)
-      },
-      destination: function (req, file, cb) {
-        cb(null, `./public/images/transactionImages`);
-      },
-    });
-    const upload = multer({ storage }).single(data.Images);
-    app.use(express.static('public'));
+  socket.on('remove_transaction_image', async (data, callback) => {
+    const { imageID, transactionID } = data;
 
-    console.log(data);
+    console.log(imageID);
+    try {
+      const images = await transactionImagesModel.getImageByID(imageID);
 
-    app.post('/', (req, res) => {
-      console.log(req.file);
-    })
+      if (images.length !== 1) {
+        throw new Error('Image not found by given id');
+      }
 
+      const removed = await cloudinary.uploader.destroy(images[0].PublicID);
 
-  })
+      if (removed.result !== 'ok') {
+        throw new Error('given public id is incorrect');
+      }
+
+      await transactionImagesModel.deleteImage(imageID);
+      callback(200);
+      socket.broadcast.to(decoded_userID).emit(`wait_for_remove_transaction_image_${transactionID}`, { imageID });
+    } catch (err) {
+      console.log(err);
+      callback(500);
+    }
+  });
 };

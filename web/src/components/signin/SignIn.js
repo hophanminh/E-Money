@@ -145,13 +145,13 @@ export default function SignIn() {
 
   return (
     <>
-      <div class="trap-container">
+      <div className="trap-container">
         <div >
           <svg fill="white" width="60%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none" style={{ position: 'absolute', left: 0, zIndex: 0 }}>
             <polygon points="0,0 100,0 80,100 0,100" />
           </svg>
         </div>
-        <div style={{ width: '55%', position: 'absolute', right: 0, zIndex: -2, height: '100%' }} class="bgimg">
+        <div style={{ width: '55%', position: 'absolute', right: 0, zIndex: -2, height: '100%' }} className="bgimg">
 
         </div>
         <div style={{ width: '45%', position: 'absolute', right: 0, zIndex: -1, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', color: '#fff' }}>
@@ -169,7 +169,7 @@ export default function SignIn() {
           </div>
         </div>
 
-        <div class="trap-content">
+        <div className="trap-content">
           <Container component="main" maxWidth="xl">
             <SnackBar open={showSnackbar} setOpen={(isOpen) => setShowSnackBar(isOpen)} content={content} />
             <Grid container spacing={4}>
@@ -204,7 +204,7 @@ export default function SignIn() {
                       value={username}
                     // onKeyUp={handleEnter}
                     />
-                    <div class="input-invalid">
+                    <div className="input-invalid">
                       {errors.username}
                     </div>
                     <TextField label="Mật khẩu" type="password"
@@ -212,7 +212,7 @@ export default function SignIn() {
                       onChange={e => handlePasswordChange(e.target.value)}
                       value={password}
                     />
-                    <div class="input-invalid">
+                    <div className="input-invalid">
                       {errors.password}
                     </div>
                     <Link variant="body2" >
@@ -220,9 +220,9 @@ export default function SignIn() {
                     </Link>
                   </div>
 
-                  <Button className={styles.submit} type="submit" fullWidth variant="contained"
+                  <Button type="submit" fullWidth variant="contained"
                     onClick={() => handleSubmit()}
-                    style={{ backgroundColor: Palette.primary, color: '#fff', fontWeight: 'bold', margin: '5px 0 20px' }}>
+                    style={{ ...styles.submit, backgroundColor: Palette.primary, color: '#fff', fontWeight: 'bold', margin: '5px 0 20px' }}>
                     Đăng nhập
                   </Button>
                 </div>
