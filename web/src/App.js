@@ -139,7 +139,7 @@ function App() {
                     />
                   )
                 })}
-                <Route path="*">
+                <Route path="/event">
                   <Home />
                 </Route>
               </Switch>

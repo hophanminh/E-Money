@@ -24,6 +24,7 @@ module.exports = function (io) {
         require('./walletSocket')(socket, decoded_userID);
         require('./transactionSocket')(socket, decoded_userID);
         require('./categorySocket')(socket, decoded_userID);
+        require('./transactionImagesSocket')(socket, decoded_userID);
 
         // disconnect by leaving page
         socket.on("disconnect", async () => {

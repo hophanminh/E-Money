@@ -53,23 +53,24 @@ export default function ImageUploader({ setContent, setShowSnackBar }) {
   }
 
   return (
-    <div >
-      <Button
-        variant="contained"
+    <div>
+      <div
         onClick={handleOpen}
         style={{
           borderRadius: '50%',
-          height: '45px',
-          width: '45px',
+          height: '3.5vw',
+          width: '3.5vw',
           color: palette.secondary,
           backgroundColor: '#fff',
-          border: 'none',
-          cursor: 'pointer'
+          cursor: 'pointer',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center'
         }}
-        class="shadow"
+        className="shadow"
       >
-        <AddPhotoAlternateIcon style={{ fontSize: '28px' }} />
-      </Button>
+        <AddPhotoAlternateIcon style={{ fontSize: '2.25vw' }} />
+      </div>
 
       <DropzoneDialog
         open={open}

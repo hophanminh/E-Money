@@ -122,7 +122,6 @@ export default function AddCategory({ open, setOpen, addList }) {
       [event.target.name]: event.target.value
     });
   }
-
   return (
     <Dialog open={open} onClose={handleCloseAddDialog} aria-labelledby="form-dialog-title">
       <DialogTitle id="form-dialog-title" >

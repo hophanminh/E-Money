@@ -128,7 +128,7 @@ export default function EditCategory({ data, updateList, open, setOpen }) {
 
                     <DialogTitle id="form-dialog-title" >
                         <Typography className={classes.title}>
-                            Thay đổi khoản giao dịch
+                            Thay đổi loại giao dịch
                 </Typography>
                     </DialogTitle>
                     <DialogContent>

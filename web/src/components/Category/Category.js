@@ -171,7 +171,7 @@ export default function Category() {
       setDefaultList(defaultList);
       setCustomList(customList);
     });
-
+    /*
     socket.on('wait_for_update_category', ({ defaultList, customList }) => {
       setDefaultList(defaultList);
       setCustomList(customList);
@@ -180,6 +180,8 @@ export default function Category() {
     return () => {
       socket.off("wait_for_update_category");
     }
+    */
+
 
   }, []);
 
@@ -214,7 +216,6 @@ export default function Category() {
   }
   const addList = (newCategory) => {
     socket.emit("add_category", { walletID, newCategory }, ({ ID }) => {
-      console.log(ID);
       let tempList = customList.slice();
       newCategory.ID = ID;
       newCategory.count = 0;
@@ -228,7 +229,6 @@ export default function Category() {
   // edit transaction dialog
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const handleOpenEditDialog = (event) => {
-    console.log(anchorEl.id)
     setOpenEditDialog(true);
   }
   const updateList = (newCategory) => {

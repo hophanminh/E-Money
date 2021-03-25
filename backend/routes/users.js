@@ -5,7 +5,6 @@ const path = require('path');
 const userModel = require('../models/userModel');
 const bcrypt = require('bcryptjs');
 const moment = require('moment');
-
 const config = require("../config/default.json");
 const cloudinary = require('cloudinary').v2;
 cloudinary.config(config.CLOUDINARY);
@@ -64,7 +63,6 @@ router.patch('/:id/password', async (req, res) => {
   // if (result.length === 1) {
 
   if (bcrypt.compareSync(CurrentPassword, users[0].Password)) { // old password is correct
-    console.log('cmm');
     const N = config.hashRound;
     const hashedPassword = bcrypt.hashSync(NewPassword, N);
     const updateResult = await userModel.updateUser(userID, { Password: hashedPassword });
@@ -117,7 +115,7 @@ router.patch('/:id/avatar', upload.single('avatar'), async (req, res) => {
       await userModel.updateUser(userID, { AvatarURL: image.url });
       return res.status(200).json({ url: image.url });
     }
-  )
+  );
 });
 
 module.exports = router;

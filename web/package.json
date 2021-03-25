@@ -27,6 +27,7 @@
     "react-dom": "^17.0.1",
     "react-horizontal-timeline": "^1.5.3",
     "react-icons": "^4.2.0",
+    "react-material-ui-carousel": "^2.2.1",
     "react-number-format": "^4.5.1",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.2",

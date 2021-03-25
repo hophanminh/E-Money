@@ -135,27 +135,26 @@ export default function SignUp() {
 
   return (
     <>
-      <div class="trap-container">
+      <div className="trap-container">
         <div >
           <svg fill="white" width="55%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none" style={{ position: 'absolute', left: 0, zIndex: -1 }}>
             <polygon points="0,0 100,0 80,100 0,100" />
           </svg>
         </div>
-        <div style={{ width: '65%', position: 'absolute', right: 0, zIndex: -2, height: '100%' }} class="bgimg">
+        <div style={{ width: '65%', position: 'absolute', right: 0, zIndex: -2, height: '100%' }} className="bgimg">
         </div>
-        <div class="trap-content">
+        <div className="trap-content">
           <Container component="main" maxWidth="xl">
             <SnackBar open={showSnackbar} setOpen={(isOpen) => setShowSnackBar(isOpen)} content={content} />
             <Grid container spacing={4}>
 
-              <Grid item item xs={2} sm={2} md={2} direction="column" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', textAlign: 'left' }}>
+              <Grid item item xs={2} sm={2} md={2} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', textAlign: 'left' }}>
                 <div>
                   <Button
                     variant="contained"
                     onClick={() => signInClicked()}
+                    // className="shadow"
                     style={{
-                      alignContent: 'center',
-                      fontSize: '4',
                       borderRadius: '50%',
                       height: '65px',
                       width: '65px',
@@ -190,7 +189,7 @@ export default function SignUp() {
                           onChange={e => handleUsernameChange(e.target.value)}
                           value={username}
                         />
-                        <div class="input-invalid">
+                        <div className="input-invalid">
                           {errors.username}
                         </div>
 
@@ -199,7 +198,7 @@ export default function SignUp() {
                           onChange={e => handleDisplayedNameChange(e.target.value)}
                           value={displayedName}
                         />
-                        <div class="input-invalid">
+                        <div className="input-invalid">
                           {errors.displayedName}
                         </div>
 
@@ -208,7 +207,7 @@ export default function SignUp() {
                           onChange={e => handleEmailChange(e.target.value)}
                           value={email}
                         />
-                        <div class="input-invalid">
+                        <div className="input-invalid">
                           {errors.email}
                         </div>
 
@@ -221,7 +220,7 @@ export default function SignUp() {
                           onChange={e => handlePasswordChange(e.target.value)}
                           value={password}
                         />
-                        <div class="input-invalid">
+                        <div className="input-invalid">
                           {errors.password}
                         </div>
                         <TextField label="Xác nhận mật khẩu" type="password"
@@ -229,11 +228,11 @@ export default function SignUp() {
                           onChange={e => handleConfirmPasswordChange(e.target.value)}
                           value={confirmedPassword}
                         />
-                        <div class="input-invalid">
+                        <div className="input-invalid">
                           {errors.confirmedPassword}
                         </div>
-                        <Button className={styles.submit} type="submit" fullWidth variant="contained" onClick={() => handleSubmit()}
-                          style={{ backgroundColor: palette.primary, color: '#fff', fontWeight: 'bold', margin: '25px 0 20px' }}>
+                        <Button type="submit" fullWidth variant="contained" onClick={() => handleSubmit()}
+                          style={{ ...styles.submit, backgroundColor: palette.primary, color: '#fff', fontWeight: 'bold', margin: '25px 0 20px' }}>
                           Đăng ký
                         </Button>
                       </div>
