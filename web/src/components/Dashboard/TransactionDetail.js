@@ -20,6 +20,7 @@ import EditTransaction from './CRUDTransaction/EditTransaction';
 import DeleteTransaction from './CRUDTransaction/DeleteTransaction';
 import TransactionImages from './TransactionImages';
 import { getSocket } from "../../utils/socket";
+import { formatMoney } from '../../utils/currency'
 
 const useStyles = makeStyles((theme) => ({
   red: {
@@ -216,21 +217,22 @@ export default function TransactionDetail({ categoryList, transactionData, updat
               {amount < 0
                 ?
                 <Typography className={`${classes.transactionSubText} ${classes.red}`}>
-                  {amount * -1}đ
+                  {formatMoney(amount * -1)}
                 </Typography>
                 :
                 <Typography className={`${classes.transactionSubText} ${classes.green}`}>
-                  {amount}đ
+                  {formatMoney(amount)}
                 </Typography>
               }
+
               <Typography
                 className={`${classes.transactionSubText}`}>
                 Sự kiện: <Link to="/">{data.eventName ? data.eventName : ''}</Link>
               </Typography>
             </Box>
             <TransactionImages transactionID={transactionData.id} images={imageList} setImages={handleSetImageList} />
-
           </div>
+
           <Divider className={classes.divider} />
           <div className={classes.descriptionBox}>
             <Typography className={classes.description}>
@@ -242,3 +244,5 @@ export default function TransactionDetail({ categoryList, transactionData, updat
     </div>
   );
 }
+
+

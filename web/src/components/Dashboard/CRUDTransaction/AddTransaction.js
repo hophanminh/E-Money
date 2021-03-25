@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useRef, useLayoutEffect, useState, useEffect } from 'react';
 import {
   Dialog,
   DialogActions,
@@ -18,8 +18,10 @@ import {
   KeyboardDateTimePicker,
   MuiPickersUtilsProvider,
 } from '@material-ui/pickers';
+import NumberFormat from 'react-number-format';
 
 import DefaultIcon from '../../../utils/DefaultIcon'
+import { getMaxMoney, getCurrencySymbol } from '../../../utils/currency'
 
 const useStyles = makeStyles({
   title: {
@@ -151,15 +153,20 @@ export default function AddCategory({ categoryList, open, setOpen, addList }) {
   }
 
   const handleChangeMoney = (e) => {
-    const max = 999999999;
-    let temp = e.target.value === '' ? 0 : Number(e.target.value);
+    // format money
+    const max = getMaxMoney();
+    let temp = e.target.value === '' ? 0 : e.target.value;
     temp = temp > max ? max : temp;
     temp = temp < 0 ? 0 : temp;
+
+
     setNewTransaction({
       ...newTransaction,
       price: type === "Thu" ? temp : temp * -1,
     });
+
   }
+
 
   return (
     <Dialog open={open} onClose={handleCloseAddDialog} aria-labelledby="form-dialog-title">
@@ -201,14 +208,16 @@ export default function AddCategory({ categoryList, open, setOpen, addList }) {
               id="price"
               name="price"
               label="Số tiền *"
-              type="number"
               value={Math.abs(newTransaction.price)}
               onChange={e => handleChangeMoney(e)}
               InputLabelProps={{
                 shrink: true,
               }}
               InputProps={{
-                className: type === "Thu" ? classes.type1Text : classes.type2Text
+                inputComponent: NumberFormatCustom,
+                className: type === "Thu" ? classes.type1Text : classes.type2Text,
+                endAdornment:
+                  <Typography>{getCurrencySymbol()}</Typography>
               }}
               fullWidth
               variant="outlined"
@@ -307,3 +316,23 @@ export default function AddCategory({ categoryList, open, setOpen, addList }) {
   );
 }
 
+function NumberFormatCustom(props) {
+  const { inputRef, onChange, ...other } = props;
+
+  return (
+    <NumberFormat
+      {...other}
+      getInputRef={inputRef}
+      onValueChange={(values) => {
+        onChange({
+          target: {
+            name: props.name,
+            value: values.value,
+          },
+        });
+      }}
+      thousandSeparator
+      isNumericString
+    />
+  );
+}

@@ -23,7 +23,7 @@ const styles = {
   largeImageItem: { width: '7vw', height: '7vw', cursor: 'pointer' },
   smallItemSpace: { margin: '3px 3px' },
   largeItemSpace: { margin: '10px 7px' },
-  roundedCorner: { borderRadius: '5px' }
+  roundedCorner: { borderRadius: '5px' },
 }
 
 const StyledBadge = withStyles((theme) => ({
@@ -49,7 +49,6 @@ const Item = ({ image }) => {
       <div className="carousel" style={{ backgroundImage: `url('${image.URL}')`, height: '72vh', maxHeight: '72vh', width: 'auto', backgroundColor: 'black' }}>
       </div>
     </>
-
   );
 }
 
@@ -111,7 +110,7 @@ export default function TransactionImages({ transactionID, images, setImages }) 
                     )}
                   </div>
                   :
-                  <div style={{ display: 'inline-block' }}>
+                  <div style={{ display: 'inline-block', textAlign: 'right' }}>
                     <div style={{ display: 'inline-block' }} onClick={() => { setDisplayedImage(0); handleClickOpen() }}>
                       <img key={0} src={images[0].URL} className="shadow"
                         style={{ ...styles.smallImageItem, ...styles.smallItemSpace, ...styles.roundedCorner }}
@@ -153,16 +152,19 @@ export default function TransactionImages({ transactionID, images, setImages }) 
         </DialogTitle>
         <Container component="main" maxWidth="xl" >
           <Grid container spacing={4}>
-            <Grid item sm={12} md={7} >
-              <Carousel
-                interval={"1000"} autoPlay={false} indicators={false} animation={'slide'} index={displayedImage}
-                next={(next, active) => { handleChangeSelectedUrl(next) }}
-                prev={(prev, active) => { handleChangeSelectedUrl(prev) }}
-              >
-                {images.map((image, i) => <Item key={i} image={image} />)}
-              </Carousel>
+            <Grid item sm={12} md={7}>
+              <div>
+                <Carousel
+                  interval={"1000"} autoPlay={false} indicators={false} animation={'slide'} index={displayedImage}
+                  next={(next, active) => { handleChangeSelectedUrl(next) }}
+                  prev={(prev, active) => { handleChangeSelectedUrl(prev) }}
+
+                >
+                  {images.map((image, i) => <Item key={i} image={image} />)}
+                </Carousel>
+              </div>
             </Grid>
-            <Grid item sm={12} md={5} >
+            <Grid item sm={12} md={5}>
               <div style={{ display: 'flex', justifyContent: 'flex-start', flexWrap: 'wrap' }}>
                 <div className="container"
                   style={{ ...styles.largeImageItem, justifyContent: 'center', ...styles.largeItemSpace }} >

@@ -26,6 +26,7 @@ import TransactionDetail from './TransactionDetail'
 import moment from 'moment'
 import AddTransaction from './CRUDTransaction/AddTransaction';
 import { getSocket } from "../../utils/socket";
+import { formatMoney } from '../../utils/currency'
 
 const useStyles = makeStyles((theme) => ({
   root: (theme) => ({
@@ -352,7 +353,7 @@ export default function Dashboard() {
                   <AccountBalanceWalletIcon className={`${classes.smallBoxIcon} ${classes.totalColor}`} />
                 </Avatar>
                 <Box className={classes.wrap}>
-                  <Typography className={classes.smallBoxNumber}>{total}đ </Typography>
+                  <Typography className={classes.smallBoxNumber}>{formatMoney(total)}</Typography>
                   <Typography className={classes.smallBoxText}>Tổng tiền </Typography>
                 </Box>
               </Box>
@@ -367,7 +368,7 @@ export default function Dashboard() {
                   <TrendingUpIcon className={`${classes.smallBoxIcon} ${classes.inColor}`} />
                 </Avatar>
                 <Box className={classes.wrap}>
-                  <Typography className={classes.smallBoxNumber}>{receive}đ </Typography>
+                  <Typography className={classes.smallBoxNumber}>{formatMoney(receive)}</Typography>
                   <Typography className={classes.smallBoxText}>Tiền thu tháng {moment(new Date()).format("M/YYYY")} </Typography>
                 </Box>
               </Box>
@@ -382,7 +383,7 @@ export default function Dashboard() {
                   <TrendingDownIcon className={`${classes.smallBoxIcon} ${classes.outColor}`} />
                 </Avatar>
                 <Box className={classes.wrap}>
-                  <Typography className={classes.smallBoxNumber}>{spend}đ </Typography>
+                  <Typography className={classes.smallBoxNumber}>{formatMoney(spend)}</Typography>
                   <Typography className={classes.smallBoxText}>Tiền chi tháng {moment(new Date()).format("M/YYYY")} </Typography>
                 </Box>
               </Box>

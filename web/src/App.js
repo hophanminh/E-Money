@@ -20,7 +20,7 @@ import ActivateDestination from './components/activedestination/ActiveDestinatio
 import Profile from './components/profile/Profile';
 import TeamProfile from './components/Team/TeamProfile';
 import config from './constants/config.json';
-import { MyProvider } from './components/mycontext/MyContext';
+import MyContext, { MyProvider } from './components/mycontext/MyContext';
 import Teams from "./components/Team/Teams";
 import UpdateProfile from "./components/Team/UpdateProfile";
 import ResetDestination from './components/signin/resetpassword/ResetDestination';
@@ -106,7 +106,11 @@ const useStyles = makeStyles((theme) => ({
 
 function App() {
   const classes = useStyles();
-  getListIcon();
+
+  const { isLoggedIn } = useContext(MyContext);
+  if (isLoggedIn) {
+    getListIcon();
+  }
 
   return (
     <Router>
