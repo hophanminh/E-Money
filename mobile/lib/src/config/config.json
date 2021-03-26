@@ -1,0 +1,5 @@
+{
+  "API_LOCAL": "http://localhost:9000",
+  "API_PRODUCTION": "",
+  "PASSWORD_MIN_LENGTH": 6
+}
