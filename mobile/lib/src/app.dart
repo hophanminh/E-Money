@@ -3,9 +3,9 @@ import 'package:mobile/src/views/ui/auth_view.dart';
 import 'package:mobile/src/views/ui/forgotpassword/generate_request_view.dart';
 import 'package:mobile/src/views/ui/forgotpassword/reset_view.dart';
 import 'package:mobile/src/views/ui/login_view.dart';
-import 'package:mobile/src/views/ui/privatewallet/dashboard.dart';
 import 'package:mobile/src/views/ui/profile_view.dart';
 import 'package:mobile/src/views/ui/register_view.dart';
+import 'package:mobile/src/views/ui/wallet/dashboard_view.dart';
 
 class MyApp extends StatefulWidget {
   @override
@@ -30,7 +30,7 @@ class _MyAppState extends State<MyApp> {
         '/forgotpassword': (context) => RequestGenerator(),
         '/reset': (context) => ResetDestination(),
         '/profile': (context) => ProfilePage(),
-        '/dashboard': (context) => Dashboard()
+        '/dashboard': (context) => Dashboard(),
       },
     );
   }

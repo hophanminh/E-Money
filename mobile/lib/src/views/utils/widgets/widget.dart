@@ -25,23 +25,8 @@ InputDecoration myInputDecoration(String placeholder) => InputDecoration(
 //       ),
 //     );
 
-AppBar myPrimaryAppBar(String title) => AppBar(
-      iconTheme: IconThemeData(color: Colors.white),
-      title: Text(title, style: TextStyle(color: Colors.white)),
-      actions: [
-        IconButton(
-          icon: Icon(
-            Icons.arrow_drop_down_sharp,
-            size: 30,
-          ),
-          onPressed: () {},
-        ),
-      ],
-      backgroundColor: primary,
-      centerTitle: true,
-    );
-
-AppBar myViceAppBar(String title) => AppBar(
+AppBar mySimpleAppBar(String title) => AppBar(
+      // app bar without 'action' property
       iconTheme: IconThemeData(color: Colors.white),
       title: Text(title, style: TextStyle(color: Colors.white)),
       backgroundColor: primary,
@@ -107,10 +92,13 @@ Drawer mySideBar({BuildContext context, bool isChoosingPrivateWallet, Function c
           Divider(
             thickness: 0.75,
           ),
-          _createDrawerItem(title: 'Đăng xuất', icon: Icons.logout, onTap: () {
-            SecureStorage.deleteAllSecureData();
-            Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
-          }),
+          _createDrawerItem(
+              title: 'Đăng xuất',
+              icon: Icons.logout,
+              onTap: () {
+                SecureStorage.deleteAllSecureData();
+                Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+              }),
         ],
       ),
     );
