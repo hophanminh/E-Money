@@ -10,7 +10,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: myViceAppBar('Hồ sơ cá nhân'),
+      appBar: mySimpleAppBar('Hồ sơ cá nhân'),
       body: Container(
         child: Text('cmm'),
       ),

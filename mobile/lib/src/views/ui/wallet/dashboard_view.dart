@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mobile/src/views/ui/wallet/privatewallet/private_wallet.dart';
 import 'package:mobile/src/views/utils/helpers/helper.dart';
 import 'package:mobile/src/views/utils/widgets/widget.dart';
 
@@ -22,15 +23,9 @@ class _DashboardState extends State<Dashboard> {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(statusBarColor: Colors.transparent));
     return ScaffoldMessenger(
       child: Scaffold(
-        appBar: myPrimaryAppBar(isChoosingPrivateWallet ? 'Ví cá nhân' : 'Ví nhóm'),
+        appBar: isChoosingPrivateWallet ? privateWalletAppBar() : null, // replace null by team appbar widget in the future
         drawer: mySideBar(context: context, isChoosingPrivateWallet: isChoosingPrivateWallet, callback: handleChangeWallet),
-        floatingActionButton: FloatingActionButton(
-          // onPressed: _incrementCounter,
-          tooltip: 'Thêm giao dịch',
-          child: Icon(Icons.add),
-          backgroundColor: secondary,
-          foregroundColor: Colors.white,
-        ),
+        floatingActionButton: isChoosingPrivateWallet == true ? privateWalletActionButton() : null, // we must replace the null with teamWalletActionBtn later
       ),
     );
   }
