@@ -16,7 +16,7 @@ class _RequestGeneratorState extends State<RequestGenerator> {
     print(usernameController.text + "  " + emailController.text);
 
     if (isSuccess) {
-      Navigator.pushNamed(context, '/reset');
+      Navigator.pushReplacementNamed(context, '/reset');
     }
   }
 
@@ -105,28 +105,12 @@ class _RequestGeneratorState extends State<RequestGenerator> {
                               }
                               return null;
                             })),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: Padding(
-                        padding: EdgeInsets.only(top: 20.0),
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              primary: const Color(0xFF1DAF1A),
-                              padding: EdgeInsets.symmetric(horizontal: 50, vertical: 10),
-                              textStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0)),
-                          child: Text(
-                            'Gửi',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                          onPressed: () {
-                            if (_formKey.currentState.validate()) {
-                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Hãy kiểm tra email để nhận mã xác nhận')));
-                              handleSendRequest();
-                            }
-                          },
-                        ),
-                      ),
-                    )
+                    myAlignedButton('Gửi', alignment: Alignment.centerRight, padding: EdgeInsets.symmetric(horizontal: 50, vertical: 10), fontSize: 20, action: () {
+                      if (_formKey.currentState.validate()) {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Hãy kiểm tra email để nhận mã xác nhận')));
+                        handleSendRequest();
+                      }
+                    }),
                   ],
                 ),
               ),

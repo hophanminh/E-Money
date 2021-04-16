@@ -110,23 +110,12 @@ class _RegisterPageState extends State<RegisterPage> {
                                 })),
                         Padding(
                           padding: EdgeInsets.only(top: 20.0),
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                                primary: primary,
-                                padding: EdgeInsets.symmetric(horizontal: 50, vertical: 10),
-                                side: BorderSide(color: Colors.white, width: 3.0),
-                                textStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0)),
-                            child: Text(
-                              'Đăng ký',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            onPressed: () {
-                              if (_formKey.currentState.validate()) {
-                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Đang xử lý...')));
-                                // handleRegister();
-                              }
-                            },
-                          ),
+                          child: myAlignedButton('Đăng ký', borderSide: BorderSide(color: Colors.white, width: 3.0), action: () {
+                            if (_formKey.currentState.validate()) {
+                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Đang xử lý...')));
+                              // handleRegister();
+                            }
+                          }),
                         )
                       ],
                     ),
