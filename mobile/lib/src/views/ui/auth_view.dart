@@ -3,9 +3,13 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:mobile/src/views/utils/helpers/helper.dart';
-import 'package:mobile/src/views/utils/services/restapiservices/auth_service.dart';
+import 'package:mobile/src/services/restapiservices/auth_service.dart';
 
 class AuthenPage extends StatefulWidget {
+  final void Function(Map<String, dynamic>) setUser;
+
+  AuthenPage({Key key, this.setUser}) : super(key: key);
+
   @override
   _AuthenPageState createState() => _AuthenPageState();
 }
@@ -15,8 +19,10 @@ class _AuthenPageState extends State<AuthenPage> with TickerProviderStateMixin {
   Animation<Offset> _animation1;
   Animation<Offset> _animation2;
 
+  // Map<String, dynamic> _user;
+
   @override
-  void initState()  {
+  void initState() {
     _controller = AnimationController(
       duration: const Duration(seconds: 1),
       vsync: this,
@@ -38,12 +44,11 @@ class _AuthenPageState extends State<AuthenPage> with TickerProviderStateMixin {
       curve: Curves.easeInCubic,
     ));
     super.initState();
-
     fetch();
   }
 
   void fetch() async {
-    await Future.delayed(const Duration(seconds: 3), (){});
+    await Future.delayed(const Duration(seconds: 3), () {});
     Response res = await AuthService.instance.fetchInfo();
 
     if (res == null || res.statusCode != 200) {
@@ -52,7 +57,10 @@ class _AuthenPageState extends State<AuthenPage> with TickerProviderStateMixin {
     }
 
     Map<String, dynamic> body = jsonDecode(res.body);
-    // print(body['user']);
+    print(body['user']);
+    setState(() {
+      widget.setUser(new Map<String, dynamic>.from(body['user']));
+    });
     // need to store 'user' in global state ==> not done
     Navigator.pushNamedAndRemoveUntil(context, '/dashboard', (route) => false);
   }

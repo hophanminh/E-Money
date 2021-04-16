@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mobile/src/config/config.dart';
 import 'package:mobile/src/views/utils/helpers/helper.dart';
 import 'package:mobile/src/views/utils/widgets/widget.dart';
 
@@ -14,7 +15,7 @@ class _ResetDestinationState extends State<ResetDestination> {
   final confirmationPasswordController = TextEditingController();
 
   void handleSendRequest() {
-    Navigator.pushNamedAndRemoveUntil(context, '/', (r) => false);// go back to login page but not allow to return this page
+    Navigator.pushNamedAndRemoveUntil(context, '/', (r) => false); // go back to login page but not allow to return this page
   }
 
   @override
@@ -97,7 +98,7 @@ class _ResetDestinationState extends State<ResetDestination> {
                               obscureText: true,
                               decoration: myInputDecoration('Mật khẩu'),
                               validator: (String value) {
-                                if (value == null || value.isEmpty || value.length < 6) {
+                                if (value == null || value.isEmpty || value.length < Properties.PASSWORD_MIN_LENGTH) {
                                   return 'Mật khẩu phải chứa ít nhất 6 ký tự';
                                 }
                                 if (value.contains(' ')) {
@@ -113,7 +114,7 @@ class _ResetDestinationState extends State<ResetDestination> {
                               decoration: myInputDecoration('Xác nhận mật khẩu'),
                               obscureText: true,
                               validator: (String value) {
-                                if (value == null || value.isEmpty || value.length < 6) {
+                                if (value == null || value.isEmpty || value.length < Properties.PASSWORD_MIN_LENGTH) {
                                   return 'Mật khẩu phải chứa ít nhất 6 ký tự';
                                 }
                                 if (value.contains(' ')) {
@@ -124,27 +125,14 @@ class _ResetDestinationState extends State<ResetDestination> {
                                 }
                                 return null;
                               })),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: Padding(
-                          padding: EdgeInsets.only(top: 20.0),
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                                primary: const Color(0xFF1DAF1A),
-                                padding: EdgeInsets.symmetric(horizontal: 50, vertical: 10),
-                                textStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0)),
-                            child: Text(
-                              'Gửi',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            onPressed: () {
-                              if (_formKey.currentState.validate()) {
-                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Đang xử lý...')));
-                                handleSendRequest();
-                              }
-                            },
-                          ),
-                        ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 20.0),
+                        child: myAlignedButton('Gửi', padding: EdgeInsets.symmetric(horizontal: 50, vertical: 10), alignment: Alignment.centerRight, fontSize: 20, action: () {
+                          if (_formKey.currentState.validate()) {
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Đang xử lý...')));
+                            handleSendRequest();
+                          }
+                        }),
                       )
                     ],
                   ),

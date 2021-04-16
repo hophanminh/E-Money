@@ -2,10 +2,11 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
-import 'package:mobile/src/views/utils/services/secure_storage_service.dart';
+import 'package:mobile/src/config/config.dart';
+import 'package:mobile/src/services/secure_storage_service.dart';
 
 class AuthService {
-  static const String _baseURL = '192.168.1.93:9000';
+  static const String _baseURL = Properties.API_LOCAL;
 
   // if using Android emulator, the baseURL must be 10.0.2.2:<port>
   // if using real device, the baseURL depends on the IPv4 of computer running the node.js server: 192.168.XX.XX:<port>
