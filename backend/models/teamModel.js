@@ -18,6 +18,14 @@ module.exports = {
         console.log(sql);
         return db.load(sql);
     },
+    getTeamByIdAndUserId: (teamId, userId) => {
+        console.log("Team id: ", teamId);
+        console.log("UserId: ", userId);
+        const sql = `SELECT t.*
+        FROM teams t JOIN teams_has_users thu on t.ID = thu.TeamID 
+        WHERE thu.status = ${config.STATUS.ACTIVE} and thu.UserID = '`+ userId +`' and thu.Role = ${config.PERMISSION.ADMIN} and t.ID = '`+teamId+`'`;
+        return db.load(sql);
+    },
     createTeam(newTeam) {
         return db.add('teams', newTeam);
     },

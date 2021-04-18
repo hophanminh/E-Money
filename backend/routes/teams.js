@@ -41,7 +41,6 @@ router.get('/details/:teamID', async (req, res) => {
 
 router.post('/:userID', async (req, res) => {
     console.log('Create team');
-
     const { Name, MaxUsers, Description } = req.body;
     const userID = req.params.userID;
     console.log(userID);
@@ -134,14 +133,15 @@ router.patch('/:id/avatar', upload.single('avatar'), async (req, res) => {
     )
 });
 
+//TODO: Just admin can update
 router.put('/details/:id', async (req, res) => {
     const teamId = req.params.id;
+    const { Name, MaxUsers, Description, UserID } = req.body;
     console.log("Update teams " + teamId)
-    const teamObject = await TeamModel.getTeamById(teamId);
-    const { Name, MaxUsers, Description } = req.body;
+    const teamObject = await TeamModel.getTeamByIdAndUserId(teamId, UserID);
 
     if (teamObject.length === 0) {
-        return res.status(400).send({ msg: "Không tìm thấy người dùng" })
+        return res.status(400).send({ msg: "Không tìm thấy người dùng hoặc bạn không có quyền để cập nhật" })
     }
 
     const update = TeamModel.updateTeam(teamId, { Name, MaxUsers, Description });

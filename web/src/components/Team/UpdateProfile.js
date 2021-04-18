@@ -100,8 +100,10 @@ export default function TeamProfile() {
         const data = {
             Name: teamName,
             MaxUsers: numberUser,
-            Description: description
+            Description: description,
+            UserID: userID
         }
+        console.log(data);
         const res = await fetch(`${API_URL}/teams/details/${teamID}`, {
             method: 'PUT',
             headers: {
@@ -116,6 +118,10 @@ export default function TeamProfile() {
             setShowSnackBar(true);
         } else {
             // alert("Some error when updating!")
+            const result = await res.json();
+            console.log(result);
+            setContent(result.msg);
+            setShowSnackBar(true);
         }
     }
 
