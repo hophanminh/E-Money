@@ -89,7 +89,7 @@ export default function AddCategory({ categoryList, open, setOpen, addList }) {
   const [newTransaction, setNewTransaction] = useState({
     price: -1000,
     time: new Date(),
-    catID: '1',
+    catID: 0,
     eventID: 0,
     description: "",
     IconID: "",
@@ -112,7 +112,7 @@ export default function AddCategory({ categoryList, open, setOpen, addList }) {
     setNewTransaction({
       price: -1000,
       time: new Date(),
-      catID: list[0].ID,
+      catID: list?.length > 0 ? list[0]?.ID : 0,
       eventID: 0,
       description: "",
       IconID: "",
@@ -134,9 +134,12 @@ export default function AddCategory({ categoryList, open, setOpen, addList }) {
     const newCategory = list.find(i => i.ID === newTransaction.catID);
     const newEvent = fakeEvent.find(i => i.id === newTransaction.eventID);
 
-    newTransaction.IconID = newCategory.IconID;
-    newTransaction.categoryName = newCategory.Name;
-    newTransaction.eventName = newEvent ? newEvent.name : null;
+    newTransaction.IconID = newCategory?.IconID;
+    newTransaction.categoryName = newCategory?.Name;
+    newTransaction.eventName = newEvent?.name;
+    newTransaction.catID = newTransaction?.catID !== 0 ? newTransaction?.catID : null
+    newTransaction.eventID = newTransaction?.eventID !== 0 ? newTransaction?.eventID : null
+
     addList(newTransaction);
     setOpen(false);
     clearNewTransaction();
@@ -296,6 +299,11 @@ export default function AddCategory({ categoryList, open, setOpen, addList }) {
                 </Box>
               </MenuItem>
             ))}
+            {(!list || list.length === 0) &&
+              <MenuItem value={0}>
+                Không tìm thấy hạng mục
+              </MenuItem>
+            }
           </TextField>
           <TextField
             className={classes.textField}

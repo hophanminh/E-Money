@@ -32,8 +32,8 @@ DROP TABLE IF EXISTS `Events`;
 CREATE TABLE Events(
     ID VARCHAR(100) NOT NULL, -- will store as UUID()
     Name VARCHAR(1000) NOT NULL,
-    StartDate DATE,
-	NexttDate DATE,
+    StartDate datetime,
+	NextDate datetime,
     EndDate DATE,
     Status INT, -- 0 or 1
 	Value INT,
@@ -47,6 +47,7 @@ CREATE TABLE Events(
         -- Loại event hằng năm: [1, 12], mỗi số tương ứng là tháng trong năm
     ExpectingAmount FLOAT,
     TotalAmount FLOAT,
+	Description varchar(1000) DEFAULT NULL,
     WalletID VARCHAR(100),
     CategoryID VARCHAR(100),
     EventTypeID VARCHAR(100),
@@ -60,6 +61,8 @@ CREATE TABLE EventTypes(
     PRIMARY KEY(ID)
 );
 
+INSERT INTO `eventtypes` VALUES ('1','Hằng ngày'),('2','Hằng tuần'),('3','Hằng tháng'),('4','Hằng năm');
+
 DROP TABLE IF EXISTS `Categories`;
 CREATE TABLE Categories(
     ID VARCHAR(100) NOT NULL, -- will store as UUID()
@@ -69,6 +72,8 @@ CREATE TABLE Categories(
     IconID VARCHAR(100),
     PRIMARY KEY(ID)
 );
+
+INSERT INTO `categories` VALUES ('1','Học tập',1,NULL,'1'),('2','Ăn uống',1,NULL,'2');
 
 DROP TABLE IF EXISTS `Transactions`;
 CREATE TABLE Transactions(
@@ -147,6 +152,8 @@ CREATE TABLE Icons(
     BackgroundColor VARCHAR(7),
     PRIMARY KEY(ID)
 );
+
+INSERT INTO `icons` VALUES ('1','school','#FFFFFF','#1DAF1A'),('2','fastfood','#FFFFFF','#FF2626');
 
 DROP TABLE IF EXISTS `TransactionImages`;
 CREATE TABLE TransactionImages(

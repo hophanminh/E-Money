@@ -199,7 +199,7 @@ export default function AddEvent({ categoryList, eventTypeList, open, setOpen, a
     }
     console.log(newEvent)
     addList(newEvent);
-    //setOpen(false);
+    setOpen(false);
   }
 
 
