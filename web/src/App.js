@@ -13,6 +13,7 @@ import PrivateRoute from './components/PrivateRoute';
 import StickyFooter from './components/stickyFooter/StickyFooter';
 import Dashboard from './components/Dashboard/Dashboard';
 import Category from './components/Category/Category';
+import Event from './components/Event/Event';
 import Menu from "./components/SideBar/Menu";
 import SignIn from './components/signin/SignIn';
 import SignUp from './components/signup/SignUp';
@@ -44,6 +45,11 @@ const routes = [
     path: "/category/:id",
     private: true,
     main: () => <Category />
+  },
+  {
+    path: "/event/:id",
+    private: true,
+    main: () => <Event />
   },
   {
     path: "/statistic",

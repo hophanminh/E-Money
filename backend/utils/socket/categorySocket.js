@@ -33,7 +33,7 @@ module.exports = function (socket, decoded_userID) {
 
             // annouce to other players
             const { wallet, transactionList, categoryList } = await helperSocket.getPrivateWallet(decoded_userID);
-            socket.broadcast.to(decoded_userID).emit('wait_for_update', { wallet, transactionList, categoryList });
+            socket.broadcast.to(walletID).emit('wait_for_update', { wallet, transactionList, categoryList });
 
         } catch (error) {
             console.log(error);
@@ -43,7 +43,6 @@ module.exports = function (socket, decoded_userID) {
     // update category
     socket.on('update_category', async ({ categoryID, newCategory }, callback) => {
         try {
-            const ID = uuidv4();
             const temp = {
                 Name: newCategory.Name,
                 IsDefault: false,
@@ -52,12 +51,12 @@ module.exports = function (socket, decoded_userID) {
             const updated = await categoryModel.getCategoryByID(categoryID);
             if (updated.length === 1) {
                 await categoryModel.updateCategory(categoryID, temp);
-                callback({ ID });
+                callback();
             }
 
             // annouce to other players
             const { wallet, transactionList, categoryList } = await helperSocket.getPrivateWallet(decoded_userID);
-            socket.broadcast.to(decoded_userID).emit('wait_for_update', { wallet, transactionList, categoryList });
+            socket.broadcast.to(walletID).emit('wait_for_update', { wallet, transactionList, categoryList });
 
         } catch (error) {
             console.log(error);
@@ -76,7 +75,7 @@ module.exports = function (socket, decoded_userID) {
 
             // annouce to other players
             const { wallet, transactionList, categoryList } = await helperSocket.getPrivateWallet(decoded_userID);
-            socket.broadcast.to(decoded_userID).emit('wait_for_update', { wallet, transactionList, categoryList });
+            socket.broadcast.to(walletID).emit('wait_for_update', { wallet, transactionList, categoryList });
         } catch (error) {
             console.log(error);
         }

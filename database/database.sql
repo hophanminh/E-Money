@@ -33,6 +33,7 @@ CREATE TABLE Events(
     ID VARCHAR(100) NOT NULL, -- will store as UUID()
     Name VARCHAR(1000) NOT NULL,
     StartDate DATE,
+	NexttDate DATE,
     EndDate DATE,
     Status INT, -- 0 or 1
 	Value INT,
@@ -44,10 +45,10 @@ CREATE TABLE Events(
             -- [2, 7]: Thứ [2, 7]
 		-- Loại event hằng tháng: [1, 28/29/30/31], mỗi số tương ứng là ngày trong tháng
         -- Loại event hằng năm: [1, 12], mỗi số tương ứng là tháng trong năm
-    ExpectingRage FLOAT,
-    CurrentIncomeCount FLOAT,
-    CurrentSpentCount FLOAT,
+    ExpectingAmount FLOAT,
+    TotalAmount FLOAT,
     WalletID VARCHAR(100),
+    CategoryID VARCHAR(100),
     EventTypeID VARCHAR(100),
     PRIMARY KEY(ID)
 );
@@ -170,6 +171,7 @@ CREATE TABLE Notifications(
 
 ALTER TABLE Events ADD CONSTRAINT FK_Events_EventTypes FOREIGN KEY(EventTypeID) REFERENCES EventTypes(ID);
 ALTER TABLE Events ADD CONSTRAINT FK_Events_Wallets FOREIGN KEY(WalletID) REFERENCES Wallets(ID);
+ALTER TABLE Events ADD CONSTRAINT FK_Events_Categories FOREIGN KEY(CategoryID) REFERENCES Categories(ID);
 ALTER TABLE Transactions ADD CONSTRAINT FK_Transactions_Categories FOREIGN KEY(CategoryID) REFERENCES Categories(ID);
 ALTER TABLE Transactions ADD CONSTRAINT FK_Transactions_Events FOREIGN KEY(EventID) REFERENCES Events(ID);
 ALTER TABLE Transactions ADD CONSTRAINT FK_Transactions_Wallets FOREIGN KEY(WalletID) REFERENCES Wallets(ID);

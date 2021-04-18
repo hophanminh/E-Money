@@ -209,7 +209,7 @@ export default function Category() {
     setOpenedPopover(false)
   };
 
-  // add transaction dialog
+  // add dialog
   const [openAddDialog, setOpenAddDialog] = useState(false);
   const handleOpenAddDialog = () => {
     setOpenAddDialog(true);
@@ -226,7 +226,7 @@ export default function Category() {
     });
   }
 
-  // edit transaction dialog
+  // edit dialog
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const handleOpenEditDialog = (event) => {
     setOpenEditDialog(true);
@@ -243,7 +243,7 @@ export default function Category() {
 
   }
 
-  // delete transaction dialog
+  // delete dialog
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const handleOpenDeleteDialog = () => {
     setOpenDeleteDialog(true);

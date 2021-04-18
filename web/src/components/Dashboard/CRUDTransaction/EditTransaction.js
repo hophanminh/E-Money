@@ -231,7 +231,7 @@ export default function EditTransaction({ categoryList, data, updateList, open, 
                         fullWidth
                         variant="outlined"
                     >
-                        {list.map((cat) => (
+                        {list && list.map((cat) => (
                             <MenuItem key={cat.ID} value={cat.ID}>
                                 <Box className={classes.categoryIconBox}>
                                     <DefaultIcon
