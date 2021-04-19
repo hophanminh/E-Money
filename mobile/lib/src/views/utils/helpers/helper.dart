@@ -11,7 +11,12 @@ bool isEmailPattern(String token) {
   return emailPattern.hasMatch(token);
 }
 
-void showSnack(GlobalKey<ScaffoldMessengerState> key, String title, {int duration = 3}) {
+bool isBlankString(String token) {
+  return token.trim().length == 0;
+}
+
+//work for scaffoldmessenger
+void showSnack(GlobalKey<ScaffoldMessengerState> key, String title, {int duration = 3, SnackBarAction action}) {
   final snackbar = SnackBar(
     content: Container(
       height: 20,
@@ -20,10 +25,38 @@ void showSnack(GlobalKey<ScaffoldMessengerState> key, String title, {int duratio
       ),
     ),
     duration: duration < 0 ? Duration(days: 365) /*look like infinite snackbar*/ : Duration(seconds: duration),
+    action: action,
   );
   key.currentState.removeCurrentSnackBar();
   key.currentState.showSnackBar(snackbar);
 }
+
+// work for non-scaffoldmessenger
+void showSnackV2(BuildContext context, String title, {int duration = 3, SnackBarAction action}) {
+  ScaffoldMessenger.of(context).removeCurrentSnackBar();
+  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    content: Container(
+      height: 20,
+      child: FittedBox(
+        child: Text(title),
+      ),
+    ),
+    duration: duration < 0 ? Duration(days: 365) /*look like infinite snackbar*/ : Duration(seconds: duration),
+    action: action,
+  ));
+}
+
+closeSnackAction(GlobalKey<ScaffoldMessengerState> key) => SnackBarAction(
+    label: 'Đóng',
+    onPressed: () {
+      key.currentState.removeCurrentSnackBar();
+    });
+
+closeSnackActionV2(BuildContext context, String label, Function action) => SnackBarAction(
+    label: label,
+    onPressed: () {
+      action();
+    });
 
 /// Examples of accepted strings:
 ///
