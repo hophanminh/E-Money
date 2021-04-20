@@ -104,13 +104,16 @@ export default function EditTransaction({ categoryList, data, updateList, open, 
         clearNewTransaction();
     }
     const handleEdit = () => {
-        const newCategory = list.find(i => i.ID === newTransaction.catID);
-        const newEvent = fakeEvent.find(i => i.id === newTransaction.eventID);
+        const newCategory = list.find(i => i?.ID === newTransaction?.catID);
+        const newEvent = fakeEvent.find(i => i?.id === newTransaction?.eventID);
 
         const temp = newTransaction;
-        temp.IconID = newCategory.IconID;
-        temp.categoryName = newCategory.Name;
-        temp.eventName = newEvent ? newEvent.name : null;
+        temp.IconID = newCategory?.IconID;
+        temp.categoryName = newCategory?.Name;
+        temp.eventName = newEvent?.name;
+        temp.catID = newTransaction?.catID !== 0 ? newTransaction?.catID : null
+        temp.eventID = newTransaction?.eventID !== 0 ? newTransaction?.eventID : null
+
         updateList(temp);
         setOpen(false);
     }
@@ -226,12 +229,12 @@ export default function EditTransaction({ categoryList, data, updateList, open, 
                         name="catID"
                         select
                         label="Hạng mục"
-                        value={newTransaction.catID}
+                        value={newTransaction?.catID ? newTransaction?.catID : 0}
                         onChange={handleChange}
                         fullWidth
                         variant="outlined"
                     >
-                        {list.map((cat) => (
+                        {list && list.map((cat) => (
                             <MenuItem key={cat.ID} value={cat.ID}>
                                 <Box className={classes.categoryIconBox}>
                                     <DefaultIcon
@@ -244,6 +247,11 @@ export default function EditTransaction({ categoryList, data, updateList, open, 
                                 </Box>
                             </MenuItem>
                         ))}
+                        {(!list || list.length === 0) &&
+                            <MenuItem value={0}>
+                                Không tìm thấy hạng mục
+                            </MenuItem>
+                        }
                     </TextField>
                     <TextField
                         className={classes.textField}

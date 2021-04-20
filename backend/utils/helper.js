@@ -39,7 +39,49 @@ module.exports = {
     // break;
     // }
     return digits;
-  }
+  },
+
+  getNextEventDate: (date, eventType, value) => {
+    let new_date = moment(date);
+    new_date.hours(0).minutes(0).seconds(0)
+    console.log(new_date.format("YYYY-MM-DD HH:mm:ss"))
+
+    if (eventType === config.EVENTTYPE.DAILY) {
+      new_date.add(1, 'days')
+    }
+
+    if (eventType === config.EVENTTYPE.WEEKLY) {
+      const today = new_date.isoWeekday();
+      if (today <= value) {
+        new_date.isoWeekday(value + 1);
+      } else {
+        new_date.add(1, 'weeks').isoWeekday(value + 1);
+      }
+    }
+
+    if (eventType === config.EVENTTYPE.MONTHLY) {
+      const today = new_date.date();
+      if (today <= value) {
+        new_date.date(value + 1);
+      } else {
+        new_date.add(1, 'months').date(value + 1);
+      }
+    }
+
+    if (eventType === config.EVENTTYPE.YEARLY) {
+      const today = new_date.month();
+      if (today <= value) {
+        new_date.month(value).date(1);
+      } else {
+        new_date.add(1, 'years').month(value).date(1);
+      }
+
+    }
+
+    return new_date.format("YYYY-MM-DD HH:mm:ss")
+  },
+
+
 }
 
 

@@ -369,7 +369,7 @@ export default function Dashboard() {
                 </Avatar>
                 <Box className={classes.wrap}>
                   <Typography className={classes.smallBoxNumber}>{formatMoney(receive)}</Typography>
-                  <Typography className={classes.smallBoxText}>Tiền thu tháng {moment(new Date()).format("M/YYYY")} </Typography>
+                  <Typography className={classes.smallBoxText}>Tiền thu tháng {moment(new Date()).format("MM/YYYY")} </Typography>
                 </Box>
               </Box>
             </Grid>
@@ -384,7 +384,7 @@ export default function Dashboard() {
                 </Avatar>
                 <Box className={classes.wrap}>
                   <Typography className={classes.smallBoxNumber}>{formatMoney(spend)}</Typography>
-                  <Typography className={classes.smallBoxText}>Tiền chi tháng {moment(new Date()).format("M/YYYY")} </Typography>
+                  <Typography className={classes.smallBoxText}>Tiền chi tháng {moment(new Date()).format("MM/YYYY")} </Typography>
                 </Box>
               </Box>
             </Grid>
@@ -467,14 +467,16 @@ export default function Dashboard() {
                 <Box
                   boxShadow={3}
                   bgcolor="background.paper">
-                  <Button className={classes.button} style={{ textTransform: 'none' }}>
-                    <Avatar className={`${classes.avatar} ${classes.eventBackGround}`}>
-                      <EventIcon className={`${classes.smallBoxIcon} ${classes.eventColor}`} />
-                    </Avatar>
-                    <Box className={classes.wrap}>
-                      <Typography className={classes.smallBoxNumber}>Quản lý sự kiện </Typography>
-                    </Box>
-                  </Button>
+                  <Link to={`/event/${walletID}`} style={{ textDecoration: 'none' }} >
+                    <Button className={classes.button} style={{ textTransform: 'none' }}>
+                      <Avatar className={`${classes.avatar} ${classes.eventBackGround}`}>
+                        <EventIcon className={`${classes.smallBoxIcon} ${classes.eventColor}`} />
+                      </Avatar>
+                      <Box className={classes.wrap}>
+                        <Typography className={classes.smallBoxNumber}>Quản lý sự kiện </Typography>
+                      </Box>
+                    </Button>
+                  </Link>
                 </Box>
 
               </div>

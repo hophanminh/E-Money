@@ -177,7 +177,7 @@ export default function TransactionDetail({ categoryList, transactionData, updat
           <div className={classes.title}>
             <Typography
               className={classes.titleText}>
-              {moment(data.time).format("D/M/YYYY - hh:mm")}
+              {moment(data.time).format("DD/MM/YYYY - hh:mm")}
 
             </Typography>
             <div>

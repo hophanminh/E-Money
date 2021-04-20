@@ -84,11 +84,17 @@ export default function AddCategory({ open, setOpen, addList }) {
   useEffect(async () => {
     const temp = await getListIcon();
     setList(temp);
+    if (temp && temp.length !== 0) {
+      setNewCategory({
+        ...newCategory,
+        IconID: temp[0].ID,
+      })
+    }
   }, []);
 
   const clearNewCategory = () => {
     setNewCategory({
-      IconID: '1',
+      IconID: list[0].ID,
       Name: "",
     })
   }

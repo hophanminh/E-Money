@@ -43,7 +43,7 @@ export default function DefaultIcon({ IconID, backgroundSize, iconSize }) {
     const styleBackground = {
         width: backgroundSize + 'px',
         height: backgroundSize + 'px',
-        backgroundColor: icon ? icon.BackgroundColor : '#1DAF1A',
+        backgroundColor: icon ? icon.BackgroundColor : '#FFFFFF',
         fontSize: iconSize + 'px',
     }
     const styleIcon = {

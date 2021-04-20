@@ -47,5 +47,12 @@
   "STATUS": {
     "ACTIVE": 1,
     "INACTIVE": 0
+  },
+  "EVENTTYPE": {
+    "DAILY": "Hằng ngày",
+    "WEEKLY": "Hằng tuần",
+    "MONTHLY": "Hằng tháng",
+    "YEARLY": "Hằng năm"
+
   }
 }
