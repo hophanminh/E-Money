@@ -39,8 +39,8 @@ export default function BarChart({ date, chartData }) {
 
   return (
     <div className={classes.container}>
-      <div>
-        <Paper className={classes.paper} style={{ width: '50%', margin: 'auto' }}>
+      <div style={{ margin: 'auto' }}>
+        <Paper className={classes.paper}>
           {chartData.length === 2 ?
             <div style={{ textAlign: 'center' }}>Không có dữ liệu</div> :
             <Chart data={chartData}>
@@ -50,11 +50,13 @@ export default function BarChart({ date, chartData }) {
                 valueField="spent"
                 argumentField="title"
                 color="#ff2626"
+                barWidth={0.6}
               />
               <BarSeries
                 valueField="earned"
                 argumentField="title"
                 color="#1daf1a"
+                barWidth={0.6}
               />
               <Title text={"Thu nhập trong tháng " + (date.getMonth() + 1) + "/" + date.getFullYear()} />
               <EventTracker />
