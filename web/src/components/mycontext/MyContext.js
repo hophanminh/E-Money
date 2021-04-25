@@ -1,12 +1,14 @@
 import React, { useState, useEffect, createContext } from 'react';
 import config from '../../constants/config.json';
-const API_URL = config.API_LOCAL;
+import { getSocket } from "../../utils/socket";
 
+const API_URL = config.API_LOCAL;
 const MyContext = createContext({});
 
 export default MyContext;
 
 export const MyProvider = (props) => {
+
   const [isLoggedIn, setIsLoggedIn] = useState(null);
   const [info, setInfo] = useState({});
   const token = window.localStorage.getItem('jwtToken');
@@ -29,6 +31,7 @@ export const MyProvider = (props) => {
         setInfo(result.user);
         setIsLoggedIn(true);
         setIsLoading(false);
+        getSocket();
       } else {
         setIsLoggedIn(false);
         setIsLoading(false);
@@ -38,7 +41,14 @@ export const MyProvider = (props) => {
   }, []);
 
   return (
-    <MyContext.Provider value={{ isLoggedIn, setIsLoggedIn, isLoading, info, setInfo }}>
+    <MyContext.Provider
+      value={{
+        isLoggedIn,
+        setIsLoggedIn,
+        isLoading,
+        info,
+        setInfo,
+      }}>
       {props.children}
     </MyContext.Provider>
   )

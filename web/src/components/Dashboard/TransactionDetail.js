@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
   Container,
   Breadcrumbs,
@@ -12,6 +12,12 @@ import {
   IconButton,
   makeStyles,
 } from '@material-ui/core/';
+import {
+  WalletContext,
+  PopupContext,
+} from '../mycontext'
+import POPUP from '../../constants/popup.json'
+
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import moment from 'moment';
@@ -21,6 +27,127 @@ import DeleteTransaction from './CRUDTransaction/DeleteTransaction';
 import TransactionImages from './TransactionImages';
 import { getSocket } from "../../utils/socket";
 import { formatMoney } from '../../utils/currency'
+
+
+export default function TransactionDetail(props) {
+  const classes = useStyles();
+  const socket = getSocket();
+  const { selected } = useContext(WalletContext)
+  const { setOpen } = useContext(PopupContext)
+
+  const data = selected;
+
+  ///////////////////////////////////////////////////// imageList[0].URL to access
+  const [imageList, setImageList] = useState([]);
+
+  const handleSetImageList = (imageList) => {
+    const sortedList = imageList.sort((img1, img2) => moment(img1.DateAdded).isBefore(moment(img2.DateAdded)) ? 1 : -1);
+    setImageList(sortedList);
+  }
+  // update data from parent and get list of images
+  useEffect(() => {
+    if (selected) {
+      socket.emit("get_transaction_image", { TransactionID: selected?.id }, ({ imageList }) => {
+        handleSetImageList(imageList);
+      });
+    }
+  }, [selected]);
+
+  useEffect(() => {
+    socket.on(`wait_for_add_transaction_image_${data?.id}`, ({ urls }) => {
+      // if (selected.id === transactionID) {
+      const concatenatedList = JSON.parse(JSON.stringify(imageList)).concat(urls);
+      handleSetImageList(concatenatedList);
+      // }
+    });
+    socket.on(`wait_for_remove_transaction_image_${data?.id}`, ({ imageID }) => {
+      // if (selected.id === transactionID) {
+      const filteredList = JSON.parse(JSON.stringify(imageList)).filter(image => image.ID !== imageID);
+      handleSetImageList(filteredList);
+      // }
+    });
+  }, [imageList]);
+
+
+  // edit transaction dialog
+  const handleOpenEditDialog = () => {
+    setOpen(POPUP.TRANSACTION.EDIT_TRANSACTION);
+  }
+
+  // delete transaction dialog
+  const handleOpenDeleteDialog = () => {
+    setOpen(POPUP.TRANSACTION.DELETE_TRANSACTION);
+  }
+
+  return (
+    <React.Fragment>
+      <EditTransaction />
+      <DeleteTransaction />
+
+      <div className={classes.root}>
+        {data &&
+          <React.Fragment>
+            <div className={classes.title}>
+              <Typography
+                className={classes.titleText}>
+                {moment(data?.time).format("DD/MM/YYYY - hh:mm")}
+
+              </Typography>
+              <div>
+                <IconButton className={`${classes.iconButton} ${classes.green}`} aria-label="edit" onClick={handleOpenEditDialog}>
+                  <EditIcon />
+                </IconButton>
+                <IconButton className={`${classes.iconButton} ${classes.red}`} aria-label="delete" onClick={handleOpenDeleteDialog}>
+                  <DeleteIcon />
+                </IconButton>
+              </div>
+            </div>
+
+            <Divider className={classes.dividerBold} />
+
+            <div className={classes.transaction}>
+              <DefaultIcon
+                IconID={data?.IconID}
+                backgroundSize={75}
+                iconSize={40} />
+              <Box className={classes.wrap} >
+                <Typography
+                  className={classes.transactionText}>
+                  {data?.categoryName}
+                </Typography>
+                {data?.price < 0
+                  ?
+                  <Typography className={`${classes.transactionSubText} ${classes.red}`}>
+                    {formatMoney(data?.price * -1)}
+                  </Typography>
+                  :
+                  <Typography className={`${classes.transactionSubText} ${classes.green}`}>
+                    {formatMoney(data?.price)}
+                  </Typography>
+                }
+
+                <Typography
+                  className={`${classes.transactionSubText}`}>
+                  Sự kiện:
+                  {data?.eventName ? <Link to="/">{data?.eventName}</Link> : "không có"}
+                </Typography>
+              </Box>
+              <TransactionImages transactionID={data?.id} images={imageList} setImages={handleSetImageList} />
+            </div>
+
+            <Divider className={classes.divider} />
+            <div className={classes.descriptionBox}>
+              <Typography className={classes.description}>
+                {data?.description}
+              </Typography>
+            </div>
+          </React.Fragment>
+        }
+      </div>
+
+    </React.Fragment>
+  );
+}
 
 const useStyles = makeStyles((theme) => ({
   red: {
@@ -115,134 +242,4 @@ const useStyles = makeStyles((theme) => ({
     fontSize: '28px',
   }
 }));
-
-export default function TransactionDetail({ categoryList, transactionData, updateList, deleteList }) {
-  const classes = useStyles();
-  const socket = getSocket();
-
-  const [data, setData] = useState(null);
-  const [amount, setAmount] = useState(0);
-
-  ///////////////////////////////////////////////////// imageList[0].URL to access
-  const [imageList, setImageList] = useState([]);
-
-  const handleSetImageList = (imageList) => {
-    const sortedList = imageList.sort((img1, img2) => moment(img1.DateAdded).isBefore(moment(img2.DateAdded)) ? 1 : -1);
-    setImageList(sortedList);
-  }
-  // update data from parent and get list of images
-  useEffect(() => {
-    if (transactionData) {
-      setData(transactionData);
-      setAmount(transactionData.price);
-      socket.emit("get_transaction_image", { TransactionID: transactionData.id }, ({ imageList }) => {
-        handleSetImageList(imageList);
-      });
-
-
-    }
-  }, [transactionData]);
-
-  useEffect(() => {
-    socket.on(`wait_for_add_transaction_image_${transactionData.id}`, ({ urls }) => {
-      // if (transactionData.id === transactionID) {
-      const concatenatedList = JSON.parse(JSON.stringify(imageList)).concat(urls);
-      handleSetImageList(concatenatedList);
-      // }
-    });
-    socket.on(`wait_for_remove_transaction_image_${transactionData.id}`, ({ imageID }) => {
-      // if (transactionData.id === transactionID) {
-      const filteredList = JSON.parse(JSON.stringify(imageList)).filter(image => image.ID !== imageID);
-      handleSetImageList(filteredList);
-      // }
-    });
-  }, [imageList]);
-
-
-  // edit transaction dialog
-  const [openEditDialog, setOpenEditDialog] = useState(false);
-  const handleOpenEditDialog = () => {
-    setOpenEditDialog(true);
-  }
-  // delete transaction dialog
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-  const handleOpenDeleteDialog = () => {
-    setOpenDeleteDialog(true);
-  }
-
-  return (
-    <div className={classes.root}>
-      {data &&
-        <React.Fragment>
-          <div className={classes.title}>
-            <Typography
-              className={classes.titleText}>
-              {moment(data.time).format("DD/MM/YYYY - hh:mm")}
-
-            </Typography>
-            <div>
-              <EditTransaction
-                categoryList={categoryList}
-                data={data}
-                updateList={(data) => updateList(data)}
-                open={openEditDialog}
-                setOpen={(open) => setOpenEditDialog(open)} />
-              <DeleteTransaction
-                data={data}
-                deleteList={(data) => deleteList(data)}
-                open={openDeleteDialog}
-                setOpen={(open) => setOpenDeleteDialog(open)}
-              />
-              <IconButton className={`${classes.iconButton} ${classes.green}`} aria-label="edit" onClick={handleOpenEditDialog}>
-                <EditIcon />
-              </IconButton>
-              <IconButton className={`${classes.iconButton} ${classes.red}`} aria-label="delete" onClick={handleOpenDeleteDialog}>
-                <DeleteIcon />
-              </IconButton>
-            </div>
-          </div>
-
-          <Divider className={classes.dividerBold} />
-
-          <div className={classes.transaction}>
-            <DefaultIcon
-              IconID={data.IconID}
-              backgroundSize={75}
-              iconSize={40} />
-            <Box className={classes.wrap} >
-              <Typography
-                className={classes.transactionText}>
-                {data.categoryName}
-              </Typography>
-              {amount < 0
-                ?
-                <Typography className={`${classes.transactionSubText} ${classes.red}`}>
-                  {formatMoney(amount * -1)}
-                </Typography>
-                :
-                <Typography className={`${classes.transactionSubText} ${classes.green}`}>
-                  {formatMoney(amount)}
-                </Typography>
-              }
-
-              <Typography
-                className={`${classes.transactionSubText}`}>
-                Sự kiện: <Link to="/">{data.eventName ? data.eventName : ''}</Link>
-              </Typography>
-            </Box>
-            <TransactionImages transactionID={transactionData.id} images={imageList} setImages={handleSetImageList} />
-          </div>
-
-          <Divider className={classes.divider} />
-          <div className={classes.descriptionBox}>
-            <Typography className={classes.description}>
-              {data.description}
-            </Typography>
-          </div>
-        </React.Fragment>
-      }
-    </div>
-  );
-}
-
 

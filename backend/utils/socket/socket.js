@@ -21,9 +21,8 @@ module.exports = function (io) {
         console.log('hello!', decoded_userID);
 
         // socket by model
-        require('./walletSocket')(socket, decoded_userID);
-        require('./transactionSocket')(socket, decoded_userID);
-        require('./categorySocket')(socket, decoded_userID);
+        require('./transactionSocket')(socket, io, decoded_userID);
+        require('./categorySocket')(socket, io, decoded_userID);
         require('./eventSocket')(socket, io, decoded_userID);
         require('./transactionImagesSocket')(socket, decoded_userID);
 

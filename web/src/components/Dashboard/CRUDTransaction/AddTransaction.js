@@ -1,7 +1,6 @@
-import React, { useRef, useLayoutEffect, useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import {
   Dialog,
-  DialogActions,
   DialogContent,
   MenuItem,
   DialogTitle,
@@ -11,8 +10,14 @@ import {
   Button,
   Box,
   makeStyles,
+  DialogActions,
 } from '@material-ui/core/';
-import moment from 'moment'
+import {
+  WalletContext,
+  PopupContext,
+  CategoryContext,
+  EventContext
+} from '../../mycontext'
 import DateFnsUtils from '@date-io/date-fns';
 import {
   KeyboardDateTimePicker,
@@ -22,65 +27,21 @@ import NumberFormat from 'react-number-format';
 
 import DefaultIcon from '../../../utils/DefaultIcon'
 import { getMaxMoney, getCurrencySymbol } from '../../../utils/currency'
+import { getSocket } from "../../../utils/socket";
+import POPUP from '../../../constants/popup.json'
 
-const useStyles = makeStyles({
-  title: {
-    fontSize: '24px',
-    fontWeight: 'bold',
-    marginBottom: '-10px'
-  },
 
-  amountRow: {
-    display: 'flex',
-  },
-  textField: {
-    margin: '10px 10px 15px 0px'
-  },
+const NAME = POPUP.TRANSACTION.ADD_TRANSACTION
 
-  typeBox: {
-    padding: '0px 15px 0px 0px',
-  },
-  type1Text: {
-    color: '#1DAF1A'
-  },
-  type2Text: {
-    color: '#FF2626'
-  },
-
-  categoryIconBox: {
-    display: 'flex',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    padding: '0px 10px 0px 10px',
-  },
-  iconText: {
-    marginLeft: '10px',
-  },
-
-  buttonBox: {
-    display: 'flex',
-    justifyContent: 'flex-end'
-  },
-  button: {
-    borderRadius: '4px',
-    color: '#FFFFFF',
-    fontWeight: 'bold',
-    padding: '5px 40px',
-    marginLeft: '20px'
-  },
-  closeButton: {
-    backgroundColor: '#F50707',
-  },
-  addButton: {
-    backgroundColor: '#1DAF1A',
-  },
-});
-
-const fakeEvent = []
-
-export default function AddCategory({ categoryList, open, setOpen, addList }) {
+export default function AddCategory(props) {
   const classes = useStyles();
-  const [list, setList] = useState(categoryList);
+  const socket = getSocket();
+  const { walletID, setSelected } = useContext(WalletContext);
+  const { open, setOpen } = useContext(PopupContext);
+  const { fullList } = useContext(CategoryContext);
+  const { eventList } = useContext(EventContext);
+  const isOpen = open === NAME
+
   const [type, setType] = useState("Chi");
   const [error, setError] = useState({
     Description: false,
@@ -98,21 +59,20 @@ export default function AddCategory({ categoryList, open, setOpen, addList }) {
   })
 
   useEffect(() => {
-    if (categoryList && categoryList.length !== 0) {
-      setList(categoryList);
+    if (fullList && fullList.length !== 0) {
       setNewTransaction({
         ...newTransaction,
-        catID: categoryList[0].ID
+        catID: fullList[0]?.ID
       })
     }
-  }, [categoryList]);
+  }, [fullList]);
 
   const clearNewTransaction = () => {
     setType("Chi");
     setNewTransaction({
       price: -1000,
       time: new Date(),
-      catID: list?.length > 0 ? list[0]?.ID : 0,
+      catID: fullList?.length !== 0 ? fullList[0]?.ID : 0,
       eventID: 0,
       description: "",
       IconID: "",
@@ -122,7 +82,7 @@ export default function AddCategory({ categoryList, open, setOpen, addList }) {
   }
 
   const handleCloseAddDialog = () => {
-    setOpen(false);
+    setOpen(null);
     clearNewTransaction();
   }
 
@@ -131,8 +91,8 @@ export default function AddCategory({ categoryList, open, setOpen, addList }) {
       return;
     }
 
-    const newCategory = list.find(i => i.ID === newTransaction.catID);
-    const newEvent = fakeEvent.find(i => i.id === newTransaction.eventID);
+    const newCategory = fullList.find(i => i.ID === newTransaction.catID);
+    const newEvent = eventList.find(i => i.id === newTransaction.eventID);
 
     newTransaction.IconID = newCategory?.IconID;
     newTransaction.categoryName = newCategory?.Name;
@@ -140,10 +100,14 @@ export default function AddCategory({ categoryList, open, setOpen, addList }) {
     newTransaction.catID = newTransaction?.catID !== 0 ? newTransaction?.catID : null
     newTransaction.eventID = newTransaction?.eventID !== 0 ? newTransaction?.eventID : null
 
-    addList(newTransaction);
-    setOpen(false);
+    socket.emit("add_transaction", { walletID, newTransaction }, ({ ID }) => {
+      setSelected(ID);
+    });
+
+    setOpen(null);
     clearNewTransaction();
   }
+
 
 
   // transaction 
@@ -205,7 +169,7 @@ export default function AddCategory({ categoryList, open, setOpen, addList }) {
 
 
   return (
-    <Dialog open={open} onClose={handleCloseAddDialog} aria-labelledby="form-dialog-title">
+    <Dialog open={isOpen} onClose={handleCloseAddDialog} aria-labelledby="form-dialog-title">
       <DialogTitle id="form-dialog-title" >
         <Typography className={classes.title}>
           Thêm khoản giao dịch mới
@@ -286,7 +250,7 @@ export default function AddCategory({ categoryList, open, setOpen, addList }) {
             fullWidth
             variant="outlined"
           >
-            {list && list.map((cat) => (
+            {fullList && fullList.map((cat) => (
               <MenuItem key={cat.ID} value={cat.ID}>
                 <Box className={classes.categoryIconBox}>
                   <DefaultIcon
@@ -299,7 +263,7 @@ export default function AddCategory({ categoryList, open, setOpen, addList }) {
                 </Box>
               </MenuItem>
             ))}
-            {(!list || list.length === 0) &&
+            {(!fullList || fullList.length === 0) &&
               <MenuItem value={0}>
                 Không tìm thấy hạng mục
               </MenuItem>
@@ -320,9 +284,9 @@ export default function AddCategory({ categoryList, open, setOpen, addList }) {
             <MenuItem key={0} value={0}>
               Không có
                         </MenuItem>
-            {fakeEvent.map((event) => (
-              <MenuItem key={event.id} value={event.id}>
-                {event.name}
+            {(eventList || []).filter(i => i.Status === 1).map((event) => (
+              <MenuItem key={event.id} value={event.ID}>
+                {event.Name}
               </MenuItem>
             ))}
           </TextField>
@@ -344,17 +308,16 @@ export default function AddCategory({ categoryList, open, setOpen, addList }) {
 
           />
 
-          <Box className={classes.buttonBox}>
-            <Button className={`${classes.button} ${classes.closeButton}`} onClick={handleCloseAddDialog} variant="contained" >
-              Hủy
-                        </Button>
-            <Button className={`${classes.button} ${classes.addButton}`} disabled={!open} onClick={handleAdd} variant="contained">
-              Thêm
-                        </Button>
-          </Box>
         </Box>
       </DialogContent>
       <DialogActions>
+        <Button className={`${classes.button} ${classes.closeButton}`} onClick={handleCloseAddDialog} variant="contained" >
+          Hủy
+        </Button>
+        <Button className={`${classes.button} ${classes.addButton}`} disabled={!isOpen} onClick={handleAdd} variant="contained">
+          Thêm
+        </Button>
+
       </DialogActions>
     </Dialog>
   );
@@ -380,3 +343,51 @@ function NumberFormatCustom(props) {
     />
   );
 }
+
+const useStyles = makeStyles({
+  title: {
+    fontSize: '24px',
+    fontWeight: 'bold',
+    marginBottom: '-10px'
+  },
+
+  amountRow: {
+    display: 'flex',
+  },
+  textField: {
+    margin: '10px 10px 15px 0px'
+  },
+
+  typeBox: {
+    padding: '0px 15px 0px 0px',
+  },
+  type1Text: {
+    color: '#1DAF1A'
+  },
+  type2Text: {
+    color: '#FF2626'
+  },
+
+  categoryIconBox: {
+    display: 'flex',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    padding: '0px 10px 0px 10px',
+  },
+  iconText: {
+    marginLeft: '10px',
+  },
+  button: {
+    borderRadius: '4px',
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+    padding: '5px 40px',
+    marginLeft: '20px'
+  },
+  closeButton: {
+    backgroundColor: '#F50707',
+  },
+  addButton: {
+    backgroundColor: '#1DAF1A',
+  },
+});

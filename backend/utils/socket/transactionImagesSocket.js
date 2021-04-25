@@ -1,4 +1,3 @@
-const helperSocket = require("./helperSocket");
 const transactionImagesModel = require('../../models/transactionImagesModel');
 const { v4: uuidv4 } = require('uuid');
 const config = require("../../config/default.json");

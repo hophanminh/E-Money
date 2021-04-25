@@ -21,7 +21,8 @@ import ActivateDestination from './components/activedestination/ActiveDestinatio
 import Profile from './components/profile/Profile';
 import TeamProfile from './components/Team/TeamProfile';
 import config from './constants/config.json';
-import MyContext, { MyProvider } from './components/mycontext/MyContext';
+import MyContext from './components/mycontext/MyContext';
+import CombinedProvider from './components/mycontext/combineProvider'
 import Teams from "./components/Team/Teams";
 import UpdateProfile from "./components/Team/UpdateProfile";
 import ResetDestination from './components/signin/resetpassword/ResetDestination';
@@ -124,7 +125,7 @@ function App() {
         <CssBaseline />
         <div className={classes.body}>
 
-          <MyProvider>
+          <CombinedProvider>
             <Menu />
             <div className={classes.content}>
               <Switch>
@@ -150,7 +151,7 @@ function App() {
                 </Route>
               </Switch>
             </div>
-          </MyProvider>
+          </CombinedProvider>
 
         </div>
         <StickyFooter />

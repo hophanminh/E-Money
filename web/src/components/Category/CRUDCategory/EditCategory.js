@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
+import { useParams } from "react-router-dom";
 import {
     Dialog,
     DialogActions,
@@ -12,68 +13,28 @@ import {
     Box,
     makeStyles,
 } from '@material-ui/core/';
-import moment from 'moment'
-import DateFnsUtils from '@date-io/date-fns';
 import {
-    KeyboardDateTimePicker,
-    MuiPickersUtilsProvider,
-} from '@material-ui/pickers';
-
+    PopupContext,
+    CategoryContext
+} from '../../mycontext'
+import POPUP from '../../../constants/popup.json'
+import { getSocket } from "../../../utils/socket";
 import DefaultIcon, { getListIcon } from '../../../utils/DefaultIcon'
 
-const useStyles = makeStyles({
-    title: {
-        fontSize: '24px',
-        fontWeight: 'bold',
-        marginBottom: '-10px'
-    },
-
-    amountRow: {
-        display: 'flex',
-    },
-    textField: {
-        margin: '10px 10px 15px 0px'
-    },
-
-    typeBox: {
-        padding: '0px 15px 0px 0px',
-    },
-    type1Text: {
-        color: '#1DAF1A'
-    },
-    type2Text: {
-        color: '#FF2626'
-    },
-
-    categoryIconBox: {
-        display: 'flex',
-        justifyContent: 'center',
-        width: '100%',
-        paddingRight: '20px'
-    },
-    buttonBox: {
-        display: 'flex',
-        justifyContent: 'flex-end'
-    },
-    button: {
-        borderRadius: '4px',
-        color: '#FFFFFF',
-        fontWeight: 'bold',
-        padding: '5px 40px',
-        marginLeft: '20px'
-    },
-    closeButton: {
-        backgroundColor: '#F50707',
-    },
-    editButton: {
-        backgroundColor: '#1DAF1A',
-    },
-});
+const NAME = POPUP.CATEGORY.EDIT_CATEGORY
 
 const fakeEvent = [];
 
-export default function EditCategory({ data, updateList, open, setOpen }) {
+export default function EditCategory(props) {
     const classes = useStyles();
+    const socket = getSocket();
+    const { id } = useParams();
+    const { open, setOpen } = useContext(PopupContext);
+    const { selected } = useContext(CategoryContext);
+
+    const isOpen = open === NAME
+    const data = selected;
+
     const [list, setList] = useState();
     const [newCategory, setNewCategory] = useState(data);
 
@@ -95,7 +56,7 @@ export default function EditCategory({ data, updateList, open, setOpen }) {
     }
 
     const handleCloseEditDialog = () => {
-        setOpen(false);
+        setOpen(null);
         clearNewCategory();
     }
 
@@ -108,8 +69,8 @@ export default function EditCategory({ data, updateList, open, setOpen }) {
         }
         else {
             newCategory.Name = newCategory.Name.trim();
-            updateList(newCategory);
-            setOpen(false);
+            socket.emit("update_category", { walletID: id, categoryID: newCategory.ID, newCategory });
+            setOpen(null);
         }
     }
 
@@ -124,7 +85,7 @@ export default function EditCategory({ data, updateList, open, setOpen }) {
     return (
         <React.Fragment>
             { newCategory &&
-                <Dialog open={open} onClose={handleCloseEditDialog} aria-labelledby="form-dialog-title">
+                <Dialog open={isOpen} onClose={handleCloseEditDialog} aria-labelledby="form-dialog-title">
 
                     <DialogTitle id="form-dialog-title" >
                         <Typography className={classes.title}>
@@ -176,23 +137,65 @@ export default function EditCategory({ data, updateList, open, setOpen }) {
                                 />
 
                             </Box>
-
-
-                            <Box className={classes.buttonBox}>
-                                <Button className={`${classes.button} ${classes.closeButton}`} onClick={handleCloseEditDialog} variant="contained" >
-                                    Hủy
-                        </Button>
-                                <Button className={`${classes.button} ${classes.editButton}`} disabled={!open} onClick={handleEdit} variant="contained">
-                                    Thay đổi
-                        </Button>
-                            </Box>
                         </Box>
                     </DialogContent>
                     <DialogActions>
-                    </DialogActions>
+                        <Button className={`${classes.button} ${classes.closeButton}`} onClick={handleCloseEditDialog} variant="contained" >
+                            Hủy
+                        </Button>
+                        <Button className={`${classes.button} ${classes.editButton}`} disabled={!isOpen} onClick={handleEdit} variant="contained">
+                            Thay đổi
+                        </Button>
 
+                    </DialogActions>
                 </Dialog>
             }
         </React.Fragment>
     );
 }
+
+const useStyles = makeStyles({
+    title: {
+        fontSize: '24px',
+        fontWeight: 'bold',
+        marginBottom: '-10px'
+    },
+
+    amountRow: {
+        display: 'flex',
+    },
+    textField: {
+        margin: '10px 10px 15px 0px'
+    },
+
+    typeBox: {
+        padding: '0px 15px 0px 0px',
+    },
+    type1Text: {
+        color: '#1DAF1A'
+    },
+    type2Text: {
+        color: '#FF2626'
+    },
+
+    categoryIconBox: {
+        display: 'flex',
+        justifyContent: 'center',
+        width: '100%',
+        paddingRight: '20px'
+    },
+    button: {
+        borderRadius: '4px',
+        color: '#FFFFFF',
+        fontWeight: 'bold',
+        padding: '5px 40px',
+        marginLeft: '20px'
+    },
+    closeButton: {
+        backgroundColor: '#F50707',
+    },
+    editButton: {
+        backgroundColor: '#1DAF1A',
+    },
+});
+

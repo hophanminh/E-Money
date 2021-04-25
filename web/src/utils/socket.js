@@ -18,7 +18,8 @@ export const startSocket = () => {
 }
 
 export const getSocket = () => {
-    if (!socket) {
+    const token = window.localStorage.getItem('jwtToken');
+    if (!socket && token) {
         startSocket();
     }
     return socket;

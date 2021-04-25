@@ -6,7 +6,6 @@ const iconModel = require('../models/IconModel');
 router.use(express.static('public'));
 
 router.post('/list', async (req, res) => {
-  console.log("here");
   try {
     const iconList = await iconModel.getAllIcon();
     return res.status(200).send(iconList);

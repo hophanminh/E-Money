@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
     Dialog,
     DialogActions,
@@ -12,7 +12,12 @@ import {
     Box,
     makeStyles,
 } from '@material-ui/core/';
-import moment from 'moment'
+import {
+    WalletContext,
+    PopupContext,
+    CategoryContext,
+    EventContext
+} from '../../mycontext'
 import DateFnsUtils from '@date-io/date-fns';
 import {
     KeyboardDateTimePicker,
@@ -22,64 +27,22 @@ import NumberFormat from 'react-number-format';
 
 import DefaultIcon from '../../../utils/DefaultIcon'
 import { getMaxMoney, getCurrencySymbol } from '../../../utils/currency'
+import { getSocket } from "../../../utils/socket";
+import POPUP from '../../../constants/popup.json'
 
-const useStyles = makeStyles({
-    title: {
-        fontSize: '24px',
-        fontWeight: 'bold',
-        marginBottom: '-10px'
-    },
 
-    amountRow: {
-        display: 'flex',
-    },
-    textField: {
-        margin: '10px 10px 15px 0px'
-    },
+const NAME = POPUP.TRANSACTION.EDIT_TRANSACTION
 
-    typeBox: {
-        padding: '0px 15px 0px 0px',
-    },
-    type1Text: {
-        color: '#1DAF1A'
-    },
-    type2Text: {
-        color: '#FF2626'
-    },
-
-    categoryIconBox: {
-        display: 'flex',
-        justifyContent: 'flex-start',
-        alignItems: 'center',
-        padding: '0px 10px 0px 10px',
-    },
-    iconText: {
-        marginLeft: '10px',
-    },
-    buttonBox: {
-        display: 'flex',
-        justifyContent: 'flex-end'
-    },
-    button: {
-        borderRadius: '4px',
-        color: '#FFFFFF',
-        fontWeight: 'bold',
-        padding: '5px 40px',
-        marginLeft: '20px'
-    },
-    closeButton: {
-        backgroundColor: '#F50707',
-    },
-    editButton: {
-        backgroundColor: '#1DAF1A',
-    },
-});
-
-const fakeEvent = [];
-
-export default function EditTransaction({ categoryList, data, updateList, open, setOpen }) {
+export default function EditTransaction(props) {
     const classes = useStyles();
-    const [list, setList] = useState(categoryList);
+    const socket = getSocket();
+    const { walletID, selected } = useContext(WalletContext);
+    const { open, setOpen } = useContext(PopupContext);
+    const { fullList } = useContext(CategoryContext);
+    const { eventList } = useContext(EventContext);
+    const isOpen = open === NAME;
+    const data = selected;
+
     const [type, setType] = useState("Chi");
     const [newTransaction, setNewTransaction] = useState(data);
 
@@ -90,9 +53,6 @@ export default function EditTransaction({ categoryList, data, updateList, open, 
         }
     }, [data])
 
-    useEffect(() => {
-        setList(categoryList);
-    }, [categoryList]);
 
     const clearNewTransaction = () => {
         setType(data.price >= 0 ? "Thu" : "Chi");
@@ -100,12 +60,12 @@ export default function EditTransaction({ categoryList, data, updateList, open, 
     }
 
     const handleCloseEditDialog = () => {
-        setOpen(false);
+        setOpen(null);
         clearNewTransaction();
     }
     const handleEdit = () => {
-        const newCategory = list.find(i => i?.ID === newTransaction?.catID);
-        const newEvent = fakeEvent.find(i => i?.id === newTransaction?.eventID);
+        const newCategory = fullList.find(i => i?.ID === newTransaction?.catID);
+        const newEvent = eventList.find(i => i?.id === newTransaction?.eventID);
 
         const temp = newTransaction;
         temp.IconID = newCategory?.IconID;
@@ -114,8 +74,8 @@ export default function EditTransaction({ categoryList, data, updateList, open, 
         temp.catID = newTransaction?.catID !== 0 ? newTransaction?.catID : null
         temp.eventID = newTransaction?.eventID !== 0 ? newTransaction?.eventID : null
 
-        updateList(temp);
-        setOpen(false);
+        socket.emit("update_transaction", { walletID, transactionID: temp.id, newTransaction: temp });
+        setOpen(null);
     }
 
     // transaction 
@@ -123,7 +83,7 @@ export default function EditTransaction({ categoryList, data, updateList, open, 
         setType(event.target.value);
         setNewTransaction({
             ...newTransaction,
-            price: newTransaction.price * (-1),
+            price: newTransaction?.price * (-1),
         });
     }
 
@@ -153,7 +113,7 @@ export default function EditTransaction({ categoryList, data, updateList, open, 
     }
 
     return (
-        <Dialog open={open} onClose={handleCloseEditDialog} aria-labelledby="form-dialog-title">
+        <Dialog open={isOpen} onClose={handleCloseEditDialog} aria-labelledby="form-dialog-title">
             <DialogTitle id="form-dialog-title" >
                 <Typography className={classes.title}>
                     Thay đổi khoản giao dịch
@@ -192,7 +152,7 @@ export default function EditTransaction({ categoryList, data, updateList, open, 
                             id="price"
                             name="price"
                             label="Số tiền *"
-                            value={Math.abs(newTransaction.price)}
+                            value={Math.abs(newTransaction?.price)}
                             onChange={e => handleChangeMoney(e)}
                             InputLabelProps={{
                                 shrink: true,
@@ -212,7 +172,7 @@ export default function EditTransaction({ categoryList, data, updateList, open, 
                             name="time"
                             size="small"
                             className={classes.textField}
-                            value={newTransaction.time}
+                            value={newTransaction?.time}
                             onChange={time => handleChangeTime(time)}
                             label="Thời gian *"
                             onError={console.log}
@@ -234,7 +194,7 @@ export default function EditTransaction({ categoryList, data, updateList, open, 
                         fullWidth
                         variant="outlined"
                     >
-                        {list && list.map((cat) => (
+                        {fullList && fullList.map((cat) => (
                             <MenuItem key={cat.ID} value={cat.ID}>
                                 <Box className={classes.categoryIconBox}>
                                     <DefaultIcon
@@ -247,7 +207,7 @@ export default function EditTransaction({ categoryList, data, updateList, open, 
                                 </Box>
                             </MenuItem>
                         ))}
-                        {(!list || list.length === 0) &&
+                        {(!fullList || fullList.length === 0) &&
                             <MenuItem value={0}>
                                 Không tìm thấy hạng mục
                             </MenuItem>
@@ -260,7 +220,7 @@ export default function EditTransaction({ categoryList, data, updateList, open, 
                         name="eventID"
                         select
                         label="Sự kiện"
-                        value={newTransaction.eventID}
+                        value={newTransaction?.eventID}
                         onChange={handleChange}
                         fullWidth
                         variant="outlined"
@@ -269,9 +229,9 @@ export default function EditTransaction({ categoryList, data, updateList, open, 
                             Không có
                         </MenuItem>
 
-                        {fakeEvent.map((event) => (
-                            <MenuItem key={event.id} value={event.id}>
-                                {event.name}
+                        {(eventList || []).filter(i => i.Status === 1).map((event) => (
+                            <MenuItem key={event.id} value={event.ID}>
+                                {event.Name}
                             </MenuItem>
                         ))}
                     </TextField>
@@ -280,7 +240,7 @@ export default function EditTransaction({ categoryList, data, updateList, open, 
                         name="description"
                         className={classes.textField}
                         size="small"
-                        value={newTransaction.description}
+                        value={newTransaction?.description}
                         onChange={handleChange}
                         id="outlined-multiline-static"
                         label="Mô tả"
@@ -289,18 +249,15 @@ export default function EditTransaction({ categoryList, data, updateList, open, 
                         fullWidth
                         variant="outlined"
                     />
-
-                    <Box className={classes.buttonBox}>
-                        <Button className={`${classes.button} ${classes.closeButton}`} onClick={handleCloseEditDialog} variant="contained" >
-                            Hủy
-                        </Button>
-                        <Button className={`${classes.button} ${classes.editButton}`} disabled={!open} onClick={handleEdit} variant="contained">
-                            Thay đổi
-                        </Button>
-                    </Box>
                 </Box>
             </DialogContent>
             <DialogActions>
+                <Button className={`${classes.button} ${classes.closeButton}`} onClick={handleCloseEditDialog} variant="contained" >
+                    Hủy
+                </Button>
+                <Button className={`${classes.button} ${classes.editButton}`} disabled={!isOpen} onClick={handleEdit} variant="contained">
+                    Thay đổi
+                </Button>
             </DialogActions>
         </Dialog>
     );
@@ -326,3 +283,51 @@ function NumberFormatCustom(props) {
         />
     );
 }
+
+const useStyles = makeStyles({
+    title: {
+        fontSize: '24px',
+        fontWeight: 'bold',
+        marginBottom: '-10px'
+    },
+
+    amountRow: {
+        display: 'flex',
+    },
+    textField: {
+        margin: '10px 10px 15px 0px'
+    },
+
+    typeBox: {
+        padding: '0px 15px 0px 0px',
+    },
+    type1Text: {
+        color: '#1DAF1A'
+    },
+    type2Text: {
+        color: '#FF2626'
+    },
+
+    categoryIconBox: {
+        display: 'flex',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        padding: '0px 10px 0px 10px',
+    },
+    iconText: {
+        marginLeft: '10px',
+    },
+    button: {
+        borderRadius: '4px',
+        color: '#FFFFFF',
+        fontWeight: 'bold',
+        padding: '5px 40px',
+        marginLeft: '20px'
+    },
+    closeButton: {
+        backgroundColor: '#F50707',
+    },
+    editButton: {
+        backgroundColor: '#1DAF1A',
+    },
+});

@@ -1,4 +1,3 @@
-const helperSocket = require("./helperSocket");
 const eventModel = require('../../models/eventModel');
 const eventTypeModel = require('../../models/eventTypeModel');
 const { v4: uuidv4 } = require('uuid');
@@ -40,7 +39,6 @@ module.exports = function (socket, io, decoded_userID) {
                 Status: 1,
                 Value: newEvent.Value,
                 ExpectingAmount: newEvent.ExpectingAmount,
-                TotalAmount: 0,
                 WalletID: walletID,
                 CategoryID: newEvent.CategoryID,
                 EventTypeID: newEvent.EventTypeID,
@@ -68,7 +66,6 @@ module.exports = function (socket, io, decoded_userID) {
             if (ended.length === 1) {
                 await eventModel.updateEvent(id, temp);
             }
-
 
             // annouce to other players
             const eventList = await eventModel.getEventByWalletID(walletID);
