@@ -33,13 +33,13 @@ export default function PieChartSpent({ date, chartData }) {
 
   return (
     <div className={classes.container}>
-      <div>
-        <Paper className={classes.paper} style={{ width: '45%', float: 'right' }}>
+      <div style={{ alignContent: 'center' }}>
+        <Paper className={classes.paper}>
           {chartData.length === 0 ?
             <div style={{ textAlign: 'center' }}>Không có dữ liệu</div> :
             <Chart data={chartData}>
               <Palette scheme={scheme} />
-              <PieSeries valueField="value" argumentField="type" />
+              <PieSeries valueField="value" argumentField="type" outerRadius={0.8} />
               <Title text={"Thống kê các khoản thu tháng " + (date.getMonth() + 1) + "/" + date.getFullYear()} />
               <Legend />
               <Animation />
