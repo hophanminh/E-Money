@@ -24,19 +24,21 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 router.get('/:userId', async (req, res) => {
-    console.log('Get teams belong to user');
-    console.log(req.params.userId);
     const userID = req.params.userId;
+    console.log('Get teams belong to user ', userID);
     const teams = await TeamModel.getTeamsByUserId(userID);
     return res.status(200).send({teams});
 })
 
 router.get('/details/:teamID', async (req, res) => {
-    console.log('Get teams belong to user');
-    console.log(req.params.userId);
     const teamID = req.params.teamID;
+    console.log('Get team belong to user ', teamID);
     const teams = await TeamModel.getTeamById(teamID);
-    return res.status(200).send({teams});
+    if (teams.length === 1) {
+        return res.status(200).send({teams});
+    } else {
+        return res.status(404).send({msg: "Không tìm thấy nhóm."})
+    }
 })
 
 router.post('/:userID', async (req, res) => {
@@ -55,9 +57,9 @@ router.post('/:userID', async (req, res) => {
 
     if (teamWallet.affectedRows !== 1) {
         return res.status(500)
-            .send({ msg: "Please try again" });
+            .send({ msg: "Please try again." });
     }
-    console.log("Created Wallet " + newWallet.ID);
+    console.log("Created Wallet successfully" + newWallet);
 
     const newTeam = {
         ID: uuidv1(),
@@ -68,12 +70,11 @@ router.post('/:userID', async (req, res) => {
         WalletID: newWallet.ID,
     };
     const team = await TeamModel.createTeam(newTeam);
-    console.log(team)
     if (team.affectedRows !== 1) {
         return res.status(500)
             .send({ msg: "Please try again" });
     }
-    console.log("Created Wallet " + newTeam.ID);
+    console.log("Create team successfully ",team)
 
     const admin = {
         UserID: userID,
@@ -133,7 +134,6 @@ router.patch('/:id/avatar', upload.single('avatar'), async (req, res) => {
     )
 });
 
-//TODO: Just admin can update
 router.put('/details/:id', async (req, res) => {
     const teamId = req.params.id;
     const { Name, MaxUsers, Description, UserID } = req.body;
@@ -141,7 +141,7 @@ router.put('/details/:id', async (req, res) => {
     const teamObject = await TeamModel.getTeamByIdAndUserId(teamId, UserID);
 
     if (teamObject.length === 0) {
-        return res.status(400).send({ msg: "Không tìm thấy người dùng hoặc bạn không có quyền để cập nhật" })
+        return res.status(400).send({ msg: "Không tìm thấy nhóm hoặc bạn không có quyền để thực hiện hành động." })
     }
 
     const update = TeamModel.updateTeam(teamId, { Name, MaxUsers, Description });
@@ -156,13 +156,11 @@ router.post('/:id/delete', async (req, res) => {
     const { UserID } = req.body;
 
     if (teamObject.length === 0) {
-        return res.status(400).send({ msg: "Không tìm thấy người dùng" })
+        return res.status(400).send({ msg: "Không tìm thấy nhóm." })
     }
 
     const team = teamObject[0];
-    console.log(teamId);
-    console.log(team);
-    console.log("Start delete thu")
+    // Remove user from team
     const c = await TeamHasUserModel.deleteTHU(team.ID, UserID)
     return res.status(200).send({msg: "success"})
 
