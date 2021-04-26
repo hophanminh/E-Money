@@ -1,13 +1,14 @@
 const db = require('../utils/database');
+const config =require("../config/default.json");
 
 module.exports = {
 
     getTHUByUserId: (userId) => {
-        const sql = `SELECT * from teams_has_users t WHERE t.UserID = '` + userId + `'`;
+        const sql = `SELECT * from teams_has_users t WHERE t.UserID = '${userId}'`;
         return db.load(sql);
     },
     getTHUByTeamId: (id) => {
-        const sql = `SELECT * from teams_has_users t WHERE t.TeamID = '` + id + `'`;
+        const sql = `SELECT * from teams_has_users t WHERE t.TeamID = '${id}'`;
         return db.load(sql);
     },
     createTHU(newTeam) {
@@ -17,8 +18,7 @@ module.exports = {
         return db.patch('teams_has_users', updateContent, {TeamID: teamId, UserId: userId});
     },
     deleteTHU: (TeamID, UserID) => {
-        const sql = `DELETE from teams_has_users WHERE TeamID = '` + TeamID + `' AND UserID = '` + UserID + `'`
-        console.log(sql)
+        const sql = `DELETE from teams_has_users WHERE TeamID = '${TeamID}' AND UserID = '${UserID}' AND Role <> ${config.PERMISSION.ADMIN} `
         return db.load(sql);
 
     }

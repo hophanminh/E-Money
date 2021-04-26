@@ -10,7 +10,7 @@ module.exports = {
                 WHERE ID = ?`, [amount, walletID]),
 
   getWalletById: (id) => {
-    const sql = `SELECT * from Wallets t WHERE t.ID = '` + id + `'`;
+    const sql = `SELECT * from Wallets t WHERE t.ID = '${id}'`;
   },
 
   getPrivateWallet: (userID) =>
