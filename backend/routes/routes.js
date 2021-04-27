@@ -26,22 +26,21 @@ router.post('/signin', async (req, res) => {
   if (users.length === 1) {
     const user = users[0];
 
-    if (user.WalletID === null) { // chưa active  tài khoản qua email
-      return res.status(401).send({ msg: "Tài khoản của bạn chưa kích hoạt. Hãy kiểm tra Email để kích hoạt" });
+    // chưa active  tài khoản qua email
+    if (user.WalletID === null) { 
+      return res.status(401).send({ msg: "Tài khoản của bạn chưa kích hoạt. Hãy kiểm tra Email để kích hoạt tài khoản." });
     }
 
     if (bcrypt.compareSync(Password, user.Password)) {
-
       const token = jwt.sign({ id: user.ID }, config.PASSPORTKEY);
       delete user.Password;
-      return res.status(200).send({ msg: "Thành công", token, user });
+      return res.status(200).send({ msg: "Thành công!", token, user });
+    } else {
+      return res.status(401).send({ msg: "Tên tài khoản hoặc mật khẩu không chính xác. Hãy kiểm tra lại." });
     }
-    else {
-      return res.status(401).send({ msg: "Mật khẩu không chính xác. Hãy kiểm tra lại" });
-    }
-  }
-  else {
-    return res.status(400).send({ msg: 'Tài khoản không tồn tại' });
+
+  } else {
+    return res.status(400).send({ msg: 'Tài khoản không tồn tại.' });
   }
 });
 
@@ -51,10 +50,10 @@ router.post('/signup', async (req, res) => {
   const user = await userModel.getUserByUserName(Username);
 
   if (user.length !== 0) {
-    return res.status(400).send({ msg: 'Tên tài khoản đã được sử dụng' });
+    return res.status(400).send({ msg: 'Tên tài khoản đã được sử dụng.' });
   }
-  const N = config.HASHROUND;
-  const hashedPassword = bcrypt.hashSync(Password, N);
+  const HASHROUND = config.HASHROUND;
+  const hashedPassword = bcrypt.hashSync(Password, HASHROUND);
 
   const newUser = {
     ID: uuidv1(),
@@ -71,7 +70,8 @@ router.post('/signup', async (req, res) => {
       `<b>CHÀO MỪNG BẠN ĐẾN VỚI E-MONEY!</b><br>Hãy nhấn vào liên kết dưới đây để kích hoạt tài khoản của bạn.<br><a href="${config.APPLOCAL}/active/${newUser.ID.toBase64()}">Kích hoạt</a>`
     const result = await emailServer.send(newUser.Email, content, "Kích hoạt tài khoản!");
     return res.status(201).send({ msg: "Hãy kiểm tra email vừa khai báo để kích hoạt tài khoản." });
-  } else {
+  } 
+  else {
     return res.status(500).send({ msg: "Hãy thử lại!" });
   }
 });
@@ -87,9 +87,10 @@ router.post('/active', async (req, res) => {
   }
 
   if (user[0].WalletID !== null) {
-    return res.status(400).send({ msg: "Tài khoản của bạn đã được kích hoạt trước đó. Hãy tiếp tục sử dụng ứng dụng" });
+    return res.status(400).send({ msg: "Tài khoản của bạn đã được kích hoạt trước đó. Hãy tiếp tục sử dụng ứng dụng." });
 
-  } else {
+  } 
+  else {
 
     const newWallet = {
       ID: uuidv1(),
@@ -111,10 +112,12 @@ router.post('/active', async (req, res) => {
 })
 
 router.post('/forgotpassword', async (req, res) => {
+  console.log("Forgot password with body", req.body)
   const { Email, Username } = req.body;
   const user = await userModel.getUserByUserName(Username);
 
-  if (user.length === 0) { // username nhập bậy bạ
+  // Không tìm thấy user
+  if (user.length === 0) {
     return res.status(400).send({ msg: "Tài khoản không tồn tại" });
   }
 
@@ -142,23 +145,25 @@ router.post('/forgotpassword', async (req, res) => {
     console.log(result);
 
     return res.status(200).send({ msg: "Hãy kiểm tra email vừa khai báo để nhận mã xác thực.", id: newResetRequest.ID });
-  } else {
+  } 
+  else {
     return res.status(500).send({ msg: "Hãy thử lại!" });
   }
 });
 
 router.post('/checkresetrequest', async (req, res) => {
-
+  console.log("Check reset request with ", req.body.id);
   const result = await accountModel.findById(req.body.id);
   if (result.length === 1) {
-    res.status(200).end();// thực sự cần reset
+    // thực hiện reset request
+    res.status(200).end();
   } else {
-    res.status(400).end(); // spam
+    res.status(400).end();
   }
 });
 
 router.put('/resetpassword', async (req, res) => {
-
+  console.log("Reset password with ", req.body);
   const { Code, Password, ID } = req.body;
   try {
     const result = await accountModel.findById(ID);
@@ -169,8 +174,8 @@ router.put('/resetpassword', async (req, res) => {
         return res.status(400).send({ msg: "Mã xác nhận không đúng." });
       }
 
-      const N = config.hashRound;
-      const hashedPassword = bcrypt.hashSync(Password, N);
+      const HASHROUND = config.hashRound;
+      const hashedPassword = bcrypt.hashSync(Password, HASHROUND);
       const [reqStatusUpdateResult, passwordUpdateResult] = await Promise.all([
         accountModel.updateRequest(ID, { IsSuccessful: 1 }),
         userModel.updateUser(result[0].UserID, { Password: hashedPassword }),
@@ -180,7 +185,7 @@ router.put('/resetpassword', async (req, res) => {
       res.status(401).end(); // spam
     }
   } catch (err) {
-    console.log(err);
+    console.log("Error when reset password: ",err);
     res.status(500).send({ msg: "Hãy thử lại!" });
   }
 })

@@ -47,7 +47,7 @@ router.post('/', upload.array('images', 5), async (req, res) => {
         (err, image) => {
 
           if (err) { return res.status(500).send({ msg: "Đã xảy ra sự cố khi tải lên ảnh của bạn. Hãy thử lại!" }); }
-          // console.log('uploaded to cloudinary');
+          console.log('uploaded to cloudinary');
           const newImage = {
             ID: uuidv1(),
             URL: image.secure_url,
@@ -81,7 +81,7 @@ router.post('/', upload.array('images', 5), async (req, res) => {
     // let t1 = performance.now();
     // console.log("cmm: ", t1 - t0);
   } catch (err) {
-    console.log(err);
+    console.log("Upload transaction img error: ", err);
   }
   return res.status(200).send({ urls });
 
@@ -106,7 +106,7 @@ router.delete('/:id', async (req, res) => {
 
     await transactionImagesModel.deleteImage(imageID);
   } catch (err) {
-    console.log(err);
+    console.log("Delete transaction img error: ", err);
     return res.status(500).send({ msg: 'Đã xảy ra sự cố. Hãy thử lại!' });
   }
   return res.status(200).end();

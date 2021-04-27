@@ -5,7 +5,7 @@ module.exports = {
     getTeamsByUserId: (userId) => {
         const sql = `SELECT t.* 
                         FROM teams t join teams_has_users thu on t.ID = thu.TeamID
-                        WHERE thu.status = ${config.STATUS.ACTIVE} AND thu.UserID = '` + userId + `'`;
+                        WHERE thu.status = ${config.STATUS.ACTIVE} AND thu.UserID = '${userId}'`;
         return db.load(sql);
     },
     getTeamByWalletId: (walletId) => {
@@ -14,7 +14,7 @@ module.exports = {
     },
     getTeamById: (id) => {
         console.log("ID: ", id);
-        const sql = `SELECT * from teams WHERE ID = '` + id + `'`;
+        const sql = `SELECT * from teams WHERE ID = '${id}'`;
         console.log(sql);
         return db.load(sql);
     },
@@ -23,7 +23,8 @@ module.exports = {
         console.log("UserId: ", userId);
         const sql = `SELECT t.*
         FROM teams t JOIN teams_has_users thu on t.ID = thu.TeamID 
-        WHERE thu.status = ${config.STATUS.ACTIVE} and thu.UserID = '` + userId + `' and thu.Role = ${config.PERMISSION.ADMIN} and t.ID = '` + teamId + `'`;
+
+        WHERE thu.status = ${config.STATUS.ACTIVE} and thu.UserID = '${userId}' and thu.Role = ${config.PERMISSION.ADMIN} and t.ID = '${teamId}'`;
         return db.load(sql);
     },
     createTeam(newTeam) {

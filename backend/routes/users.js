@@ -23,7 +23,6 @@ const { convertToRegularDate } = require('../utils/helper');
 router.use(express.static('public'));
 
 router.post('/authenticate', (req, res) => {
-  // console.log(req.user);
   console.log("authenticated");
   return res.status(200).end();
 });
@@ -59,8 +58,6 @@ router.patch('/:id/password', async (req, res) => {
   const { CurrentPassword, NewPassword } = req.body;
 
   const users = await userModel.getUserByID(userID);
-
-  // if (result.length === 1) {
 
   if (bcrypt.compareSync(CurrentPassword, users[0].Password)) { // old password is correct
     const N = config.hashRound;
