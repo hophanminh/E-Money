@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
+import { useParams } from "react-router-dom";
 import {
     Dialog,
-    DialogActions,
     DialogContent,
     MenuItem,
     DialogTitle,
@@ -11,75 +11,41 @@ import {
     Button,
     Box,
     makeStyles,
+    DialogActions,
 } from '@material-ui/core/';
 import moment from 'moment'
-import DateFnsUtils from '@date-io/date-fns';
-import {
-    KeyboardDateTimePicker,
-    MuiPickersUtilsProvider,
-} from '@material-ui/pickers';
 import NumberFormat from 'react-number-format';
 
 import DefaultIcon from '../../../utils/DefaultIcon'
 import { getMaxMoney, getCurrencySymbol } from '../../../utils/currency'
+import {
+    PopupContext,
+    EventContext
+} from '../../mycontext'
+import POPUP from '../../../constants/popup.json'
+import { getSocket } from "../../../utils/socket";
 
-const useStyles = makeStyles({
-    title: {
-        fontSize: '24px',
-        fontWeight: 'bold',
-        marginBottom: '-10px'
-    },
-    amountRow: {
-        display: 'flex',
-    },
-    textField: {
-        margin: '10px 10px 15px 0px'
-    },
-    type1Text: {
-        color: '#1DAF1A'
-    },
-    type2Text: {
-        color: '#FF2626'
-    },
-    buttonBox: {
-        display: 'flex',
-        justifyContent: 'flex-end'
-    },
-    button: {
-        borderRadius: '4px',
-        color: '#FFFFFF',
-        fontWeight: 'bold',
-        padding: '5px 40px',
-        marginLeft: '20px'
-    },
-    closeButton: {
-        backgroundColor: '#F50707',
-    },
-});
+const NAME = POPUP.EVENT.INFO_EVENT
 
-const fakeEvent = [];
-
-export default function InfoEvent({ data, open, setOpen }) {
+export default function InfoEvent(props) {
     const classes = useStyles();
-    const [type, setType] = useState("Chi");
-    const [transactionEvent, setTransactionEvent] = useState(data);
+    const socket = getSocket();
+    const { id } = useParams();
+    const { open, setOpen } = useContext(PopupContext);
+    const { selected } = useContext(EventContext);
 
-    useEffect(() => {
-        if (data) {
-            console.log(data)
-            setTransactionEvent(data)
-            setType(data?.ExpectingAmount >= 0 ? "Thu" : "Chi");
-        }
-    }, [data, open])
+    const isOpen = open === NAME
+
+    const type = selected?.ExpectingAmount >= 0 ? "Thu" : "Chi";
 
     const handleCloseEditDialog = () => {
-        setOpen(false);
+        setOpen(null);
     }
 
     return (
         <React.Fragment>
-            {transactionEvent &&
-                <Dialog open={open} onClose={handleCloseEditDialog} aria-labelledby="form-dialog-title">
+            {selected &&
+                <Dialog open={isOpen} onClose={handleCloseEditDialog} aria-labelledby="form-dialog-title">
                     <DialogTitle id="form-dialog-title" >
                         <Typography className={classes.title}>
                             Khoản giao dịch dự kiến
@@ -111,7 +77,7 @@ export default function InfoEvent({ data, open, setOpen }) {
                                     id="price"
                                     name="price"
                                     label="Số tiền *"
-                                    value={Math.abs(transactionEvent?.ExpectingAmount)}
+                                    value={Math.abs(selected?.ExpectingAmount)}
                                     InputLabelProps={{
                                         shrink: true,
                                     }}
@@ -130,7 +96,7 @@ export default function InfoEvent({ data, open, setOpen }) {
                                 name="time"
                                 size="small"
                                 className={classes.textField}
-                                value={moment(transactionEvent?.NextDate).format("DD/MM/YYYY")}
+                                value={moment(selected?.NextDate).format("DD/MM/YYYY")}
                                 label="Thời gian *"
                                 fullWidth
                                 variant="outlined"
@@ -149,14 +115,14 @@ export default function InfoEvent({ data, open, setOpen }) {
                                 id="category"
                                 name="CategoryID"
                                 label="Hạng mục"
-                                value={" " + transactionEvent?.CategoryName}
+                                value={" " + selected?.CategoryName}
                                 fullWidth
                                 variant="outlined"
                                 InputProps={{
                                     readOnly: true,
                                     startAdornment:
                                         <DefaultIcon
-                                            IconID={transactionEvent?.IconID}
+                                            IconID={selected?.IconID}
                                             backgroundSize={24}
                                             iconSize={14} />
                                 }}
@@ -169,7 +135,7 @@ export default function InfoEvent({ data, open, setOpen }) {
                                 id="event"
                                 name="eventID"
                                 label="Sự kiện"
-                                value={transactionEvent?.Name}
+                                value={selected?.Name}
                                 fullWidth
                                 variant="outlined"
                                 InputProps={{
@@ -183,7 +149,7 @@ export default function InfoEvent({ data, open, setOpen }) {
                                 name="description"
                                 className={classes.textField}
                                 size="small"
-                                value={transactionEvent?.Description}
+                                value={selected?.Description}
                                 id="outlined-multiline-static"
                                 label="Mô tả"
                                 multiline
@@ -194,15 +160,13 @@ export default function InfoEvent({ data, open, setOpen }) {
                                     readOnly: true,
                                 }}
                             />
-
-                            <Box className={classes.buttonBox}>
-                                <Button className={`${classes.button} ${classes.closeButton}`} onClick={handleCloseEditDialog} variant="contained" >
-                                    Đóng
-                        </Button>
-                            </Box>
                         </Box>
                     </DialogContent>
                     <DialogActions>
+                        <Button className={`${classes.button} ${classes.closeButton}`} onClick={handleCloseEditDialog} variant="contained" >
+                            Đóng
+                        </Button>
+
                     </DialogActions>
                 </Dialog>
             }
@@ -230,3 +194,32 @@ function NumberFormatCustom(props) {
         />
     );
 }
+const useStyles = makeStyles({
+    title: {
+        fontSize: '24px',
+        fontWeight: 'bold',
+        marginBottom: '-10px'
+    },
+    amountRow: {
+        display: 'flex',
+    },
+    textField: {
+        margin: '10px 10px 15px 0px'
+    },
+    type1Text: {
+        color: '#1DAF1A'
+    },
+    type2Text: {
+        color: '#FF2626'
+    },
+    button: {
+        borderRadius: '4px',
+        color: '#FFFFFF',
+        fontWeight: 'bold',
+        padding: '5px 40px',
+        marginLeft: '20px'
+    },
+    closeButton: {
+        backgroundColor: '#F50707',
+    },
+});

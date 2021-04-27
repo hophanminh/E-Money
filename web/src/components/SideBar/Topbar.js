@@ -119,7 +119,9 @@ function Topbar(props) {
   const history = useHistory();
   const { setIsLoggedIn, info } = useContext(MyContext);
   const logOut = (e) => {
-    localStorage.clear();
+    localStorage.removeItem("jwtToken")
+    localStorage.removeItem("userID")
+    //localStorage.clear();
     setIsLoggedIn(false);
   };
   const openSidebar = props.open;  // sidebar's open

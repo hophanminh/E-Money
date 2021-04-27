@@ -46,7 +46,6 @@ CREATE TABLE Events(
 		-- Loại event hằng tháng: [1, 28/29/30/31], mỗi số tương ứng là ngày trong tháng
         -- Loại event hằng năm: [1, 12], mỗi số tương ứng là tháng trong năm
     ExpectingAmount FLOAT,
-    TotalAmount FLOAT,
 	Description varchar(1000) DEFAULT NULL,
     WalletID VARCHAR(100),
     CategoryID VARCHAR(100),
@@ -73,7 +72,7 @@ CREATE TABLE Categories(
     PRIMARY KEY(ID)
 );
 
-INSERT INTO `categories` VALUES ('1','Học tập',1,NULL,'1'),('2','Ăn uống',1,NULL,'2');
+INSERT INTO `categories` VALUES ('1','Học tập',1,NULL,'1'),('2','Ăn uống',1,NULL,'2'),('2','Khác',1,NULL,'3');
 
 DROP TABLE IF EXISTS `Transactions`;
 CREATE TABLE Transactions(
@@ -153,7 +152,7 @@ CREATE TABLE Icons(
     PRIMARY KEY(ID)
 );
 
-INSERT INTO `icons` VALUES ('1','school','#FFFFFF','#1DAF1A'),('2','fastfood','#FFFFFF','#FF2626');
+INSERT INTO `icons` VALUES ('1','school','#FFFFFF','#1DAF1A'),('2','fastfood','#FFFFFF','#FF2626'),('3','attach_money','#FFFFFF','#808080');
 
 DROP TABLE IF EXISTS `TransactionImages`;
 CREATE TABLE TransactionImages(

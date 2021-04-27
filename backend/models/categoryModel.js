@@ -8,13 +8,13 @@ module.exports = {
 
     deleteCategory: (id) => db.delete(`Categories`, { ID: id }),
 
-    getDefaultCategory: () => {
+    getDefaultCategory: (walletID) => {
         const isDefault = config.CATEGORY.DEFAULT;
         return db.loadSafe(`SELECT cat.*, COUNT(t.ID) as count
-                    FROM Categories as cat LEFT JOIN Transactions as t ON cat.ID = t.CategoryID
-                    WHERE cat.WalletID IS NULL AND cat.isDefault = ?
+                    FROM Categories as cat LEFT JOIN Transactions as t ON cat.ID = t.CategoryID AND t.WalletID = ?
+                    WHERE cat.WalletID IS NULL AND cat.isDefault = ? 
                     GROUP BY cat.ID
-                    ORDER BY cat.Name`, [isDefault]);
+                    ORDER BY cat.Name`, [walletID, isDefault]);
     },
 
     getCustomCategoryFromWalletID: (walletID) => {

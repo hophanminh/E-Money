@@ -1,16 +1,21 @@
-const helperSocket = require("./helperSocket");
 const categoryModel = require('../../models/categoryModel');
-const { v4: uuidv4 } = require('uuid');
+const eventModel = require('../../models/eventModel');
+const transactionModel = require('../../models/transactionModel');
+const config = require("../../config/default.json");
 
-module.exports = function (socket, decoded_userID) {
+const { v4: uuidv4 } = require('uuid');
+const { ISO_8601 } = require("moment");
+
+module.exports = function (socket, io, decoded_userID) {
 
     // get category of wallet
     socket.on('get_category', async ({ walletID }, callback) => {
         socket.join(walletID);
         try {
-            const defaultList = await categoryModel.getDefaultCategory();
-            const customList = await categoryModel.getCustomCategoryFromWalletID(walletID);
-            callback({ defaultList, customList });
+            const defaultList = await categoryModel.getDefaultCategory(walletID) || [];
+            const customList = await categoryModel.getCustomCategoryFromWalletID(walletID) || [];
+            const fullList = defaultList.concat(customList);
+            callback({ defaultList, customList, fullList });
         } catch (error) {
             console.log(error);
         }
@@ -18,7 +23,7 @@ module.exports = function (socket, decoded_userID) {
     });
 
     // add category
-    socket.on('add_category', async ({ walletID, newCategory }, callback) => {
+    socket.on('add_category', async ({ walletID, newCategory }) => {
         try {
             const ID = uuidv4();
             const temp = {
@@ -29,19 +34,19 @@ module.exports = function (socket, decoded_userID) {
                 IconID: newCategory.IconID,
             }
             await categoryModel.addCategory(temp);
-            callback({ ID });
 
             // annouce to other players
-            const { wallet, transactionList, categoryList } = await helperSocket.getPrivateWallet(decoded_userID);
-            socket.broadcast.to(walletID).emit('wait_for_update', { wallet, transactionList, categoryList });
-
+            const defaultList = await categoryModel.getDefaultCategory(walletID) || [];
+            const customList = await categoryModel.getCustomCategoryFromWalletID(walletID) || [];
+            const fullList = defaultList.concat(customList);
+            io.in(walletID).emit('wait_for_update_category', { defaultList, customList, fullList });
         } catch (error) {
             console.log(error);
         }
     });
 
     // update category
-    socket.on('update_category', async ({ categoryID, newCategory }, callback) => {
+    socket.on('update_category', async ({ walletID, categoryID, newCategory }) => {
         try {
             const temp = {
                 Name: newCategory.Name,
@@ -51,31 +56,35 @@ module.exports = function (socket, decoded_userID) {
             const updated = await categoryModel.getCategoryByID(categoryID);
             if (updated.length === 1) {
                 await categoryModel.updateCategory(categoryID, temp);
-                callback();
+
+                // annouce to other players
+                const defaultList = await categoryModel.getDefaultCategory(walletID) || [];
+                const customList = await categoryModel.getCustomCategoryFromWalletID(walletID) || [];
+                const fullList = defaultList.concat(customList);
+                io.in(walletID).emit('wait_for_update_category', { defaultList, customList, fullList });
             }
-
-            // annouce to other players
-            const { wallet, transactionList, categoryList } = await helperSocket.getPrivateWallet(decoded_userID);
-            socket.broadcast.to(walletID).emit('wait_for_update', { wallet, transactionList, categoryList });
-
         } catch (error) {
             console.log(error);
         }
     });
 
     // delete category
-    socket.on('delete_category', async ({ id }, callback) => {
+    socket.on('delete_category', async ({ walletID, id }) => {
         try {
             const deleted = await categoryModel.getCategoryByID(id);
             if (deleted.length === 1) {
+                // change transaction in deleted category to default category
+                await transactionModel.updateTransactionCategory(walletID, id, config.CATEGORY.DEFAULT_ID)
+                await eventModel.updateEventCategory(walletID, id, config.CATEGORY.DEFAULT_ID)
+
                 await categoryModel.deleteCategory(id);
-                callback();
+
+                // annouce to other players
+                const defaultList = await categoryModel.getDefaultCategory(walletID) || [];
+                const customList = await categoryModel.getCustomCategoryFromWalletID(walletID) || [];
+                const fullList = defaultList.concat(customList);
+                io.in(walletID).emit('wait_for_update_category', { defaultList, customList, fullList });
             }
-
-
-            // annouce to other players
-            const { wallet, transactionList, categoryList } = await helperSocket.getPrivateWallet(decoded_userID);
-            socket.broadcast.to(walletID).emit('wait_for_update', { wallet, transactionList, categoryList });
         } catch (error) {
             console.log(error);
         }

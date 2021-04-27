@@ -62,16 +62,17 @@ export default function SearchBar(props) {
     // filter menu
     const [anchorEl, setAnchorEl] = React.useState(null);
 
-    const handleClickFilter = (event) => {
+    const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
     };
 
-    const handleCloseFilter = () => {
+    const handleClose = () => {
         setAnchorEl(null);
     };
     const open = Boolean(anchorEl);
     const id = open ? 'simple-popover' : undefined;
 
+    // check filter
     const [checkAll, setCheckAll] = useState(true);
     const checkBox = (event) => {
         setCheckList(checkList.map(cat => (cat.ID === event.target.id ? { ...cat, checked: !cat.checked } : cat)));
@@ -97,7 +98,7 @@ export default function SearchBar(props) {
     const checkBoxSimple = (event) => {
         setSimpleOption(event.target.checked);
     }
-    //console.log(isSimple)
+
     return (
         <Container component="form" className={classes.root}>
             <Box className={classes.iconButton} aria-label="search">
@@ -112,14 +113,14 @@ export default function SearchBar(props) {
                 <ClearIcon />
             </IconButton>
             <Divider className={classes.dividerVertical} orientation="vertical" />
-            <IconButton color="primary" className={classes.iconButton} aria-label="directions" onClick={handleClickFilter}>
-                <FilterListIcon className={classes.filterIcon} />
+            <IconButton color="primary" className={classes.iconButton} aria-label="directions" onClick={handleClick}>
+                <FilterListIcon />
             </IconButton>
             <Popover
                 id={id}
                 open={open}
                 anchorEl={anchorEl}
-                onClose={handleCloseFilter}
+                onClose={handleClose}
                 anchorOrigin={{
                     vertical: 'bottom',
                     horizontal: 'center',

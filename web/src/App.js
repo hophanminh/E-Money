@@ -12,6 +12,7 @@ import Statistic from './components/statistic/statistic';
 import PrivateRoute from './components/PrivateRoute';
 import StickyFooter from './components/stickyFooter/StickyFooter';
 import Dashboard from './components/Dashboard/Dashboard';
+import TeamDashBoard from './components/TeamDashBoard/TeamDashBoard';
 import Category from './components/Category/Category';
 import Event from './components/Event/Event';
 import Menu from "./components/SideBar/Menu";
@@ -21,7 +22,8 @@ import ActivateDestination from './components/activedestination/ActiveDestinatio
 import Profile from './components/profile/Profile';
 import TeamProfile from './components/Team/TeamProfile';
 import config from './constants/config.json';
-import MyContext, { MyProvider } from './components/mycontext/MyContext';
+import MyContext from './components/mycontext/MyContext';
+import CombinedProvider from './components/mycontext/combineProvider'
 import Teams from "./components/Team/Teams";
 import UpdateProfile from "./components/Team/UpdateProfile";
 import ResetDestination from './components/signin/resetpassword/ResetDestination';
@@ -31,25 +33,24 @@ const API_URL = config.API_LOCAL;
 
 const routes = [
   {
-    path: "/",
-    exact: true,
-    private: false,
-    main: () => <Home />
-  },
-  {
-    path: "/Dashboard/Wallet",
-    private: true,
-    main: () => <Dashboard />
-  },
-  {
-    path: "/category/:id",
+    path: "/Wallet/:id/category",
     private: true,
     main: () => <Category />
   },
   {
-    path: "/event/:id",
+    path: "/Wallet/:id/event",
     private: true,
     main: () => <Event />
+  },
+  {
+    path: "/Wallet/:id",
+    private: true,
+    main: () => <TeamDashBoard />
+  },
+  {
+    path: "/Wallet",
+    private: true,
+    main: () => <Dashboard />
   },
   {
     path: "/statistic",
@@ -95,7 +96,13 @@ const routes = [
     path: '/reset',
     private: false,
     main: () => <ResetDestination />
-  }
+  },
+  {
+    path: "/",
+    exact: true,
+    private: false,
+    main: () => <Home />
+  },
 ];
 
 const useStyles = makeStyles((theme) => ({
@@ -124,7 +131,7 @@ function App() {
         <CssBaseline />
         <div className={classes.body}>
 
-          <MyProvider>
+          <CombinedProvider>
             <Menu />
             <div className={classes.content}>
               <Switch>
@@ -145,12 +152,12 @@ function App() {
                     />
                   )
                 })}
-                <Route path="/event">
+                <Route path="/">
                   <Home />
                 </Route>
               </Switch>
             </div>
-          </MyProvider>
+          </CombinedProvider>
 
         </div>
         <StickyFooter />

@@ -1,4 +1,5 @@
-import React, { useRef, useLayoutEffect, useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
+import { useParams } from "react-router-dom";
 import {
   Dialog,
   DialogActions,
@@ -14,7 +15,11 @@ import {
   Box,
   makeStyles,
 } from '@material-ui/core/';
-import moment from 'moment'
+import {
+  PopupContext,
+  CategoryContext,
+  EventContext
+} from '../../mycontext'
 import DateFnsUtils from '@date-io/date-fns';
 import {
   KeyboardDateTimePicker,
@@ -25,78 +30,24 @@ import NumberFormat from 'react-number-format';
 import DefaultIcon from '../../../utils/DefaultIcon'
 import getValueOfEventType from '../../../utils/defaultEventType'
 import { getMaxMoney, getCurrencySymbol } from '../../../utils/currency'
+import POPUP from '../../../constants/popup.json'
+import { getSocket } from "../../../utils/socket";
 
-const useStyles = makeStyles({
-  title: {
-    fontSize: '24px',
-    fontWeight: 'bold',
-    marginBottom: '-10px'
-  },
-  subTitle: {
-    fontSize: '20px',
-    marginTop: '10px',
-    marginBottom: '5px'
-  },
-  dialog: {
-    minWidth: '500px'
-  },
-  amountRow: {
-    display: 'flex',
-  },
-  textField: {
-    margin: '10px 10px 15px 0px'
-  },
-  checkBox: {
-    marginBottom: '0px'
-  },
-  typeBox: {
-    padding: '0px 15px 0px 0px',
-  },
-  type1Text: {
-    color: '#1DAF1A'
-  },
-  type2Text: {
-    color: '#FF2626'
-  },
-
-  categoryIconBox: {
-    display: 'flex',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    padding: '0px 10px 0px 10px',
-  },
-  iconText: {
-    marginLeft: '10px',
-  },
-
-  buttonBox: {
-    display: 'flex',
-    justifyContent: 'flex-end',
-    marginTop: '10px',
-    marginBottom: '10px'
-  },
-  button: {
-    borderRadius: '4px',
-    color: '#FFFFFF',
-    fontWeight: 'bold',
-    padding: '5px 40px',
-    marginLeft: '20px'
-  },
-  closeButton: {
-    backgroundColor: '#F50707',
-  },
-  addButton: {
-    backgroundColor: '#1DAF1A',
-  },
-});
 
 const fakeEvent = []
+const NAME = POPUP.EVENT.ADD_EVENT;
 
-export default function AddEvent({ categoryList, eventTypeList, open, setOpen, addList }) {
+export default function AddEvent(props) {
   const classes = useStyles();
+  const socket = getSocket();
+  const { id } = useParams();
+  const { open, setOpen } = useContext(PopupContext);
+  const { fullList } = useContext(CategoryContext);
+  const { eventTypeList } = useContext(EventContext);
+
+  const isOpen = open === NAME
+
   const [step, setStep] = useState(1);
-  const [list, setList] = useState(categoryList);
-  const [typeList, setTypeList] = useState(eventTypeList);
 
   const [error, setError] = useState({
     Name: false,
@@ -124,25 +75,23 @@ export default function AddEvent({ categoryList, eventTypeList, open, setOpen, a
   })
 
   useEffect(() => {
-    if (open) {
+    if (isOpen) {
       setStep(1);
       clearNewEvent();
     }
-  }, [open]);
+  }, [isOpen]);
 
   useEffect(() => {
-    if (categoryList && categoryList.length !== 0) {
-      setList(categoryList);
+    if (fullList && fullList.length !== 0) {
       setNewEvent({
         ...newEvent,
-        CategoryID: categoryList[0]?.ID
+        CategoryID: fullList[0]?.ID
       })
     }
-  }, [categoryList]);
+  }, [fullList]);
 
   useEffect(() => {
     if (eventTypeList && eventTypeList.length !== 0) {
-      setTypeList(eventTypeList);
       setNewEvent({
         ...newEvent,
         EventTypeID: eventTypeList[0]?.ID
@@ -158,8 +107,8 @@ export default function AddEvent({ categoryList, eventTypeList, open, setOpen, a
       EndDate: todayNextYear,
       Value: 0,
       ExpectingAmount: -1000,
-      CategoryID: list[0]?.ID,
-      EventTypeID: typeList[0]?.ID,
+      CategoryID: fullList[0]?.ID,
+      EventTypeID: eventTypeList[0]?.ID,
       TypeName: '',
       CategoryName: '',
       IconID: '1',
@@ -168,7 +117,7 @@ export default function AddEvent({ categoryList, eventTypeList, open, setOpen, a
   }
 
   const handleCloseAddDialog = () => {
-    setOpen(false);
+    setOpen(null);
   }
 
   const handleNextStep = (number) => {
@@ -187,8 +136,8 @@ export default function AddEvent({ categoryList, eventTypeList, open, setOpen, a
     if (error.Name === true || error.Description === true) {
       return;
     }
-    const newCategory = list.find(i => i?.ID === newEvent.CategoryID);
-    const newEventType = typeList.find(i => i?.ID === newEvent.EventTypeID);
+    const newCategory = fullList.find(i => i?.ID === newEvent.CategoryID);
+    const newEventType = eventTypeList.find(i => i?.ID === newEvent.EventTypeID);
 
     newEvent.IconID = newCategory?.IconID;
     newEvent.CategoryName = newCategory?.Name;
@@ -198,8 +147,8 @@ export default function AddEvent({ categoryList, eventTypeList, open, setOpen, a
       newEvent.EndDate = null;
     }
     console.log(newEvent)
-    addList(newEvent);
-    setOpen(false);
+    socket.emit("add_event", { walletID: id, newEvent });
+    setOpen(null);
   }
 
 
@@ -218,7 +167,7 @@ export default function AddEvent({ categoryList, eventTypeList, open, setOpen, a
 
   const handleChangeEventType = (event) => {
     if (newEvent.EventTypeID !== event.target.value) {
-      const selected = typeList.filter(i => i?.ID === event.target.value);
+      const selected = eventTypeList.filter(i => i?.ID === event.target.value);
       setNewEvent({
         ...newEvent,
         EventTypeID: event.target.value,
@@ -293,7 +242,7 @@ export default function AddEvent({ categoryList, eventTypeList, open, setOpen, a
   const valueList = getValueOfEventType(newEvent.TypeName);
 
   return (
-    <Dialog open={open} onClose={handleCloseAddDialog} aria-labelledby="form-dialog-title">
+    <Dialog open={isOpen} onClose={handleCloseAddDialog} aria-labelledby="form-dialog-title">
       {step === 1 &&
         <React.Fragment>
           <DialogTitle id="form-dialog-title" >
@@ -333,7 +282,7 @@ export default function AddEvent({ categoryList, eventTypeList, open, setOpen, a
                 onChange={handleChangeEventType}
                 variant="outlined"
               >
-                {(typeList || []).map((type) => (
+                {(eventTypeList || []).map((type) => (
                   <MenuItem key={type.ID} value={type.ID}>
                     {type.Name}
                   </MenuItem>
@@ -444,17 +393,17 @@ export default function AddEvent({ categoryList, eventTypeList, open, setOpen, a
                   />
                 </MuiPickersUtilsProvider>
               </Box>
-              <Box className={classes.buttonBox}>
-                <Button className={`${classes.button} ${classes.closeButton}`} onClick={handleCloseAddDialog} variant="contained" >
-                  Hủy
-                </Button>
-                <Button className={`${classes.button} ${classes.addButton}`} onClick={() => handleNextStep(2)} variant="contained">
-                  Tiếp tục
-                </Button>
-              </Box>
-
             </Box>
           </DialogContent>
+          <DialogActions>
+            <Button className={`${classes.button} ${classes.closeButton}`} onClick={handleCloseAddDialog} variant="contained" >
+              Hủy
+            </Button>
+            <Button className={`${classes.button} ${classes.addButton}`} onClick={() => handleNextStep(2)} variant="contained">
+              Tiếp tục
+            </Button>
+
+          </DialogActions>
         </React.Fragment>
       }
       {step === 2 &&
@@ -526,7 +475,7 @@ export default function AddEvent({ categoryList, eventTypeList, open, setOpen, a
                 fullWidth
                 variant="outlined"
               >
-                {(list || []).map((cat) => (
+                {(fullList || []).map((cat) => (
                   <MenuItem key={cat.ID} value={cat.ID}>
                     <Box className={classes.categoryIconBox}>
                       <DefaultIcon
@@ -556,18 +505,16 @@ export default function AddEvent({ categoryList, eventTypeList, open, setOpen, a
                 error={error?.Description}
                 helperText={error?.Description ? "Mô tả không được quá 500 ký tự" : ''}
               />
-
-              <Box className={classes.buttonBox}>
-                <Button className={`${classes.button} ${classes.closeButton}`} onClick={() => handleNextStep(1)} variant="contained" >
-                  Trở về
-                </Button>
-                <Button className={`${classes.button} ${classes.addButton}`} onClick={handleAdd} variant="contained">
-                  Thêm
-                </Button>
-              </Box>
-
             </Box>
           </DialogContent>
+          <DialogActions>
+            <Button className={`${classes.button} ${classes.closeButton}`} onClick={() => handleNextStep(1)} variant="contained" >
+              Trở về
+            </Button>
+            <Button className={`${classes.button} ${classes.addButton}`} onClick={handleAdd} variant="contained">
+              Thêm
+            </Button>
+          </DialogActions>
         </React.Fragment>
       }
     </Dialog>
@@ -594,3 +541,61 @@ function NumberFormatCustom(props) {
     />
   );
 }
+
+const useStyles = makeStyles({
+  title: {
+    fontSize: '24px',
+    fontWeight: 'bold',
+    marginBottom: '-10px'
+  },
+  subTitle: {
+    fontSize: '20px',
+    marginTop: '10px',
+    marginBottom: '5px'
+  },
+  dialog: {
+    minWidth: '500px'
+  },
+  amountRow: {
+    display: 'flex',
+  },
+  textField: {
+    margin: '10px 10px 15px 0px'
+  },
+  checkBox: {
+    marginBottom: '0px'
+  },
+  typeBox: {
+    padding: '0px 15px 0px 0px',
+  },
+  type1Text: {
+    color: '#1DAF1A'
+  },
+  type2Text: {
+    color: '#FF2626'
+  },
+
+  categoryIconBox: {
+    display: 'flex',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    padding: '0px 10px 0px 10px',
+  },
+  iconText: {
+    marginLeft: '10px',
+  },
+
+  button: {
+    borderRadius: '4px',
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+    padding: '5px 40px',
+    marginLeft: '20px'
+  },
+  closeButton: {
+    backgroundColor: '#F50707',
+  },
+  addButton: {
+    backgroundColor: '#1DAF1A',
+  },
+});

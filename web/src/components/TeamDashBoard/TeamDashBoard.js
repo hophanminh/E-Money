@@ -39,10 +39,10 @@ import { getSocket } from "../../utils/socket";
 import { formatMoney } from '../../utils/currency'
 import EventAccordion from './Accordion/EventAccordion';
 
-export default function Dashboard() {
+const TeamDashBoard = () => {
   const classes = useStyles();
+  const { id } = useParams();
   const socket = getSocket();
-  const { info } = useContext(MyContext);
   const { setWalletID, selected, setSelected, list, setList, filterList, updateSelected } = useContext(WalletContext);
   const { setOpen } = useContext(PopupContext);
   const { setAllList } = useContext(CategoryContext);
@@ -53,12 +53,16 @@ export default function Dashboard() {
     receive: 0,
     total: 0
   })
-
+  const [team, setTeam] = useState();
   // get initial data
   useEffect(() => {
-    setWalletID(info?.WalletID);
+    socket.emit("get_team", { walletID: id }, (team) => {
+      setTeam(team);
+    });
 
-    socket.emit("get_transaction", { walletID: info?.WalletID }, ({ transactionList, total, spend, receive }) => {
+    setWalletID(id);
+
+    socket.emit("get_transaction", { walletID: id }, ({ transactionList, total, spend, receive }) => {
       setList(transactionList);
       setSelected(transactionList[0]);
       setStat({
@@ -77,7 +81,7 @@ export default function Dashboard() {
       })
     });
 
-    socket.emit("get_category", { walletID: info?.WalletID }, ({ defaultList, customList, fullList }) => {
+    socket.emit("get_category", { walletID: id }, ({ defaultList, customList, fullList }) => {
       setAllList(defaultList, customList, fullList)
     });
 
@@ -86,7 +90,7 @@ export default function Dashboard() {
       setAllList(defaultList, customList, fullList)
     });
 
-    socket.emit("get_event", { walletID: info?.WalletID }, ({ eventList }) => {
+    socket.emit("get_event", { walletID: id }, ({ eventList }) => {
       setEventList(eventList);
     });
 
@@ -101,7 +105,7 @@ export default function Dashboard() {
       socket.off("wait_for_update_category");
       socket.off("wait_for_update_event");
     }
-  }, [info]);
+  }, [id]);
 
   useEffect(() => {
     updateSelected();
@@ -121,10 +125,10 @@ export default function Dashboard() {
         <div className={classes.title}>
           <Breadcrumbs className={classes.breadcrumb} separator={<NavigateNextIcon fontSize="large" />} aria-label="breadcrumb">
             <Typography className={classes.titleFont} color="textPrimary">
-              Ví cá nhân
+              Ví nhóm {team?.Name}
             </Typography>
           </Breadcrumbs>
-          <Typography className={classes.subTitleFont} color="textSecondary">Quản lý các khoản giao dịch tiền tệ cá nhân </Typography>
+          <Typography className={classes.subTitleFont} color="textSecondary">Quản lý các khoản giao dịch tiền tệ nhóm </Typography>
         </div>
 
         <div className={classes.body}>
@@ -238,6 +242,8 @@ export default function Dashboard() {
     </>
   );
 }
+
+export default TeamDashBoard;
 
 const useStyles = makeStyles((theme) => ({
   root: (theme) => ({
