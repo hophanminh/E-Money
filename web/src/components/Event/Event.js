@@ -77,9 +77,10 @@ export default function Event() {
     return () => {
       socket.off("wait_for_update_event");
       socket.off("wait_for_update_category");
+      setOpen(null);
     }
 
-  }, [id]);
+  }, []);
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
 

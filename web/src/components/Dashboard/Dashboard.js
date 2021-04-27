@@ -100,6 +100,7 @@ export default function Dashboard() {
       socket.off("wait_for_update_transaction");
       socket.off("wait_for_update_category");
       socket.off("wait_for_update_event");
+      setOpen(null);
     }
   }, [info]);
 

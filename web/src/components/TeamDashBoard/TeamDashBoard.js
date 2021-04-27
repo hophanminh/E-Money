@@ -24,7 +24,7 @@ import AccountBalanceWalletIcon from '@material-ui/icons/AccountBalanceWallet';
 import TrendingUpIcon from '@material-ui/icons/TrendingUp';
 import TrendingDownIcon from '@material-ui/icons/TrendingDown';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
-import ListIcon from '@material-ui/icons/List';
+import SettingsIcon from '@material-ui/icons/Settings';
 import EventIcon from '@material-ui/icons/Event';
 import DefaultIcon from '../../utils/DefaultIcon'
 
@@ -104,6 +104,7 @@ const TeamDashBoard = () => {
       socket.off("wait_for_update_transaction");
       socket.off("wait_for_update_category");
       socket.off("wait_for_update_event");
+      setOpen(null);
     }
   }, [id]);
 
@@ -122,15 +123,24 @@ const TeamDashBoard = () => {
       <AddTransaction />
 
       <Container className={classes.root} maxWidth={null}>
-        <div className={classes.title}>
-          <Breadcrumbs className={classes.breadcrumb} separator={<NavigateNextIcon fontSize="large" />} aria-label="breadcrumb">
-            <Typography className={classes.titleFont} color="textPrimary">
-              Ví nhóm {team?.Name}
-            </Typography>
-          </Breadcrumbs>
-          <Typography className={classes.subTitleFont} color="textSecondary">Quản lý các khoản giao dịch tiền tệ nhóm </Typography>
-        </div>
-
+        <Box className={classes.header}>
+          <div className={classes.title}>
+            <Breadcrumbs className={classes.breadcrumb} separator={<NavigateNextIcon fontSize="large" />} aria-label="breadcrumb">
+              <Typography className={classes.titleFont} color="textPrimary">
+                Ví nhóm {team?.Name}
+              </Typography>
+            </Breadcrumbs>
+            <Typography className={classes.subTitleFont} color="textSecondary">Quản lý các khoản giao dịch tiền tệ nhóm </Typography>
+          </div>
+          <Box className={classes.actionBox}>
+            <Link to={`/teams/${team?.ID}/details`} style={{ textDecoration: 'none' }} >
+              <Button className={classes.teamButton} variant="outlined" onClick={handleOpenAddDialog}>
+                <SettingsIcon className={classes.green} />
+                Thông tin nhóm
+              </Button>
+            </Link>
+          </Box>
+        </Box>
         <div className={classes.body}>
           <Grid container spacing={5} className={classes.grid}>
             <Grid item lg={3} sm={12} >
@@ -253,6 +263,9 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: '24px',
     paddingTop: '24px',
   }),
+  green: {
+    color: '#1DAF1A'
+  },
   card: (theme) => ({
     backgroundColor: theme.body,
     border: theme.fieldBorder,
@@ -293,6 +306,26 @@ const useStyles = makeStyles((theme) => ({
   },
   breadcrumb: {
     fontSize: '24px',
+  },
+  header: {
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingBottom: '10px'
+  },
+  actionBox: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+  },
+  teamButton: {
+    height: '40px',
+    textTransform: 'none',
+    borderColor: '#1DAF1A',
+    padding: '5px 10px',
+    backgroundColor: '#FFFFFF'
   },
   titleFont: {
     fontWeight: 'bold',
