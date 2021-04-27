@@ -1,6 +1,7 @@
 import React, { useState, useEffect, createContext } from 'react';
 import config from '../../constants/config.json';
 import { getSocket } from "../../utils/socket";
+import moment from 'moment';
 
 const API_URL = config.API_LOCAL;
 const EventContext = createContext({});
@@ -13,8 +14,6 @@ export const EventProvider = (props) => {
   const [selected, setSelected] = useState();
   const [eventList, setEventList] = useState([])
   const [eventTypeList, setTypeList] = useState([])
-
-  //Event
 
   return (
     <EventContext.Provider

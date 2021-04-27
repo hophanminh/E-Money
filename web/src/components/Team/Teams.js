@@ -109,6 +109,9 @@ export default function Teams() {
         }
     }
 
+    const walletTeam = (walletID) => {
+        history.push(`/Wallet/${walletID}`)
+    }
     const detailTeam = (teamID) => {
         history.push(`/teams/${teamID}/details`)
     }
@@ -169,7 +172,7 @@ export default function Teams() {
         setOpenDiaForm(false);
     };
 
-
+    console.log(teams)
     return (
         <>
             <SnackBar open={showSnackbar} setOpen={(isOpen) => setShowSnackBar(isOpen)} content={content} />
@@ -194,11 +197,14 @@ export default function Teams() {
                                         </Typography>
                                     </CardContent>
                                     <CardActions>
+                                        <Button size="small" color="primary" onClick={(TeamID) => walletTeam(card.WalletID)}>
+                                            Ví nhóm
+                                        </Button>
                                         <Button size="small" color="primary" onClick={(TeamID) => detailTeam(card.ID)}>
-                                            View
+                                            Chỉnh sửa thông tin
                                         </Button>
                                         <Button size="small" color="primary" onClick={(TeamID) => deleteTeam(card.ID)}>
-                                            Delete
+                                            Xóa nhóm
                                         </Button>
                                     </CardActions>
                                 </Card>
@@ -208,13 +214,13 @@ export default function Teams() {
                             <Grid item xs={12} sm={6} md={4}>
                                 <Card className={`${classes.card} ${classes.centerCard}`}>
                                     <Button size="small"
-                                            color="primary"
-                                            onClick={handleClickOpen}
+                                        color="primary"
+                                        onClick={handleClickOpen}
 
                                     >
-                                    <CardActions>
-                                            <AddIcon style={{ fontSize: 100 }}/>
-                                    </CardActions>
+                                        <CardActions>
+                                            <AddIcon style={{ fontSize: 100 }} />
+                                        </CardActions>
                                     </Button>
                                     <Dialog
                                         open={open}

@@ -41,10 +41,11 @@ export default function Category(props) {
   const { setOpen } = useContext(PopupContext);
   const { defaultList, customList, setAllList, setSelected } = useContext(CategoryContext);
 
+  const [team, setTeam] = useState();
   // get initial data
   useEffect(() => {
-    socket.emit("get_category", { walletID: id }, ({ defaultList, customList, fullList }) => {
-      setAllList(defaultList, customList, fullList)
+    socket.emit("get_team", { walletID: id }, (team) => {
+      setTeam(team);
     });
 
     socket.on('wait_for_update_category', ({ defaultList, customList, fullList }) => {
@@ -149,11 +150,19 @@ export default function Category(props) {
       <Container className={classes.root} maxWidth={null}>
         <div className={classes.title}>
           <Breadcrumbs className={classes.breadcrumb} separator={<NavigateNextIcon fontSize="large" />} aria-label="breadcrumb">
-            <Link to="/Dashboard/Wallet" style={{ textDecoration: 'none' }}>
-              <Typography className={classes.LinkFont}>
-                Ví cá nhân
-              </Typography>
-            </Link>
+            {team ?
+              <Link to={`/Wallet/${id}`} style={{ textDecoration: 'none' }}>
+                <Typography className={classes.LinkFont}>
+                  {"Ví " + team?.Name}
+                </Typography>
+              </Link>
+              :
+              <Link to="/Wallet" style={{ textDecoration: 'none' }}>
+                <Typography className={classes.LinkFont}>
+                  Ví cá nhân
+                </Typography>
+              </Link>
+            }
             <Typography className={classes.titleFont} color="textPrimary">
               Quản lý phân loại giao dịch
             </Typography>
@@ -253,8 +262,6 @@ export default function Category(props) {
                       className={classes.categoryNumber}>
                       ({i.count})
                     </Typography>
-                  </Box>
-                  <Box className={classes.categoryInfo}>
                   </Box>
                 </Card>
               )

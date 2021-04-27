@@ -12,7 +12,7 @@ module.exports = function (socket, io, decoded_userID) {
     socket.on('get_category', async ({ walletID }, callback) => {
         socket.join(walletID);
         try {
-            const defaultList = await categoryModel.getDefaultCategory() || [];
+            const defaultList = await categoryModel.getDefaultCategory(walletID) || [];
             const customList = await categoryModel.getCustomCategoryFromWalletID(walletID) || [];
             const fullList = defaultList.concat(customList);
             callback({ defaultList, customList, fullList });
@@ -36,7 +36,7 @@ module.exports = function (socket, io, decoded_userID) {
             await categoryModel.addCategory(temp);
 
             // annouce to other players
-            const defaultList = await categoryModel.getDefaultCategory() || [];
+            const defaultList = await categoryModel.getDefaultCategory(walletID) || [];
             const customList = await categoryModel.getCustomCategoryFromWalletID(walletID) || [];
             const fullList = defaultList.concat(customList);
             io.in(walletID).emit('wait_for_update_category', { defaultList, customList, fullList });
@@ -58,7 +58,7 @@ module.exports = function (socket, io, decoded_userID) {
                 await categoryModel.updateCategory(categoryID, temp);
 
                 // annouce to other players
-                const defaultList = await categoryModel.getDefaultCategory() || [];
+                const defaultList = await categoryModel.getDefaultCategory(walletID) || [];
                 const customList = await categoryModel.getCustomCategoryFromWalletID(walletID) || [];
                 const fullList = defaultList.concat(customList);
                 io.in(walletID).emit('wait_for_update_category', { defaultList, customList, fullList });
@@ -80,7 +80,7 @@ module.exports = function (socket, io, decoded_userID) {
                 await categoryModel.deleteCategory(id);
 
                 // annouce to other players
-                const defaultList = await categoryModel.getDefaultCategory() || [];
+                const defaultList = await categoryModel.getDefaultCategory(walletID) || [];
                 const customList = await categoryModel.getCustomCategoryFromWalletID(walletID) || [];
                 const fullList = defaultList.concat(customList);
                 io.in(walletID).emit('wait_for_update_category', { defaultList, customList, fullList });

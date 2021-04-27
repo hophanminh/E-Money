@@ -16,6 +16,7 @@ export const CategoryProvider = (props) => {
     defaultList: [],
     customList: []
   })
+  const [filterList, setFilterList] = useState([]);
 
   //Category
   const updateSelected = () => {
@@ -46,11 +47,13 @@ export const CategoryProvider = (props) => {
         defaultList: categoryList?.defaultList,
         customList: categoryList?.customList,
         fullList: categoryList?.fullList,
+        filterList, 
 
         setSelected,
         updateSelected,
         setAllList,
         setFullList,
+        setFilterList,
       }}>
       {props.children}
     </CategoryContext.Provider>

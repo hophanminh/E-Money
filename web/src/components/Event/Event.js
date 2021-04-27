@@ -43,11 +43,16 @@ export default function Event() {
   const { id } = useParams();
   const socket = getSocket();
   const { setOpen } = useContext(PopupContext);
-  const { setAllList } = useContext(CategoryContext);
+  const { fullList, setAllList } = useContext(CategoryContext);
   const { selected, setSelected, eventList, setEventList, setTypeList } = useContext(EventContext);
 
+  const [team, setTeam] = useState();
   // get initial data
   useEffect(() => {
+    socket.emit("get_team", { walletID: id }, (team) => {
+      setTeam(team);
+    });
+    
     socket.emit("get_event", { walletID: id }, ({ eventList }) => {
       setEventList(eventList);
     });
@@ -57,8 +62,9 @@ export default function Event() {
     });
 
     socket.emit("get_category", { walletID: id }, ({ defaultList, customList, fullList }) => {
-      setAllList(defaultList, customList, fullList);
+      setAllList(defaultList, customList, fullList)
     });
+
 
     socket.on('wait_for_update_event', ({ eventList }) => {
       setEventList(eventList);
@@ -73,7 +79,7 @@ export default function Event() {
       socket.off("wait_for_update_category");
     }
 
-  }, []);
+  }, [id]);
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
@@ -139,11 +145,19 @@ export default function Event() {
       <Container className={classes.root} maxWidth={null}>
         <div className={classes.title}>
           <Breadcrumbs className={classes.breadcrumb} separator={<NavigateNextIcon fontSize="large" />} aria-label="breadcrumb">
-            <Link to="/Dashboard/Wallet" style={{ textDecoration: 'none' }}>
-              <Typography className={classes.LinkFont}>
-                Ví cá nhân
-              </Typography>
-            </Link>
+            {team ?
+              <Link to={`/Wallet/${id}`} style={{ textDecoration: 'none' }}>
+                <Typography className={classes.LinkFont}>
+                  {"Ví " + team?.Name}
+                </Typography>
+              </Link>
+              :
+              <Link to="/Wallet" style={{ textDecoration: 'none' }}>
+                <Typography className={classes.LinkFont}>
+                  Ví cá nhân
+                </Typography>
+              </Link>
+            }
             <Typography className={classes.titleFont} color="textPrimary">
               Quản lý sự kiện
             </Typography>
@@ -188,7 +202,7 @@ export default function Event() {
                           <TableCell align="left">{row?.Name}</TableCell>
                           <TableCell align="left" className={row.ExpectingAmount > 0 ? classes.green : classes.red}>{formatMoney(Math.abs(row?.ExpectingAmount))}</TableCell>
                           <TableCell align="left">{row?.TypeName}</TableCell>
-                          <TableCell align="left">G{moment(row?.NextDate).format("DD/MM/YYYY")}</TableCell>
+                          <TableCell align="left">{moment(row?.NextDate).format("DD/MM/YYYY")}</TableCell>
                           <TableCell align="left" >{row?.EndDate ? moment(row?.EndDate).format("DD/MM/YYYY") : ''}</TableCell>
                           <TableCell align="right" className={row.ExpectingAmount >= 0 ? classes.green : classes.red}>{formatMoney(Math.abs(row?.TotalAmount))}</TableCell>
                           <TableCell align="right">

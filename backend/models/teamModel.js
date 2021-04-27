@@ -9,8 +9,8 @@ module.exports = {
         return db.load(sql);
     },
     getTeamByWalletId: (walletId) => {
-        const sql = `SELECT * from teams t WHERE t.WalletID = ${walletId}`
-        return db.load(sql);
+        const sql = `SELECT * from teams t WHERE t.WalletID = ?`
+        return db.loadSafe(sql, [walletId]);
     },
     getTeamById: (id) => {
         console.log("ID: ", id);
@@ -23,16 +23,16 @@ module.exports = {
         console.log("UserId: ", userId);
         const sql = `SELECT t.*
         FROM teams t JOIN teams_has_users thu on t.ID = thu.TeamID 
-        WHERE thu.status = ${config.STATUS.ACTIVE} and thu.UserID = '`+ userId +`' and thu.Role = ${config.PERMISSION.ADMIN} and t.ID = '`+teamId+`'`;
+        WHERE thu.status = ${config.STATUS.ACTIVE} and thu.UserID = '` + userId + `' and thu.Role = ${config.PERMISSION.ADMIN} and t.ID = '` + teamId + `'`;
         return db.load(sql);
     },
     createTeam(newTeam) {
         return db.add('teams', newTeam);
     },
     updateTeam(teamId, updateContent) {
-        return db.patch('teams', updateContent, {ID: teamId});
+        return db.patch('teams', updateContent, { ID: teamId });
     },
     deleteTeam: (id) => {
-        return db.delete('teams', {ID: id})
+        return db.delete('teams', { ID: id })
     },
 }

@@ -13,7 +13,17 @@ export const WalletProvider = (props) => {
   const [walletID, setWalletID] = useState();
   const [selected, setSelected] = useState();
   const [list, setList] = useState([])
-  
+  const [filterList, setFilterList] = useState([])
+
+  const [expanded, setExpanded] = useState('category');
+  const [isSimple, setIsSimple] = useState(true)
+
+  useEffect(() => {
+    const check = window.localStorage.getItem('isSimple') === '0' ? false : true;
+    console.log(window.localStorage.getItem('isSimple'), check)
+    setIsSimple(check)
+  }, [])
+
   //Wallet
   const updateSelected = () => {
     if (selected) {
@@ -22,17 +32,29 @@ export const WalletProvider = (props) => {
     }
   }
 
+  const setSimpleOption = (status) => {
+    const check = status ? '1' : '0'
+    window.localStorage.setItem('isSimple', check);
+    setIsSimple(status)
+  }
+
   return (
     <WalletContext.Provider
       value={{
         walletID,
         selected,
         list,
+        expanded,
+        filterList,
+        isSimple,
 
         setWalletID,
         setSelected,
         setList,
-        updateSelected
+        updateSelected,
+        setExpanded,
+        setFilterList,
+        setSimpleOption,
       }}>
       {props.children}
     </WalletContext.Provider>

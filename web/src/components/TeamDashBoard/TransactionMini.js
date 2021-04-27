@@ -23,7 +23,7 @@ export default function TransactionMini({ transactionData }) {
     useEffect(() => {
         if (transactionData) {
             setData(transactionData);
-            setAmount(transactionData.price);
+            setAmount(transactionData?.price);
         }
     }, [transactionData])
 
@@ -32,19 +32,19 @@ export default function TransactionMini({ transactionData }) {
         setSelected(data);
     }
 
-
+    console.log(data)
     return (
         <div className={classes.root} onClick={handleSelect} style={{ backgroundColor: selected?.id === data?.id ? 'rgba(29,175,26,0.07)' : '' }}>
             <div className={classes.transaction}>
                 <DefaultIcon
-                    IconID={data.IconID}
+                    IconID={data?.IconID}
                     backgroundSize={50}
                     iconSize={24} />
                 <Box className={classes.wrap}>
                     <Box className={classes.transactionInfo}>
                         <Typography
                             className={classes.transactionText}>
-                            {data.categoryName}
+                            {data?.categoryName}
                         </Typography>
                         {amount < 0
                             ?
@@ -58,13 +58,16 @@ export default function TransactionMini({ transactionData }) {
                         <Typography
                             noWrap={true}
                             className={classes.transactionSubText}>
-                            {data.description}
+                            {data?.description}
                         </Typography>
                     }
                 </Box>
             </div>
             {!isSimple &&
-                <Typography className={classes.transactionSubText}>{moment(data.time).format("hh:mm - DD/MM/YYYY")}</Typography>
+                <Box className={classes.transactionInfo2}>
+                    <Typography className={classes.transactionAuthor}>{data?.userName}</Typography>
+                    <Typography className={classes.transactionSubText}>{moment(data?.time).format("hh:mm - DD/MM/YYYY")}</Typography>
+                </Box>
             }
         </div>
     );
@@ -108,8 +111,20 @@ const useStyles = makeStyles((isSimple) => ({
         fontSize: '16',
         fontWeight: 'bold'
     },
+    transactionInfo2: {
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        alignItems: 'baseline'
+    },
     transactionSubText: {
         fontSize: '14px',
+    },
+    transactionAuthor: {
+        fontSize: '14px',
+        fontWeight: 'bold',
+        marginRight: '10px'
     },
     transactionTime: {
         width: '24px',
