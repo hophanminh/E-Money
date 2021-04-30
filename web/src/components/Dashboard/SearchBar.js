@@ -21,10 +21,13 @@ import {
 } from '../mycontext'
 import { getSocket } from '../../utils/socket'
 import DefaultIcon from '../../utils/DefaultIcon'
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 
 export default function SearchBar(props) {
     const classes = useStyles();
     const socket = getSocket();
+    const matches = useMediaQuery('(min-width:600px)');
+
     const { list, setFilterList, isSimple, setSimpleOption } = useContext(WalletContext);
     const { fullList } = useContext(CategoryContext);
 
@@ -45,7 +48,7 @@ export default function SearchBar(props) {
     useEffect(() => {
         let filtered = list.slice();
         if (searchInput !== '') {
-            filtered = filtered.filter(i => i.description.toLowerCase().includes(searchInput) || i.categoryName.toLowerCase().includes(searchInput));
+            filtered = filtered.filter(i => i.description.toLowerCase().includes(searchInput.toLowerCase()) || i.categoryName.toLowerCase().includes(searchInput.toLowerCase()));
         }
         setFilterList(filtered.filter(i => checkList.filter(cat => cat.ID === i.catID && cat.checked === true).length !== 0))
     }, [list, searchInput, checkList])
@@ -107,10 +110,14 @@ export default function SearchBar(props) {
                 className={classes.input}
                 value={searchInput}
                 onChange={changeInput}
-                placeholder="Tìm kiếm giao dịch" />
-            <IconButton className={classes.iconButton} aria-label="clear" onClick={clearInput}>
-                <ClearIcon />
-            </IconButton>
+                placeholder="Tìm kiếm giao dịch"
+                InputProps={searchInput !== '' ? {
+                    endAdornment:
+                        <IconButton className={classes.iconButton} size='small' aria-label="clear" onClick={clearInput}>
+                            <ClearIcon />
+                        </IconButton>,
+                } : null}
+            />
             <Divider className={classes.dividerVertical} orientation="vertical" />
             <IconButton color="primary" className={classes.iconButton} aria-label="directions" onClick={handleClickFilter}>
                 <FilterListIcon className={classes.filterIcon} />
@@ -257,7 +264,7 @@ const useStyles = makeStyles((theme) => ({
     iconButton: {
         display: 'flex',
         alignItems: 'center',
-        padding: 10,
+        padding: '5px',
     },
     dividerVertical: {
         height: 28,

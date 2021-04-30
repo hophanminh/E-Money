@@ -70,7 +70,6 @@ CREATE TABLE Categories(
     PRIMARY KEY(ID)
 );
 
-
 DROP TABLE IF EXISTS `Transactions`;
 CREATE TABLE Transactions(
     ID VARCHAR(100) NOT NULL, -- will store as UUID()
