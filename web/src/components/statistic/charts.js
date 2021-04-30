@@ -24,12 +24,13 @@ export default function Charts({ date, barChartData, pieChartSpentData, pieChart
     <Container className={classes.root}>
       <div className={classes.container}>
         <BarChart date={date} chartData={barChartData} />
+        <div>
+          {/* Chi */}
+          <PieChartSpent date={date} chartData={pieChartSpentData} />
 
-        {/* Chi */}
-        <PieChartSpent date={date} chartData={pieChartSpentData} />
-
-        {/* Thu */}
-        <PieChartIncome date={date} chartData={pieChartIncomeData} />
+          {/* Thu */}
+          <PieChartIncome date={date} chartData={pieChartIncomeData} />
+        </div>
 
       </div>
     </Container>
