@@ -1,14 +1,9 @@
 import React, { useState, useEffect, useContext } from 'react';
 import {
-  Container,
-  Breadcrumbs,
   Typography,
   Link,
-  Grid,
   Box,
-  Avatar,
   Divider,
-  Button,
   IconButton,
   makeStyles,
 } from '@material-ui/core/';
@@ -128,7 +123,7 @@ export default function TransactionDetail(props) {
 
                 <Typography
                   className={`${classes.transactionSubText}`}>
-                  Sự kiện:
+                  Sự kiện:&nbsp;
                   {data?.eventName ? <Link to="/">{data?.eventName}</Link> : "không có"}
                 </Typography>
               </Box>

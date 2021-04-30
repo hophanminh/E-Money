@@ -19,7 +19,7 @@ router.post('/barChart', async (req, res) => {
     if (chartData[0].Title === 'Thu') {
       chartData.push({ Title: 'Chi', Money: 0 });
     } else {
-      chartData.push({ Title: 'Thu', Money: 0 });
+      chartData.splice(0, 0, { Title: 'Thu', Money: 0 });
     }
   }
 
