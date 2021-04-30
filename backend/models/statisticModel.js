@@ -7,6 +7,7 @@ module.exports = {
     FROM Transactions T JOIN Users U ON U.ID = T.UserID
     WHERE U.ID = '${userID}' AND MONTH(T.DateAdded) = ${month} AND YEAR(T.DateAdded) = ${year}
     GROUP BY Title
+    ORDER BY Title
   `),
 
   getDataForPieChart: (userID, month, year, isSpent) => db.load(`
