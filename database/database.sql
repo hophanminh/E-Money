@@ -161,6 +161,7 @@ CREATE TABLE TransactionImages(
     TransactionID VARCHAR(100),
 	DateAdded DATETIME,
 	PublicID VARCHAR(100),
+    UserID VARCHAR(100) DEFAULT NULL,
     PRIMARY KEY(ID)
 );
 
@@ -191,5 +192,6 @@ ALTER TABLE Teams_Has_Users ADD CONSTRAINT FK_Teams_Has_Users_Team FOREIGN KEY(T
 ALTER TABLE Teams_Has_Users ADD CONSTRAINT FK_Teams_Has_Users_Users FOREIGN KEY(UserID) REFERENCES Users(ID);
 ALTER TABLE ResetRequests ADD CONSTRAINT FK_ResetRequests_Users FOREIGN KEY(UserID) REFERENCES Users(ID);
 ALTER TABLE TransactionImages ADD CONSTRAINT FK_TransactionImages_Transactions FOREIGN KEY(TransactionID) REFERENCES Transactions(ID);
+ALTER TABLE TransactionImages ADD CONSTRAINT FK_TransactionImages_Users FOREIGN KEY(UserID) REFERENCES Users(ID);
 ALTER TABLE Notifications ADD CONSTRAINT FK_Notifications_Users FOREIGN KEY(UserID) REFERENCES Users(ID);
 ALTER TABLE Notifications ADD CONSTRAINT FK_Notifications_Teams FOREIGN KEY(UserID) REFERENCES Teams(ID);
