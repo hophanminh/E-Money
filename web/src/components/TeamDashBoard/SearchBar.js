@@ -45,7 +45,7 @@ export default function SearchBar(props) {
     useEffect(() => {
         let filtered = list.slice();
         if (searchInput !== '') {
-            filtered = filtered.filter(i => i.description.toLowerCase().includes(searchInput) || i.categoryName.toLowerCase().includes(searchInput));
+            filtered = filtered.filter(i => i.description.toLowerCase().includes(searchInput.toLowerCase()) || i.categoryName.toLowerCase().includes(searchInput.toLowerCase()));
         }
         setFilterList(filtered.filter(i => checkList.filter(cat => cat.ID === i.catID && cat.checked === true).length !== 0))
     }, [list, searchInput, checkList])

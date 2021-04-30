@@ -192,7 +192,7 @@ export default function Dashboard() {
             </Grid>
 
           </Grid>
-          <Grid container spacing={5} className={classes.grid}>
+          <Grid container spacing={5} className={classes.lowerGrid}>
 
             <Grid item lg={3} sm={12}>
               <Box
@@ -201,7 +201,7 @@ export default function Dashboard() {
                 className={classes.longBox}>
                 <SearchBar />
                 <Divider className={classes.dividerBold} />
-
+                <Box className={classes.longListBox}>
                 {(filterList || []).map((i, n) => {
                   return (
                     <React.Fragment key={i.id}>
@@ -210,6 +210,7 @@ export default function Dashboard() {
                     </React.Fragment>
                   )
                 })}
+                </Box>
               </Box>
             </Grid>
 
@@ -307,6 +308,11 @@ const useStyles = makeStyles((theme) => ({
   grid: {
     marginBottom: '20px',
   },
+  lowerGrid: {
+    marginBottom: '20px',
+    minHeight: '630px',
+    maxHeight: '630px',
+  },
   wrap: {
     flexGrow: 3,
     marginLeft: '15px',
@@ -348,9 +354,9 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'center',
   },
 
-  // 3 button
+  // 2 button
   buttonColumn: {
-    minHeight: '575px',
+    height: '100%',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-between',
@@ -377,19 +383,22 @@ const useStyles = makeStyles((theme) => ({
 
   // transaction list
   longBox: {
-    minHeight: '575px',
-    maxHeight: '575px',
+    height: '100%',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
+  },
+  longListBox: {
+    width: '100%',
+    minHeight: '530px',
+    maxHeight: '530px',
     overflowY: 'auto'
   },
 
   // transaction detail
   transactionBox: {
-    minHeight: '575px',
-    maxHeight: '575px',
+    height: '100%',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'flex-start',

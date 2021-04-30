@@ -72,7 +72,7 @@ CREATE TABLE Categories(
     PRIMARY KEY(ID)
 );
 
-INSERT INTO `categories` VALUES ('1','Học tập',1,NULL,'1'),('2','Ăn uống',1,NULL,'2'),('2','Khác',1,NULL,'3');
+INSERT INTO `categories` VALUES ('1','Học tập',1,NULL,'1'),('2','Ăn uống',1,NULL,'2'),('3','Khác',1,NULL,'3');
 
 DROP TABLE IF EXISTS `Transactions`;
 CREATE TABLE Transactions(

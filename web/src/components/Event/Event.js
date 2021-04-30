@@ -268,7 +268,7 @@ export default function Event() {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {(rows_2 || []).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
+                    {(rows_2 || []).slice(page_2 * rowsPerPage, page_2 * rowsPerPage + rowsPerPage).map((row, index) => {
                       return (
                         <TableRow
                           tabIndex={-1}
@@ -385,8 +385,8 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'row',
     justifyContent: 'flex-start',
     flexWrap: "wrap",
-    marginBottom: '25px',
-    marginTop: '25px'
+    marginBottom: '35px',
+    marginTop: '10px'
   },
   addButton: {
     height: '40px',

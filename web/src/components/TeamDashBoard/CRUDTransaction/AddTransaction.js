@@ -101,7 +101,7 @@ export default function AddCategory(props) {
     newTransaction.eventID = newTransaction?.eventID !== 0 ? newTransaction?.eventID : null
 
     socket.emit("add_transaction", { walletID, newTransaction }, ({ ID }) => {
-      setSelected(ID);
+      //setSelected(ID);
     });
 
     setOpen(null);
