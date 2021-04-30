@@ -33,6 +33,8 @@ export default function Statistic() {
       list.push(startDate.format("YYYY-MM-01"));
       startDate.add(1, 'month');
     }
+    setCurrentIndex(list.length - 1);
+    setPreIndex(list.length - 2);
     setDates(list);
   }
 
@@ -42,6 +44,21 @@ export default function Statistic() {
     getPieChartData(info.ActivatedDate, true);
     getPieChartData(info.ActivatedDate, false);
   }, []);
+
+  const changeDate = (index) => {
+    getBarChartData(dates[index]);
+    getPieChartData(dates[index], true);
+    getPieChartData(dates[index], false);
+
+    setPreIndex(currentIndex);
+    setCurrentIndex(index);
+  }
+
+  useEffect(() => {
+    if (dates.length > 0) {
+      changeDate(dates.length - 1);
+    }
+  }, [dates]);
 
   const getBarChartData = async (date) => {
     const data = {
@@ -125,15 +142,6 @@ export default function Statistic() {
         setPieChartIncomeData([]);
       }
     }
-  }
-
-  const changeDate = (index) => {
-    getBarChartData(dates[index]);
-    getPieChartData(dates[index], true);
-    getPieChartData(dates[index], false);
-
-    setPreIndex(currentIndex);
-    setCurrentIndex(index);
   }
 
   return (

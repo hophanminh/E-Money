@@ -6,7 +6,7 @@ import DashboardIcon from '@material-ui/icons/Dashboard';
 import PeopleIcon from '@material-ui/icons/People';
 import AccountBalanceWalletIcon from '@material-ui/icons/AccountBalanceWallet';
 import TableChartIcon from '@material-ui/icons/TableChart';
-import { BsFillBarChartFill } from "react-icons/bs";
+import BarChartIcon from '@material-ui/icons/BarChart';
 import {
   NavLink
 } from "react-router-dom";
@@ -25,7 +25,7 @@ export default function SideBarList(props) {
       {(
         <ListItem button component={NavLink} to="/Statistic">
           <ListItemIcon>
-            <BsFillBarChartFill />
+            <BarChartIcon />
           </ListItemIcon>
           <ListItemText primary="Thống kê" />
         </ListItem>

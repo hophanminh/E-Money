@@ -14,7 +14,7 @@ import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import AddIcon from '@material-ui/icons/Add';
-
+import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -22,6 +22,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Slide from '@material-ui/core/Slide';
 import TextField from '@material-ui/core/TextField';
+import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -69,7 +70,35 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center'
-    }
+    },
+    // upper section
+    title: {
+        display: 'flex',
+        flexDirection: 'column',
+        paddingBottom: '10px'
+    },
+    breadcrumb: {
+        fontSize: '24px',
+    },
+    titleFont: {
+        fontWeight: 'bold',
+        fontSize: '24px',
+    },
+    subTitleFont: {
+        fontSize: '14px',
+    },
+
+    body: {
+        display: 'flex',
+        flexDirection: 'column',
+        marginTop: '30px',
+        paddingBottom: '10px',
+        '& .MuiContainer-root': {
+            padding: 0
+        }
+    },
+
+
 }));
 
 export default function Teams() {
@@ -183,9 +212,18 @@ export default function Teams() {
     return (
         <>
             <SnackBar open={showSnackbar} setOpen={(isOpen) => setShowSnackBar(isOpen)} content={content} />
+
             <Container className={classes.root} maxWidth={null}>
-                <div style={classes.body}>
-                    <Container component="main" maxWidth="lg">
+                <div className={classes.title}>
+                    <Breadcrumbs className={classes.breadcrumb} separator={<NavigateNextIcon fontSize="large" />} aria-label="breadcrumb">
+                        <Typography className={classes.titleFont} color="textPrimary">
+                            Danh sách nhóm
+                        </Typography>
+                    </Breadcrumbs>
+                    <Typography className={classes.subTitleFont} color="textSecondary">Quản lý các khoản giao dịch tiền tệ nhóm </Typography>
+                </div>
+                <div className={classes.body}>
+                    <Container component="main" maxWidth={null}>
                         <Grid container spacing={4}>
                             {teams.map((card) => (
                                 <Grid item key={card} xs={12} sm={6} md={4}>

@@ -214,13 +214,12 @@ export default function Profile() {
                     format="dd/MM/yyyy"
                     margin="normal"
                     id="date-picker-inline"
-                    placeholder="chh"
                     fullWidth value={dateOfBirth}
                     onChange={handleDateChange}
                     KeyboardButtonProps={{
                       'aria-label': 'change date',
                     }}
-                    placeholder="Date of Birth"
+                    placeholder="Ngày sinh"
                   />
                 </MuiPickersUtilsProvider>
                 <Button type="submit" fullWidth variant="contained" style={{ backgroundColor: palette.primary, color: 'white', fontWeight: 'bold', marginTop: '20px' }}

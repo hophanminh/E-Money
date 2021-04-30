@@ -102,18 +102,18 @@ function FastConnect() {
         {`Truy cập nhanh`}
       </h4>
       <div className={`${classes.flexColumn} ${classes.flexStart}`}>
-        <a className={`${classes.hyperLink} ${classes.textFormat}`} href={'/trangChu/google.com'}>
+        <a className={`${classes.hyperLink} ${classes.textFormat}`} href={'/'}>
           Trang chủ
-                </a>
-        <a className={`${classes.hyperLink}  ${classes.textFormat}`} href={'/dangnhap/google.com'}>
+        </a>
+        <a className={`${classes.hyperLink}  ${classes.textFormat}`} href={'/signin'}>
           Đăng Nhập
-                </a>
-        <a className={`${classes.hyperLink}  ${classes.textFormat}`} href={'/dangky/google.com'}>
+        </a>
+        <a className={`${classes.hyperLink}  ${classes.textFormat}`} href={'/signup'}>
           Đăng ký
-                </a>
-        <a className={`${classes.hyperLink}  ${classes.textFormat}`} href={'/dashboard/google.com'}>
-          DashBoard
-                </a>
+        </a>
+        <a className={`${classes.hyperLink}  ${classes.textFormat}`} href={'/wallet'}>
+          Ví cá nhân
+        </a>
       </div>
     </Typography>
 

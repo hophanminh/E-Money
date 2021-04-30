@@ -34,7 +34,9 @@ export default function TransactionMini({ transactionData }) {
 
 
     return (
-        <div className={classes.root} onClick={handleSelect} style={{ backgroundColor: selected?.id === data?.id ? 'rgba(29,175,26,0.07)' : '' }}>
+        <div className={classes.root} onClick={handleSelect}
+            style={{ backgroundColor: selected?.id === data?.id ? 'rgba(29,175,26,0.07)' : '', cursor: 'pointer' }}
+        >
             <div className={classes.transaction}>
                 <DefaultIcon
                     IconID={data.IconID}

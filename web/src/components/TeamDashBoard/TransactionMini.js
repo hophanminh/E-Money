@@ -34,7 +34,9 @@ export default function TransactionMini({ transactionData }) {
 
     console.log(data)
     return (
-        <div className={classes.root} onClick={handleSelect} style={{ backgroundColor: selected?.id === data?.id ? 'rgba(29,175,26,0.07)' : '' }}>
+        <div className={classes.root} onClick={handleSelect}
+            style={{ backgroundColor: selected?.id === data?.id ? 'rgba(29,175,26,0.07)' : '', cursor: 'pointer' }}
+        >
             <div className={classes.transaction}>
                 <DefaultIcon
                     IconID={data?.IconID}
@@ -42,8 +44,7 @@ export default function TransactionMini({ transactionData }) {
                     iconSize={24} />
                 <Box className={classes.wrap}>
                     <Box className={classes.transactionInfo}>
-                        <Typography
-                            className={classes.transactionText}>
+                        <Typography className={classes.transactionText}>
                             {data?.categoryName}
                         </Typography>
                         {amount < 0
