@@ -17,9 +17,13 @@ module.exports = {
     updateTHU(teamId, userId, updateContent) {
         return db.patch('teams_has_users', updateContent, {TeamID: teamId, UserId: userId});
     },
-    deleteTHU: (TeamID, UserID) => {
+    leaveTHU: (TeamID, UserID) => {
         const sql = `DELETE from teams_has_users WHERE TeamID = '${TeamID}' AND UserID = '${UserID}' AND Role <> ${config.PERMISSION.ADMIN} `
         return db.load(sql);
 
+    },
+    deleteTHU: (TeamID, UserID) => {
+        const sql = `DELETE from teams_has_users WHERE TeamID = '${TeamID}'`
+        return db.load(sql);
     }
 }

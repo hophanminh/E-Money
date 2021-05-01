@@ -225,73 +225,18 @@ export default function Teams() {
                 <div className={classes.body}>
                     <Container component="main" maxWidth={null}>
                         <Grid container spacing={4}>
-                            {teams.map((card) => (
-                                <Grid item key={card} xs={12} sm={6} md={4}>
-                                    <Card className={classes.card}>
-                                        <CardMedia
-                                            className={classes.cardMedia}
-                                            image="https://source.unsplash.com/random"
-                                            title="Image title"
-                                        />
-                                        <CardContent className={classes.cardContent}>
-                                            <Typography gutterBottom variant="h5" component="h2">
-                                                {card.TeamID}
-                                            </Typography>
-                                            <Typography>
-                                                {card.Description}
-                                            </Typography>
-                                        </CardContent>
-                                        <CardActions>
-                                            <Button size="small" color="primary" onClick={(TeamID) => walletTeam(card.WalletID)}>
-                                                Ví nhóm
-                                        </Button>
-                                            <Button size="small" color="primary" onClick={(TeamID) => detailTeam(card.ID)}>
-                                                Thông tin nhóm
-                                        </Button>
-                                            <Button size="small" color="primary" onClick={(TeamID) => deleteTeam(card.ID)}>
-                                                Xóa nhóm
-                                        </Button>
-                                        </CardActions>
-                                    </Card>
-                                </Grid>
-                            ))}
-                            {
+                        {
                                 <Grid item xs={12} sm={6} md={4}>
                                     <Card className={`${classes.card} ${classes.centerCard}`}>
                                         <Button size="small"
                                             color="primary"
-                                            onClick={handleClickOpen}
+                                            onClick={createTeam}
 
                                         >
                                             <CardActions>
                                                 <AddIcon style={{ fontSize: 100 }} />
                                             </CardActions>
                                         </Button>
-                                        <Dialog
-                                            open={open}
-                                            TransitionComponent={Transition}
-                                            keepMounted
-                                            onClose={handleClose}
-                                            aria-labelledby="alert-dialog-slide-title"
-                                            aria-describedby="alert-dialog-slide-description"
-                                        >
-                                            <DialogTitle id="alert-dialog-slide-title">{"Tùy chọn"}</DialogTitle>
-                                            <DialogContent>
-                                                <DialogContentText id="alert-dialog-slide-description">
-                                                    Bạn muốn thực hiện hành động gì ???
-                                            </DialogContentText>
-                                            </DialogContent>
-                                            <DialogActions>
-                                                <Button onClick={createTeam} color="primary">
-                                                    Tạo nhóm
-                                            </Button>
-                                                <Button onClick={handleClickOpenDiaForm} color="primary">
-                                                    Tham gia nhóm
-                                            </Button>
-                                            </DialogActions>
-                                        </Dialog>
-
-
                                         <Dialog open={openDiaForm} onClose={handleCloseDiaForm} aria-labelledby="form-dialog-title">
                                             <DialogTitle id="form-dialog-title">Tham Gia Nhóm </DialogTitle>
                                             <DialogContent>
@@ -319,6 +264,34 @@ export default function Teams() {
                                     </Card>
                                 </Grid>
                             }
+                            {teams.map((card) => (
+                                <Grid item key={card} xs={12} sm={6} md={4}>
+                                    <Card className={classes.card}>
+                                        <Typography gutterBottom variant="h5" component="h2">
+                                                {card.Name}
+                                        </Typography>
+                                        <CardContent className={classes.cardContent}>
+                                            <Typography gutterBottom variant="h5" component="h2">
+                                                {card.TeamID}
+                                            </Typography>
+                                            <Typography>
+                                                {card.Description}
+                                            </Typography>
+                                        </CardContent>
+                                        <CardActions>
+                                            <Button size="small" color="primary" onClick={(TeamID) => walletTeam(card.WalletID)}>
+                                                Ví nhóm
+                                        </Button>
+                                            <Button size="small" color="primary" onClick={(TeamID) => detailTeam(card.ID)}>
+                                                Thông tin nhóm
+                                        </Button>
+                                            <Button size="small" color="primary" onClick={(TeamID) => deleteTeam(card.ID)}>
+                                                Xóa nhóm
+                                        </Button>
+                                        </CardActions>
+                                    </Card>
+                                </Grid>
+                            ))}
                         </Grid>
                     </Container>
                 </div>

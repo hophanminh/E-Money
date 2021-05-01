@@ -12,7 +12,6 @@ import config from '../../constants/config.json';
 import palette from '../../constants/palette.json';
 import MyContext from '../mycontext/MyContext';
 import SnackBar from '../snackbar/SnackBar';
-
 const API_URL = config.API_LOCAL;
 const styles = {
     wallpaper: {
@@ -183,9 +182,12 @@ export default function TeamProfile() {
                                         <Typography style={{ fontWeight: 'bold' }} variant="h6">Mô tả</Typography>
                                     </div>
                                     <TextField placeholder="Mô tả"
-                                               variant="outlined" margin="normal" required fullWidth
+                                               variant="outlined" 
+                                               margin="normal" 
+                                               required fullWidth
                                                onChange={e => handleDescription(e.target.value)}
                                                value={description}
+                                               multiline
                                     />
                                 </div>
 

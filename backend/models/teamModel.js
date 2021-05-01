@@ -8,14 +8,14 @@ module.exports = {
                         WHERE thu.status = ${config.STATUS.ACTIVE} AND thu.UserID = '${userId}'`;
         return db.load(sql);
     },
-    getTeamByWalletId: (walletId) => {
-        const sql = `SELECT * from teams t WHERE t.WalletID = ?`
-        return db.loadSafe(sql, [walletId]);
+    getTeamByWalletId: (id) => {
+        console.log("ID: ", id);
+        const sql = `SELECT * from teams WHERE WalletID = '${id}'`;
+        return db.load(sql);
     },
     getTeamById: (id) => {
         console.log("ID: ", id);
         const sql = `SELECT * from teams WHERE ID = '${id}'`;
-        console.log(sql);
         return db.load(sql);
     },
     getTeamByIdAndUserId: (teamId, userId) => {

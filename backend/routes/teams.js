@@ -149,12 +149,31 @@ router.put('/details/:id', async (req, res) => {
     res.send(update);
 });
 
-router.post('/:id/delete', async (req, res) => {
-    const teamId = req.params.id;
-    console.log("delete teams " + teamId)
-    const teamObject = await TeamModel.getTeamById(teamId);
+router.post('/:id/leave', async (req, res) => {
+    const walletId = req.params.id;
+    console.log("delete teams wallet " + walletId)
+    const teamObject = await TeamModel.getTeamByWalletId(walletId);
     const { UserID } = req.body;
+    console.log(teamObject.length)
+    if (teamObject.length === 0) {
+        return res.status(400).send({ msg: "Không tìm thấy nhóm." })
+    }
 
+    const team = teamObject[0];
+    // Remove user from team
+    const c = await TeamHasUserModel.leaveTHU(team.ID, UserID)
+    return res.status(200).send({msg: "success"})
+
+});
+
+//TODO Delete all team member
+
+router.post('/:id/delete', async (req, res) => {
+    const walletId = req.params.id;
+    console.log("delete teams wallet " + walletId)
+    const teamObject = await TeamModel.getTeamByWalletId(walletId);
+    const { UserID } = req.body;
+    console.log(teamObject.length)
     if (teamObject.length === 0) {
         return res.status(400).send({ msg: "Không tìm thấy nhóm." })
     }
@@ -162,6 +181,7 @@ router.post('/:id/delete', async (req, res) => {
     const team = teamObject[0];
     // Remove user from team
     const c = await TeamHasUserModel.deleteTHU(team.ID, UserID)
+    const d = await TeamModel.deleteTeam(team.ID);
     return res.status(200).send({msg: "success"})
 
 });
