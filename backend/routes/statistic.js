@@ -6,10 +6,18 @@ const statisticModel = require('../models/statisticModel');
 router.use(express.static('public'));
 
 router.post('/barChart', async (req, res) => {
-  const { userID, date } = req.body;
+  const { userID, teamID, date } = req.body;
   const month = moment(date).format("M");
   const year = moment(date).format("YYYY");
-  const chartData = await statisticModel.getDataForBarChart(userID, month, year);
+  let chartData;
+
+  if (userID) {
+    chartData = await statisticModel.getDataForBarChart(userID, month, year);
+  }
+
+  if (teamID) {
+    chartData = await statisticModel.getDataForTeamBarChart(teamID, month, year);
+  }
 
   if (chartData.length === 0) {
     return res.status(400).end();
@@ -29,14 +37,24 @@ router.post('/barChart', async (req, res) => {
 });
 
 router.post('/pieChart', async (req, res) => {
-  const { userID, date, isSpent } = req.body;
+  const { userID, teamID, date, isSpent } = req.body;
   const month = moment(date).format("M");
   const year = moment(date).format("YYYY");
-  const chartData = await statisticModel.getDataForPieChart(userID, month, year, isSpent);
+  let chartData;
+
+  if (userID) {
+    chartData = await statisticModel.getDataForPieChart(userID, month, year, isSpent);
+  }
+
+  if (teamID) {
+    chartData = await statisticModel.getDataForTeamPieChart(teamID, month, year, isSpent);
+  }
 
   if (chartData.length === 0) {
     return res.status(400).end();
   }
+
+  console.log(chartData);
 
   return res.status(200).send({ chartData });
 });
