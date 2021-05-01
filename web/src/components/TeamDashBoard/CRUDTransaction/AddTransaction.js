@@ -33,7 +33,7 @@ import POPUP from '../../../constants/popup.json'
 
 const NAME = POPUP.TRANSACTION.ADD_TRANSACTION
 
-export default function AddCategory(props) {
+export default function AddTransaction(props) {
   const classes = useStyles();
   const socket = getSocket();
   const { walletID, setSelected } = useContext(WalletContext);
@@ -92,7 +92,7 @@ export default function AddCategory(props) {
     }
 
     const newCategory = fullList.find(i => i.ID === newTransaction.catID);
-    const newEvent = eventList.find(i => i.id === newTransaction.eventID);
+    const newEvent = eventList.find(i => i.ID === newTransaction.eventID);
 
     newTransaction.IconID = newCategory?.IconID;
     newTransaction.categoryName = newCategory?.Name;
@@ -245,7 +245,7 @@ export default function AddCategory(props) {
             name="catID"
             select
             label="Hạng mục"
-            value={newTransaction.catID}
+            value={newTransaction ? newTransaction.catID : 0}
             onChange={handleChange}
             fullWidth
             variant="outlined"
@@ -276,7 +276,7 @@ export default function AddCategory(props) {
             name="eventID"
             select
             label="Sự kiện"
-            value={newTransaction.eventID}
+            value={newTransaction ? newTransaction?.eventID : 0}
             onChange={handleChange}
             fullWidth
             variant="outlined"
@@ -285,7 +285,7 @@ export default function AddCategory(props) {
               Không có
                         </MenuItem>
             {(eventList || []).filter(i => i.Status === 1).map((event) => (
-              <MenuItem key={event.id} value={event.ID}>
+              <MenuItem key={event.ID} value={event.ID}>
                 {event.Name}
               </MenuItem>
             ))}

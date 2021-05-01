@@ -21,10 +21,13 @@ import {
 } from '../mycontext'
 import { getSocket } from '../../utils/socket'
 import DefaultIcon from '../../utils/DefaultIcon'
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 
 export default function SearchBar(props) {
     const classes = useStyles();
     const socket = getSocket();
+    const matches = useMediaQuery('(min-width:600px)');
+
     const { list, setFilterList, isSimple, setSimpleOption } = useContext(WalletContext);
     const { fullList } = useContext(CategoryContext);
 
@@ -32,7 +35,7 @@ export default function SearchBar(props) {
     const [searchInput, setSearchInput] = useState('');
 
     useEffect(() => {
-        if (fullList?.length !== 0 && checkList?.length === 0) {
+        if (fullList) {
             let temp = [];
             for (let i = 0; i < fullList?.length; i++) {
                 temp.push({ ...fullList[i], checked: true })
@@ -62,17 +65,16 @@ export default function SearchBar(props) {
     // filter menu
     const [anchorEl, setAnchorEl] = React.useState(null);
 
-    const handleClick = (event) => {
+    const handleClickFilter = (event) => {
         setAnchorEl(event.currentTarget);
     };
 
-    const handleClose = () => {
+    const handleCloseFilter = () => {
         setAnchorEl(null);
     };
     const open = Boolean(anchorEl);
     const id = open ? 'simple-popover' : undefined;
 
-    // check filter
     const [checkAll, setCheckAll] = useState(true);
     const checkBox = (event) => {
         setCheckList(checkList.map(cat => (cat.ID === event.target.id ? { ...cat, checked: !cat.checked } : cat)));
@@ -108,19 +110,22 @@ export default function SearchBar(props) {
                 className={classes.input}
                 value={searchInput}
                 onChange={changeInput}
-                placeholder="Tìm kiếm giao dịch" />
-            <IconButton className={classes.iconButton} aria-label="clear" onClick={clearInput}>
-                <ClearIcon />
-            </IconButton>
-            <Divider className={classes.dividerVertical} orientation="vertical" />
-            <IconButton color="primary" className={classes.iconButton} aria-label="directions" onClick={handleClick}>
-                <FilterListIcon />
+                placeholder="Tìm kiếm giao dịch"
+                                InputProps={searchInput !== '' ? {
+                    endAdornment:
+                        <IconButton className={classes.iconButton} size='small' aria-label="clear" onClick={clearInput}>
+                            <ClearIcon />
+                        </IconButton>,
+                } : null}
+            />
+            <IconButton color="primary" className={classes.iconButton} aria-label="directions" onClick={handleClickFilter}>
+                <FilterListIcon className={classes.filterIcon} />
             </IconButton>
             <Popover
                 id={id}
                 open={open}
                 anchorEl={anchorEl}
-                onClose={handleClose}
+                onClose={handleCloseFilter}
                 anchorOrigin={{
                     vertical: 'bottom',
                     horizontal: 'center',
@@ -258,11 +263,7 @@ const useStyles = makeStyles((theme) => ({
     iconButton: {
         display: 'flex',
         alignItems: 'center',
-        padding: 10,
-    },
-    dividerVertical: {
-        height: 28,
-        margin: 4,
+        padding: '5px',
     },
     dividerBold: {
         width: '100%',

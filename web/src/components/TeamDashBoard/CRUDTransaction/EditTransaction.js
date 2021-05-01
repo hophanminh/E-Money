@@ -49,13 +49,13 @@ export default function EditTransaction(props) {
     useEffect(() => {
         if (data) {
             setNewTransaction(data)
-            setType(data.price >= 0 ? "Thu" : "Chi");
+            setType(data?.price >= 0 ? "Thu" : "Chi");
         }
     }, [data])
 
 
     const clearNewTransaction = () => {
-        setType(data.price >= 0 ? "Thu" : "Chi");
+        setType(data?.price >= 0 ? "Thu" : "Chi");
         setNewTransaction(data)
     }
 
@@ -65,7 +65,7 @@ export default function EditTransaction(props) {
     }
     const handleEdit = () => {
         const newCategory = fullList.find(i => i?.ID === newTransaction?.catID);
-        const newEvent = eventList.find(i => i?.id === newTransaction?.eventID);
+        const newEvent = eventList.find(i => i?.ID === newTransaction?.eventID);
 
         const temp = newTransaction;
         temp.IconID = newCategory?.IconID;
@@ -220,7 +220,7 @@ export default function EditTransaction(props) {
                         name="eventID"
                         select
                         label="Sự kiện"
-                        value={newTransaction?.eventID}
+                        value={newTransaction ? newTransaction?.eventID : 0}
                         onChange={handleChange}
                         fullWidth
                         variant="outlined"

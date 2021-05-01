@@ -20,7 +20,6 @@ export const WalletProvider = (props) => {
 
   useEffect(() => {
     const check = window.localStorage.getItem('isSimple') === '0' ? false : true;
-    console.log(window.localStorage.getItem('isSimple'), check)
     setIsSimple(check)
   }, [])
 

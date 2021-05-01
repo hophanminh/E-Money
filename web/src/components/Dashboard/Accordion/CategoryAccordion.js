@@ -27,15 +27,35 @@ const CategoryAccordion = (props) => {
     const classes = useStyles();
 
     const { fullList } = useContext(CategoryContext);
-    const { walletID, expanded, setExpanded } = useContext(WalletContext);
+    const { walletID, list, expanded, setExpanded } = useContext(WalletContext);
 
-    const list = fullList.sort((a, b) => b.count - a.count).slice(0, 5);
-    const extra = new Array(5 - list?.length).fill(null)
+    const [catList, setCatList] = useState([]);
+    const extra = new Array(5 - catList?.length).fill(null)
+
+    useEffect(() => {
+        if (fullList) {
+            const temp = fullList?.sort((a, b) => b.count - a.count)?.slice(0, 5);
+            setCatList(temp);
+        }
+    }, [fullList])
+
+    useEffect(() => {
+        if (list && fullList) {
+            const temp = [...fullList];
+            for (let i = 0; i < temp?.length; i++) {
+                const number = list.filter(j => j?.catID === temp[i]?.ID)?.length;
+                temp[i] = { ...temp[i], count: number };
+                temp?.sort((a, b) => b.count - a.count)
+                setCatList(temp);
+            }
+        }
+    }, [list, fullList])
 
     const handleChangeExpand = () => {
         const name = 'category';
         setExpanded(name !== expanded ? name : 'event')
     }
+    
     return (
         <div className={classes.root}>
             <Accordion className={classes.accordion} expanded={expanded === 'category'} onChange={() => handleChangeExpand()}>
@@ -44,7 +64,7 @@ const CategoryAccordion = (props) => {
                     <Typography className={classes.accordionHeadText}>Danh mục giao dịch</Typography>
                 </AccordionSummary>
                 <Divider className={classes.divider} />
-                {(list || []).map(cat => {
+                {(catList || []).map(cat => {
                     return (
                         <React.Fragment key={cat?.ID}>
                             <AccordionDetails className={classes.accordionDetail}>
@@ -137,6 +157,7 @@ const useStyles = makeStyles(() => ({
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'flex-end',
+        marginBottom: '40px'
     }),
     accordion: {
         width: '100%',

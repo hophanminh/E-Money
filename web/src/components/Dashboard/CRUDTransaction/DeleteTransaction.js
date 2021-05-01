@@ -32,7 +32,7 @@ export default function DeleteTransaction(props) {
     };
 
     const handleDelete = () => {
-        socket.emit("delete_transaction", { walletID, id: data.id });
+        socket.emit("delete_transaction", { walletID, id: data?.id });
         setOpen(null);
     };
 
