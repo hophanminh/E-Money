@@ -1,18 +1,22 @@
 import React, { useContext, useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Container } from '@material-ui/core';
 import HorizontalTimeline from "react-horizontal-timeline";
 import moment from 'moment';
 
 import MyContext from '../mycontext/MyContext';
-import Charts from './charts.js';
+import Charts from '../statistic/charts';
 import config from '../../constants/config.json';
 
 const API_URL = config.API_LOCAL;
 
-export default function Statistic() {
-  const userID = localStorage.getItem('userID');
+export default function TeamStatistic() {
   const jwtToken = localStorage.getItem('jwtToken');
+
+  const location = useLocation();
+  const team = location.state.team;
   const { info } = useContext(MyContext);
+
   const [dates, setDates] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [preIndex, setPreIndex] = useState(-1);
@@ -34,7 +38,7 @@ export default function Statistic() {
   }
 
   useEffect(() => {
-    calculateDates(info.ActivatedDate);
+    calculateDates(team.CreatedDate);
   }, []);
 
   const changeDate = (index) => {
@@ -53,7 +57,7 @@ export default function Statistic() {
 
   const getBarChartData = async (date) => {
     const data = {
-      userID: userID,
+      teamID: team.ID,
       date: date
     }
 
@@ -86,7 +90,7 @@ export default function Statistic() {
 
   const getPieChartData = async (date, isSpent) => {
     const data = {
-      userID: userID,
+      teamID: team.ID,
       date: date,
       isSpent: isSpent
     }
@@ -107,17 +111,12 @@ export default function Statistic() {
         return {
           type: data.Name,
           value: data.Money < 0 ? data.Money * -1 : data.Money
-        };
-      });
-      let temp = [];
-      chartData.forEach(data => {
-        if (data.value > 0)
-          temp.push(data);
+        }
       });
       if (isSpent) {
-        setPieChartSpentData(temp);
+        setPieChartSpentData(chartData);
       } else {
-        setPieChartIncomeData(temp);
+        setPieChartIncomeData(chartData);
       }
     } else {
       if (isSpent) {

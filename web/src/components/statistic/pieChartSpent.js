@@ -39,7 +39,7 @@ export default function PieChartSpent({ date, chartData }) {
             <div style={{ textAlign: 'center' }}>Không có dữ liệu</div> :
             <Chart data={chartData}>
               <Palette scheme={scheme} />
-              <PieSeries valueField="value" argumentField="type" outerRadius={0.8} />
+              <PieSeries valueField="value" argumentField="type" outerRadius={0.6} />
               <Title text={"Thống kê các khoản chi tháng " + (date.getMonth() + 1) + "/" + date.getFullYear()} />
               <Legend />
               <Animation />

@@ -60,8 +60,6 @@ CREATE TABLE EventTypes(
     PRIMARY KEY(ID)
 );
 
-INSERT INTO `eventtypes` VALUES ('1','Hằng ngày'),('2','Hằng tuần'),('3','Hằng tháng'),('4','Hằng năm');
-
 DROP TABLE IF EXISTS `Categories`;
 CREATE TABLE Categories(
     ID VARCHAR(100) NOT NULL, -- will store as UUID()
@@ -71,8 +69,6 @@ CREATE TABLE Categories(
     IconID VARCHAR(100),
     PRIMARY KEY(ID)
 );
-
-INSERT INTO `categories` VALUES ('1','Học tập',1,NULL,'1'),('2','Ăn uống',1,NULL,'2'),('3','Khác',1,NULL,'3');
 
 DROP TABLE IF EXISTS `Transactions`;
 CREATE TABLE Transactions(
@@ -152,8 +148,6 @@ CREATE TABLE Icons(
     PRIMARY KEY(ID)
 );
 
-INSERT INTO `icons` VALUES ('1','school','#FFFFFF','#1DAF1A'),('2','fastfood','#FFFFFF','#FF2626'),('3','attach_money','#FFFFFF','#808080');
-
 DROP TABLE IF EXISTS `TransactionImages`;
 CREATE TABLE TransactionImages(
     ID VARCHAR(100) NOT NULL, -- will store as UUID()
@@ -172,7 +166,6 @@ CREATE TABLE Notifications(
     DateNotified DATETIME,
     IsRead BOOLEAN,
     UserID VARCHAR(100),
-    TeamID VARCHAR(100),
     PRIMARY KEY(ID)
 );
 
@@ -194,4 +187,18 @@ ALTER TABLE ResetRequests ADD CONSTRAINT FK_ResetRequests_Users FOREIGN KEY(User
 ALTER TABLE TransactionImages ADD CONSTRAINT FK_TransactionImages_Transactions FOREIGN KEY(TransactionID) REFERENCES Transactions(ID);
 ALTER TABLE TransactionImages ADD CONSTRAINT FK_TransactionImages_Users FOREIGN KEY(UserID) REFERENCES Users(ID);
 ALTER TABLE Notifications ADD CONSTRAINT FK_Notifications_Users FOREIGN KEY(UserID) REFERENCES Users(ID);
-ALTER TABLE Notifications ADD CONSTRAINT FK_Notifications_Teams FOREIGN KEY(UserID) REFERENCES Teams(ID);
+
+INSERT INTO `icons` VALUES ('1','school','#FFFFFF','#1DAF1A'),('2','fastfood','#FFFFFF','#FF2626'),('3','attach_money','#FFFFFF','#808080');
+INSERT INTO `eventtypes` VALUES ('1','Hằng ngày'),('2','Hằng tuần'),('3','Hằng tháng'),('4','Hằng năm');
+INSERT INTO `categories` VALUES ('1','Học tập',1,NULL,'1'),('2','Ăn uống',1,NULL,'2'),('3','Khác',1,NULL,'3');
+INSERT INTO `wallets` VALUES 
+	('1', 0, 0, 0, '2021-01-01'),
+	('2', 0, 0, 0, '2021-01-01'),
+	('3', 0, 0, 0, '2021-01-01'),
+	('4', 0, 0, 0, '2021-01-01');
+-- Password: 123456
+INSERT INTO `users` VALUES 
+	('1', 'Hồ Phan Minh', 'hpminh', '$2a$10$eOJ7p0X0Lva0KcqbB3im1usbd.zPFxSFIeuaeqVWlFgFZUuJ8h5Da', 'hophanminh@gmail.com', '1999-05-19', NULL, '2021-01-01', '1'),
+	('2', 'Lạc Tuấn Minh', 'ltminh', '$2a$10$eOJ7p0X0Lva0KcqbB3im1usbd.zPFxSFIeuaeqVWlFgFZUuJ8h5Da', 'lactuanminh@gmail.com', '1999-01-01', NULL, '2021-01-01', '2'),
+	('3', 'Nguyễn Quang Minh', 'nqminh', '$2a$10$eOJ7p0X0Lva0KcqbB3im1usbd.zPFxSFIeuaeqVWlFgFZUuJ8h5Da', 'nguyenquangminh@gmail.com', '1999-01-01', NULL, '2021-01-01', '3'),
+	('4', 'Hồ Khánh Nguyên', 'hknguyen', '$2a$10$eOJ7p0X0Lva0KcqbB3im1usbd.zPFxSFIeuaeqVWlFgFZUuJ8h5Da', 'hokhanhnguyen@gmail.com', '1999-04-30', NULL, '2021-01-01', '4');

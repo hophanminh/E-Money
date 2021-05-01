@@ -12,7 +12,7 @@ import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
   container: {
-    margin: '50px 20px 20px 30px'
+    margin: '50px 20px 20px 30px',
   },
   paper: {
     boxShadow: '0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23)',
@@ -39,7 +39,7 @@ export default function PieChartSpent({ date, chartData }) {
             <div style={{ textAlign: 'center' }}>Không có dữ liệu</div> :
             <Chart data={chartData}>
               <Palette scheme={scheme} />
-              <PieSeries valueField="value" argumentField="type" outerRadius={0.8} />
+              <PieSeries valueField="value" argumentField="type" outerRadius={0.6} />
               <Title text={"Thống kê các khoản thu tháng " + (date.getMonth() + 1) + "/" + date.getFullYear()} />
               <Legend />
               <Animation />

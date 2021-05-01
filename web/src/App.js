@@ -1,10 +1,10 @@
-import React, { useEffect, useContext } from 'react';
+import React, { useContext } from 'react';
 import './App.css';
 import {
   BrowserRouter as Router,
   Switch,
   Route,
-} from "react-router-dom";
+} from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Home from './components/home/home';
@@ -15,21 +15,19 @@ import Dashboard from './components/Dashboard/Dashboard';
 import TeamDashBoard from './components/TeamDashBoard/TeamDashBoard';
 import Category from './components/Category/Category';
 import Event from './components/Event/Event';
-import Menu from "./components/SideBar/Menu";
+import Menu from './components/SideBar/Menu';
 import SignIn from './components/signin/SignIn';
 import SignUp from './components/signup/SignUp';
 import ActivateDestination from './components/activedestination/ActiveDestination';
 import Profile from './components/profile/Profile';
 import TeamProfile from './components/Team/TeamProfile';
-import config from './constants/config.json';
+import TeamStatistic from './components/Team/TeamStatistic';
 import MyContext from './components/mycontext/MyContext';
 import CombinedProvider from './components/mycontext/combineProvider'
-import Teams from "./components/Team/Teams";
-import UpdateProfile from "./components/Team/UpdateProfile";
+import Teams from './components/Team/Teams';
+import UpdateProfile from './components/Team/UpdateProfile';
 import ResetDestination from './components/signin/resetpassword/ResetDestination';
-import { getListIcon } from './utils/DefaultIcon'
-
-const API_URL = config.API_LOCAL;
+import { getListIcon } from './utils/DefaultIcon';
 
 const routes = [
   {
@@ -86,6 +84,11 @@ const routes = [
     path: '/teams/:TeamID/details',
     private: true,
     main: () => <UpdateProfile />
+  },
+  {
+    path: '/teams/:TeamID/statistic',
+    private: true,
+    main: () => <TeamStatistic />
   },
   {
     path: '/teams',
