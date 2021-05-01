@@ -198,7 +198,7 @@ INSERT INTO `wallets` VALUES
 	('4', 0, 0, 0, '2021-01-01');
 -- Password: 123456
 INSERT INTO `users` VALUES 
-	('1', 'Hồ Phan Minh', 'hpminh', '$10$eOJ7p0X0Lva0KcqbB3im1usbd.zPFxSFIeuaeqVWlFgFZUuJ8h5Da', 'hophanminh@gmail.com', '1999-05-19', NULL, '2021-01-01', '1'),
-	('2', 'Lạc Tuấn Minh', 'ltminh', '$10$eOJ7p0X0Lva0KcqbB3im1usbd.zPFxSFIeuaeqVWlFgFZUuJ8h5Da', 'lactuanminh@gmail.com', '1999-01-01', NULL, '2021-01-01', '2'),
-	('3', 'Nguyên Quang Minh', 'nqminh', '$10$eOJ7p0X0Lva0KcqbB3im1usbd.zPFxSFIeuaeqVWlFgFZUuJ8h5Da', 'nguyenquangminh@gmail.com', '1999-01-01', NULL, '2021-01-01', '3'),
-	('4', 'Hồ Khánh Nguyên', 'hknguyen', '$10$eOJ7p0X0Lva0KcqbB3im1usbd.zPFxSFIeuaeqVWlFgFZUuJ8h5Da', 'hokhanhnguyen@gmail.com', '1999-30-04', NULL, '2021-01-01', '4');
+	('1', 'Hồ Phan Minh', 'hpminh', '$2a$10$eOJ7p0X0Lva0KcqbB3im1usbd.zPFxSFIeuaeqVWlFgFZUuJ8h5Da', 'hophanminh@gmail.com', '1999-05-19', NULL, '2021-01-01', '1'),
+	('2', 'Lạc Tuấn Minh', 'ltminh', '$2a$10$eOJ7p0X0Lva0KcqbB3im1usbd.zPFxSFIeuaeqVWlFgFZUuJ8h5Da', 'lactuanminh@gmail.com', '1999-01-01', NULL, '2021-01-01', '2'),
+	('3', 'Nguyễn Quang Minh', 'nqminh', '$2a$10$eOJ7p0X0Lva0KcqbB3im1usbd.zPFxSFIeuaeqVWlFgFZUuJ8h5Da', 'nguyenquangminh@gmail.com', '1999-01-01', NULL, '2021-01-01', '3'),
+	('4', 'Hồ Khánh Nguyên', 'hknguyen', '$2a$10$eOJ7p0X0Lva0KcqbB3im1usbd.zPFxSFIeuaeqVWlFgFZUuJ8h5Da', 'hokhanhnguyen@gmail.com', '1999-04-30', NULL, '2021-01-01', '4');

@@ -2,10 +2,8 @@ import React, { useState } from 'react';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import DashboardIcon from '@material-ui/icons/Dashboard';
 import PeopleIcon from '@material-ui/icons/People';
 import AccountBalanceWalletIcon from '@material-ui/icons/AccountBalanceWallet';
-import TableChartIcon from '@material-ui/icons/TableChart';
 import BarChartIcon from '@material-ui/icons/BarChart';
 import {
   NavLink

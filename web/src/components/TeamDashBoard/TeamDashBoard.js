@@ -25,8 +25,7 @@ import TrendingUpIcon from '@material-ui/icons/TrendingUp';
 import TrendingDownIcon from '@material-ui/icons/TrendingDown';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import SettingsIcon from '@material-ui/icons/Settings';
-import EventIcon from '@material-ui/icons/Event';
-import DefaultIcon from '../../utils/DefaultIcon'
+import BarChartIcon from '@material-ui/icons/BarChart';
 
 import SearchBar from './SearchBar'
 import TransactionMini from './TransactionMini'
@@ -133,8 +132,21 @@ const TeamDashBoard = () => {
             <Typography className={classes.subTitleFont} color="textSecondary">Quản lý các khoản giao dịch tiền tệ nhóm </Typography>
           </div>
           <Box className={classes.actionBox}>
-            <Link to={`/teams/${team?.ID}/details`} style={{ textDecoration: 'none' }} >
-              <Button className={classes.teamButton} variant="outlined" onClick={handleOpenAddDialog}>
+            <Link
+              to={{
+                pathname: `/teams/${team?.ID}/statistic`,
+                state: { team: team }
+              }}
+              style={{ textDecoration: 'none', marginRight: 10 }}
+            >
+              <Button className={classes.teamStatisticButton} variant="outlined">
+                <BarChartIcon className={classes.yellow} />
+                Thống kê nhóm
+              </Button>
+            </Link>
+
+            <Link to={`/teams/${team?.ID}/details`} style={{ textDecoration: 'none', marginLeft: 10 }} >
+              <Button className={classes.teamInfoButton} variant="outlined">
                 <SettingsIcon className={classes.green} />
                 Thông tin nhóm
               </Button>
@@ -266,6 +278,9 @@ const useStyles = makeStyles((theme) => ({
   green: {
     color: '#1DAF1A'
   },
+  yellow: {
+    color: '#fda92c'
+  },
   card: (theme) => ({
     backgroundColor: theme.body,
     border: theme.fieldBorder,
@@ -320,10 +335,17 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: 'flex-start',
     alignItems: 'center',
   },
-  teamButton: {
+  teamInfoButton: {
     height: '40px',
     textTransform: 'none',
     borderColor: '#1DAF1A',
+    padding: '5px 10px',
+    backgroundColor: '#FFFFFF'
+  },
+  teamStatisticButton: {
+    height: '40px',
+    textTransform: 'none',
+    borderColor: '#fda92c',
     padding: '5px 10px',
     backgroundColor: '#FFFFFF'
   },
