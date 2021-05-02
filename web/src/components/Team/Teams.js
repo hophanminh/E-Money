@@ -172,24 +172,16 @@ export default function Teams() {
             },
             body: JSON.stringify(data),
         });
-        history.push("/teams")
+        if(res.status === 201) {
+            history.push("/teams")
+        } else {
+            const result = await res.json();
+            console.log(result);
+            setContent(result.msg);
+            setShowSnackBar(true);
+        }
         handleCloseDiaForm();
         handleClose();
-    }
-
-    const deleteTeam = async (TeamID) => {
-        const data = {
-            UserID: userID
-        }
-        const res = await fetch(`${API_URL}/teams/${TeamID}/delete`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify(data),
-        });
-        history.push("/teams")
     }
 
     const [open, setOpen] = React.useState(false);
@@ -202,6 +194,7 @@ export default function Teams() {
 
     const [openDiaForm, setOpenDiaForm] = React.useState(false);
     const handleClickOpenDiaForm = () => {
+        handleClose();
         setOpenDiaForm(true);
     };
     const handleCloseDiaForm = () => {
@@ -230,13 +223,31 @@ export default function Teams() {
                                     <Card className={`${classes.card} ${classes.centerCard}`}>
                                         <Button size="small"
                                             color="primary"
-                                            onClick={createTeam}
+                                            onClick={handleClickOpen}
 
                                         >
                                             <CardActions>
                                                 <AddIcon style={{ fontSize: 100 }} />
                                             </CardActions>
                                         </Button>
+                                        <Dialog
+                                            open={open}
+                                            TransitionComponent={Transition}
+                                            keepMounted
+                                            onClose={handleClose}
+                                            aria-labelledby="alert-dialog-slide-title"
+                                            aria-describedby="alert-dialog-slide-description"
+                                        >
+                                            <DialogTitle id="alert-dialog-slide-title">{"Tùy chọn"}</DialogTitle>
+                                            <DialogActions>
+                                                <Button onClick={createTeam} color="primary">
+                                                    Tạo nhóm
+                                            </Button>
+                                                <Button onClick={handleClickOpenDiaForm} color="primary">
+                                                    Tham gia nhóm
+                                            </Button>
+                                            </DialogActions>
+                                        </Dialog>
                                         <Dialog open={openDiaForm} onClose={handleCloseDiaForm} aria-labelledby="form-dialog-title">
                                             <DialogTitle id="form-dialog-title">Tham Gia Nhóm </DialogTitle>
                                             <DialogContent>
@@ -284,9 +295,6 @@ export default function Teams() {
                                         </Button>
                                             <Button size="small" color="primary" onClick={(TeamID) => detailTeam(card.ID)}>
                                                 Thông tin nhóm
-                                        </Button>
-                                            <Button size="small" color="primary" onClick={(TeamID) => deleteTeam(card.ID)}>
-                                                Xóa nhóm
                                         </Button>
                                         </CardActions>
                                     </Card>
