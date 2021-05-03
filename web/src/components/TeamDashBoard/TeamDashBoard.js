@@ -40,6 +40,8 @@ import { formatMoney } from '../../utils/currency'
 import EventAccordion from './Accordion/EventAccordion';
 
 import config from '../../constants/config.json';
+import cf from '../../Config/default.json';
+
 const API_URL = config.API_LOCAL;
 
 const TeamDashBoard = () => {
@@ -60,10 +62,13 @@ const TeamDashBoard = () => {
     total: 0
   })
   const [team, setTeam] = useState();
+  const [thu, setTHU] = useState({});
   // get initial data
   useEffect(() => {
     socket.emit("get_team", { walletID: id }, (team) => {
-      setTeam(team);
+      setTeam(team.team);
+      setTHU(team.thu[0]);
+      console.log("THU: ", thu.Role);
     });
 
     setWalletID(id);
@@ -139,7 +144,24 @@ const TeamDashBoard = () => {
         body: JSON.stringify(data),
     });
     history.push("/teams")
-}
+  }
+
+  const deleteTeam = async () => {
+    const data = {
+        UserID: userID
+    }
+    console.log('data: ' + data);
+    console.log('idTeam: ' + id);
+    const res = await fetch(`${API_URL}/teams/${id}/delete`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+    });
+    history.push("/teams")
+  }
 
   return (
     <>
@@ -175,11 +197,12 @@ const TeamDashBoard = () => {
                 &nbsp;Thông tin nhóm
               </Button>
             </Link>
-
             <Link style={{ textDecoration: 'none', marginLeft: 10 }} >
-              <Button className={classes.teamLeaveButton} variant="outlined" onClick={(TeamID) => leaveTeam()}>
+              <Button className={classes.teamLeaveButton} variant="outlined" 
+              onClick={() => (thu.Role === 1) ? deleteTeam () :leaveTeam()}
+            >
                 <ExitToAppIcon className={classes.red} />
-                &nbsp;Rời nhóm
+                {(thu.Role === 1) ? ` Xóa nhóm` : ` Rời nhóm`}
               </Button>
             </Link>
           </Box>
