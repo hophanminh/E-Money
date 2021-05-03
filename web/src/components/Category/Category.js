@@ -14,7 +14,6 @@ import {
   makeStyles,
 } from '@material-ui/core/';
 import {
-  MyContext,
   WalletContext,
   PopupContext,
   CategoryContext
@@ -40,12 +39,29 @@ export default function Category(props) {
   const socket = getSocket();
   const { setOpen } = useContext(PopupContext);
   const { defaultList, customList, setAllList, setSelected } = useContext(CategoryContext);
+  const { list, setList } = useContext(WalletContext);
 
+  const [countList, setCountList] = useState();
   const [team, setTeam] = useState();
   // get initial data
   useEffect(() => {
     socket.emit("get_team", { walletID: id }, (team) => {
       setTeam(team);
+    });
+
+    if (list?.length === 0) {
+      socket.emit("get_transaction", { walletID: id }, ({ transactionList }) => {
+        setList(transactionList);
+      });
+    }
+
+    socket.on('wait_for_update_transaction', ({ transactionList }) => {
+      setList(transactionList);
+    });
+
+    socket.emit("get_category", { walletID: id }, ({ defaultList, customList, fullList }) => {
+      console.log(defaultList)
+      setAllList(defaultList, customList, fullList)
     });
 
     socket.on('wait_for_update_category', ({ defaultList, customList, fullList }) => {
@@ -57,6 +73,29 @@ export default function Category(props) {
       setOpen(null);
     }
   }, []);
+
+  useEffect(() => {
+    if (list) {
+      const temp = { ...countList };
+
+      if (defaultList) {
+        for (let i = 0; i < defaultList?.length; i++) {
+          const cat = defaultList[i];
+          const number = list.filter(j => j?.catID === cat?.ID)?.length;
+          temp[cat?.ID] = { count: number };
+        }
+      }
+
+      if (customList) {
+        for (let i = 0; i < customList?.length; i++) {
+          const cat = customList[i];
+          const number = list.filter(j => j?.catID === cat?.ID)?.length;
+          temp[cat?.ID] = { count: number };
+        }
+      }
+      setCountList(temp);
+    }
+  }, [list, defaultList, customList])
 
   // popover button
   const [openedPopover, setOpenedPopover] = useState(false)
@@ -195,7 +234,7 @@ export default function Category(props) {
                     <Typography
                       noWrap={true}
                       className={classes.categoryNumber}>
-                      ({i.count})
+                      ({countList ? countList[i?.ID]?.count : 0})
                     </Typography>
                   </Box>
                 </Card>
@@ -261,7 +300,7 @@ export default function Category(props) {
                     <Typography
                       noWrap={true}
                       className={classes.categoryNumber}>
-                      ({i.count})
+                      ({countList ? countList[i?.ID]?.count : 0})
                     </Typography>
                   </Box>
                 </Card>

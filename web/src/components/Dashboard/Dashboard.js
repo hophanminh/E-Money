@@ -192,8 +192,7 @@ export default function Dashboard() {
             </Grid>
 
           </Grid>
-          <Grid container spacing={5} className={classes.lowerGrid}>
-
+          <Grid container spacing={5} alignItems="stretch" className={classes.lowerGrid}>
             <Grid item lg={3} sm={12}>
               <Box
                 boxShadow={3}
@@ -202,14 +201,14 @@ export default function Dashboard() {
                 <SearchBar />
                 <Divider className={classes.dividerBold} />
                 <Box className={classes.longListBox}>
-                {(filterList || []).map((i, n) => {
-                  return (
-                    <React.Fragment key={i.id}>
-                      <TransactionMini transactionData={i} />
-                      <Divider className={classes.divider} />
-                    </React.Fragment>
-                  )
-                })}
+                  {(filterList || []).map((i, n) => {
+                    return (
+                      <React.Fragment key={i.id}>
+                        <TransactionMini transactionData={i} />
+                        <Divider className={classes.divider} />
+                      </React.Fragment>
+                    )
+                  })}
                 </Box>
               </Box>
             </Grid>
@@ -311,7 +310,6 @@ const useStyles = makeStyles((theme) => ({
   lowerGrid: {
     marginBottom: '20px',
     minHeight: '630px',
-    maxHeight: '630px',
   },
   wrap: {
     flexGrow: 3,
@@ -354,7 +352,7 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'center',
   },
 
-  // 2 button
+  // 3 button
   buttonColumn: {
     height: '100%',
     display: 'flex',

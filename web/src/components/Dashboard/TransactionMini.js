@@ -23,7 +23,7 @@ export default function TransactionMini({ transactionData }) {
     useEffect(() => {
         if (transactionData) {
             setData(transactionData);
-            setAmount(transactionData.price);
+            setAmount(transactionData?.price);
         }
     }, [transactionData])
 
@@ -32,21 +32,20 @@ export default function TransactionMini({ transactionData }) {
         setSelected(data);
     }
 
-
     return (
         <div className={classes.root} onClick={handleSelect}
             style={{ backgroundColor: selected?.id === data?.id ? 'rgba(29,175,26,0.07)' : '', cursor: 'pointer' }}
         >
             <div className={classes.transaction}>
                 <DefaultIcon
-                    IconID={data.IconID}
+                    IconID={data?.IconID}
                     backgroundSize={50}
                     iconSize={24} />
                 <Box className={classes.wrap}>
                     <Box className={classes.transactionInfo}>
                         <Typography
                             className={classes.transactionText}>
-                            {data.categoryName}
+                            {data?.categoryName}
                         </Typography>
                         {amount < 0
                             ?
@@ -60,13 +59,13 @@ export default function TransactionMini({ transactionData }) {
                         <Typography
                             noWrap={true}
                             className={classes.transactionSubText}>
-                            {data.description}
+                            {data?.description}
                         </Typography>
                     }
                 </Box>
             </div>
             {!isSimple &&
-                <Typography className={classes.transactionSubText}>{moment(data.time).format("hh:mm - DD/MM/YYYY")}</Typography>
+                <Typography className={classes.transactionSubText}>{moment(data?.time).format("hh:mm - DD/MM/YYYY")}</Typography>
             }
         </div>
     );

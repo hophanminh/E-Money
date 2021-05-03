@@ -35,7 +35,7 @@ export default function SearchBar(props) {
     const [searchInput, setSearchInput] = useState('');
 
     useEffect(() => {
-        if (fullList?.length !== 0 && checkList?.length === 0) {
+        if (fullList) {
             let temp = [];
             for (let i = 0; i < fullList?.length; i++) {
                 temp.push({ ...fullList[i], checked: true })
@@ -100,7 +100,6 @@ export default function SearchBar(props) {
     const checkBoxSimple = (event) => {
         setSimpleOption(event.target.checked);
     }
-    //console.log(isSimple)
     return (
         <Container component="form" className={classes.root}>
             <Box className={classes.iconButton} aria-label="search">
@@ -118,7 +117,6 @@ export default function SearchBar(props) {
                         </IconButton>,
                 } : null}
             />
-            <Divider className={classes.dividerVertical} orientation="vertical" />
             <IconButton color="primary" className={classes.iconButton} aria-label="directions" onClick={handleClickFilter}>
                 <FilterListIcon className={classes.filterIcon} />
             </IconButton>
@@ -265,10 +263,6 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         alignItems: 'center',
         padding: '5px',
-    },
-    dividerVertical: {
-        height: 28,
-        margin: 4,
     },
     dividerBold: {
         width: '100%',

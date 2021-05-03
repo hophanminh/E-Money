@@ -32,7 +32,6 @@ export default function TransactionMini({ transactionData }) {
         setSelected(data);
     }
 
-    console.log(data)
     return (
         <div className={classes.root} onClick={handleSelect}
             style={{ backgroundColor: selected?.id === data?.id ? 'rgba(29,175,26,0.07)' : '', cursor: 'pointer' }}

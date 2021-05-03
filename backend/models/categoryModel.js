@@ -10,19 +10,17 @@ module.exports = {
 
     getDefaultCategory: (walletID) => {
         const isDefault = config.CATEGORY.DEFAULT;
-        return db.loadSafe(`SELECT cat.*, COUNT(t.ID) as count
-                    FROM Categories as cat LEFT JOIN Transactions as t ON cat.ID = t.CategoryID AND t.WalletID = ?
+        return db.loadSafe(`SELECT cat.*
+                    FROM Categories as cat
                     WHERE cat.WalletID IS NULL AND cat.isDefault = ? 
-                    GROUP BY cat.ID
-                    ORDER BY cat.Name`, [walletID, isDefault]);
+                    ORDER BY cat.Name`, [isDefault]);
     },
 
     getCustomCategoryFromWalletID: (walletID) => {
         const isDefault = config.CATEGORY.CUSTOM;
-        return db.loadSafe(`SELECT cat.*, COUNT(t.ID) as count
-                    FROM Categories as cat LEFT JOIN Transactions as t ON cat.ID = t.CategoryID
+        return db.loadSafe(`SELECT cat.*
+                    FROM Categories as cat
                     WHERE cat.WalletID = ? AND cat.isDefault = ?
-                    GROUP BY cat.ID
                     ORDER BY cat.Name`, [walletID, isDefault]);
     },
 
