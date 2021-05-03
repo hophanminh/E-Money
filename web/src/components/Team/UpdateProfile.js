@@ -8,11 +8,10 @@ import Container from '@material-ui/core/Container';
 import SaveIcon from '@material-ui/icons/Save';
 import Grid from '@material-ui/core/Grid';
 import * as helper from '../../utils/helper';
-import config from '../../constants/config.json';
 import palette from '../../constants/palette.json';
 import MyContext from '../mycontext/MyContext';
 import SnackBar from '../snackbar/SnackBar';
-
+import config from '../../constants/config.json';
 const API_URL = config.API_LOCAL;
 const styles = {
     wallpaper: {
@@ -58,7 +57,7 @@ export default function TeamProfile() {
             }
         });
 
-        console.log(res.body);
+        console.log("Body res: ",res.body);
         if (res.status === 200) {
             const result = await res.json();
             console.log(result.teams[0]);
@@ -147,9 +146,6 @@ export default function TeamProfile() {
                                          backgroundImage: `url('${avatar}')`
                                      }}
                                 >
-                                    <div style={{ position: 'absolute', left: '76%', bottom: '0%' }}>
-                                        {/*<ImageUploader setAvatar={setAvatar} setContent={setContent} setShowSnackBar={setShowSnackBar} />*/}
-                                    </div>
                                 </div>
                             </div>
                         </Grid>
@@ -177,15 +173,19 @@ export default function TeamProfile() {
                                     <TextField placeholder="Số lượng" variant="outlined"
                                                margin="normal" required fullWidth
                                                value={numberUser}
+                                               onChange={e => handleNumberUsers(e.target.value)}
                                     />
 
                                     <div class="container margin-top-10">
                                         <Typography style={{ fontWeight: 'bold' }} variant="h6">Mô tả</Typography>
                                     </div>
                                     <TextField placeholder="Mô tả"
-                                               variant="outlined" margin="normal" required fullWidth
+                                               variant="outlined" 
+                                               margin="normal" 
+                                               required fullWidth
                                                onChange={e => handleDescription(e.target.value)}
                                                value={description}
+                                               multiline
                                     />
                                 </div>
 

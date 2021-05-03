@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useHistory } from "react-router-dom";
 import {
   Container,
   Breadcrumbs,
@@ -26,6 +26,7 @@ import TrendingDownIcon from '@material-ui/icons/TrendingDown';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import SettingsIcon from '@material-ui/icons/Settings';
 import BarChartIcon from '@material-ui/icons/BarChart';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 
 import SearchBar from './SearchBar'
 import TransactionMini from './TransactionMini'
@@ -38,9 +39,17 @@ import { getSocket } from "../../utils/socket";
 import { formatMoney } from '../../utils/currency'
 import EventAccordion from './Accordion/EventAccordion';
 
+import config from '../../constants/config.json';
+import cf from '../../Config/default.json';
+
+const API_URL = config.API_LOCAL;
+
 const TeamDashBoard = () => {
   const classes = useStyles();
+  const userID = localStorage.getItem('userID');
+  const token = localStorage.getItem('jwtToken');
   const { id } = useParams();
+  const history = useHistory();
   const socket = getSocket();
   const { setWalletID, selected, setSelected, list, setList, filterList, updateSelected } = useContext(WalletContext);
   const { setOpen } = useContext(PopupContext);
@@ -53,10 +62,13 @@ const TeamDashBoard = () => {
     total: 0
   })
   const [team, setTeam] = useState();
+  const [thu, setTHU] = useState({});
   // get initial data
   useEffect(() => {
     socket.emit("get_team", { walletID: id }, (team) => {
-      setTeam(team);
+      setTeam(team.team);
+      setTHU(team.thu[0]);
+      console.log("THU: ", thu.Role);
     });
 
     setWalletID(id);
@@ -117,6 +129,40 @@ const TeamDashBoard = () => {
     setOpen(POPUP.TRANSACTION.ADD_TRANSACTION);
   }
 
+  const leaveTeam = async () => {
+    const data = {
+        UserID: userID
+    }
+    console.log('data: ' + data);
+    console.log('idTeam: ' + id);
+    const res = await fetch(`${API_URL}/teams/${id}/leave`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+    });
+    history.push("/teams")
+  }
+
+  const deleteTeam = async () => {
+    const data = {
+        UserID: userID
+    }
+    console.log('data: ' + data);
+    console.log('idTeam: ' + id);
+    const res = await fetch(`${API_URL}/teams/${id}/delete`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+    });
+    history.push("/teams")
+  }
+
   return (
     <>
       <AddTransaction />
@@ -141,7 +187,7 @@ const TeamDashBoard = () => {
             >
               <Button className={classes.teamStatisticButton} variant="outlined">
                 <BarChartIcon className={classes.yellow} />
-                Thống kê nhóm
+                &nbsp;Thống kê nhóm
               </Button>
             </Link>
 
@@ -149,6 +195,14 @@ const TeamDashBoard = () => {
               <Button className={classes.teamInfoButton} variant="outlined">
                 <SettingsIcon className={classes.green} />
                 &nbsp;Thông tin nhóm
+              </Button>
+            </Link>
+            <Link style={{ textDecoration: 'none', marginLeft: 10 }} >
+              <Button className={classes.teamLeaveButton} variant="outlined" 
+              onClick={() => (thu.Role === 1) ? deleteTeam () :leaveTeam()}
+            >
+                <ExitToAppIcon className={classes.red} />
+                {(thu.Role === 1) ? ` Xóa nhóm` : ` Rời nhóm`}
               </Button>
             </Link>
           </Box>
@@ -278,6 +332,9 @@ const useStyles = makeStyles((theme) => ({
   green: {
     color: '#1DAF1A'
   },
+  red: {
+    color: '#FF0000'
+  },
   yellow: {
     color: '#fda92c'
   },
@@ -339,6 +396,13 @@ const useStyles = makeStyles((theme) => ({
     height: '40px',
     textTransform: 'none',
     borderColor: '#1DAF1A',
+    padding: '5px 10px',
+    backgroundColor: '#FFFFFF'
+  },
+  teamLeaveButton: {
+    height: '40px',
+    textTransform: 'none',
+    borderColor: '#FF0000',
     padding: '5px 10px',
     backgroundColor: '#FFFFFF'
   },

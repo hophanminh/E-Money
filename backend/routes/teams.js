@@ -34,6 +34,7 @@ router.get('/details/:teamID', async (req, res) => {
     const teamID = req.params.teamID;
     console.log('Get team belong to user ', teamID);
     const teams = await TeamModel.getTeamById(teamID);
+    const thu = await TeamHasUserModel.getTHUByTeamId(teamID);
     if (teams.length === 1) {
         return res.status(200).send({teams});
     } else {
@@ -144,17 +145,41 @@ router.put('/details/:id', async (req, res) => {
         return res.status(400).send({ msg: "Không tìm thấy nhóm hoặc bạn không có quyền để thực hiện hành động." })
     }
 
+    const thu = await TeamHasUserModel.getTHUByTeamId(teamId);
+    if(thu.length > MaxUsers) {
+        return res.status(400).send({ msg: "Số lượng thành viên lớn hơn số lượng tối đa vừa thay đổi." })
+    }
+
     const update = TeamModel.updateTeam(teamId, { Name, MaxUsers, Description });
     console.log(update);
     res.send(update);
 });
 
-router.post('/:id/delete', async (req, res) => {
-    const teamId = req.params.id;
-    console.log("delete teams " + teamId)
-    const teamObject = await TeamModel.getTeamById(teamId);
+router.post('/:id/leave', async (req, res) => {
+    const walletId = req.params.id;
+    console.log("delete teams wallet " + walletId)
+    const teamObject = await TeamModel.getTeamByWalletId(walletId);
     const { UserID } = req.body;
+    console.log(teamObject.length)
+    if (teamObject.length === 0) {
+        return res.status(400).send({ msg: "Không tìm thấy nhóm." })
+    }
 
+    const team = teamObject[0];
+    // Remove user from team
+    const c = await TeamHasUserModel.leaveTHU(team.ID, UserID)
+    return res.status(200).send({msg: "success"})
+
+});
+
+//TODO Delete all team member
+
+router.post('/:id/delete', async (req, res) => {
+    const walletId = req.params.id;
+    console.log("delete teams wallet " + walletId)
+    const teamObject = await TeamModel.getTeamByWalletId(walletId);
+    const { UserID } = req.body;
+    console.log(teamObject.length)
     if (teamObject.length === 0) {
         return res.status(400).send({ msg: "Không tìm thấy nhóm." })
     }
@@ -162,6 +187,7 @@ router.post('/:id/delete', async (req, res) => {
     const team = teamObject[0];
     // Remove user from team
     const c = await TeamHasUserModel.deleteTHU(team.ID, UserID)
+    const d = await TeamModel.deleteTeam(team.ID);
     return res.status(200).send({msg: "success"})
 
 });
@@ -171,27 +197,37 @@ router.post('/join/:userId', async (req, res) => {
     const { teamID } = req.body
     console.log(`Invite user ${userID} joins team ${teamID}`);
 
+    // f7660a60-ab5d-11eb-acb7-9f04fc5ba02d
     const team = await TeamModel.getTeamById(teamID);
-
+    const thu = await TeamHasUserModel.getTHUByTeamId(teamID);
+    console.log(team[0].MaxUsers)
     if(team.length === 0) {
         return res.status(404).send({msg: "Not found team"});
     }
-    const thuObject = {
-        TeamID: teamID,
-        UserID: userID,
-        Role: config.PERMISSION.MEMBER,
-        Status: config.STATUS.ACTIVE
-    }
-    const result = await TeamHasUserModel.createTHU(thuObject);
-    console.log(result.affectedRows)
-    if (result.affectedRows === 1) {
-        console.log("Joined successfully");
-        return res.status(201)
-            .send({ msg: "You are now a member of a team." });
+    if((team[0].MaxUsers > thu.length) && (!thu.includes(userID))) {
+        const thuObject = {
+            TeamID: teamID,
+            UserID: userID,
+            Role: config.PERMISSION.MEMBER,
+            Status: config.STATUS.ACTIVE
+        }
+        const result = await TeamHasUserModel.createTHU(thuObject);
+        console.log(result.affectedRows)
+        if (result.affectedRows === 1) {
+            console.log("Joined successfully");
+            return res.status(201)
+                .send({ msg: "You are now a member of a team." });
+        } else {
+            return res.status(500)
+                .send({ msg: "Please try again" });
+        }
     } else {
-        return res.status(500)
-            .send({ msg: "Please try again" });
+        console.log("Cannot join teams");
+        res.status(500)
+                .send({ msg: "Nhóm đã đủ số lượng thành viên" });
     }
+
+   
 })
 
 module.exports = router;

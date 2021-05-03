@@ -155,6 +155,7 @@ export default function TeamProfile() {
                                         <Typography style={{ fontWeight: 'bold' }} variant="h6">Mô tả</Typography>
                                     </div>
                                     <TextField placeholder="Mô tả"
+                                                multiline
                                                variant="outlined" margin="normal" required fullWidth
                                                onChange={e => handleDescription(e.target.value)}
                                                value={description}
