@@ -15,6 +15,7 @@ import Palette from '../../constants/palette.json';
 import ResetPassword from './resetpassword/RequestGenerator';
 import * as helper from '../../utils/helper';
 import config from '../../constants/config.json';
+import { Hidden } from '@material-ui/core';
 
 const API_URL = config.API_LOCAL;
 
@@ -173,28 +174,29 @@ export default function SignIn() {
           <Container component="main" maxWidth="xl">
             <SnackBar open={showSnackbar} setOpen={(isOpen) => setShowSnackBar(isOpen)} content={content} />
             <Grid container spacing={4}>
-              <Grid item xs={2} sm={2} md={2} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', textAlign: 'left' }}>
-                <div>
-                  <Button
-                    variant="contained"
-                    onClick={() => signUpClicked()}
-                    style={{
-                      borderRadius: '50%',
-                      height: '65px',
-                      width: '65px',
-                      color: '#FFF',
-                      backgroundColor: Palette.primary,
-                      boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)',
-                    }}
-                  >
-                    <KeyboardReturnIcon />
-                  </Button>
-                  <h4 variant='h6' style={{ color: '#172755' }}>Chưa có tài khoản?</h4>
-                </div>
+              <Hidden smDown>
+                <Grid item xs={2} sm={2} md={2} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', textAlign: 'left' }}>
+                  <div>
+                    <Button
+                      variant="contained"
+                      onClick={() => signUpClicked()}
+                      style={{
+                        borderRadius: '50%',
+                        height: '65px',
+                        width: '65px',
+                        color: '#FFF',
+                        backgroundColor: Palette.primary,
+                        boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)',
+                      }}
+                    >
+                      <KeyboardReturnIcon />
+                    </Button>
+                    <h4 variant='h6' style={{ color: '#172755' }}>Chưa có tài khoản?</h4>
+                  </div>
+                </Grid>
 
-              </Grid>
-
-              <Grid item xs={4} sm={4} md={4}>
+              </Hidden>
+              <Grid item xs={7} sm={6} md={4}>
                 <div style={{ ...styles.shadow, ...styles.paper, width: '110%' }}>
                   <Typography style={{ color: Palette.primary, fontWeight: 'bold' }} variant='h5'>Đăng nhập tài khoản</Typography>
                   <div style={{ margin: '20px 0 20px' }}>

@@ -41,7 +41,7 @@
     "api_key": "239485199764345",
     "api_secret": "nl0LvugzHn9L20T3j4vz55ZIClw"
   },
-  "PERMISSION":  {
+  "PERMISSION": {
     "ADMIN": 1,
     "MEMBER": 0
   },
