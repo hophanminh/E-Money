@@ -49,15 +49,23 @@
   #fafafa), url('/src/resources/images/background1.jpg');
   background-repeat: no-repeat;
   background-size: cover;
+  background-position: center; 
 }
 
 .avatar {
   width: 18vw;
   height: 18vw;
   border-radius: 50%;
-  border: white solid 5px;
+  border: white solid 5px !important;
   background-repeat: no-repeat;
   background-size: cover;
+  background-position: center;
+}
+
+.carousel {
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
 }
 
 .trap-container {
@@ -71,7 +79,7 @@
 .trap-content {
   display: inline-block;
   position: relative;
-  padding-top: 11%;
+  padding-top: 9.5%;
   height: 80%;
   width: 90%;
   bottom: 10%;
@@ -88,6 +96,7 @@
 
 .shadow {
   box-shadow: 2px 4px 8px 2px rgba(0, 0, 0, 0.2), 4px 6px 20px 4px rgba(0, 0, 0, 0.19);
+  border: none;
 }
 
 .container {

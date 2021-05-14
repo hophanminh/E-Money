@@ -1,16 +1,77 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
     Typography,
     Box,
     Avatar,
     makeStyles,
 } from '@material-ui/core/';
-import TrendingDownIcon from '@material-ui/icons/TrendingDown';
+import {
+    WalletContext
+} from '../mycontext'
 import moment from 'moment'
 
 import DefaultIcon from '../../utils/DefaultIcon'
+import { formatMoney } from '../../utils/currency'
 
-const useStyles = makeStyles((selected) => ({
+export default function TransactionMini({ transactionData }) {
+    const classes = useStyles();
+    const { selected, setSelected, isSimple } = useContext(WalletContext);
+
+    const [data, setData] = useState(transactionData);
+    const [amount, setAmount] = useState(0);
+
+    useEffect(() => {
+        if (transactionData) {
+            setData(transactionData);
+            setAmount(transactionData?.price);
+        }
+    }, [transactionData])
+
+    // select 1 transaction
+    const handleSelect = () => {
+        setSelected(data);
+    }
+
+    return (
+        <div className={classes.root} onClick={handleSelect}
+            style={{ backgroundColor: selected?.id === data?.id ? 'rgba(29,175,26,0.07)' : '', cursor: 'pointer' }}
+        >
+            <div className={classes.transaction}>
+                <DefaultIcon
+                    IconID={data?.IconID}
+                    backgroundSize={50}
+                    iconSize={24} />
+                <Box className={classes.wrap}>
+                    <Box className={classes.transactionInfo}>
+                        <Typography
+                            className={classes.transactionText}>
+                            {data?.categoryName}
+                        </Typography>
+                        {amount < 0
+                            ?
+                            <Typography className={`${classes.transactionText} ${classes.red}`}>{formatMoney(amount * -1)}</Typography>
+                            :
+                            <Typography className={`${classes.transactionText} ${classes.green}`}>{formatMoney(amount)}</Typography>
+                        }
+
+                    </Box>
+                    {!isSimple &&
+                        <Typography
+                            noWrap={true}
+                            className={classes.transactionSubText}>
+                            {data?.description}
+                        </Typography>
+                    }
+                </Box>
+            </div>
+            {!isSimple &&
+                <Typography className={classes.transactionSubText}>{moment(data?.time).format("hh:mm - DD/MM/YYYY")}</Typography>
+            }
+        </div>
+    );
+}
+
+const useStyles = makeStyles((isSimple) => ({
     red: {
         color: '#FF2626'
     },
@@ -23,13 +84,12 @@ const useStyles = makeStyles((selected) => ({
         overflow: 'hidden',
         marginLeft: '15px'
     },
-    root: (selected) => ({
+    root: (isSimple) => ({
         width: "100%",
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'flex-end',
-        padding: '15px 20px 0px 20px',
-        backgroundColor: selected === true ? 'rgba(29,175,26,0.07)' : ''
+        padding: isSimple ? '12px 20px 10px 20px' : '15px 20px 0px 20px',
     }),
     transaction: {
         width: '100%',
@@ -46,11 +106,11 @@ const useStyles = makeStyles((selected) => ({
         justifyContent: 'space-between',
     },
     transactionText: {
-        fontSize: '20px',
+        fontSize: '16',
         fontWeight: 'bold'
     },
     transactionSubText: {
-        fontSize: '16px',
+        fontSize: '14px',
     },
     transactionTime: {
         width: '24px',
@@ -58,39 +118,3 @@ const useStyles = makeStyles((selected) => ({
     },
 
 }));
-
-export default function TransactionMini({ transactionData, selected, onClick }) {
-    const classes = useStyles(selected);
-    const [data, setData] = useState(transactionData);
-
-    useEffect(() => {
-        setData(transactionData)
-    }, [transactionData])
-
-    return (
-        <div className={classes.root} onClick={onClick}>
-            <div className={classes.transaction}>
-                <DefaultIcon
-                    avatar={data.avatar}
-                    backgroundSize={50}
-                    iconSize={24} />
-                <Box className={classes.wrap}>
-                    <Box className={classes.transactionInfo}>
-                        <Typography
-                            className={classes.transactionText}>
-                            {data.categoryName}
-                        </Typography>
-                        <Typography className={`${classes.transactionText} ${classes.red}`}>{data.price}đ</Typography>
-
-                    </Box>
-                    <Typography
-                        noWrap={true}
-                        className={classes.transactionSubText}>
-                        {data.description}
-                    </Typography>
-                </Box>
-            </div>
-            <Typography className={classes.transactionSubText}>{moment(data.time).format("hh:mm - D/M/YYYY")}</Typography>
-        </div>
-    );
-}

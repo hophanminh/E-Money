@@ -5,15 +5,18 @@ import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
 import KeyboardReturnIcon from '@material-ui/icons/KeyboardReturn';
 import Typography from '@material-ui/core/Typography';
+import Dialog from '@material-ui/core/Dialog';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import DialogContent from '@material-ui/core/DialogContent';
 import Container from '@material-ui/core/Container';
-import Palette from '../../constants/palette.json';
+import palette from '../../constants/palette.json';
 import SnackBar from '../snackbar/SnackBar';
 import * as helper from '../../utils/helper';
 import config from '../../constants/config.json';
 import MyContext from '../mycontext/MyContext';
 
 const API_URL = config.API_LOCAL;
-const styles = {
+export const styles = {
   background: {
     width: '100%',
     height: '100%',
@@ -47,6 +50,7 @@ export default function SignUp() {
   const [errors, setErrors] = useState({});
   const [showSnackbar, setShowSnackBar] = useState(false);
   const [content, setContent] = useState("");
+  const [waiting, setWaiting] = useState(false);
   const { isLoggedIn, setIsLoggedIn } = useContext(MyContext);
 
   useEffect(() => {
@@ -98,13 +102,13 @@ export default function SignUp() {
       return;
     }
 
+    setWaiting(true);
     const data = {
       Name: displayedName,
       Username: username,
       Password: password,
       Email: email
     }
-
     // call API here
     const res = await fetch(`${API_URL}/signup`, {
       method: 'POST',
@@ -114,6 +118,7 @@ export default function SignUp() {
       }
     });
     const result = await res.json();
+    setWaiting(false);
     setContent(result.msg);
     setShowSnackBar(true);
   }
@@ -130,32 +135,31 @@ export default function SignUp() {
 
   return (
     <>
-      <div class="trap-container">
+      <div className="trap-container">
         <div >
           <svg fill="white" width="55%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none" style={{ position: 'absolute', left: 0, zIndex: -1 }}>
             <polygon points="0,0 100,0 80,100 0,100" />
           </svg>
         </div>
-        <div style={{ width: '65%', position: 'absolute', right: 0, zIndex: -2, height: '100%' }} class="bgimg">
+        <div style={{ width: '65%', position: 'absolute', right: 0, zIndex: -2, height: '100%' }} className="bgimg">
         </div>
-        <div class="trap-content">
+        <div className="trap-content">
           <Container component="main" maxWidth="xl">
             <SnackBar open={showSnackbar} setOpen={(isOpen) => setShowSnackBar(isOpen)} content={content} />
             <Grid container spacing={4}>
 
-              <Grid item item xs={2} sm={2} md={2} direction="column" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', textAlign: 'left' }}>
+              <Grid item item xs={2} sm={2} md={2} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', textAlign: 'left' }}>
                 <div>
                   <Button
                     variant="contained"
                     onClick={() => signInClicked()}
+                    // className="shadow"
                     style={{
-                      alignContent: 'center',
-                      fontSize: '4',
                       borderRadius: '50%',
                       height: '65px',
                       width: '65px',
                       color: '#FFF',
-                      backgroundColor: Palette.primary,
+                      backgroundColor: palette.primary,
                       boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)',
                     }}
                   >
@@ -167,8 +171,14 @@ export default function SignUp() {
               </Grid>
 
               <Grid item xs={8} sm={8} md={8} style={{ padding: 'auto 20px auto', marginLeft: '3%' }}>
+                <Dialog style={{ textAlign: 'center' }} open={waiting} >
+                  <DialogContent align='center'>
+                    <CircularProgress style={{ color: palette.primary }} />
+                    <Typography variant='h6'>Đang xử lý</Typography>
+                  </DialogContent>
+                </Dialog>
                 <div style={{ ...styles.shadow, ...styles.paper, width: '100%' }}>
-                  <Typography style={{ color: Palette.primary, fontWeight: 'bold' }} variant='h4'>Đăng ký tài khoản</Typography>
+                  <Typography style={{ color: palette.primary, fontWeight: 'bold' }} variant='h5'>Đăng ký tài khoản</Typography>
 
                   <Grid container spacing={6}>
 
@@ -179,7 +189,7 @@ export default function SignUp() {
                           onChange={e => handleUsernameChange(e.target.value)}
                           value={username}
                         />
-                        <div class="input-invalid">
+                        <div className="input-invalid">
                           {errors.username}
                         </div>
 
@@ -188,7 +198,7 @@ export default function SignUp() {
                           onChange={e => handleDisplayedNameChange(e.target.value)}
                           value={displayedName}
                         />
-                        <div class="input-invalid">
+                        <div className="input-invalid">
                           {errors.displayedName}
                         </div>
 
@@ -197,7 +207,7 @@ export default function SignUp() {
                           onChange={e => handleEmailChange(e.target.value)}
                           value={email}
                         />
-                        <div class="input-invalid">
+                        <div className="input-invalid">
                           {errors.email}
                         </div>
 
@@ -206,11 +216,11 @@ export default function SignUp() {
                     <Grid item xs={12} md={6}>
                       <div style={{ margin: '20px 10px 20px' }}>
                         <TextField label="Mật khẩu" variant="outlined" type="password"
-                          margin="normal" required fullWidth autoFocus
+                          margin="normal" required fullWidth
                           onChange={e => handlePasswordChange(e.target.value)}
                           value={password}
                         />
-                        <div class="input-invalid">
+                        <div className="input-invalid">
                           {errors.password}
                         </div>
                         <TextField label="Xác nhận mật khẩu" type="password"
@@ -218,19 +228,14 @@ export default function SignUp() {
                           onChange={e => handleConfirmPasswordChange(e.target.value)}
                           value={confirmedPassword}
                         />
-                        <div class="input-invalid">
+                        <div className="input-invalid">
                           {errors.confirmedPassword}
                         </div>
-                        <Button className={styles.submit} type="submit" fullWidth variant="contained" onClick={() => handleSubmit()}
-                          style={{ backgroundColor: Palette.primary, color: '#fff', fontWeight: 'bold', margin: '25px 0 20px' }}>
+                        <Button type="submit" fullWidth variant="contained" onClick={() => handleSubmit()}
+                          style={{ ...styles.submit, backgroundColor: palette.primary, color: '#fff', fontWeight: 'bold', margin: '25px 0 20px' }}>
                           Đăng ký
                         </Button>
                       </div>
-                    </Grid>
-                  </Grid>
-                  <Grid container justify="flex-end">
-                    <Grid item>
-                      {/* <ResetPasswordDialog /> */}
                     </Grid>
                   </Grid>
 
@@ -241,6 +246,5 @@ export default function SignUp() {
         </div>
       </div>
     </>
-
   );
 }

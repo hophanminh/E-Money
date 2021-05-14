@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const userModel = require('../models/userModel');
 const bcrypt = require('bcryptjs');
-
+const moment = require('moment');
 const config = require("../config/default.json");
 const cloudinary = require('cloudinary').v2;
 cloudinary.config(config.CLOUDINARY);
@@ -28,7 +28,6 @@ router.post('/authenticate', (req, res) => {
 });
 
 router.get('/:id', async (req, res) => {
-
   const id = req.params.id;
   const users = await userModel.getUserByID(id);
 
@@ -50,7 +49,7 @@ router.patch('/:id/info', async (req, res) => {
 
   if (result.affectedRows === 1) {
     res.status(200).end();
-  } else res.status(400).end();
+  } else res.status(500).end();
 
 });
 
@@ -60,10 +59,7 @@ router.patch('/:id/password', async (req, res) => {
 
   const users = await userModel.getUserByID(userID);
 
-  // if (result.length === 1) {
-
   if (bcrypt.compareSync(CurrentPassword, users[0].Password)) { // old password is correct
-    console.log('cmm');
     const N = config.hashRound;
     const hashedPassword = bcrypt.hashSync(NewPassword, N);
     const updateResult = await userModel.updateUser(userID, { Password: hashedPassword });
@@ -77,10 +73,6 @@ router.patch('/:id/password', async (req, res) => {
   } else {
     res.status(400).send({ msg: "Mật khẩu hiện tại không đúng" });
   }
-
-  // } else {
-  //   res.status(400).send({ mesg: "Something wrong when changing password" });
-  // }
 });
 
 router.patch('/:id/avatar', upload.single('avatar'), async (req, res) => {
@@ -120,7 +112,7 @@ router.patch('/:id/avatar', upload.single('avatar'), async (req, res) => {
       await userModel.updateUser(userID, { AvatarURL: image.url });
       return res.status(200).json({ url: image.url });
     }
-  )
+  );
 });
 
 module.exports = router;

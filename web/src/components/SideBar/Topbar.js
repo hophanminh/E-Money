@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext } from 'react';
 import clsx from 'clsx';
 import {
   useHistory,
@@ -12,14 +12,21 @@ import {
   Popover,
   IconButton,
   ListItem,
-  ListItemText,
-  makeStyles
-} from '@material-ui/core'
+  makeStyles,
+  Divider,
+  Card
+} from '@material-ui/core';
+
+import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
+
 import MenuIcon from '@material-ui/icons/Menu';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import NotificationsNoneIcon from '@material-ui/icons/NotificationsNone';
 import MyContext from '../mycontext/MyContext';
+import config from '../../constants/config.json';
+import defaultAvatar from '../../resources/images/defaultAvatar.png';
 
+const API_URL = config.API_LOCAL;
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
@@ -90,26 +97,35 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "space-between"
   },
   avatarImg: {
-    wight: 52,
+    width: 52,
     height: 52,
-    borderRadius: 50
+    borderRadius: 50,
+
   },
   colorTopBar: {
     background: "green !important"
   }
 }));
 
+const notifications = [
+  { id: 1, content: 'Hello' },
+  { id: 2, content: 'World' },
+  { id: 3, content: 'FIT' },
+  { id: 4, content: 'HCMUS' }
+]
+
 function Topbar(props) {
   const classes = useStyles();
   const history = useHistory();
-  const displayedName = localStorage.getItem('name');
-  const { isLoggedIn, setIsLoggedIn } = useContext(MyContext);
+  const { setIsLoggedIn, info } = useContext(MyContext);
   const logOut = (e) => {
-    localStorage.clear();
+    localStorage.removeItem("jwtToken")
+    localStorage.removeItem("userID")
+    //localStorage.clear();
     setIsLoggedIn(false);
   };
-  // sidebar's open
-  const openSidebar = props.open;
+  const openSidebar = props.open;  // sidebar's open
+
   return (
     <AppBar position="absolute" className={clsx(classes.appBar, openSidebar && classes.appBarShift)}>
       <Toolbar className={`${classes.toolbar} ${classes.spaceBetween} ${classes.colorTopBar}`}>
@@ -128,18 +144,52 @@ function Topbar(props) {
           {(
             <>
               <ListItem button component={NavLink} to="/profile" className={classes.button}>
-                <Typography style={{ marginRight: '10px' }}>{displayedName}</Typography>
-                <img src={`https://picsum.photos/200`} className={`${classes.avatarImg}`}></img>
+                <Typography style={{ marginRight: '10px' }}>{info.Name}</Typography>
+                <img src={info.AvatarURL ? info.AvatarURL : defaultAvatar} className={`${classes.avatarImg}`}></img>
               </ListItem>
             </>
           )}
 
           {(
             <>
-              <ListItem button component={NavLink} to="/Login" onClick={(e) => logOut(e)}
-                className={classes.button}>
-                <NotificationsNoneIcon />
-              </ListItem>
+              <PopupState variant="popover" popupId="demo-popup-popover">
+                {(popupState) => (
+                  <div>
+                    <ListItem button {...bindTrigger(popupState)} className={classes.button} style={{ height: '100%' }}>
+                      <Badge badgeContent={notifications.length} color="error">
+                        <NotificationsNoneIcon />
+                      </Badge>
+                    </ListItem>
+
+                    <Popover
+                      {...bindPopover(popupState)}
+                      anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'right',
+                      }}
+                      transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'right',
+                      }}
+                    >
+                      <div>
+                        {notifications.map(notification => {
+                          return (
+                            <div key={notification.id}>
+                              <Card key={notification.id} style={{ padding: '10px', borderRadius: '0px' }}>
+                                <Typography>
+                                  {notification.id + " - " + notification.content}
+                                </Typography>
+                              </Card>
+                              <Divider></Divider>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </Popover>
+                  </div>
+                )}
+              </PopupState>
             </>
           )}
           {(

@@ -1,3 +1,4 @@
+const { table } = require("console");
 const mysql = require("mysql");
 const util = require("util");
 const config = require("../config/default.json");

@@ -23,19 +23,23 @@ export default function Introduction() {
   return (
     <div className={classes.container} style={{ display: 'flex', alignItems: 'center' }}>
       <div style={{ width: '50%', float: 'left', textAlign: 'left' }}>
-        <Typography style={{ fontSize: '48px', width: '600px', marginBottom: '50px' }}>
+        <Typography style={{ fontSize: '38px', width: '600px', marginBottom: '50px' }}>
           Chi tiêu hiệu quả hơn bằng việc sử dụng E-Money
         </Typography>
         <div >
           <Button className={classes.button}
-            style={{ height: '70px', width: '250px', fontSize: '30px', color: 'white', 
-              backgroundColor: '#1daf1a', marginRight: '30px' }}
+            style={{
+              height: '60px', width: '220px', fontSize: '24px', color: 'white',
+              backgroundColor: '#1daf1a', marginRight: '30px'
+            }}
           >
             Bắt đầu ngay
           </Button>
           <Button className={classes.button}
-            style={{ height: '70px', width: '250px', fontSize: '30px', color: 'black',
-              border: '1px solid #1daf1a' }}
+            style={{
+              height: '60px', width: '220px', fontSize: '24px', color: 'black',
+              border: '1px solid #1daf1a'
+            }}
           >
             Tìm hiểu thêm
           </Button>

@@ -23,14 +23,12 @@ function ContactInfo() {
   const classes = useStyles();
 
   return (
-    <Typography className={`${classes.flexColumn} ${classes.flexStart}`}>
+    <Typography className={`${classes.flexColumn} ${classes.flexStart}`} component={'span'}>
       <h4>
         {`Thông tin liên hệ`}
       </h4>
       <PhoneInfo />
       <MailInfo />
-
-
     </Typography>
   )
 }
@@ -83,7 +81,7 @@ function MailInfo() {
 
 function SocialConnect() {
   return (
-    <Typography>
+    <Typography component={'span'}>
       <h4>
         {`Kết nối với chúng tôi`}
       </h4>
@@ -99,23 +97,23 @@ function FastConnect() {
   const classes = useStyles();
 
   return (
-    <Typography>
+    <Typography component={'span'}>
       <h4>
         {`Truy cập nhanh`}
       </h4>
       <div className={`${classes.flexColumn} ${classes.flexStart}`}>
-        <a className={`${classes.hyperLink} ${classes.textFormat}`} href={'/trangChu/google.com'}>
+        <a className={`${classes.hyperLink} ${classes.textFormat}`} href={'/'}>
           Trang chủ
-                </a>
-        <a className={`${classes.hyperLink}  ${classes.textFormat}`} href={'/dangnhap/google.com'}>
+        </a>
+        <a className={`${classes.hyperLink}  ${classes.textFormat}`} href={'/signin'}>
           Đăng Nhập
-                </a>
-        <a className={`${classes.hyperLink}  ${classes.textFormat}`} href={'/dangky/google.com'}>
+        </a>
+        <a className={`${classes.hyperLink}  ${classes.textFormat}`} href={'/signup'}>
           Đăng ký
-                </a>
-        <a className={`${classes.hyperLink}  ${classes.textFormat}`} href={'/dashboard/google.com'}>
-          DashBoard
-                </a>
+        </a>
+        <a className={`${classes.hyperLink}  ${classes.textFormat}`} href={'/wallet'}>
+          Ví cá nhân
+        </a>
       </div>
     </Typography>
 
@@ -188,10 +186,10 @@ export default function StickyFooter() {
                           ${classes.paperLikeShadow} 
                           ${classes.textFormat}`}>
         <div className={`${classes.align}  ${classes.flexSpaceBetween}`}>
-          <p>
+          <span>
             <p style={{ fontSize: '30px' }}> E-MONEY</p>
             <Description style={{ margin: '10px' }} />
-          </p>
+          </span>
           <FastConnect />
           <SocialConnect />
           <ContactInfo />

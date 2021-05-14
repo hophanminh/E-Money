@@ -1,12 +1,14 @@
 const nodemailer = require("nodemailer");
+const util = require('util');
+const config = require("../config/default.json");
 
 module.exports = {
-  send: (receiver, description, title) => {
+  send: async (receiver, description, title) => {
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: 'superuser4058@gmail.com',
-        pass: 'admin123!'
+        user: config.EMAIL.EMAIL,
+        pass: config.EMAIL.PASSWORD
       },
       tls: {
         rejectUnauthorized: false
@@ -15,18 +17,14 @@ module.exports = {
     });
 
     const mailOptions = {
-      from: 'NHÓM QUẢN LÝ CHI TIÊU HCMUS',
+      from: `E-Money HCMUS <${config.EMAIL.EMAIL}>`,
       to: receiver,
       subject: title,
       html: description
     };
 
-    return transporter.sendMail(mailOptions, function (error, info) {
-      if (error) {
-        console.log(error);
-      } else {
-        console.log('Email sent: ' + info.response);
-      }
-    });
+    const result = await transporter.sendMail(mailOptions);
+
+    return result;
   }
 }
