@@ -14,6 +14,7 @@ import SnackBar from '../snackbar/SnackBar';
 import * as helper from '../../utils/helper';
 import config from '../../constants/config.json';
 import MyContext from '../mycontext/MyContext';
+import { Hidden } from '@material-ui/core';
 
 const API_URL = config.API_LOCAL;
 export const styles = {
@@ -146,44 +147,43 @@ export default function SignUp() {
         <div className="trap-content">
           <Container component="main" maxWidth="xl">
             <SnackBar open={showSnackbar} setOpen={(isOpen) => setShowSnackBar(isOpen)} content={content} />
-            <Grid container spacing={4}>
+            <Grid container spacing={4} alignItems='center'>
+              <Hidden smDown>
+                <Grid item sm={2} md={3} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', textAlign: 'left' }}>
+                  <div>
+                    <Button
+                      variant="contained"
+                      onClick={() => signInClicked()}
+                      // className="shadow"
+                      style={{
+                        borderRadius: '50%',
+                        height: '65px',
+                        width: '65px',
+                        color: '#FFF',
+                        backgroundColor: palette.primary,
+                        boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)',
+                      }}
+                    >
+                      <KeyboardReturnIcon />
+                    </Button>
+                    <h4 variant='h6' style={{ color: '#172755' }}>Đăng nhập</h4>
+                  </div>
+                </Grid>
+              </Hidden>
 
-              <Grid item item xs={2} sm={2} md={2} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', textAlign: 'left' }}>
-                <div>
-                  <Button
-                    variant="contained"
-                    onClick={() => signInClicked()}
-                    // className="shadow"
-                    style={{
-                      borderRadius: '50%',
-                      height: '65px',
-                      width: '65px',
-                      color: '#FFF',
-                      backgroundColor: palette.primary,
-                      boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)',
-                    }}
-                  >
-                    <KeyboardReturnIcon />
-                  </Button>
-                  <h4 variant='h6' style={{ color: '#172755' }}>Đăng nhập</h4>
-                </div>
-
-              </Grid>
-
-              <Grid item xs={8} sm={8} md={8} style={{ padding: 'auto 20px auto', marginLeft: '3%' }}>
+              <Grid item sm={12} md={8} style={{ padding: '25px 20px 25px' }}>
                 <Dialog style={{ textAlign: 'center' }} open={waiting} >
                   <DialogContent align='center'>
                     <CircularProgress style={{ color: palette.primary }} />
                     <Typography variant='h6'>Đang xử lý</Typography>
                   </DialogContent>
                 </Dialog>
-                <div style={{ ...styles.shadow, ...styles.paper, width: '100%' }}>
-                  <Typography style={{ color: palette.primary, fontWeight: 'bold' }} variant='h5'>Đăng ký tài khoản</Typography>
+                <div style={{ ...styles.shadow, ...styles.paper, width: '100%', alignItems: 'center' }}>
+                  <Typography gutterBottom style={{ color: palette.primary, fontWeight: 'bold' }} variant='h5'>Đăng ký tài khoản</Typography>
 
                   <Grid container spacing={6}>
-
-                    <Grid item xs={12} md={6}>
-                      <div style={{ margin: '20px 10px 20px' }}>
+                    <Grid item xs={12} sm={6}>
+                      <div>
                         <TextField label="Tên tài khoản" variant="outlined"
                           margin="normal" required fullWidth autoFocus
                           onChange={e => handleUsernameChange(e.target.value)}
@@ -213,8 +213,8 @@ export default function SignUp() {
 
                       </div>
                     </Grid>
-                    <Grid item xs={12} md={6}>
-                      <div style={{ margin: '20px 10px 20px' }}>
+                    <Grid item xs={12} sm={6}>
+                      <div >
                         <TextField label="Mật khẩu" variant="outlined" type="password"
                           margin="normal" required fullWidth
                           onChange={e => handlePasswordChange(e.target.value)}
@@ -231,14 +231,13 @@ export default function SignUp() {
                         <div className="input-invalid">
                           {errors.confirmedPassword}
                         </div>
-                        <Button type="submit" fullWidth variant="contained" onClick={() => handleSubmit()}
+                        <Button type="submit" fullWidth variant="contained" onClick={() => handleSubmit()} size='large'
                           style={{ ...styles.submit, backgroundColor: palette.primary, color: '#fff', fontWeight: 'bold', margin: '25px 0 20px' }}>
                           Đăng ký
                         </Button>
                       </div>
                     </Grid>
                   </Grid>
-
                 </div>
               </Grid>
             </Grid>

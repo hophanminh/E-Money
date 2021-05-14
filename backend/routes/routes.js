@@ -20,6 +20,7 @@ router.get("/", (req, res) => {
 });
 
 router.post('/signin', async (req, res) => {
+  console.log('sign in');
   const { Username, Password } = req.body;
   const users = await userModel.getUserByUserName(Username);
 
@@ -27,7 +28,7 @@ router.post('/signin', async (req, res) => {
     const user = users[0];
 
     // chưa active  tài khoản qua email
-    if (user.WalletID === null) { 
+    if (user.WalletID === null) {
       return res.status(401).send({ msg: "Tài khoản của bạn chưa kích hoạt. Hãy kiểm tra Email để kích hoạt tài khoản." });
     }
 
@@ -70,7 +71,7 @@ router.post('/signup', async (req, res) => {
       `<b>CHÀO MỪNG BẠN ĐẾN VỚI E-MONEY!</b><br>Hãy nhấn vào liên kết dưới đây để kích hoạt tài khoản của bạn.<br><a href="${config.APPLOCAL}/active/${newUser.ID.toBase64()}">Kích hoạt</a>`
     const result = await emailServer.send(newUser.Email, content, "Kích hoạt tài khoản!");
     return res.status(201).send({ msg: "Hãy kiểm tra email vừa khai báo để kích hoạt tài khoản." });
-  } 
+  }
   else {
     return res.status(500).send({ msg: "Hãy thử lại!" });
   }
@@ -89,7 +90,7 @@ router.post('/active', async (req, res) => {
   if (user[0].WalletID !== null) {
     return res.status(400).send({ msg: "Tài khoản của bạn đã được kích hoạt trước đó. Hãy tiếp tục sử dụng ứng dụng." });
 
-  } 
+  }
   else {
 
     const newWallet = {
@@ -145,7 +146,7 @@ router.post('/forgotpassword', async (req, res) => {
     console.log(result);
 
     return res.status(200).send({ msg: "Hãy kiểm tra email vừa khai báo để nhận mã xác thực.", id: newResetRequest.ID });
-  } 
+  }
   else {
     return res.status(500).send({ msg: "Hãy thử lại!" });
   }
@@ -185,7 +186,7 @@ router.put('/resetpassword', async (req, res) => {
       res.status(401).end(); // spam
     }
   } catch (err) {
-    console.log("Error when reset password: ",err);
+    console.log("Error when reset password: ", err);
     res.status(500).send({ msg: "Hãy thử lại!" });
   }
 })

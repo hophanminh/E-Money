@@ -11,22 +11,24 @@ require('./utils/passport')(passport);
 
 app.use(express.static("public"));
 const URL = config.HOST.CURRENT;
-const corsOptions = {
-  // test
-  origin: [URL]
-};
+// const corsOptions = {
+//   // test
+//   origin: [URL]
+// };
 
 // socket
 const server = http.createServer(app);
 const io = socketIO(server, {
   cors: {
-    origin: [URL],
+    origin: "*",
     methods: ["GET", "POST"]
   }
 });
 const ioConfig = require('./utils/socket/socket')(io, passport);
 
-app.use(cors(corsOptions));
+// app.use(cors(corsOptions));
+app.use(cors());
+app.options('*', cors());
 app.use(express.json());
 app.use(express.urlencoded({
   extended: true
