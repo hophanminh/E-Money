@@ -1,5 +1,5 @@
 import React from 'react';
-import { Typography, Button } from '@material-ui/core';
+import { Typography, Button, Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
 import imgTemp from '../../resources/images/moneySaving.png';
@@ -26,24 +26,28 @@ export default function Introduction() {
         <Typography style={{ fontSize: '38px', width: '600px', marginBottom: '50px' }}>
           Chi tiêu hiệu quả hơn bằng việc sử dụng E-Money
         </Typography>
-        <div >
-          <Button className={classes.button}
-            style={{
-              height: '60px', width: '220px', fontSize: '24px', color: 'white',
-              backgroundColor: '#1daf1a', marginRight: '30px'
-            }}
-          >
-            Bắt đầu ngay
+        <Grid container spacing={2}>
+          <Grid item md={6}>
+            <Button className={classes.button}
+              style={{
+                height: '60px', width: '220px', fontSize: '24px', color: 'white',
+                backgroundColor: '#1daf1a', marginRight: '30px'
+              }}
+            >
+              Bắt đầu ngay
           </Button>
-          <Button className={classes.button}
-            style={{
-              height: '60px', width: '220px', fontSize: '24px', color: 'black',
-              border: '1px solid #1daf1a'
-            }}
-          >
-            Tìm hiểu thêm
-          </Button>
-        </div>
+          </Grid>
+          <Grid item md={6}>
+            <Button className={classes.button}
+              style={{
+                height: '60px', width: '220px', fontSize: '24px', color: 'black',
+                border: '1px solid #1daf1a'
+              }}
+            >
+              Tìm hiểu thêm
+             </Button>
+          </Grid>
+        </Grid>
       </div>
 
       <div style={{ width: '50%', float: "right", textAlign: 'center' }}>

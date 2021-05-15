@@ -16,7 +16,7 @@ import config from '../../constants/config.json';
 import MyContext from '../mycontext/MyContext';
 import { Hidden } from '@material-ui/core';
 
-const API_URL = config.API_LOCAL;
+const API_URL = process.env.REACT_APP_API_URL || config.API_LOCAL;
 export const styles = {
   background: {
     width: '100%',
@@ -55,7 +55,7 @@ export default function SignUp() {
   const { isLoggedIn, setIsLoggedIn } = useContext(MyContext);
 
   useEffect(() => {
-    console.log(isLoggedIn);
+    console.log(API_URL);
     if (isLoggedIn !== null && isLoggedIn) {
       history.push('/');
     }
@@ -137,17 +137,20 @@ export default function SignUp() {
   return (
     <>
       <div className="trap-container">
-        <div >
-          <svg fill="white" width="55%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none" style={{ position: 'absolute', left: 0, zIndex: -1 }}>
-            <polygon points="0,0 100,0 80,100 0,100" />
-          </svg>
-        </div>
-        <div style={{ width: '65%', position: 'absolute', right: 0, zIndex: -2, height: '100%' }} className="bgimg">
-        </div>
+        <Hidden xsDown>
+          <div >
+            <svg fill="white" width="55%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none" style={{ position: 'absolute', left: 0, zIndex: -1 }}>
+              <polygon points="0,0 100,0 80,100 0,100" />
+            </svg>
+          </div>
+          <div style={{ width: '65%', position: 'absolute', right: 0, zIndex: -2, height: '100%' }} className="bgimg">
+          </div>
+        </Hidden>
+
         <div className="trap-content">
           <Container component="main" maxWidth="xl">
             <SnackBar open={showSnackbar} setOpen={(isOpen) => setShowSnackBar(isOpen)} content={content} />
-            <Grid container spacing={4} alignItems='center'>
+            <Grid container spacing={4}>
               <Hidden smDown>
                 <Grid item sm={2} md={3} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', textAlign: 'left' }}>
                   <div>
@@ -171,7 +174,7 @@ export default function SignUp() {
                 </Grid>
               </Hidden>
 
-              <Grid item sm={12} md={8} style={{ padding: '25px 20px 25px' }}>
+              <Grid item xs={12} md={8} style={{ padding: '25px 20px 25px' }}>
                 <Dialog style={{ textAlign: 'center' }} open={waiting} >
                   <DialogContent align='center'>
                     <CircularProgress style={{ color: palette.primary }} />

@@ -7,6 +7,7 @@ import Config from '../../Config/default.json'
 import MailIcon from '@material-ui/icons/Mail';
 import FacebookIcon from '@material-ui/icons/Facebook';
 import TwitterIcon from '@material-ui/icons/Twitter';
+import { Grid } from '@material-ui/core';
 
 function Copyright() {
   return (
@@ -173,6 +174,9 @@ const useStyles = makeStyles((theme) => ({
   flexStart: {
     display: "flex",
     justifyContent: "flex-start"
+  },
+  containerMargin: {
+    margin: '10px 40px'
   }
 }));
 
@@ -190,11 +194,22 @@ export default function StickyFooter() {
             <p style={{ fontSize: '30px' }}> E-MONEY</p>
             <Description style={{ margin: '10px' }} />
           </span>
-          <FastConnect />
-          <SocialConnect />
-          <ContactInfo />
+          <Grid container spacing={4} className={classes.containerMargin}>
+            <Grid item sm={6} md={4}>
+              <FastConnect />
+            </Grid>
+            <Grid item sm={6} md={4}>
+              <SocialConnect />
+
+            </Grid>
+            <Grid item md={4}>
+              <ContactInfo />
+
+            </Grid>
+          </Grid>
+
         </div>
-        <div>
+        <div style={{ textAlign: 'center' }}>
           <Copyright />
         </div>
       </footer>
