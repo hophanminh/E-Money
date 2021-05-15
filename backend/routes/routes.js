@@ -68,7 +68,7 @@ router.post('/signup', async (req, res) => {
 
   if (addUser.affectedRows === 1) {
     const content =
-      `<b>CHÀO MỪNG BẠN ĐẾN VỚI E-MONEY!</b><br>Hãy nhấn vào liên kết dưới đây để kích hoạt tài khoản của bạn.<br><a href="${config.APPLOCAL}/active/${newUser.ID.toBase64()}">Kích hoạt</a>`
+      `<b>CHÀO MỪNG BẠN ĐẾN VỚI E-MONEY!</b><br>Hãy nhấn vào liên kết dưới đây để kích hoạt tài khoản của bạn.<br><a href="${process.env.APPLOCAL || config.APPLOCAL}/active/${newUser.ID.toBase64()}">Kích hoạt</a>`
     const result = await emailServer.send(newUser.Email, content, "Kích hoạt tài khoản!");
     return res.status(201).send({ msg: "Hãy kiểm tra email vừa khai báo để kích hoạt tài khoản." });
   }
@@ -88,7 +88,7 @@ router.post('/active', async (req, res) => {
   }
 
   if (user[0].WalletID !== null) {
-    return res.status(400).send({ msg: "Tài khoản của bạn đã được kích hoạt trước đó. Hãy tiếp tục sử dụng ứng dụng." });
+    return res.status(403).send({ msg: "Tài khoản của bạn đã được kích hoạt trước đó. Hãy tiếp tục sử dụng ứng dụng." });
 
   }
   else {

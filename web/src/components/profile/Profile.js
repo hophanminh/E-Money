@@ -18,6 +18,7 @@ import config from '../../constants/config.json';
 import palette from '../../constants/palette.json';
 import MyContext from '../mycontext/MyContext';
 import SnackBar from '../snackbar/SnackBar';
+import { Refresh } from '@material-ui/icons';
 
 const API_URL = config.API_LOCAL;
 const styles = {
@@ -34,7 +35,6 @@ export default function Profile() {
 
   const userID = localStorage.getItem('userID');
   const token = localStorage.getItem('jwtToken');
-  console.log(token)
   const history = useHistory();
   const [errors, setErrors] = useState({});
   const [username, setUsername] = useState("");// không thay đổi được
@@ -127,8 +127,18 @@ export default function Profile() {
     }
   }
 
-  const handleResetInfo = () => {
-
+  const handleResetInfo = async () => {
+    const res = await fetch(`${API_URL}/users/${userID}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      }
+    });
+    if (res.status === 200) {
+      const result = await res.json();
+      setInfo(result.user);
+    }
   }
 
   return (
@@ -173,7 +183,7 @@ export default function Profile() {
                 <Typography component="h2" variant="h5" style={{ fontWeight: 'bold' }}>
                   Thông tin tài khoản
                 <IconButton onClick={handleResetInfo} title="Reset information" color="primary" aria-label="add an alarm" style={{ fontSize: 'large' }} >
-                    <ReplayIcon />
+                    <Refresh />
                   </IconButton>
                 </Typography>
                 <div style={{ margin: '20px 0 20px' }}>

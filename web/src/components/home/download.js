@@ -1,5 +1,5 @@
 import React from 'react';
-import { Typography, Button } from '@material-ui/core';
+import { Typography, Button, Grid } from '@material-ui/core';
 import PhoneAndroidIcon from '@material-ui/icons/PhoneAndroid';
 import ComputerIcon from '@material-ui/icons/Computer';
 import LanguageIcon from '@material-ui/icons/Language';
@@ -28,39 +28,49 @@ export default function Download() {
           Sử dụng ngay trên mọi nền tảng
         </Typography>
         <div style={{ marginTop: '30px' }}>
-          <Button className={classes.button}
-            style={{
-              height: '100px', width: '350px', color: 'white', backgroundColor: '#1daf1a',
-              marginRight: '30px', padding: '0px 15px 0px 15px'
-            }}
-          >
-            <ComputerIcon style={{ width: '50px', height: '50px', marginRight: '15px' }} />
-            <Typography style={{ textAlign: 'left', fontSize: '24px' }}>
-              Tải về phiên bản trên <b>Window</b>
-            </Typography>
-          </Button>
-          <Button className={classes.button}
-            style={{
-              height: '100px', width: '350px', color: 'white', backgroundColor: '#1daf1a',
-              marginRight: '30px', padding: '0px 15px 0px 15px'
-            }}
-          >
-            <PhoneAndroidIcon style={{ width: '50px', height: '50px', marginRight: '15px' }} />
-            <Typography style={{ textAlign: 'left', fontSize: '24px' }}>
-              Tải về phiên bản trên <b>Android</b>
-            </Typography>
-          </Button>
-          <Button className={classes.button}
-            style={{
-              height: '100px', width: '350px', color: 'white', backgroundColor: '#1daf1a',
-              marginRight: '30px', padding: '0px 15px 0px 15px'
-            }}
-          >
-            <LanguageIcon style={{ width: '50px', height: '50px', marginRight: '15px' }} />
-            <Typography style={{ textAlign: 'left', fontSize: '24px' }}>
-              Sử dụng ngay trên <b>Website</b>
-            </Typography>
-          </Button>
+          <Grid container spacing={2}>
+            <Grid item md={4} xs={12}>
+              <Button className={classes.button}
+                style={{
+                  height: '100px', width: '350px', color: 'white', backgroundColor: '#1daf1a',
+                  padding: '0px 15px 0px 15px'
+                }}
+              >
+                <ComputerIcon style={{ width: '50px', height: '50px', marginRight: '15px' }} />
+                <Typography style={{ textAlign: 'left', fontSize: '24px' }}>
+                  Tải về phiên bản trên <b>Window</b>
+                </Typography>
+              </Button>
+
+
+            </Grid>
+            <Grid item md={4} xs={12}>
+              <Button className={classes.button}
+                style={{
+                  height: '100px', width: '350px', color: 'white', backgroundColor: '#1daf1a',
+                  padding: '0px 15px 0px 15px'
+                }}
+              >
+                <PhoneAndroidIcon style={{ width: '50px', height: '50px', marginRight: '15px' }} />
+                <Typography style={{ textAlign: 'left', fontSize: '24px' }}>
+                  Tải về phiên bản trên <b>Android</b>
+                </Typography>
+              </Button>
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <Button className={classes.button}
+                style={{
+                  height: '100px', width: '350px', color: 'white', backgroundColor: '#1daf1a',
+                  padding: '0px 15px 0px 15px'
+                }}
+              >
+                <LanguageIcon style={{ width: '50px', height: '50px', marginRight: '15px' }} />
+                <Typography style={{ textAlign: 'left', fontSize: '24px' }}>
+                  Sử dụng ngay trên <b>Website</b>
+                </Typography>
+              </Button>
+            </Grid>
+          </Grid>
         </div>
       </div>
     </div>
