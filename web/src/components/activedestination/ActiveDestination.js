@@ -33,17 +33,17 @@ export default function ActiveDestination() {
 
   useEffect(() => {
     async function active() {
+      alert(isLoggedIn)
 
       if (isLoggedIn === null) {
         return;
       }
-
       if (isLoggedIn) {
         setStatusCode(200)
         setMsg("Bạn đã đăng nhập trước đó");
         // history.push("/");
       }
-
+      // const res = await fetch(`http://192.168.1.93:9000/active`, {
       const res = await fetch(`${API_URL}/active`, {
         method: 'POST',
         body: JSON.stringify({ ID }),

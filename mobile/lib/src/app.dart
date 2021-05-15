@@ -30,11 +30,11 @@ class _MyAppState extends State<MyApp> {
       initialRoute: '/',
       routes: {
         '/': (context) => AuthenPage(setUser: setUser),
-        '/login': (context) => LoginPage(),
+        '/login': (context) => LoginPage(setUser: setUser),
         '/register': (context) => RegisterPage(),
         '/forgotpassword': (context) => RequestGenerator(),
         '/reset': (context) => ResetDestination(),
-        '/profile': (context) => ProfilePage(user: user,setUser: setUser,),
+        '/profile': (context) => ProfilePage(user: user, setUser: setUser),
         '/dashboard': (context) => Dashboard(user: user),
       },
     );

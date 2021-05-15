@@ -226,6 +226,9 @@ class _ProfilePageState extends State<ProfilePage> {
                               if (value == null || value.isEmpty) {
                                 return 'Tên không được để trống';
                               }
+                              if (isBlankString(value)) {
+                                return 'Tên chỉ chứa khoảng trắng';
+                              }
                               return null;
                             },
                           ),

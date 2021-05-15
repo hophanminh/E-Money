@@ -17,11 +17,11 @@ class ChangePasswordDialog extends StatefulWidget {
 }
 
 class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
-  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  GlobalKey<ScaffoldMessengerState> _scaffoldKey = GlobalKey<ScaffoldMessengerState>();
-  TextEditingController _oldPassword = TextEditingController();
-  TextEditingController _newPassword = TextEditingController();
-  TextEditingController _confirmedPassword = TextEditingController();
+  var _formKey = GlobalKey<FormState>();
+  var _scaffoldKey = GlobalKey<ScaffoldMessengerState>();
+  var _oldPassword = TextEditingController();
+  var _newPassword = TextEditingController();
+  var _confirmingPassword = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -103,7 +103,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
                     Padding(
                       padding: const EdgeInsets.fromLTRB(0, 10, 0, 20),
                       child: TextFormField(
-                        controller: _confirmedPassword,
+                        controller: _confirmingPassword,
                         // autofocus: true,
                         obscureText: true,
                         decoration: myInputDecoration('Xác nhận mật khẩu', inputBorder: Colors.black26),

@@ -10,9 +10,9 @@ import 'package:mobile/src/views/utils/helpers/helper.dart';
 import 'package:mobile/src/views/utils/widgets/widget.dart';
 
 class LoginPage extends StatefulWidget {
-  final Map<String, dynamic> user;
+  final void Function(Map<String, dynamic>) setUser;
 
-  const LoginPage({this.user});
+  const LoginPage({this.setUser});
 
   // LoginPage({Key key, this.title}) : super(key: key);
 
@@ -26,12 +26,9 @@ class _LoginPageState extends State<LoginPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final GlobalKey<ScaffoldMessengerState> _scaffoldKey = GlobalKey<ScaffoldMessengerState>();
 
-  Map<String, dynamic> user;
-
   @override
   void initState() {
     super.initState();
-    user = widget.user;
   }
 
   void handleLogin() async {
@@ -46,9 +43,7 @@ class _LoginPageState extends State<LoginPage> {
     await SecureStorage.writeSecureData('jwtToken', body['token']);
     await SecureStorage.writeSecureData('userID', body['user']['ID']);
     // need to store 'user' in global state ==> not done
-    setState(() {
-      user = body['user'];
-    });
+    widget.setUser(body['user']);
     Navigator.pushNamedAndRemoveUntil(context, '/dashboard', (route) => false);
   }
 
@@ -79,7 +74,7 @@ class _LoginPageState extends State<LoginPage> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
                 Container(
-                  color: const Color(0xFF1DAF1A),
+                  color: primary,
                   child: ClipRRect(
                     borderRadius: BorderRadius.only(bottomLeft: Radius.circular(70.0), bottomRight: Radius.circular(70.0)),
                     child: Image(
@@ -91,7 +86,7 @@ class _LoginPageState extends State<LoginPage> {
                   padding: const EdgeInsets.fromLTRB(25, 45, 25, 25),
                   decoration: BoxDecoration(
                       border: Border.all(width: 0, color: primary),
-                      color: primary,
+                      gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [primary, const Color(0xFFb4dc63)]),
                       borderRadius: BorderRadius.only(bottomLeft: Radius.circular(70.0), bottomRight: Radius.circular(70.0))),
                   child: Center(
                     child: Form(
@@ -119,7 +114,7 @@ class _LoginPageState extends State<LoginPage> {
                             padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
                             child: TextFormField(
                               controller: usernameController,
-                              decoration: myInputDecoration('Tên tài khoản'),
+                              decoration: myInputDecoration('Tên tài khoản', inputBorder: Colors.transparent),
                               validator: (String value) {
                                 if (value == null || value.isEmpty) {
                                   return 'Tên tài khoản không được để trống';
@@ -136,7 +131,7 @@ class _LoginPageState extends State<LoginPage> {
                               child: TextFormField(
                                   controller: passwordController,
                                   obscureText: true,
-                                  decoration: myInputDecoration('Mật khẩu'),
+                                  decoration: myInputDecoration('Mật khẩu', inputBorder: Colors.transparent),
                                   validator: (String value) {
                                     if (value == null || value.isEmpty || value.length < Properties.PASSWORD_MIN_LENGTH) {
                                       return 'Mật khẩu phải chứa ít nhất 6 ký tự';
@@ -173,7 +168,8 @@ class _LoginPageState extends State<LoginPage> {
                                   handleLogin();
                                 }
                               },
-                              borderSide: BorderSide(color: Colors.white, width: 3.0),
+                              borderSide: BorderSide(color: Colors.white, width: 2.0),
+                              // backgroundColor: Colors.transparent
                             ),
                           )
                         ],

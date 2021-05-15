@@ -1,4 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
+import 'package:mobile/src/services/restapiservices/auth_service.dart';
+import 'package:mobile/src/views/ui/forgotpassword/reset_view.dart';
 import 'package:mobile/src/views/utils/helpers/helper.dart';
 import 'package:mobile/src/views/utils/widgets/widget.dart';
 
@@ -8,28 +13,34 @@ class RequestGenerator extends StatefulWidget {
 }
 
 class _RequestGeneratorState extends State<RequestGenerator> {
-  final usernameController = TextEditingController();
-  final emailController = TextEditingController();
+  var _usernameController = TextEditingController(text: 'minhlac');
+  var _emailController = TextEditingController(text: 'lactuanminh2121@gmail.com');
+  var _formKey = GlobalKey<FormState>();
+  var _scaffoldKey = GlobalKey<ScaffoldMessengerState>();
 
-  void handleSendRequest() {
-    const isSuccess = true;
-    print(usernameController.text + "  " + emailController.text);
-
-    if (isSuccess) {
-      Navigator.pushReplacementNamed(context, '/reset');
+  void handleSendRequest() async {
+    FocusScope.of(context).unfocus();
+    Response res = await AuthService.instance.forgotPassword(_usernameController.text, _emailController.text);
+    Map<String, dynamic> body = jsonDecode(res.body);
+    if (res.statusCode == 200) {
+      showSnackV2(context, 'Hãy kiểm tra email để nhận mã xác nhận', /*action: closeSnackActionV2(context),*/ duration: 5); // action not work when navigate to second page
+      print('28');
+      print(body['id']);
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ResetDestination(resetID: body['id'])));
+    } else {
+      showSnack(_scaffoldKey, body['msg']);
     }
   }
 
   @override
   void dispose() {
-    usernameController.dispose();
-    emailController.dispose();
+    _usernameController.dispose();
+    _emailController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
     return Scaffold(
       body: Container(
         child: Column(
@@ -77,7 +88,7 @@ class _RequestGeneratorState extends State<RequestGenerator> {
                         padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
                         // decoration: BoxDecoration(boxShadow: [myShadow()]),
                         child: TextFormField(
-                          controller: usernameController,
+                          controller: _usernameController,
                           autofocus: true,
                           decoration: myInputDecoration('Tên tài khoản'),
                           validator: (String value) {
@@ -94,7 +105,7 @@ class _RequestGeneratorState extends State<RequestGenerator> {
                         padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
                         // decoration: BoxDecoration(boxShadow: [myShadow()]),
                         child: TextFormField(
-                            controller: emailController,
+                            controller: _emailController,
                             decoration: myInputDecoration('Email'),
                             validator: (String value) {
                               if (value == null || value.isEmpty) {
@@ -107,7 +118,7 @@ class _RequestGeneratorState extends State<RequestGenerator> {
                             })),
                     myAlignedButton('Gửi', alignment: Alignment.centerRight, padding: EdgeInsets.symmetric(horizontal: 50, vertical: 10), fontSize: 20, action: () {
                       if (_formKey.currentState.validate()) {
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Hãy kiểm tra email để nhận mã xác nhận')));
+                        showSnackV2(context, 'Đang xử lý...', duration: -1);
                         handleSendRequest();
                       }
                     }),

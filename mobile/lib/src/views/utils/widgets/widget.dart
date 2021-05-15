@@ -13,15 +13,19 @@ Align myLabelText(String title, {AlignmentGeometry position = Alignment.centerLe
     );
 
 InputDecoration myInputDecoration(String placeholder, {Color inputBorder = primary}) => InputDecoration(
-    hintText: placeholder,
-    contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
-    focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: inputBorder, width: 1.0)),
-    enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: inputBorder, width: 1.0)),
-    errorBorder: OutlineInputBorder(borderSide: BorderSide(color: error, width: 1.0)),
-    focusedErrorBorder: OutlineInputBorder(borderSide: BorderSide(color: error, width: 1.0)),
-    filled: true,
-    fillColor: Colors.white,
-    errorStyle: myErrorTextStyle);
+      hintText: placeholder,
+      contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+      focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: inputBorder, width: 1.0), borderRadius: BorderRadius.circular(12)),
+      enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: inputBorder, width: 1.0), borderRadius: BorderRadius.circular(12)),
+      errorBorder: OutlineInputBorder(borderSide: BorderSide(color: error, width: 1.0), borderRadius: BorderRadius.circular(12)),
+      focusedErrorBorder: OutlineInputBorder(borderSide: BorderSide(color: error, width: 1.0), borderRadius: BorderRadius.circular(12)),
+      filled: true,
+      fillColor: Colors.white,
+      errorStyle: myErrorTextStyle,
+      // border: OutlineInputBorder(
+      //   borderRadius: BorderRadius.circular(200),
+      // ),
+    );
 
 AppBar mySimpleAppBar(String title) => AppBar(
       // app bar without 'action' property

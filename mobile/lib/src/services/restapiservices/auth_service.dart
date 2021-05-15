@@ -26,6 +26,14 @@ class AuthService {
         body: jsonEncode(<String, String>{'Username': username, 'Password': password}));
   }
 
+  Future<http.Response> signup(String username, String displayedName, String password, String email) async {
+    return await http.post(Uri.http(_baseURL, '/signup'),
+        headers: {
+          HttpHeaders.contentTypeHeader: 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{"Name": displayedName, "Username": username, "Password": password, "Email": email}));
+  }
+
   Future<http.Response> fetchInfo() async {
     String userID = await SecureStorage.readSecureData('userID');
 
@@ -36,5 +44,15 @@ class AuthService {
     String token = await SecureStorage.readSecureData('jwtToken');
     return await http
         .get(Uri.http(_baseURL, '/users/$userID'), headers: {HttpHeaders.authorizationHeader: "Bearer $token", HttpHeaders.contentTypeHeader: 'application/json; charset=UTF-8'});
+  }
+
+  Future<http.Response> forgotPassword(String username, String email) async {
+    return await http.post(Uri.http(_baseURL, '/forgotpassword'),
+        headers: {HttpHeaders.contentTypeHeader: 'application/json; charset=UTF-8'}, body: jsonEncode(<String, String>{"Username": username, "Email": email}));
+  }
+
+  Future<http.Response> resetPassword(String id, String code, String password) async {
+    return await http.put(Uri.http(_baseURL, '/resetpassword'),
+        headers: {HttpHeaders.contentTypeHeader: 'application/json; charset=UTF-8'}, body: jsonEncode(<String, String>{"ID": id, "Code": code, "Password": password}));
   }
 }

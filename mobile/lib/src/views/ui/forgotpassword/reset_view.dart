@@ -1,35 +1,66 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:http/http.dart';
 import 'package:mobile/src/config/config.dart';
+import 'package:mobile/src/services/restapiservices/auth_service.dart';
 import 'package:mobile/src/views/utils/helpers/helper.dart';
 import 'package:mobile/src/views/utils/widgets/widget.dart';
 
 class ResetDestination extends StatefulWidget {
+  final String resetID;
+
+  const ResetDestination({@required this.resetID});
+
   @override
   _ResetDestinationState createState() => _ResetDestinationState();
 }
 
 class _ResetDestinationState extends State<ResetDestination> {
-  final verificationCodeController = TextEditingController();
-  final passwordController = TextEditingController();
-  final confirmationPasswordController = TextEditingController();
+  var _verificationCodeController = TextEditingController();
+  var _passwordController = TextEditingController();
+  var _confirmationPasswordController = TextEditingController();
+  var _scaffoldKey = GlobalKey<ScaffoldMessengerState>();
+  var _formKey = GlobalKey<FormState>();
 
-  void handleSendRequest() {
-    Navigator.pushNamedAndRemoveUntil(context, '/', (r) => false); // go back to login page but not allow to return this page
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  void handleSendRequest() async {
+    FocusScope.of(context).unfocus();
+    print(widget.resetID);
+    Response res = await AuthService.instance.resetPassword(widget.resetID, _verificationCodeController.text, _passwordController.text);
+    Map<String, dynamic> body = jsonDecode(res.body);
+
+    if (res.statusCode == 200) {
+      showSnackV2(context, body['msg'],
+          duration: -1,
+          action: closeSnackActionV2(context, 'Đăng nhập', () {
+            Navigator.pushNamedAndRemoveUntil(context, '/login', (r) => false); // go back to login page but not allow to return this page
+          }));
+    }
+    if (res.statusCode == 400 || res.statusCode == 500) {
+      showSnackV2(context, body['msg']);
+    }
+    if (res.statusCode == 401) {
+      // resetID is not presented in database (unauthorized)
+      Navigator.pushNamedAndRemoveUntil(context, '/login', (r) => false); // go back to login page but not allow to return this page
+    }
   }
 
   @override
   void dispose() {
-    verificationCodeController.dispose();
-    passwordController.dispose();
-    verificationCodeController.dispose();
+    _verificationCodeController.dispose();
+    _passwordController.dispose();
+    _confirmationPasswordController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
     return Scaffold(
       body: SingleChildScrollView(
         child: Container(
@@ -78,7 +109,7 @@ class _ResetDestinationState extends State<ResetDestination> {
                           padding: const EdgeInsets.fromLTRB(0, 10, 0, 30),
                           // decoration: BoxDecoration(boxShadow: [myShadow()]),
                           child: TextFormField(
-                            controller: verificationCodeController,
+                            controller: _verificationCodeController,
                             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                             autofocus: true,
                             decoration: myInputDecoration('Mã xác nhận'),
@@ -94,7 +125,7 @@ class _ResetDestinationState extends State<ResetDestination> {
                           padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
                           // decoration: BoxDecoration(boxShadow: [myShadow()]),
                           child: TextFormField(
-                              controller: passwordController,
+                              controller: _passwordController,
                               obscureText: true,
                               decoration: myInputDecoration('Mật khẩu'),
                               validator: (String value) {
@@ -110,7 +141,7 @@ class _ResetDestinationState extends State<ResetDestination> {
                           padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
                           // decoration: BoxDecoration(boxShadow: [myShadow()]),
                           child: TextFormField(
-                              controller: confirmationPasswordController,
+                              controller: _confirmationPasswordController,
                               decoration: myInputDecoration('Xác nhận mật khẩu'),
                               obscureText: true,
                               validator: (String value) {
@@ -120,7 +151,7 @@ class _ResetDestinationState extends State<ResetDestination> {
                                 if (value.contains(' ')) {
                                   return 'Mật khẩu không được chứa khoảng trắng';
                                 }
-                                if (value != passwordController.text) {
+                                if (value != _passwordController.text) {
                                   return 'Mật khẩu xác nhận không khớp';
                                 }
                                 return null;
@@ -129,11 +160,12 @@ class _ResetDestinationState extends State<ResetDestination> {
                         padding: const EdgeInsets.only(top: 20.0),
                         child: myAlignedButton('Gửi', padding: EdgeInsets.symmetric(horizontal: 50, vertical: 10), alignment: Alignment.centerRight, fontSize: 20, action: () {
                           if (_formKey.currentState.validate()) {
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Đang xử lý...')));
+                            // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Đang xử lý...')));
+                            showSnackV2(context, 'Đang xử lý...');
                             handleSendRequest();
                           }
                         }),
-                      )
+                      ),
                     ],
                   ),
                 ),

@@ -133,6 +133,7 @@ CREATE TABLE Teams_Has_Users(
 DROP TABLE IF EXISTS `ResetRequests`;
 CREATE TABLE ResetRequests(
     ID VARCHAR(100) NOT NULL, -- will store as UUID()
+	Code VARCHAR(10) NOT NULL,
     UserID VARCHAR(100) NOT NULL,
     Email VARCHAR(100) NOT NULL,
     IsSuccessful BOOLEAN NOT NULL,
