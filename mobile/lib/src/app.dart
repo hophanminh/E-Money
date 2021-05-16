@@ -5,7 +5,7 @@ import 'package:mobile/src/views/ui/forgotpassword/reset_view.dart';
 import 'package:mobile/src/views/ui/login_view.dart';
 import 'package:mobile/src/views/ui/profile/profile_view.dart';
 import 'package:mobile/src/views/ui/register_view.dart';
-import 'package:mobile/src/views/ui/wallet/dashboard_view.dart';
+import 'file:///D:/Github/E-Money/mobile/lib/src/views/ui/wallet/dashboard_view.dart';
 
 class MyApp extends StatefulWidget {
   @override
