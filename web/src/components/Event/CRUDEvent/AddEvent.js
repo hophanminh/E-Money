@@ -321,7 +321,7 @@ export default function AddEvent(props) {
                   variant="outlined"
                 >
                   {(valueList || []).map((type, i) => (
-                    <MenuItem key={i} value={i}>
+                    <MenuItem key={i} value={i + 1}>
                       {type}
                     </MenuItem>
                   ))}
