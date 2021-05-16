@@ -45,7 +45,7 @@ const CategoryAccordion = (props) => {
             for (let i = 0; i < temp?.length; i++) {
                 const number = list.filter(j => j?.catID === temp[i]?.ID)?.length;
                 temp[i] = { ...temp[i], count: number };
-                temp?.sort((a, b) => b.count - a.count)
+                temp?.sort((a, b) => b.count - a.count).slice(0, 5);
                 setCatList(temp);
             }
         }

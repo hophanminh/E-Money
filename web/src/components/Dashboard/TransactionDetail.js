@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
+import { Link, } from "react-router-dom";
 import {
   Typography,
-  Link,
   Box,
   Divider,
   IconButton,
@@ -15,10 +15,12 @@ import POPUP from '../../constants/popup.json'
 
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
+import RestoreIcon from '@material-ui/icons/Restore';
 import moment from 'moment';
 import DefaultIcon from '../../utils/DefaultIcon'
 import EditTransaction from './CRUDTransaction/EditTransaction';
 import DeleteTransaction from './CRUDTransaction/DeleteTransaction';
+import Rollback from '../Rollback/Rollback';
 import TransactionImages from './TransactionImages';
 import { getSocket } from "../../utils/socket";
 import { formatMoney } from '../../utils/currency'
@@ -74,26 +76,42 @@ export default function TransactionDetail(props) {
     setOpen(POPUP.TRANSACTION.DELETE_TRANSACTION);
   }
 
+  // rollback transaction dialog
+  const handleOpenRollbackDialog = () => {
+    setOpen(POPUP.TRANSACTION.ROLLBACK_TRANSACTION);
+  }
+
   return (
     <React.Fragment>
       <EditTransaction />
       <DeleteTransaction />
+      <Rollback />
 
       <div className={classes.root}>
         {data &&
           <React.Fragment>
             <div className={classes.title}>
-              <Typography
-                className={classes.titleText}>
-                {moment(data?.time).format("DD/MM/YYYY - hh:mm")}
-
-              </Typography>
+              <Box className={classes.titleText}>
+                <Typography
+                  className={classes.timeText}>
+                  {moment(data?.time).format("DD/MM/YYYY - HH:mm")}
+                </Typography>
+                {data?.editNumber > 1 &&
+                  <Typography
+                    className={classes.editedText}>
+                    (Có chỉnh sửa)
+                </Typography>
+                }
+              </Box>
               <div>
                 <IconButton className={`${classes.iconButton} ${classes.green}`} aria-label="edit" onClick={handleOpenEditDialog}>
                   <EditIcon />
                 </IconButton>
                 <IconButton className={`${classes.iconButton} ${classes.red}`} aria-label="delete" onClick={handleOpenDeleteDialog}>
                   <DeleteIcon />
+                </IconButton>
+                <IconButton className={`${classes.iconButton} ${classes.blue}`} aria-label="delete" onClick={handleOpenRollbackDialog}>
+                  <RestoreIcon />
                 </IconButton>
               </div>
             </div>
@@ -124,7 +142,7 @@ export default function TransactionDetail(props) {
                 <Typography
                   className={`${classes.transactionSubText}`}>
                   Sự kiện:&nbsp;
-                  {data?.eventName ? <Link to="/">{data?.eventName}</Link> : "không có"}
+                  {data?.eventName ? data?.eventName : "không có"}
                 </Typography>
               </Box>
               <TransactionImages transactionID={data?.id} images={imageList} setImages={handleSetImageList} />
@@ -150,6 +168,9 @@ const useStyles = makeStyles((theme) => ({
   },
   green: {
     color: '#1DAF1A'
+  },
+  blue: {
+    color: '#2a75bc'
   },
   wrap: {
     // width: "100%",
@@ -187,8 +208,19 @@ const useStyles = makeStyles((theme) => ({
     margin: '5px 0px',
   },
   titleText: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'baseline',
+  },
+  timeText: {
     fontSize: '28px',
     fontWeight: 'bold'
+  },
+  editedText: {
+    fontSize: '13px',
+    fontStyle: 'italic',
+    marginLeft: '6px',
   },
   iconButton: {
     width: '32px',

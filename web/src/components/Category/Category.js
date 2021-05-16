@@ -45,7 +45,7 @@ export default function Category(props) {
   const [team, setTeam] = useState();
   // get initial data
   useEffect(() => {
-    socket.emit("get_team", { walletID: id }, (team) => {
+    socket.emit("get_team", { walletID: id }, ({ team }) => {
       setTeam(team);
     });
 

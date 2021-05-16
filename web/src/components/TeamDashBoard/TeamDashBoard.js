@@ -65,9 +65,9 @@ const TeamDashBoard = () => {
   const [thu, setTHU] = useState({});
   // get initial data
   useEffect(() => {
-    socket.emit("get_team", { walletID: id }, (team) => {
-      setTeam(team.team);
-      setTHU(team.thu[0]);
+    socket.emit("get_team", { walletID: id }, ({ team, thu }) => {
+      setTeam(team);
+      setTHU(thu[0]);
       console.log("THU: ", thu.Role);
     });
 
@@ -526,6 +526,7 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
     flexShrink: 0,
+    minHeight: '530px',
   },
 
 }));

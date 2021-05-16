@@ -123,6 +123,7 @@ export default function EditTransaction(props) {
                 <Box>
                     <Box className={classes.amountRow}>
                         <TextField
+                            style={{ marginRight: '10px' }}
                             className={classes.textField}
                             size="small"
                             id="isNegative"
@@ -295,7 +296,7 @@ const useStyles = makeStyles({
         display: 'flex',
     },
     textField: {
-        margin: '10px 10px 15px 0px'
+        margin: '10px 0px 15px 0px'
     },
 
     typeBox: {

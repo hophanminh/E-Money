@@ -402,6 +402,7 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
     flexShrink: 0,
+    minHeight: '530px',
   },
 
 }));
