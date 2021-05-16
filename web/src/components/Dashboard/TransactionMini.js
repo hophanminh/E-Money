@@ -65,7 +65,7 @@ export default function TransactionMini({ transactionData }) {
                 </Box>
             </div>
             {!isSimple &&
-                <Typography className={classes.transactionSubText}>{moment(data?.time).format("hh:mm - DD/MM/YYYY")}</Typography>
+                <Typography className={classes.transactionSubText}>{moment(data?.time).format("HH:mm - DD/MM/YYYY")}</Typography>
             }
         </div>
     );

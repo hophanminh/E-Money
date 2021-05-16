@@ -12,8 +12,13 @@ module.exports = function (socket, io, decoded_userID) {
         socket.join(walletID);
         try {
             const team = await teamModel.getTeamByWalletId(walletID);
-            const thu = await team_has_model.getTHUByTeamId(team[0].ID);
-            callback({team: team[0], thu: thu});
+            if (team.length > 0) {
+                const thu = await team_has_model.getTHUByTeamId(team[0].ID);
+                callback({ team: team[0], thu: thu });
+            }
+            else {
+                callback({ team: null, thu: 0 });
+            }
         } catch (error) {
             console.log(error);
         }

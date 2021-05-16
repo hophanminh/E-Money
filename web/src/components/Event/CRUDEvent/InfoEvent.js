@@ -55,6 +55,7 @@ export default function InfoEvent(props) {
                         <Box>
                             <Box className={classes.amountRow}>
                                 <TextField
+                                    style={{ marginRight: '10px' }}
                                     className={classes.textField}
                                     size="small"
                                     id="isNegative"
@@ -77,7 +78,7 @@ export default function InfoEvent(props) {
                                     id="price"
                                     name="price"
                                     label="Số tiền *"
-                                    value={Math.abs(selected?.ExpectingAmount)}
+                                    value={Math.abs(selected?.ExpectingAmount) || ''}
                                     InputLabelProps={{
                                         shrink: true,
                                     }}
@@ -96,7 +97,7 @@ export default function InfoEvent(props) {
                                 name="time"
                                 size="small"
                                 className={classes.textField}
-                                value={moment(selected?.NextDate).format("DD/MM/YYYY")}
+                                value={moment(selected?.NextDate).format("DD/MM/YYYY - HH:mm") || ''}
                                 label="Thời gian *"
                                 fullWidth
                                 variant="outlined"
@@ -135,7 +136,7 @@ export default function InfoEvent(props) {
                                 id="event"
                                 name="eventID"
                                 label="Sự kiện"
-                                value={selected?.Name}
+                                value={selected?.Name || ''}
                                 fullWidth
                                 variant="outlined"
                                 InputProps={{
@@ -149,7 +150,7 @@ export default function InfoEvent(props) {
                                 name="description"
                                 className={classes.textField}
                                 size="small"
-                                value={selected?.Description}
+                                value={selected?.Description || ''}
                                 id="outlined-multiline-static"
                                 label="Mô tả"
                                 multiline
@@ -204,7 +205,7 @@ const useStyles = makeStyles({
         display: 'flex',
     },
     textField: {
-        margin: '10px 10px 15px 0px'
+        margin: '10px 0px 15px 0px'
     },
     type1Text: {
         color: '#1DAF1A'

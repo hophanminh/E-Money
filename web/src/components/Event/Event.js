@@ -49,10 +49,10 @@ export default function Event() {
   const [team, setTeam] = useState();
   // get initial data
   useEffect(() => {
-    socket.emit("get_team", { walletID: id }, (team) => {
+    socket.emit("get_team", { walletID: id }, ({ team }) => {
       setTeam(team);
     });
-    
+
     socket.emit("get_event", { walletID: id }, ({ eventList }) => {
       setEventList(eventList);
     });
@@ -98,7 +98,7 @@ export default function Event() {
     const temp2 = temp1 ? rowsPerPage - Math.min(rowsPerPage, temp1.length - page * rowsPerPage) : 0;
     setRows(temp1);
     setEmptyRows(temp2);
-  }, [eventList]);
+  }, [eventList, page]);
 
   // table 2: finished event
   const [page_2, setPage_2] = useState(0);
@@ -114,7 +114,7 @@ export default function Event() {
     const temp2 = temp1 ? rowsPerPage - Math.min(rowsPerPage, temp1.length - page_2 * rowsPerPage) : 0;
     setRows_2(temp1);
     setEmptyRows_2(temp2);
-  }, [eventList]);
+  }, [eventList, page]);
 
   // info dialog
   const [openInfoDialog, setOpenInfoDialog] = useState(false);
@@ -229,7 +229,7 @@ export default function Event() {
                       )
                     })}
                     {emptyRows > 0 && (
-                      <TableRow style={{ height: 53 * emptyRows }}>
+                      <TableRow style={{ height: 67 * emptyRows }}>
                         <TableCell colSpan={6} />
                       </TableRow>
                     )}
@@ -294,7 +294,7 @@ export default function Event() {
                       )
                     })}
                     {emptyRows_2 > 0 && (
-                      <TableRow style={{ height: 53 * emptyRows }}>
+                      <TableRow style={{ height: 67 * emptyRows }}>
                         <TableCell colSpan={6} />
                       </TableRow>
                     )}
@@ -402,6 +402,7 @@ const useStyles = makeStyles((theme) => ({
   // table
   paper: {
     width: '100%',
+    minHeight: '530px'
   },
   tableHead: {
     backgroundColor: '#000000',

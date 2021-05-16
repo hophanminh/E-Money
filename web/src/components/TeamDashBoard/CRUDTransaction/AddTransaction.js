@@ -179,6 +179,7 @@ export default function AddTransaction(props) {
         <Box>
           <Box className={classes.amountRow}>
             <TextField
+              style={{ marginRight: '10px' }}
               className={classes.textField}
               size="small"
               id="isNegative"
@@ -353,9 +354,10 @@ const useStyles = makeStyles({
 
   amountRow: {
     display: 'flex',
+    width: '100%'
   },
   textField: {
-    margin: '10px 10px 15px 0px'
+    margin: '10px 0px 15px 0px'
   },
 
   typeBox: {
