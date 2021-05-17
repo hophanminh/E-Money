@@ -159,14 +159,14 @@ export default function SignIn() {
           <div style={{ ...styles.socialLoginButton }} >
             <Typography style={styles.logoContainer}>
               <img src={FacebookIcon} alt="Facebook icon" style={styles.logo} />
-                    Đăng nhập bằng Facebook
+              Đăng nhập bằng Facebook
             </Typography>
           </div>
           <div style={styles.socialLoginButton}>
             <Typography style={{ ...styles.logoContainer }}>
               <img src={GoogleIcon} alt="Google icon" style={styles.logo} />
-                    Đăng nhập bằng Google
-                </Typography>
+              Đăng nhập bằng Google
+            </Typography>
           </div>
         </div>
 
@@ -222,9 +222,12 @@ export default function SignIn() {
                     </Link>
                   </div>
 
-                  <Button type="submit" fullWidth variant="contained"
+                  <Button
+                    type="submit" fullWidth variant="contained"
                     onClick={() => handleSubmit()}
-                    style={{ ...styles.submit, backgroundColor: Palette.primary, color: '#fff', fontWeight: 'bold', margin: '5px 0 20px' }}>
+                    style={{ ...styles.submit, backgroundColor: Palette.primary, color: '#fff', 
+                      fontWeight: 'bold', margin: '5px 0 20px' }}
+                  >
                     Đăng nhập
                   </Button>
                 </div>

@@ -4,6 +4,7 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import PhoneIcon from '@material-ui/icons/Phone';
+import Config from '../../Config/default.json'
 import MailIcon from '@material-ui/icons/Mail';
 import FacebookIcon from '@material-ui/icons/Facebook';
 import TwitterIcon from '@material-ui/icons/Twitter';
@@ -31,10 +32,11 @@ function ContactInfo() {
       <PhoneInfo />
       <MailInfo />
     </Typography>
-  );
+  )
 }
 
 function PhoneInfo() {
+  const classes = useStyles();
   return (
     <div style={{ display: 'table', margin: '5px' }}>
       <div style={{ display: 'table-cell', verticalAlign: 'middle', paddingRight: '0' }}>
@@ -49,7 +51,7 @@ function PhoneInfo() {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 function MailInfo() {
@@ -104,7 +106,7 @@ function FastConnect() {
         </Link>
       </div>
     </Typography>
-  )
+  );
 }
 
 function Description() {
@@ -112,7 +114,7 @@ function Description() {
     <Typography style={{ width: `30vw` }}>
       {`E-money giải pháp giúp bạn dễ dàng quản lý việc thu chi rõ ràng, minh bạch. Quản lý quỹ nhóm cũng đã trở nên dễ dàng hơn với E-money.`}
     </Typography>
-  )
+  );
 }
 
 const useStyles = makeStyles((theme) => ({

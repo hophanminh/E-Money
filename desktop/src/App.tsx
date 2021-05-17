@@ -24,6 +24,7 @@ import Teams from './components/Team/Teams';
 import UpdateProfile from './components/Team/UpdateProfile';
 import ResetDestination from './components/signin/resetpassword/ResetDestination';
 import { getListIcon } from './utils/DefaultIcon';
+import './App.css';
 
 const routes = [
   {

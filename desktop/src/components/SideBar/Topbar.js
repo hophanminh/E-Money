@@ -25,9 +25,11 @@ import MenuIcon from '@material-ui/icons/Menu';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import NotificationsNoneIcon from '@material-ui/icons/NotificationsNone';
 import MyContext from '../mycontext/MyContext';
-import defaultAvatar from '../../resources/images/defaultAvatar.png';
+import config from '../../constants/config.json';
+import defaultAvatar from '../../../assets/defaultAvatar.png';
 import moment from 'moment';
 
+const API_URL = config.API_LOCAL;
 const drawerWidth = 240;
 
 const notifications = [
@@ -38,18 +40,19 @@ const notifications = [
   { id: 5, content: 'HCMUS' },
   { id: 6, content: 'HCMUS' },
   { id: 7, content: 'HCMUS' },
-];
+]
 
 function Topbar(props) {
   const classes = useStyles();
   const history = useHistory();
   const { setIsLoggedIn, info } = useContext(MyContext);
   const logOut = (e) => {
-    localStorage.removeItem("jwtToken")
-    localStorage.removeItem("userID")
+    localStorage.removeItem("jwtToken");
+    localStorage.removeItem("userID");
     //localStorage.clear();
     setIsLoggedIn(false);
-  };
+  }
+
   const openSidebar = props.open;  // sidebar's open
 
   return (
