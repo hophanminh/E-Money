@@ -41,7 +41,6 @@ export const styles = {
 }
 
 export default function SignUp() {
-
   const history = useHistory();
   const [username, setUsername] = useState("");
   const [displayedName, setDisplayedName] = useState("");
@@ -55,7 +54,6 @@ export default function SignUp() {
   const { isLoggedIn, setIsLoggedIn } = useContext(MyContext);
 
   useEffect(() => {
-    console.log(API_URL);
     if (isLoggedIn !== null && isLoggedIn) {
       history.push('/');
     }
@@ -66,9 +64,8 @@ export default function SignUp() {
   }
 
   const handleSubmit = async () => {
-
     const errorObj = {
-    };
+    }
 
     if (helper.isBlankString(username)) {
       errorObj.username = "Tên tài khoản không được để trống";

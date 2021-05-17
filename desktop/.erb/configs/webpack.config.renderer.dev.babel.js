@@ -55,7 +55,7 @@ export default merge(baseConfig, {
   module: {
     rules: [
       {
-        test: /\.[jt]sx?$/,
+        test: /\.(js|mjs|jsx|ts|tsx)$/,
         exclude: /node_modules/,
         use: [
           {
