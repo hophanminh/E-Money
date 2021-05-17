@@ -31,10 +31,7 @@ if (process.env.NODE_ENV === 'production') {
   sourceMapSupport.install();
 }
 
-if (
-  process.env.NODE_ENV === 'development' ||
-  process.env.DEBUG_PROD === 'true'
-) {
+if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true') {
   require('electron-debug')();
 }
 
@@ -49,13 +46,10 @@ const installExtensions = async () => {
       forceDownload
     )
     .catch(console.log);
-};
+}
 
 const createWindow = async () => {
-  if (
-    process.env.NODE_ENV === 'development' ||
-    process.env.DEBUG_PROD === 'true'
-  ) {
+  if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true') {
     await installExtensions();
   }
 
@@ -65,16 +59,22 @@ const createWindow = async () => {
 
   const getAssetPath = (...paths: string[]): string => {
     return path.join(RESOURCES_PATH, ...paths);
-  };
+  }
 
   mainWindow = new BrowserWindow({
     show: false,
     width: 1024,
     height: 728,
     icon: getAssetPath('icon.png'),
-    webPreferences: {
-      nodeIntegration: true,
-    },
+    webPreferences:
+      (process.env.NODE_ENV === 'development' || process.env.E2E_BUILD === 'true')
+        && process.env.ERB_SECURE !== 'true'
+      ? {
+          nodeIntegration: true,
+        }
+      : {
+          preload: path.join(__dirname, 'dist/renderer.prod.js'),
+        }
   });
 
   mainWindow.loadURL(`file://${__dirname}/index.html`);
@@ -106,10 +106,16 @@ const createWindow = async () => {
     shell.openExternal(url);
   });
 
+  mainWindow.webContents
+    .executeJavaScript('({...localStorage});', true)
+    .then(localStorage => {
+      console.log(localStorage);
+    });
+
   // Remove this if your app does not use auto updates
   // eslint-disable-next-line
   new AppUpdater();
-};
+}
 
 /**
  * Add event listeners...
@@ -128,5 +134,7 @@ app.whenReady().then(createWindow).catch(console.log);
 app.on('activate', () => {
   // On macOS it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
-  if (mainWindow === null) createWindow();
+  if (mainWindow === null) {
+    createWindow();
+  }
 });

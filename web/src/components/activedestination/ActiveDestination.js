@@ -8,8 +8,9 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import DialogContent from '@material-ui/core/DialogContent';
 import config from '../../constants/config.json';
 import palette from '../../constants/palette.json';
-import { Check, CheckCircleOutline, ErrorOutline, NotInterestedOutlined } from '@material-ui/icons';
+import { CheckCircleOutline, ErrorOutline, NotInterestedOutlined } from '@material-ui/icons';
 import { Button, makeStyles } from '@material-ui/core';
+
 const API_URL = process.env.REACT_APP_API_URL || config.API_LOCAL;
 
 const useStyles = makeStyles((theme) => ({
@@ -33,13 +34,13 @@ export default function ActiveDestination() {
 
   useEffect(() => {
     async function active() {
-      alert(isLoggedIn)
+      alert(isLoggedIn);
 
       if (isLoggedIn === null) {
         return;
       }
       if (isLoggedIn) {
-        setStatusCode(200)
+        setStatusCode(200);
         setMsg("Bạn đã đăng nhập trước đó");
         // history.push("/");
       }
@@ -54,7 +55,6 @@ export default function ActiveDestination() {
 
 
       if (res.status === 200) {
-
         const result = await res.json();
         window.localStorage.setItem('jwtToken', result.token);
         window.localStorage.setItem('userID', result.user.ID);
@@ -71,11 +71,12 @@ export default function ActiveDestination() {
       } else if (res.status === 403) {
         const result = await res.json();
         setMsg(result.msg);
-        setStatusCode(403)
+        setStatusCode(403);
       }
     }
     active();
-  }, [isLoggedIn])
+  }, [isLoggedIn]);
+
   return (
     <>
       <Dialog style={{ textAlign: 'center' }} open={true} >
