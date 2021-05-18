@@ -2,13 +2,20 @@ const db = require('../utils/database');
 
 module.exports = {
 
-  getNotificationByUserID: userID => db.load(`
+  countUnreadNotification: () => db.load(`SELECT COUNT(*) AS count FROM Notifications WHERE IsRead = FALSE`),
+
+  getNotificationByUserID: (userID, limit) => db.load(`
     SELECT *
-    FROM Notification N
-    WHERE UserID = ${userID} AND DateNotified >= NOW()
-    ORDER BY DateNotified
+    FROM Notifications
+    WHERE UserID = ${userID}
+    ORDER BY IsRead, DateNotified DESC
+    LIMIT ${limit}
   `),
 
-  addNotification: entity => db.add('Notification', entity)
+  addNotification: entity => db.add('Notification', entity),
+
+  updateNotification: (ID, entity) => db.patch('Notifications', entity, { ID }),
+
+  updateListNotification: IDs => db.load(`UPDATE Notifications SET IsRead = TRUE WHERE ID IN (${IDs})`)
 
 }

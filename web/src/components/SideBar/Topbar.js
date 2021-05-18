@@ -1,9 +1,6 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import clsx from 'clsx';
-import {
-  useHistory,
-  NavLink,
-} from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import {
   AppBar,
   Toolbar,
@@ -15,42 +12,72 @@ import {
   makeStyles,
   Divider,
   Card,
-  CardContent
+  CardContent,
+  Link,
+  Tooltip
 } from '@material-ui/core';
 
 import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
 
-import ClearIcon from '@material-ui/icons/Menu';
+import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
+import CheckIcon from '@material-ui/icons/Check';
 import MenuIcon from '@material-ui/icons/Menu';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import NotificationsNoneIcon from '@material-ui/icons/NotificationsNone';
 import MyContext from '../mycontext/MyContext';
 import defaultAvatar from '../../resources/images/defaultAvatar.png';
 import moment from 'moment';
+import { getSocket } from '../../utils/socket';
+import config from '../../constants/config.json';
 
 const drawerWidth = 240;
 
-const notifications = [
-  { id: 1, content: 'Hello' },
-  { id: 2, content: 'World' },
-  { id: 3, content: 'FIT' },
-  { id: 4, content: 'HCMUS' },
-  { id: 5, content: 'HCMUS' },
-  { id: 6, content: 'HCMUS' },
-  { id: 7, content: 'HCMUS' },
-];
-
 function Topbar(props) {
   const classes = useStyles();
-  const history = useHistory();
+  const socket = getSocket();
+  const userID = localStorage.getItem('userID');
   const { setIsLoggedIn, info } = useContext(MyContext);
+
+  const [notifications, setNotifications] = useState([]);
+  const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
+  const [currentAmountToLoad, setCurrentAmountToLoad] = useState(config.NOTIFICATION_AMOUNT_TO_LOAD);
+
+  useEffect(async () => {
+    socket.emit('get_notification', { userID, limit: currentAmountToLoad }, ({ notificationList, count }) => {
+      setNotifications(notificationList);
+      setUnreadNotificationCount(count);
+    });
+  }, []);
+
   const logOut = (e) => {
-    localStorage.removeItem("jwtToken")
-    localStorage.removeItem("userID")
+    localStorage.removeItem("jwtToken");
+    localStorage.removeItem("userID");
     //localStorage.clear();
     setIsLoggedIn(false);
-  };
+  }
   const openSidebar = props.open;  // sidebar's open
+
+  const handleMarkNotification = (notification) => {
+    socket.emit('update_notification', { userID, limit: currentAmountToLoad, notificationID: notification.ID, value: !notification.IsRead }, ({ notificationList }) => {
+      setNotifications(notificationList);
+      setUnreadNotificationCount(unreadNotificationCount + (notification.IsRead ? 1 : -1));
+    });
+  }
+
+  const handleMarkAllAsRead = () => {
+    socket.emit('mark_all_as_read', { userID, notificationIDs: notifications.map(notification => notification.ID) }, ({ notificationList, count }) => {
+      setNotifications(notificationList);
+      setUnreadNotificationCount(count);
+    });
+  }
+
+  const handleLoadMoreNotification = () => {
+    const amountToLoad = currentAmountToLoad + config.NOTIFICATION_AMOUNT_TO_LOAD;
+    socket.emit('load_more_notifications', { userID, limit: amountToLoad }, ({ notificationList }) => {
+      setNotifications(notificationList);
+      setCurrentAmountToLoad(amountToLoad);
+    });
+  }
 
   return (
     <AppBar position="absolute" className={clsx(classes.appBar, openSidebar && classes.appBarShift)}>
@@ -81,8 +108,11 @@ function Topbar(props) {
               <PopupState variant="popover" popupId="demo-popup-popover">
                 {(popupState) => (
                   <div>
-                    <ListItem button {...bindTrigger(popupState)} className={classes.button} style={{ height: '100%' }}>
-                      <Badge badgeContent={notifications.length} color="error">
+                    <ListItem
+                      button {...bindTrigger(popupState)}
+                      className={classes.button} style={{ height: '100%' }}
+                    >
+                      <Badge badgeContent={unreadNotificationCount} color="error">
                         <NotificationsNoneIcon />
                       </Badge>
                     </ListItem>
@@ -102,26 +132,40 @@ function Topbar(props) {
                         <div className={classes.scrollable}>
                           {notifications.map(notification => {
                             return (
-                              <div key={notification.id}>
-                                <Card key={notification.id} className={classes.notifyCard}>
+                              <div key={notification.ID}>
+                                <Card key={notification.ID} className={classes.notifyCard} style={{ backgroundColor: notification.IsRead ? '#ffffff' : '#eaeaea' }}>
                                   <CardContent className={classes.notifyContent}>
-                                    <div className={classes.notifyText}>
-                                      <div>{notification.content}</div>
+                                    <div className={classes.notifyText} style={{ fontWeight: notification.IsRead ? 'normal' : 'bold' }}>
+                                      <FiberManualRecordIcon className={classes.unreadMessageIcon} style={{ visibility: notification.IsRead ? 'hidden' : 'visible' }} />
                                       <div>
-                                        <IconButton id={notification.ID} size='small' aria-label="refuse" onClick={(e) => e.preventDefault()}>
-                                          <ClearIcon className={classes.clearIcon} />
-                                        </IconButton>
+                                        <p style={{ margin: '5px 5px 5px 0px', wordBreak: 'break-all', fontSize: '11pt' }}>{notification.Content}</p>
+                                        <Typography variant="body2" color="textSecondary" component="p" style={{ fontSize: '9pt' }}>
+                                          {moment(notification.DateNotified).format(config.DATE_TIME_FORMAT)}
+                                        </Typography>
+                                      </div>
+                                      <div style={{ flexGrow: 1 }}></div>
+                                      <div>
+                                        <Tooltip title={notification.IsRead ? "Đánh dấu là chưa đọc" : "Đánh dấu là đã đọc"} aria-label="mark-as-read">
+                                          <IconButton id={notification.ID} size='small' aria-label="refuse" onClick={() => handleMarkNotification(notification)}>
+                                            <CheckIcon className={classes.checkIcon} />
+                                          </IconButton>
+                                        </Tooltip>
                                       </div>
                                     </div>
-                                    <Typography variant="body2" color="textSecondary" component="p" >
-                                      {moment(notification?.time).format("DD/MM/YYYY")}
-                                    </Typography>
                                   </CardContent>
                                 </Card>
                                 <Divider />
                               </div>
                             );
                           })}
+                          <div className={classes.notifyToolbar}>
+                            <Link className={classes.link} onClick={handleMarkAllAsRead}>
+                              Đánh dấu tất cả đã xem
+                            </Link>
+                            <Link className={classes.link} onClick={handleLoadMoreNotification}>
+                              Tải thêm
+                            </Link>
+                          </div>
                         </div>
                       </div>
                     </Popover>
@@ -199,7 +243,6 @@ const useStyles = makeStyles((theme) => ({
     right: '-17px',
     overflowY: 'scroll',
   },
-
   notifyCard: {
     height: '100%',
     width: '100%',
@@ -209,21 +252,15 @@ const useStyles = makeStyles((theme) => ({
       padding: '10px',
     }
   },
-  notifyToolTip: {
-    display: 'flex',
-    justifyContent: 'center',
-    padding: '10px',
-  },
   notifyContent: {
     padding: '10px'
   },
   notifyText: {
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center'
   },
-  clearIcon: {
+  checkIcon: {
     color: 'red'
   },
   spaceBetween: {
@@ -234,9 +271,25 @@ const useStyles = makeStyles((theme) => ({
     width: 52,
     height: 52,
     borderRadius: 50,
-
   },
   colorTopBar: {
     background: "green !important"
+  },
+  notifyToolbar: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    height: 25,
+    padding: 10,
+  },
+  link: {
+    cursor: 'pointer',
+    color: 'red'
+  },
+  unreadMessageIcon: {
+    width: '12px',
+    height: '12px',
+    marginRight: 10,
+    color: '#2e89ff'
   }
 }));
