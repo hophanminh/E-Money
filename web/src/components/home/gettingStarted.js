@@ -18,6 +18,11 @@ const useStyles = makeStyles((theme) => ({
     lineHeight: 'normal',
     fontWeight: 'normal',
     textTransform: 'none'
+  },
+  icon: {
+    width: '60px',
+    height: '60px',
+    color: 'white'
   }
 }));
 
@@ -26,47 +31,47 @@ export default function GettingStarted() {
 
   return (
     <div className={classes.container}>
-      <div style={{ display: 'flex', alignItems: 'center', margin: '0px 50px 0px 50px' }}>
-        <div style={{ width: '45%', float: 'left', marginRight: '50px' }}>
-          <Typography style={{ color: '#172755', fontSize: '36px', fontWeight: 'bold', textAlign: 'left' }}>
+      <div style={{ display: 'flex', alignItems: 'center', margin: '0px 50px 0px 50px', justifyContent: 'space-between' }}>
+        <div style={{ marginRight: '50px', width: '50%' }}>
+          <Typography style={{ color: '#172755', fontSize: '32px', fontWeight: 'bold', textAlign: 'left' }}>
             Ghi chép chi tiêu cho cá nhân hoặc nhóm
           </Typography>
           <Typography style={{ color: '#8794ba', textAlign: 'justify', marginTop: '20px' }}>
             Ghi chép, phân loại hoạt động thu chi một cách tiện lợi, E-Money sẽ đồng bộ hoạt động thu chi trong nhóm trên tất cả thiết bị để mọi người cùng theo dõi.
           </Typography>
         </div>
-        <div style={{ width: '55%', float: 'right', display: 'flex', justifyContent: 'center' }}>
+        <div style={{ display: 'flex' }}>
           <div>
             <Tooltip title="IDK" aria-label="IDK">
               <Button style={{
-                width: '300px', height: '400px', backgroundColor: '#1bb55c',
+                width: '200px', height: '300px', backgroundColor: '#1bb55c',
                 borderTopLeftRadius: '30px', borderBottomLeftRadius: '30px',
                 borderTopRightRadius: '0px', borderBottomRightRadius: '0px'
               }}
               >
-                <CreateIcon style={{ width: '80px', height: '80px', color: 'white' }} />
+                <CreateIcon className={classes.icon} />
               </Button>
             </Tooltip>
           </div>
-          <div style={{ width: '300px' }}>
+          <div style={{ width: '200px' }}>
             <Tooltip title="Vào ví cá nhân" aria-label="Vào ví cá nhân">
               <Button style={{
-                width: '300px', height: '200px', backgroundColor: '#fda92c',
+                width: '200px', height: '150px', backgroundColor: '#fda92c',
                 borderTopLeftRadius: '0px', borderBottomLeftRadius: '0px',
                 borderTopRightRadius: '30px', borderBottomRightRadius: '0px'
               }}
               >
-                <AccountBalanceWalletIcon style={{ width: '80px', height: '80px', color: 'white' }} />
+                <AccountBalanceWalletIcon className={classes.icon} />
               </Button>
             </Tooltip>
             <Tooltip title="Vào 1 nhóm" aria-label="Vào 1 nhóm">
               <Button style={{
-                width: '300px', height: '200px', backgroundColor: '#fda92c',
+                width: '200px', height: '150px', backgroundColor: '#fda92c',
                 borderTopLeftRadius: '0px', borderBottomLeftRadius: '0px',
                 borderTopRightRadius: '0px', borderBottomRightRadius: '30px'
               }}
               >
-                <PeopleIcon style={{ width: '80px', height: '80px', color: 'white' }} />
+                <PeopleIcon className={classes.icon} />
               </Button>
             </Tooltip>
           </div>

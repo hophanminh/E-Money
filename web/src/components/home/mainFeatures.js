@@ -13,8 +13,8 @@ export default function MainFeatures() {
 
   return (
     <div className={classes.container} style={{ textAlign: 'center' }}>
-      <div style={{ margin: '0px 240px 0px 240px' }}>
-        <Typography style={{ color: '#172755', fontSize: '36px', fontWeight: 'bold' }}>
+      <div style={{ padding: '0px 100px 0px 100px' }}>
+        <Typography style={{ color: '#172755', fontSize: '32px', fontWeight: 'bold' }}>
           Chức năng chính
         </Typography>
         <Typography style={{ color: '#8794ba', marginTop: '10px' }}>

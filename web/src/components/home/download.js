@@ -15,6 +15,11 @@ const useStyles = makeStyles((theme) => ({
     lineHeight: 'normal',
     fontWeight: 'normal',
     textTransform: 'none'
+  },
+  icon: {
+    width: '40px',
+    height: '40px',
+    marginRight: '15px'
   }
 }));
 
@@ -24,53 +29,45 @@ export default function Download() {
   return (
     <div className={classes.container}>
       <div style={{ textAlign: 'center' }}>
-        <Typography style={{ color: '#172755', fontSize: '36px', fontWeight: 'bold' }}>
+        <Typography style={{ color: '#172755', fontSize: '32px', fontWeight: 'bold' }}>
           Sử dụng ngay trên mọi nền tảng
         </Typography>
         <div style={{ marginTop: '30px' }}>
-          <Grid container spacing={2}>
-            <Grid item md={4} xs={12}>
-              <Button className={classes.button}
-                style={{
-                  height: '100px', width: '350px', color: 'white', backgroundColor: '#1daf1a',
-                  padding: '0px 15px 0px 15px'
-                }}
-              >
-                <ComputerIcon style={{ width: '50px', height: '50px', marginRight: '15px' }} />
-                <Typography style={{ textAlign: 'left', fontSize: '24px' }}>
-                  Tải về phiên bản trên <b>Window</b>
-                </Typography>
-              </Button>
+          <Button className={classes.button}
+            style={{
+              height: '100px', width: '300px', color: 'white', backgroundColor: '#1daf1a',
+              padding: '0px 15px 0px 15px', margin: '0px 20px 10px 20px'
+            }}
+          >
+            <ComputerIcon className={classes.icon} />
+            <Typography style={{ textAlign: 'left', fontSize: '20px' }}>
+              Tải về phiên bản trên <b>Window</b>
+            </Typography>
+          </Button>
 
+          <Button className={classes.button}
+            style={{
+              height: '100px', width: '300px', color: 'white', backgroundColor: '#1daf1a',
+              padding: '0px 15px 0px 15px', margin: '0px 20px 10px 20px'
+            }}
+          >
+            <PhoneAndroidIcon className={classes.icon} />
+            <Typography style={{ textAlign: 'left', fontSize: '20px' }}>
+              Tải về phiên bản trên <b>Android</b>
+            </Typography>
+          </Button>
 
-            </Grid>
-            <Grid item md={4} xs={12}>
-              <Button className={classes.button}
-                style={{
-                  height: '100px', width: '350px', color: 'white', backgroundColor: '#1daf1a',
-                  padding: '0px 15px 0px 15px'
-                }}
-              >
-                <PhoneAndroidIcon style={{ width: '50px', height: '50px', marginRight: '15px' }} />
-                <Typography style={{ textAlign: 'left', fontSize: '24px' }}>
-                  Tải về phiên bản trên <b>Android</b>
-                </Typography>
-              </Button>
-            </Grid>
-            <Grid item xs={12} md={4}>
-              <Button className={classes.button}
-                style={{
-                  height: '100px', width: '350px', color: 'white', backgroundColor: '#1daf1a',
-                  padding: '0px 15px 0px 15px'
-                }}
-              >
-                <LanguageIcon style={{ width: '50px', height: '50px', marginRight: '15px' }} />
-                <Typography style={{ textAlign: 'left', fontSize: '24px' }}>
-                  Sử dụng ngay trên <b>Website</b>
-                </Typography>
-              </Button>
-            </Grid>
-          </Grid>
+          <Button className={classes.button}
+            style={{
+              height: '100px', width: '300px', color: 'white', backgroundColor: '#1daf1a',
+              padding: '0px 15px 0px 15px', margin: '0px 20px 10px 20px'
+            }}
+          >
+            <LanguageIcon className={classes.icon} />
+            <Typography style={{ textAlign: 'left', fontSize: '20px' }}>
+              Sử dụng ngay trên <b>Website</b>
+            </Typography>
+          </Button>
         </div>
       </div>
     </div>
