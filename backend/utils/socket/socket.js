@@ -26,6 +26,7 @@ module.exports = function (io) {
         require('./eventSocket')(socket, io, decoded_userID);
         require('./transactionImagesSocket')(socket, decoded_userID);
         require('./teamSocket')(socket, io, decoded_userID);
+        require('./notificationSocket')(socket, io, decoded_userID);
 
         // disconnect by leaving page
         socket.on("disconnect", async () => {
