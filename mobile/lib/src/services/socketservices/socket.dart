@@ -5,23 +5,34 @@ import 'package:socket_io_client/socket_io_client.dart' as IO;
 const API_URL = 'http://' + Properties.API_LOCAL;
 IO.Socket socket = null;
 
-void startSocket() {
-  // print( await SecureStorage.readSecureData('jwtToken'));
-  socket = IO.io(API_URL);
-  print('2');
-  socket.onConnect((_) {
-    print('connect');
-  });
-
-  socket.on('connect_error', (err) => print(err));
-}
+// startSocket() async {
+//   print('Starting socket client');
+//   String jwtToken = await SecureStorage.readSecureData('jwtToken');
+//   socket = IO.io(API_URL, <String, dynamic>{
+//     'transports': ['websocket'],
+//     'query': {'token': jwtToken}
+//   });
+//   socket.onConnect((_) {
+//     print('connected: ' + socket.id);
+//   });
+//
+//   socket.on('connect_error', (err) => print(err));
+// }
 
 Future<IO.Socket> getSocket() async {
-  print('dds');
-  if (socket == null && await SecureStorage.readSecureData('jwtToken') != null) {
-    print('chưa có');
-    startSocket();
+  String jwtToken = await SecureStorage.readSecureData('jwtToken');
+  if (socket == null && jwtToken != null) {
+    print('starting socket client');
+    socket = IO.io(API_URL, <String, dynamic>{
+      'transports': ['websocket'],
+      'query': {'token': jwtToken}
+    });
+    socket.onConnect((_) {
+      print('connected: ' + socket.id);
+    });
+
+    socket.on('connect_error', (err) => print(err));
   }
-  print('xog');
+  print(socket.id);
   return socket;
 }

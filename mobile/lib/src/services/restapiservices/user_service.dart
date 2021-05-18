@@ -1,7 +1,6 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:async';
-import 'package:async/async.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:mobile/src/config/config.dart';

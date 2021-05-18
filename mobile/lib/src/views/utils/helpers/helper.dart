@@ -6,6 +6,10 @@ const secondary = Color(0xFFFDA92C);
 const error = Colors.redAccent;
 const warning = error;
 
+Map<String,dynamic> parseMap(dynamic data) => new Map<String,dynamic>.from(data);
+var formatter = new NumberFormat.simpleCurrency(locale: 'vi');
+String moneyFormatter(dynamic amount) => amount != null ? formatter.format(amount) : "";
+
 bool isEmailPattern(String token) {
   RegExp emailPattern = new RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
   return emailPattern.hasMatch(token);
@@ -76,6 +80,15 @@ String convertToDDMMYYYY(String input) {
   try {
     DateTime tempDate = DateTime.parse(input);
     return DateFormat('dd/MM/yyyy').format(tempDate.toLocal());
+  } catch (error) {
+    return "";
+  }
+}
+
+String convertToDDMMYYYYHHMM(String input) {
+  try {
+    DateTime tempDate = DateTime.parse(input);
+    return DateFormat('dd/MM/yyyy - HH:mm').format(tempDate.toLocal());
   } catch (error) {
     return "";
   }
