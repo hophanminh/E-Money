@@ -58,7 +58,7 @@ router.post('/:userID', async (req, res) => {
 
     if (teamWallet.affectedRows !== 1) {
         return res.status(500)
-            .send({ msg: "Please try again." });
+            .send({ msg: "Hãy thử lại." });
     }
     console.log("Created Wallet successfully" + newWallet);
 
@@ -73,7 +73,7 @@ router.post('/:userID', async (req, res) => {
     const team = await TeamModel.createTeam(newTeam);
     if (team.affectedRows !== 1) {
         return res.status(500)
-            .send({ msg: "Please try again" });
+            .send({ msg: "Hãy thử lại." });
     }
     console.log("Create team successfully ",team)
 
@@ -88,10 +88,10 @@ router.post('/:userID', async (req, res) => {
     if (result.affectedRows === 1) {
         console.log("Created successfully");
         return res.status(201)
-            .send({ msg: "Please check your email to active your account." });
+            .send({ msg: "Kiểm tra email để kích hoạt tài khoản." });
     } else {
         return res.status(500)
-            .send({ msg: "Please try again" });
+            .send({ msg: "Hãy thử lại." });
     }
 })
 
@@ -168,7 +168,7 @@ router.post('/:id/leave', async (req, res) => {
     const team = teamObject[0];
     // Remove user from team
     const c = await TeamHasUserModel.leaveTHU(team.ID, UserID)
-    return res.status(200).send({msg: "success"})
+    return res.status(200).send({msg: "Thành công."})
 
 });
 
@@ -188,7 +188,7 @@ router.post('/:id/delete', async (req, res) => {
     // Remove user from team
     const c = await TeamHasUserModel.deleteTHU(team.ID, UserID)
     const d = await TeamModel.deleteTeam(team.ID);
-    return res.status(200).send({msg: "success"})
+    return res.status(200).send({msg: "Thành công."})
 
 });
 
@@ -197,12 +197,11 @@ router.post('/join/:userId', async (req, res) => {
     const { teamID } = req.body
     console.log(`Invite user ${userID} joins team ${teamID}`);
 
-    // f7660a60-ab5d-11eb-acb7-9f04fc5ba02d
     const team = await TeamModel.getTeamById(teamID);
     const thu = await TeamHasUserModel.getTHUByTeamId(teamID);
     console.log(team[0].MaxUsers)
     if(team.length === 0) {
-        return res.status(404).send({msg: "Not found team"});
+        return res.status(404).send({msg: "Không tìm thấy nhóm."});
     }
     if((team[0].MaxUsers > thu.length) && (!thu.includes(userID))) {
         const thuObject = {
@@ -216,10 +215,10 @@ router.post('/join/:userId', async (req, res) => {
         if (result.affectedRows === 1) {
             console.log("Joined successfully");
             return res.status(201)
-                .send({ msg: "You are now a member of a team." });
+                .send({ msg: "Bạn vừa gia nhập vào nhóm." });
         } else {
             return res.status(500)
-                .send({ msg: "Please try again" });
+                .send({ msg: "Xin hãy thử lại." });
         }
     } else {
         console.log("Cannot join teams");
