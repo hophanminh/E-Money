@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:mobile/src/services/restapiservices/wallet_service.dart';
 import 'package:mobile/src/services/socketservices/socket.dart';
+import 'package:mobile/src/views/ui/wallet/private_wallet/add_transaction.dart';
 import 'package:mobile/src/views/ui/wallet/private_wallet/delete_transaction.dart';
 import 'package:mobile/src/views/utils/helpers/helper.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
@@ -24,7 +25,8 @@ class _IndividualWalletState extends State<IndividualWallet> {
   var _txns = [];
   var _stat = new Map<String, dynamic>();
   var _categoryList = {'fullList': [], 'defaultList': [], 'customList': []};
-  var iconList = [];
+  var _iconList = [];
+  var _eventList = [];
 
   void _setCategoryList(List<dynamic> fullList, List<dynamic> defaultList, List<dynamic> customList) {
     setState(() {
@@ -34,9 +36,15 @@ class _IndividualWalletState extends State<IndividualWallet> {
     });
   }
 
+  void _setEventList(List<dynamic> eventList) {
+    setState(() {
+      _eventList = eventList;
+    });
+  }
+
   void _initPage() async {
     final walletID = widget.user['WalletID'];
-    iconList = jsonDecode(await WalletService.instance.getListIcon());
+    _iconList = jsonDecode(await WalletService.instance.getListIcon());
     // print('${iconList[0]['ID']}');
 
     _socket = await getSocket();
@@ -59,25 +67,15 @@ class _IndividualWalletState extends State<IndividualWallet> {
               })
             });
 
-    _socket.emitWithAck("get_category", {walletID: walletID},
-        ack: (data) => {
-              //{ defaultList, customList, fullList }
-              // setAllList(defaultList, customList, fullList)
-              // setState(() {
-              _setCategoryList(data['fullList'], data['defaultList'], data['customList'])
-              // })
-            });
+    _socket.emitWithAck("get_category", {'walletID': walletID}, ack: (data) => {_setCategoryList(data['fullList'], data['defaultList'], data['customList'])});
 
     _socket.on('wait_for_update_category', (data) => {_setCategoryList(data['fullList'], data['defaultList'], data['customList'])});
 
-    // _socket.emit("get_event", { walletID: info?.WalletID}, ({ eventList }) => {
-    // setEventList(eventList);
-    // });
-    //
-    //
-    // _socket.on('wait_for_update_event', ({ eventList }) => {
-    // setEventList(eventList);
-    // });
+    _socket.emitWithAck("get_event", {'walletID': walletID}, ack: (data) {
+      _setEventList(data['eventList']);
+    });
+
+    _socket.on('wait_for_update_event', (data) => {_setEventList(data['eventList'])});
   }
 
   @override
@@ -97,13 +95,13 @@ class _IndividualWalletState extends State<IndividualWallet> {
           body: SingleChildScrollView(
             child: Container(
               // height: MediaQuery.of(context).size.height,
-              padding: EdgeInsets.symmetric(vertical: 20),
+              padding: EdgeInsets.only(top: 20, bottom: 100),
               child: Center(
                 child: Column(
                   children: [
                     Container(
                       padding: EdgeInsets.all(20),
-                      margin: EdgeInsets.only(bottom: 20),
+                      margin: EdgeInsets.only(bottom: 20, left: 5, right: 5),
                       width: MediaQuery.of(context).size.width,
                       decoration: BoxDecoration(
                           gradient: LinearGradient(begin: Alignment.bottomLeft, end: Alignment.topRight, colors: [primary, Colors.lightGreenAccent]),
@@ -116,7 +114,7 @@ class _IndividualWalletState extends State<IndividualWallet> {
                             style: TextStyle(fontSize: 20, color: Colors.white),
                           ),
                           Text(
-                            '${moneyFormatter(_stat['total'])}',
+                            '${formatMoneyWithSymbol(_stat['total'])}',
                             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.white),
                           ),
                         ],
@@ -124,7 +122,7 @@ class _IndividualWalletState extends State<IndividualWallet> {
                     ),
                     Padding(
                       padding: const EdgeInsets.all(15),
-                      child: Text('Báo cáo nhanh 05/2021', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+                      child: Text('Báo cáo nhanh ${getThisMonth()}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
                     ),
                     Row(
                       children: [
@@ -134,11 +132,11 @@ class _IndividualWalletState extends State<IndividualWallet> {
                             alignment: Alignment.center,
                             child: Column(
                               children: [
-                                Text('Tổng thu tháng 5/2021'),
+                                Text('Tổng thu ${getThisMonth()}'),
                                 Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: Text(
-                                    '${moneyFormatter(_stat['receive'])}',
+                                    '${formatMoneyWithSymbol(_stat['receive'])}',
                                     style: TextStyle(fontWeight: FontWeight.bold, color: Colors.green, fontSize: 21),
                                   ),
                                 ),
@@ -153,11 +151,11 @@ class _IndividualWalletState extends State<IndividualWallet> {
                                 alignment: Alignment.center,
                                 child: Column(
                                   children: [
-                                    Text('Tổng chi tháng 05/2021'),
+                                    Text('Tổng chi ${getThisMonth()}'),
                                     Padding(
                                       padding: const EdgeInsets.all(8.0),
                                       child: Text(
-                                        '${moneyFormatter(_stat['spend'])}',
+                                        '${formatMoneyWithSymbol(_stat['spend'])}',
                                         style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red, fontSize: 21),
                                       ),
                                     )
@@ -183,7 +181,7 @@ class _IndividualWalletState extends State<IndividualWallet> {
   }
 
   _createCompactTxn(Map<String, dynamic> tx) {
-    var selectedIcon = iconList.firstWhere((element) => element['ID'] == tx['IconID']);
+    var selectedIcon = _iconList.firstWhere((element) => element['ID'] == tx['IconID']);
     return Card(
       child: Slidable(
         actionPane: SlidableDrawerActionPane(),
@@ -238,7 +236,7 @@ class _IndividualWalletState extends State<IndividualWallet> {
                         child: Align(
                             alignment: Alignment.centerRight,
                             child: Text(
-                              '${moneyFormatter(tx['price'])}',
+                              '${formatMoneyWithSymbol(tx['price'])}',
                               style: TextStyle(color: tx['price'] < 0 ? Colors.red : Colors.green, fontWeight: FontWeight.bold),
                             ))))
               ]),
@@ -247,7 +245,7 @@ class _IndividualWalletState extends State<IndividualWallet> {
                     padding: const EdgeInsets.only(left: 20.0, right: 20, top: 10),
                     child: Row(
                       children: [
-                        Expanded(child: Text(tx['description'] != null && tx['description'].length > 0 ? 'Mô tả: ${tx['description']}' : '')),
+                        Expanded(child: Text(tx['description'] != null && tx['description'].length > 0 ? 'Mô tả: ${tx['description'].length < 50 ? tx['description'] : tx['description'].toString().substring(0,50) + ' ...'}' : '')),
                         Padding(
                           padding: const EdgeInsets.only(left: 15.0),
                           child: TextButton(onPressed: () {}, child: Text('Xem chi tiết')),
@@ -292,7 +290,12 @@ class _IndividualWalletState extends State<IndividualWallet> {
       centerTitle: true);
 
   FloatingActionButton privateWalletActionButton() => FloatingActionButton(
-      // onPressed: onPressed,
+      onPressed: () {
+        showDialog(
+            context: context,
+            builder: (_) =>
+                AddTransactionDialog(walletID: widget.user['WalletID'], fullCategoryList: _categoryList['fullList'], eventList: _eventList, wrappingScaffoldKey: _scaffoldKey));
+      },
       tooltip: 'Thêm giao dịch',
       child: Icon(Icons.add),
       backgroundColor: secondary,

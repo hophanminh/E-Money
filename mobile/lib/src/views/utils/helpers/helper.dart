@@ -6,9 +6,15 @@ const secondary = Color(0xFFFDA92C);
 const error = Colors.redAccent;
 const warning = error;
 
-Map<String,dynamic> parseMap(dynamic data) => new Map<String,dynamic>.from(data);
+Map<String, dynamic> parseMap(dynamic data) => new Map<String, dynamic>.from(data);
+
+final max = 999999999;
 var formatter = new NumberFormat.simpleCurrency(locale: 'vi');
-String moneyFormatter(dynamic amount) => amount != null ? formatter.format(amount) : "";
+var _formatter = new NumberFormat.currency(locale: 'vi', symbol: '');
+
+String formatMoneyWithSymbol(dynamic amount) => amount != null ? formatter.format(amount) : "";
+
+String formatMoneyWithoutSymbol(dynamic amount) => amount != null ? _formatter.format(amount).replaceAll(new RegExp("\\s+"), '') : ""; // format xong có dấu cách ở cuối nên replace để bỏ
 
 bool isEmailPattern(String token) {
   RegExp emailPattern = new RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
@@ -93,6 +99,8 @@ String convertToDDMMYYYYHHMM(String input) {
     return "";
   }
 }
+
+String getThisMonth() => DateFormat('MM/yyyy').format(new DateTime.now());
 
 String convertRegularDateToNormalDate(String input) {
   try {
