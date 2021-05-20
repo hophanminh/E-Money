@@ -23,6 +23,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Slide from '@material-ui/core/Slide';
 import TextField from '@material-ui/core/TextField';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
+import { CardHeader, Divider } from '@material-ui/core';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -97,6 +98,10 @@ const useStyles = makeStyles((theme) => ({
             padding: 0
         }
     },
+    buttonAction: {
+        display: 'flex',
+        justifyContent: 'flex-end'
+    }
 
 
 }));
@@ -242,10 +247,10 @@ export default function Teams() {
                                             <DialogActions>
                                                 <Button onClick={createTeam} color="primary">
                                                     Tạo nhóm
-                                            </Button>
+                                                </Button>
                                                 <Button onClick={handleClickOpenDiaForm} color="primary">
                                                     Tham gia nhóm
-                                            </Button>
+                                                </Button>
                                             </DialogActions>
                                         </Dialog>
                                         <Dialog open={openDiaForm} onClose={handleCloseDiaForm} aria-labelledby="form-dialog-title">
@@ -278,10 +283,11 @@ export default function Teams() {
                             {teams.map((card) => (
                                 <Grid item key={card} xs={12} sm={6} md={4}>
                                     <Card className={classes.card}>
-                                        <Typography gutterBottom variant="h5" component="h2">
-                                                {card.Name}
-                                        </Typography>
                                         <CardContent className={classes.cardContent}>
+                                            <Typography gutterBottom variant="h5" component="h2">
+                                                    {card.Name}
+                                            </Typography>
+                                            <Divider />
                                             <Typography gutterBottom variant="h5" component="h2">
                                                 {card.TeamID}
                                             </Typography>
@@ -289,13 +295,13 @@ export default function Teams() {
                                                 {card.Description}
                                             </Typography>
                                         </CardContent>
-                                        <CardActions>
-                                            <Button size="small" color="primary" onClick={(TeamID) => walletTeam(card.WalletID)}>
+                                        <CardActions className={classes.buttonAction}>
+                                            <Button variant="outlined" size="small" color="primary" onClick={(TeamID) => walletTeam(card.WalletID)}>
                                                 Ví nhóm
-                                        </Button>
-                                            <Button size="small" color="primary" onClick={(TeamID) => detailTeam(card.ID)}>
+                                            </Button>
+                                            <Button variant="outlined" size="small" color="primary" onClick={(TeamID) => detailTeam(card.ID)}>
                                                 Thông tin nhóm
-                                        </Button>
+                                            </Button>
                                         </CardActions>
                                     </Card>
                                 </Grid>
