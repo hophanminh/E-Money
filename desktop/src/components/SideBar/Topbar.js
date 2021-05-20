@@ -15,6 +15,7 @@ import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import MyContext from '../mycontext/MyContext';
 import Notification from '../Notification/Notification';
 import defaultAvatar from '../../../assets/defaultAvatar.png';
+import {clearSocket} from '../../utils/socket';
 
 const drawerWidth = 240;
 
@@ -27,6 +28,7 @@ function Topbar(props) {
     localStorage.removeItem("userID");
     //localStorage.clear();
     setIsLoggedIn(false);
+    clearSocket();
   }
   const openSidebar = props.open;  // sidebar's open
 

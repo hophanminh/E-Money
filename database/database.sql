@@ -189,22 +189,38 @@ ALTER TABLE TransactionImages ADD CONSTRAINT FK_TransactionImages_Transactions F
 ALTER TABLE TransactionImages ADD CONSTRAINT FK_TransactionImages_Users FOREIGN KEY(UserID) REFERENCES Users(ID);
 ALTER TABLE Notifications ADD CONSTRAINT FK_Notifications_Users FOREIGN KEY(UserID) REFERENCES Users(ID);
 
-INSERT INTO `icons` VALUES ('1','school','#FFFFFF','#1DAF1A'),('2','fastfood','#FFFFFF','#FF2626'),('3','attach_money','#FFFFFF','#808080');
-INSERT INTO `eventtypes` VALUES ('1','Hằng ngày'),('2','Hằng tuần'),('3','Hằng tháng'),('4','Hằng năm');
-INSERT INTO `categories` VALUES ('1','Học tập',1,NULL,'1'),('2','Ăn uống',1,NULL,'2'),('3','Khác',1,NULL,'3');
-INSERT INTO `wallets` VALUES 
+INSERT INTO icons VALUES ('1','school','#FFFFFF','#1DAF1A'),('2','fastfood','#FFFFFF','#FF2626'),('3','attach_money','#FFFFFF','#808080');
+INSERT INTO eventtypes VALUES ('1','Hằng ngày'),('2','Hằng tuần'),('3','Hằng tháng'),('4','Hằng năm');
+INSERT INTO categories VALUES ('1','Học tập',1,NULL,'1'),('2','Ăn uống',1,NULL,'2'),('3','Khác',1,NULL,'3');
+INSERT INTO wallets VALUES 
 	('1', 0, 0, 0, '2021-01-01'),
 	('2', 0, 0, 0, '2021-01-01'),
 	('3', 0, 0, 0, '2021-01-01'),
-	('4', 0, 0, 0, '2021-01-01');
+	('4', 0, 0, 0, '2021-01-01'),
+    ('30764480-aa43-11eb-9012-370ed11ba268', 0, 0, 0, '2021-05-01')
+;
+
+INSERT INTO teams VALUES
+    ('30847550-aa43-11eb-9012-370ed11ba268', 'KHTN', 4, 'This is the description for team', '2021-05-01', NULL, '30764480-aa43-11eb-9012-370ed11ba268')
+;
+
+
+
 -- Password: 123456
-INSERT INTO `users` VALUES 
+INSERT INTO users VALUES 
 	('1', 'Hồ Phan Minh', 'hpminh', '$2a$10$eOJ7p0X0Lva0KcqbB3im1usbd.zPFxSFIeuaeqVWlFgFZUuJ8h5Da', 'hophanminh@gmail.com', '1999-05-19', NULL, '2021-01-01', '1'),
 	('2', 'Lạc Tuấn Minh', 'ltminh', '$2a$10$eOJ7p0X0Lva0KcqbB3im1usbd.zPFxSFIeuaeqVWlFgFZUuJ8h5Da', 'lactuanminh@gmail.com', '1999-01-01', NULL, '2021-01-01', '2'),
 	('3', 'Nguyễn Quang Minh', 'nqminh', '$2a$10$eOJ7p0X0Lva0KcqbB3im1usbd.zPFxSFIeuaeqVWlFgFZUuJ8h5Da', 'nguyenquangminh@gmail.com', '1999-01-01', NULL, '2021-01-01', '3'),
 	('4', 'Hồ Khánh Nguyên', 'hknguyen', '$2a$10$eOJ7p0X0Lva0KcqbB3im1usbd.zPFxSFIeuaeqVWlFgFZUuJ8h5Da', 'hokhanhnguyen@gmail.com', '1999-04-30', NULL, '2021-01-01', '4');
 
-INSERT INTO `notifications` VALUES
+INSERT INTO teams_has_users VALUES
+    ('1', '30847550-aa43-11eb-9012-370ed11ba268', 0, 1),
+    ('2', '30847550-aa43-11eb-9012-370ed11ba268', 0, 1),
+    ('3', '30847550-aa43-11eb-9012-370ed11ba268', 0, 1),
+    ('4', '30847550-aa43-11eb-9012-370ed11ba268', 1, 1)
+;
+
+INSERT INTO notifications VALUES
 	('1', 'Notification 1', '2021-05-18 10:10:59', FALSE, '4'),
     ('2', 'Notification 2', '2021-05-18 10:10:58', FALSE, '4'),
     ('3', 'Notification 3', '2021-05-18 10:10:57', FALSE, '4'),

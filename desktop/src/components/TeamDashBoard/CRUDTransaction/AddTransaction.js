@@ -110,7 +110,7 @@ export default function AddTransaction(props) {
 
 
 
-  // transaction 
+  // transaction
 
   const handleChangeType = (event) => {
     setType(event.target.value);
