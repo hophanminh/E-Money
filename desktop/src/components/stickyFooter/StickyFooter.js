@@ -174,8 +174,8 @@ export default function StickyFooter() {
   return (
     <div className={classes.root}>
       <CssBaseline />
-      <footer className={`${classes.footer} 
-                          ${classes.paperLikeShadow} 
+      <footer className={`${classes.footer}
+                          ${classes.paperLikeShadow}
                           ${classes.textFormat}`}>
         <div className={`${classes.align}  ${classes.flexSpaceBetween}`}>
           <span>
