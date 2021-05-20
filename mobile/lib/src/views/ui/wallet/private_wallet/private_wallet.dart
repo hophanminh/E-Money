@@ -22,6 +22,7 @@ class IndividualWallet extends StatefulWidget {
 }
 
 class _IndividualWalletState extends State<IndividualWallet> {
+
   IO.Socket _socket;
   var _scaffoldKey = GlobalKey<ScaffoldMessengerState>();
   var _txs = [];

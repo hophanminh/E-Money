@@ -70,6 +70,13 @@ Drawer mySideBar({BuildContext context, @required bool isChoosingPrivateWallet, 
                       Navigator.pop(context);
                       Navigator.pushNamed(context, '/profile');
                     }),
+                _createDrawerItem(
+                    title: 'Đổi mật khẩu',
+                    icon: Icons.lock,
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.pushNamed(context, '/changepassword');
+                    }),
                 Divider(
                   thickness: 0.75,
                 ),
@@ -141,6 +148,25 @@ Align myAlignedButton(
           text,
           style: TextStyle(color: textColor),
         ),
+      ),
+    );
+
+ElevatedButton myFullWidthButton(
+    String text, {
+      Function action,
+      AlignmentGeometry alignment = Alignment.center,
+      Color backgroundColor = primary,
+      Color textColor = Colors.white,
+      double fontSize = 17.0,
+      BorderSide borderSide,
+      EdgeInsetsGeometry padding = const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
+    }) =>
+    ElevatedButton(
+      style: ElevatedButton.styleFrom(primary: backgroundColor, padding: padding, side: borderSide, textStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: fontSize)),
+      onPressed: action, // != null ? action : () {},
+      child: Text(
+        text,
+        style: TextStyle(color: textColor),
       ),
     );
 

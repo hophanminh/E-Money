@@ -5,6 +5,8 @@ import 'package:http/http.dart';
 import 'package:mobile/src/services/socketservices/socket.dart';
 import 'package:mobile/src/views/utils/helpers/helper.dart';
 import 'package:mobile/src/services/restapiservices/auth_service.dart';
+import 'package:provider/provider.dart';
+import 'package:mobile/src/models/UsersProvider.dart';
 
 class AuthenPage extends StatefulWidget {
   final void Function(Map<String, dynamic>) setUser;
@@ -60,6 +62,8 @@ class _AuthenPageState extends State<AuthenPage> with TickerProviderStateMixin {
 
     Map<String, dynamic> body = jsonDecode(res.body);
     print(body['user']);
+    Provider.of<UsersProvider>(context, listen: false)
+        .loadData(body['user'], body['token']);
     setState(() {
       widget.setUser(new Map<String, dynamic>.from(body['user']));
     });

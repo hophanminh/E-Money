@@ -7,14 +7,14 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart';
 import 'package:mobile/src/services/restapiservices/user_service.dart';
 import 'package:mobile/src/views/utils/helpers/helper.dart';
+import 'package:provider/provider.dart';
+import 'package:mobile/src/models/UsersProvider.dart';
 
 class AvatarPreview extends StatefulWidget {
-  final Map<String, dynamic> user;
   final File image;
-  final void Function(Map<String, dynamic>) setUser;
   final GlobalKey<ScaffoldMessengerState> profileScaffoldKey;
 
-  AvatarPreview({Key key, this.image, this.user, this.setUser, this.profileScaffoldKey}): super(key: key);
+  AvatarPreview({Key key, this.image, this.profileScaffoldKey}): super(key: key);
 
   @override
   _AvatarPreviewState createState() => _AvatarPreviewState();
@@ -90,9 +90,8 @@ class _AvatarPreviewState extends State<AvatarPreview> {
     if (streamedResponse.statusCode == 200) {
       var response = await streamedResponse.stream.bytesToString(); //Response.fromStream(streamedResponse);
       Map<String, dynamic> body = jsonDecode(response);
-      Map<String, dynamic> userCopy = new Map<String, dynamic>.from(widget.user);
-      userCopy['AvatarURL'] = body['url'];
-      widget.setUser(userCopy);
+      Provider.of<UsersProvider>(context, listen: false)
+          .updateImage(body['url']);
       showSnack(widget.profileScaffoldKey, 'Cập nhật thành công');
       Navigator.of(context).pop();
     } else if (streamedResponse.statusCode == 500) {
