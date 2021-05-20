@@ -20,12 +20,12 @@ module.exports = function (socket, io, decoded_userID) {
         }
     });
 
-    socket.on('mark_all_as_read', async ({ userID, notificationIDs }, callback) => {
+    socket.on('mark_all_as_read', async ({ userID, notificationIDs, limit }, callback) => {
         const listIDs = notificationIDs.map(id => "'" + id.replace("'", "''") + "'").join();
         try {
             await notificationModel.updateListNotification(listIDs);
             const count = await notificationModel.countUnreadNotification();
-            const notificationList = await notificationModel.getNotificationByUserID(userID, 0);
+            const notificationList = await notificationModel.getNotificationByUserID(userID, limit);
             callback({ notificationList, count: count[0].count });
         } catch (error) {
             console.log(error);
