@@ -17,12 +17,6 @@ class IndividualWallet extends StatefulWidget {
 }
 
 class _IndividualWalletState extends State<IndividualWallet> {
-  IO.Socket _socket = IO.io('http://192.168.1.93:9000', <String, dynamic>{
-    'transports': ['websocket'],
-    'autoConnect': true,
-    'query': {'token': 'dfcsfcl,,'}
-  });
-
   Map<String, dynamic> _txnList;
 
   @override
@@ -30,21 +24,33 @@ class _IndividualWalletState extends State<IndividualWallet> {
     // _getSocket();
     // _socket = IO.io('http://192.168.1.93:9000', IO.OptionBuilder().setTransports(['polling']).disableAutoConnect().setQuery({'token': 'xmmm'}).build());
     super.initState();
-    print('cmm');
-    _socket.on('connect', (_) {
-      print('connect');
+    connectToServer();
+  }
 
-      _socket.emitWithAck('get_transaction', json.encode({'walletID': widget.user['WalletID']}), ack: ({transactionList, total, spend, receive}) {
-        print('cmn');
-        setState(() {
-          _txnList = jsonDecode(transactionList);
-        });
-      });
-    });
-    print('cho1');
-    _socket.on('event', (data) => print(data));
-    _socket.onDisconnect((_) => print('disconnect'));
-    _socket.on('fromServer', (_) => print(_));  }
+  void connectToServer() async {
+    try {
+      print('cmm');
+
+      // IO.Socket socket = IO.io(
+      //     'http://192.168.1.31:9000',
+      //     IO.OptionBuilder().setTransports(['websocket']).setQuery(
+      //         {'token': "secretkey"}).build());
+      //
+      // socket.on('connect', (_) {
+      //   print('connect');
+      // });
+      //
+      // socket.onConnect((data) {
+      //   print("connected");
+      //   socket.emit("message");
+      // });
+      // socket.onDisconnect((data) => print("disconnected"));
+      // socket.onConnectError((data) => print("connect_error: $data"));
+
+    } catch (err) {
+      print('Caught error: $err');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

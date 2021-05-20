@@ -8,6 +8,8 @@ import 'package:mobile/src/services/restapiservices/auth_service.dart';
 import 'package:mobile/src/services/secure_storage_service.dart';
 import 'package:mobile/src/views/utils/helpers/helper.dart';
 import 'package:mobile/src/views/utils/widgets/widget.dart';
+import 'package:provider/provider.dart';
+import 'package:mobile/src/models/UsersProvider.dart';
 
 class LoginPage extends StatefulWidget {
   final void Function(Map<String, dynamic>) setUser;
@@ -33,7 +35,10 @@ class _LoginPageState extends State<LoginPage> {
 
   void handleLogin() async {
     FocusScope.of(context).unfocus();
-    http.Response res = await AuthService.instance.signin(usernameController.text, passwordController.text);
+     http.Response res = await AuthService.instance
+         .signin(usernameController.text, passwordController.text);
+    //http.Response res = await AuthService.instance.signin("admin", "123456");
+
     Map<String, dynamic> body = jsonDecode(res.body);
 
     if (res.statusCode != 200) {
@@ -43,6 +48,8 @@ class _LoginPageState extends State<LoginPage> {
     await SecureStorage.writeSecureData('jwtToken', body['token']);
     await SecureStorage.writeSecureData('userID', body['user']['ID']);
     // need to store 'user' in global state ==> not done
+    Provider.of<UsersProvider>(context, listen: false)
+        .loadData(body['user'], body['token']);
     widget.setUser(body['user']);
     Navigator.pushNamedAndRemoveUntil(context, '/dashboard', (route) => false);
   }
