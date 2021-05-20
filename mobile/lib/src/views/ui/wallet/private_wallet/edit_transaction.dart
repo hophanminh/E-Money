@@ -4,33 +4,34 @@ import 'package:mobile/src/views/utils/helpers/helper.dart';
 import 'package:mobile/src/views/utils/widgets/widget.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 
-class AddTransaction extends StatefulWidget {
+class EditTransaction extends StatefulWidget {
   final GlobalKey<ScaffoldMessengerState> wrappingScaffoldKey;
   final String walletID;
+  final Map<String, dynamic> tx;
   final List<dynamic> eventList;
   final List<dynamic> fullCategoryList;
 
-  const AddTransaction({Key key, @required this.walletID, @required this.fullCategoryList, @required this.eventList, @required this.wrappingScaffoldKey}) : super(key: key);
+  const EditTransaction({Key key, @required this.walletID, @required this.tx, @required this.fullCategoryList, @required this.eventList, @required this.wrappingScaffoldKey})
+      : super(key: key);
 
   @override
-  _AddTransactionState createState() => _AddTransactionState();
+  _EditTransactionState createState() => _EditTransactionState();
 }
 
-class _AddTransactionState extends State<AddTransaction> {
+class _EditTransactionState extends State<EditTransaction> {
   var _scaffoldKey = GlobalKey<ScaffoldMessengerState>();
   var _formKey = GlobalKey<FormState>();
 
   // data section for new transaction
+  Map<String, dynamic> _clonedTx;
 
   // thu hoắc chi
   List<DropdownMenuItem<String>> _txTypeMenuItems = [];
   List _typeList = ['Chi', 'Thu'];
   String _currentType;
+  var _priceController = TextEditingController();
 
-  var _priceController = TextEditingController(text: formatMoneyWithoutSymbol(0));
-
-  var _selectedDatetime = DateTime.now().toLocal(); // ex: 2021-05-19 23:17:11.279652
-
+  DateTime _selectedDatetime; // ex: 2021-05-19 23:17:11.279652
   var _datetimeController = TextEditingController();
 
   // thể loại giao dịch
@@ -41,11 +42,14 @@ class _AddTransactionState extends State<AddTransaction> {
   List<DropdownMenuItem<String>> _availableEventMenuItems = [];
   String _currentEvent;
 
-  var _descriptionController = TextEditingController(text: "");
+  var _descriptionController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
+
+    _clonedTx = Map.from(widget.tx);
+
     for (String type in _typeList) {
       _txTypeMenuItems.add(new DropdownMenuItem(
           child: Text(
@@ -54,7 +58,8 @@ class _AddTransactionState extends State<AddTransaction> {
           ),
           value: type));
     }
-    _currentType = _txTypeMenuItems[0].value;
+    _currentType = _clonedTx['price'] < 0 ? 'Chi' : 'Thu';
+    _priceController.text = formatMoneyWithoutSymbol(_clonedTx['price'].abs());
 
     for (Map<String, dynamic> cat in widget.fullCategoryList) {
       _txCategoryMenuItems.add(new DropdownMenuItem(
@@ -70,14 +75,17 @@ class _AddTransactionState extends State<AddTransaction> {
         value: cat['ID'],
       ));
     }
-    _currentCategory = _txCategoryMenuItems[0].value;
+    _currentCategory = _clonedTx['catID'];
 
     for (Map<String, dynamic> event in widget.eventList) {
       _availableEventMenuItems.add(new DropdownMenuItem(child: Text(event['Name']), value: event['ID']));
     }
-    _currentEvent = null;
+    _currentEvent = _clonedTx['eventID'];
 
-    _datetimeController.text = convertToDDMMYYYYHHMM(_selectedDatetime.toLocal().toString());
+    _selectedDatetime = DateTime.parse(_clonedTx['time']).toLocal();
+    _datetimeController.text = convertToDDMMYYYYHHMM(_selectedDatetime.toString());
+
+    _descriptionController.text = _clonedTx['description'];
   }
 
   @override
@@ -93,7 +101,7 @@ class _AddTransactionState extends State<AddTransaction> {
     return ScaffoldMessenger(
       key: _scaffoldKey,
       child: Scaffold(
-        appBar: mySimpleAppBar('Thêm giao dịch mới'),
+        appBar: mySimpleAppBar('Sửa thông tin giao dịch'),
         // backgroundColor: Colors.transparent,
         body: SingleChildScrollView(
           child: Container(
@@ -234,10 +242,10 @@ class _AddTransactionState extends State<AddTransaction> {
                     ),
                   ),
                 ),
-                myAlignedButton('Thêm', backgroundColor: primary, action: () {
+                myAlignedButton('Thay đổi', backgroundColor: primary, action: () {
                   if (_formKey.currentState.validate()) {
                     showSnack(_scaffoldKey, 'Đang xử lý...');
-                    handleAddTx();
+                    handleEditTx();
                   }
                 })
               ],
@@ -263,16 +271,20 @@ class _AddTransactionState extends State<AddTransaction> {
       initialDatePickerMode: DatePickerMode.day,
     );
 
-    final TimeOfDay pickedTime =
-        await showTimePicker(context: context, initialTime: TimeOfDay(hour: _selectedDatetime.hour, minute: _selectedDatetime.minute), helpText: 'Chọn giờ giao dịch', cancelText: 'Hủy', confirmText: 'Chọn');
+    print(_selectedDatetime);
+    final TimeOfDay pickedTime = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay(hour: _selectedDatetime.hour, minute: _selectedDatetime.minute),
+        helpText: 'Chọn giờ giao dịch',
+        cancelText: 'Hủy',
+        confirmText: 'Chọn');
 
     if (picked != null && pickedTime != null) {
       DateTime result = DateTime(picked.year, picked.month, picked.day, pickedTime.hour, pickedTime.minute);
 
-      if (result.isAfter(currentDatetime)) {
+      if(result.isAfter(currentDatetime)) {
         result = currentDatetime;
       }
-
       setState(() {
         _selectedDatetime = result;
       });
@@ -293,7 +305,7 @@ class _AddTransactionState extends State<AddTransaction> {
     });
   }
 
-  void handleAddTx() async {
+  void handleEditTx() async {
     Socket socket = await getSocket();
     double price;
 
@@ -303,20 +315,29 @@ class _AddTransactionState extends State<AddTransaction> {
       showSnack(_scaffoldKey, 'Số tiền không hợp lệ');
       return;
     }
+    //
+    // final Map<String, dynamic> newTx = {
+    //   'catID': _currentCategory,
+    //   'eventID': _currentEvent,
+    //   'price': _currentType == 'Chi' ? price * -1 : price,
+    //   'time': _selectedDate.toIso8601String(),
+    //   'description': _descriptionController.text
+    // };
 
-    final Map<String, dynamic> newTx = {
-      'catID': _currentCategory,
-      'eventID': _currentEvent,
-      'price': _currentType == 'Chi' ? price * -1 : price,
-      'time': _selectedDatetime.toIso8601String(),
-      'description': _descriptionController.text
-    };
+    _clonedTx['catID'] = _currentCategory;
+    _clonedTx['eventID'] = _currentEvent;
+    _clonedTx['price'] = _currentType == 'Chi' ? price * -1 : price;
+    _clonedTx['time'] = _selectedDatetime.toIso8601String();
+    _clonedTx['description'] = _descriptionController.text;
 
     showSnack(_scaffoldKey, 'Đang xử lý...');
-    socket.emitWithAck('add_transaction', {'walletID': widget.walletID, 'newTransaction': newTx}, ack: (data) {
-      Navigator.pop(context);
-      showSnack(widget.wrappingScaffoldKey, "Thêm thành công");
+    socket.emitWithAck('update_transaction', {'walletID': widget.walletID, 'newTransaction': _clonedTx, 'transactionID': _clonedTx['id']}, ack: () {
+      Navigator.pop(context); // trở về private wallet
+      showSnack(widget.wrappingScaffoldKey, "Cập nhật thành công");
     });
+
+    // socket.emit('update_transaction', {'walletID': widget.walletID, 'newTransaction': _clonedTx, 'transactionID': _clonedTx['id']});
+
     // for (String key in newTx.keys) {
     //   print('${key} - ${newTx[key]}');
     // }

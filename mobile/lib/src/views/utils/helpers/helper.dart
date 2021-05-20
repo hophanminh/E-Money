@@ -8,13 +8,13 @@ const warning = error;
 
 Map<String, dynamic> parseMap(dynamic data) => new Map<String, dynamic>.from(data);
 
-final max = 999999999;
+final double max = 999999999;
 var formatter = new NumberFormat.simpleCurrency(locale: 'vi');
 var _formatter = new NumberFormat.currency(locale: 'vi', symbol: '');
 
-String formatMoneyWithSymbol(dynamic amount) => amount != null ? formatter.format(amount) : "";
+String formatMoneyWithSymbol(dynamic amount) => amount != null ? (amount > max ? _formatter.format(max) : formatter.format(amount)) : "";
 
-String formatMoneyWithoutSymbol(dynamic amount) => amount != null ? _formatter.format(amount).replaceAll(new RegExp("\\s+"), '') : ""; // format xong có dấu cách ở cuối nên replace để bỏ
+String formatMoneyWithoutSymbol(dynamic amount) => amount != null ? (amount > max ? _formatter.format(max) : _formatter.format(amount).replaceAll(new RegExp("\\s+"), '')) : ""; // format xong có dấu cách ở cuối nên replace để bỏ
 
 bool isEmailPattern(String token) {
   RegExp emailPattern = new RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");

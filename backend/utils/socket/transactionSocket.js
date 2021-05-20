@@ -9,7 +9,7 @@ module.exports = function (socket, io, decoded_userID) {
 
   // get Transaction of wallet
   socket.on('get_transaction', async ({ walletID }, callback) => {
-    console.log('lấy', walletID);
+    console.log('lấy tx', walletID);
     socket.join(walletID);
     try {
       const transactionList = await transactionModel.getTransactionByWalletID(walletID);
@@ -51,7 +51,7 @@ module.exports = function (socket, io, decoded_userID) {
   });
 
   // update Transaction
-  socket.on('update_transaction', async ({ walletID, transactionID, newTransaction }) => {
+  socket.on('update_transaction', async ({ walletID, transactionID, newTransaction }, callback) => {
     try {
       const temp = {
         Money: newTransaction.price,
@@ -66,7 +66,7 @@ module.exports = function (socket, io, decoded_userID) {
         await transactionModel.updateTransaction(transactionID, temp);
         await walletModel.updateTotalWallet(newTransaction.price - updated[0].Money, updated[0].WalletID);
       }
-
+      callback ? callback() : console.log('ko có call back');
       // annouce to other players
       const transactionList = await transactionModel.getTransactionByWalletID(walletID);
       const { total, spend, receive } = calculateStat(transactionList);

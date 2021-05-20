@@ -6,6 +6,7 @@ import 'package:mobile/src/services/restapiservices/wallet_service.dart';
 import 'package:mobile/src/services/socketservices/socket.dart';
 import 'package:mobile/src/views/ui/wallet/private_wallet/add_transaction.dart';
 import 'package:mobile/src/views/ui/wallet/private_wallet/delete_transaction.dart';
+import 'package:mobile/src/views/ui/wallet/private_wallet/edit_transaction.dart';
 import 'package:mobile/src/views/utils/helpers/helper.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
@@ -22,7 +23,7 @@ class IndividualWallet extends StatefulWidget {
 class _IndividualWalletState extends State<IndividualWallet> {
   IO.Socket _socket;
   var _scaffoldKey = GlobalKey<ScaffoldMessengerState>();
-  var _txns = [];
+  var _txs = [];
   var _stat = new Map<String, dynamic>();
   var _categoryList = {'fullList': [], 'defaultList': [], 'customList': []};
   var _iconList = [];
@@ -53,19 +54,18 @@ class _IndividualWalletState extends State<IndividualWallet> {
       //{ transactionList, total, spend, receive }
       // print(data['transactionList'][0]['id']);
       setState(() {
-        _txns = data['transactionList'];
+        _txs = data['transactionList'];
         _stat = {"total": data['total'], "spend": data['spend'], "receive": data['receive']};
       });
     });
 
-    _socket.on(
-        'wait_for_update_transaction',
-        (data) => {
-              setState(() {
-                _txns = data['transactionList'];
-                _stat = {"total": data['total'], "spend": data['spend'], "receive": data['receive']};
-              })
-            });
+    _socket.on('wait_for_update_transaction', (data) {
+      print('on updating txs');
+      setState(() {
+        _txs = data['transactionList'];
+        _stat = {"total": data['total'], "spend": data['spend'], "receive": data['receive']};
+      });
+    });
 
     _socket.emitWithAck("get_category", {'walletID': walletID}, ack: (data) => {_setCategoryList(data['fullList'], data['defaultList'], data['customList'])});
 
@@ -169,9 +169,9 @@ class _IndividualWalletState extends State<IndividualWallet> {
                     ),
                     Padding(
                       padding: const EdgeInsets.only(top: 40, bottom: 10),
-                      child: Text('Danh sách giao dịch', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+                      child: Text('Danh sách tất cả giao dịch', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
                     ),
-                    for (var tx in _txns) _createCompactTxn(tx)
+                    for (var tx in _txs) _createCompactTxn(tx)
                   ],
                 ),
               ),
@@ -187,7 +187,19 @@ class _IndividualWalletState extends State<IndividualWallet> {
         actionPane: SlidableDrawerActionPane(),
         actionExtentRatio: 0.25,
         secondaryActions: <Widget>[
-          new IconSlideAction(
+          IconSlideAction(
+            caption: 'Sửa',
+            color: Colors.blue,
+            icon: Icons.edit,
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => EditTransaction(
+                          walletID: widget.user['WalletID'], tx: tx, fullCategoryList: _categoryList['fullList'], eventList: _eventList, wrappingScaffoldKey: _scaffoldKey)));
+            },
+          ),
+          IconSlideAction(
             caption: 'Xóa',
             color: warning,
             icon: Icons.delete_outline,
@@ -201,12 +213,6 @@ class _IndividualWalletState extends State<IndividualWallet> {
                       ));
             },
           ),
-          // new IconSlideAction(
-          //   caption: 'Share',
-          //   color: Colors.indigo,
-          //   icon: Icons.share,
-          //   onTap: () {},
-          // ),
         ],
         child: Container(
           margin: const EdgeInsets.symmetric(vertical: 10.0),
@@ -219,14 +225,23 @@ class _IndividualWalletState extends State<IndividualWallet> {
                 SizedBox(width: 50, height: 50, child: createCircleIcon(selectedIcon['Name'], selectedIcon['BackgroundColor'], selectedIcon['Color'])),
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Text(
-                    tx['categoryName'],
+                    '${tx['categoryName']}',
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
+                  // tx['eventName'] != null
+                  //     ? Padding(
+                  //       padding: const EdgeInsets.only(top: 8.0),
+                  //       child: Text(
+                  //           'Sự kiện: ${tx['eventName']}',
+                  //           style: TextStyle(fontWeight: FontWeight.w300, fontSize: 14),
+                  //         ),
+                  //     )
+                  //     : Container(),
                   Padding(
                     padding: const EdgeInsets.only(top: 8.0),
                     child: Text(
                       '${convertToDDMMYYYYHHMM(tx['time'])}',
-                      style: TextStyle(color: Colors.black87, fontWeight: FontWeight.w200, fontSize: 14),
+                      style: TextStyle(color: Colors.black, fontWeight: FontWeight.w300, fontSize: 14),
                     ),
                   )
                 ]),
@@ -245,7 +260,10 @@ class _IndividualWalletState extends State<IndividualWallet> {
                     padding: const EdgeInsets.only(left: 20.0, right: 20, top: 10),
                     child: Row(
                       children: [
-                        Expanded(child: Text(tx['description'] != null && tx['description'].length > 0 ? 'Mô tả: ${tx['description'].length < 50 ? tx['description'] : tx['description'].toString().substring(0,50) + ' ...'}' : '')),
+                        Expanded(
+                            child: Text(tx['description'] != null && tx['description'].length > 0
+                                ? 'Mô tả: ${tx['description'].length < 50 ? tx['description'] : tx['description'].toString().substring(0, 50) + ' ...'}'
+                                : '')),
                         Padding(
                           padding: const EdgeInsets.only(left: 15.0),
                           child: TextButton(onPressed: () {}, child: Text('Xem chi tiết')),
@@ -260,20 +278,15 @@ class _IndividualWalletState extends State<IndividualWallet> {
     );
   }
 
-  String toUnicode(String value) {
-    print(value.codeUnits[0]);
-    return '65456';
-  }
-
   // color from database is hexadecimal : #123456; convert to int
   CircleAvatar createCircleIcon(String name, String background, String foreground) => CircleAvatar(
         backgroundColor: Color(int.parse('0x' + background.substring(2))),
         foregroundColor: Color(int.parse('0x' + foreground.substring(2))),
         child: FlutterLogo(size: 40.0
-            // Icon(IconData(0xe88a, fontFamily: 'MaterialIcons'),
-            //   color: Colors.pink,
-            //   size: 40.0,
-            //   semanticLabel: 'Text to announce in accessibility modes',
+            //     Icon(MdiIcons.fromString('sword'),
+            //       // color: Colors.pink,
+            //       // size: 40.0,
+            //       // semanticLabel: 'Text to announce in accessibility modes',
             ),
       );
 
@@ -291,10 +304,11 @@ class _IndividualWalletState extends State<IndividualWallet> {
 
   FloatingActionButton privateWalletActionButton() => FloatingActionButton(
       onPressed: () {
-        showDialog(
-            context: context,
-            builder: (_) =>
-                AddTransactionDialog(walletID: widget.user['WalletID'], fullCategoryList: _categoryList['fullList'], eventList: _eventList, wrappingScaffoldKey: _scaffoldKey));
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    AddTransaction(walletID: widget.user['WalletID'], fullCategoryList: _categoryList['fullList'], eventList: _eventList, wrappingScaffoldKey: _scaffoldKey)));
       },
       tooltip: 'Thêm giao dịch',
       child: Icon(Icons.add),

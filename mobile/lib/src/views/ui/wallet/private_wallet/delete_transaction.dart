@@ -66,7 +66,9 @@ class _DeleteTransactionDialogState extends State<DeleteTransactionDialog> {
                       textAlign: TextAlign.center,
                     ),
                   ),
-                  myAlignedButton('Xóa', backgroundColor: warning, action: () {})
+                  myAlignedButton('Xóa', backgroundColor: warning, action: () {
+                    handleDeleteTx();
+                  })
                 ],
               ),
             ),
@@ -77,16 +79,7 @@ class _DeleteTransactionDialogState extends State<DeleteTransactionDialog> {
   }
 
   void handleDeleteTx() async {
-    // Response res = await UserService.instance.changePassword(_oldPassword.text, _newPassword.text);
-
-    // if (res.statusCode == 200) {
-    //   Navigator.pop(context); // tắt dialog
-    //   showSnack(widget.wrappingScaffoldKey, "Cập nhật thành công"); // hiện snack bar báo thành công
-    // } else {
-    //   Map<String, dynamic> body = jsonDecode(res.body);
-    //   showSnack(_scaffoldKey, body['msg']);
-    // }
-
+    print('delete tx');
     Socket socket = await getSocket();
 
     socket.emit('delete_transaction', {'walletID': widget.walletID, 'id': widget.txID});
