@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:mobile/src/services/socketservices/socket.dart';
 import 'package:mobile/src/views/utils/helpers/helper.dart';
 import 'package:mobile/src/services/restapiservices/auth_service.dart';
 import 'package:provider/provider.dart';
@@ -66,7 +67,6 @@ class _AuthenPageState extends State<AuthenPage> with TickerProviderStateMixin {
     setState(() {
       widget.setUser(new Map<String, dynamic>.from(body['user']));
     });
-    // need to store 'user' in global state ==> not done
     Navigator.pushNamedAndRemoveUntil(context, '/dashboard', (route) => false);
   }
 
