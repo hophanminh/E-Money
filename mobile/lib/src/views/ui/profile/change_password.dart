@@ -60,7 +60,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
         backgroundColor: Colors.white,
         appBar: mySimpleAppBar('Đổi mật khẩu'),
         body: SingleChildScrollView(
-          physics: NeverScrollableScrollPhysics(),
+          // physics: NeverScrollableScrollPhysics(),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,

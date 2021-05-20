@@ -107,9 +107,9 @@ class _ViewTransactionState extends State<ViewTransaction> {
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 45, color: widget.tx['price'] > 0 ? Colors.green : Colors.red),
                 ),
               ),
-              createDetail('Ngày giao dịch', widget.tx['time'], 'iconName'),
+              createDetail('Ngày giao dịch', convertToDDMMYYYYHHMM(widget.tx['time']), 'iconName'),
+              createDetail('Sự kiện', widget.tx['eventName'] == null ? 'Không có sự kiện được chọn' : widget.tx['eventName'], 'iconName'),
               createDetail('Ghi chú', widget.tx['description'].length == 0 ? 'Không có chú thích được tạo' : widget.tx['description'], 'iconName'),
-              createDetail('Sự kiện', widget.tx['eventName'] == null ? 'Không có sự kiện được chọn' : widget.tx['eventName'], 'iconName')
             ],
           ),
         ),
