@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
-import defaultAvatar from '../../resources/images/defaultAvatar.png';
+import defaultAvatar from '../../../assets/defaultAvatar.png';
 import ImageUploader from './ImageUploader';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';

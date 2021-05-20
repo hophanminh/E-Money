@@ -9,6 +9,7 @@ import {
   NavLink
 } from "react-router-dom";
 
+
 export default function SideBarList(props) {
   const [currentUser, setCurrentUser] = useState();
   return (
@@ -19,18 +20,22 @@ export default function SideBarList(props) {
         </ListItemIcon>
         <ListItemText primary="Ví cá nhân" />
       </ListItem>
-      <ListItem button component={NavLink} to="/statistic">
-        <ListItemIcon>
-          <BarChartIcon />
-        </ListItemIcon>
-        <ListItemText primary="Thống kê" />
-      </ListItem>
-      <ListItem button component={NavLink} to="/teams">
-        <ListItemIcon>
-          <PeopleIcon />
-        </ListItemIcon>
-        <ListItemText primary="Nhóm" />
-      </ListItem>
+      {(
+        <ListItem button component={NavLink} to="/Statistic">
+          <ListItemIcon>
+            <BarChartIcon />
+          </ListItemIcon>
+          <ListItemText primary="Thống kê" />
+        </ListItem>
+      )}
+      {(
+        <ListItem button component={NavLink} to="/teams">
+          <ListItemIcon>
+            <PeopleIcon />
+          </ListItemIcon>
+          <ListItemText primary="Nhóm" />
+        </ListItem>
+      )}
     </div>
   )
 };
