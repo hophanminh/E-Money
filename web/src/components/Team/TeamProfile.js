@@ -20,7 +20,11 @@ const styles = {
         height: '50vh'
     },
     body: {
-        marginBottom: '10vh'
+        marginTop: '10vh',
+        marginBottom: '10vh',
+        display: 'flex',
+        justifyContent: 'center',
+        align: 'center'
     }
 }
 
@@ -99,33 +103,9 @@ export default function TeamProfile() {
     return (
         <>
             <SnackBar open={showSnackbar} setOpen={(isOpen) => setShowSnackBar(isOpen)} content={content} />
-
-            <div class="wallpaper" style={{ ...styles.wallpaper }}>
-            </div>
             <div style={styles.body}>
-                <Container component="main" maxWidth="lg">
-                    <Grid container spacing={2}>
-                        <Grid item item xs={12} sm={12} md={6} direction="column" style={{ textAlign: 'center', marginTop: '5%' }}>
-                            <div style={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                alignItems: 'center'
-                            }}>
-                                <div class="shadow avatar"
-                                     style={{
-                                         position: 'relative',
-                                         marginTop: '-200px',
-                                         backgroundImage: `url('${avatar}')`
-                                     }}
-                                >
-                                    <div style={{ position: 'absolute', left: '76%', bottom: '0%' }}>
-                                        {/*<ImageUploader setAvatar={setAvatar} setContent={setContent} setShowSnackBar={setShowSnackBar} />*/}
-                                    </div>
-                                </div>
-                            </div>
-                        </Grid>
-
-                        <Grid item xs={12} sm={12} md={6} maxWidth='md' align="center">
+                <Container xs={12} sm={12} md={6} component="main" maxWidth="lg">
+                    <Grid align="center">
                             <div style={{ textAlign: 'center', width: '80%' }}>
                                 <Typography component="h2" variant="h5" style={{ fontWeight: 'bold' }}>
                                     Thông tin tạo nhóm
@@ -169,7 +149,6 @@ export default function TeamProfile() {
                                     Tạo nhóm
                                 </Button>
                             </div>
-                        </Grid>
                     </Grid>
                 </Container>
             </div>
