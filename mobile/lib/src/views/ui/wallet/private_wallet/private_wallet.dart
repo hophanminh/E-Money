@@ -7,6 +7,7 @@ import 'package:mobile/src/services/socketservices/socket.dart';
 import 'package:mobile/src/views/ui/wallet/private_wallet/add_transaction.dart';
 import 'package:mobile/src/views/ui/wallet/private_wallet/delete_transaction.dart';
 import 'package:mobile/src/views/ui/wallet/private_wallet/edit_transaction.dart';
+import 'package:mobile/src/views/ui/wallet/private_wallet/view_transaction.dart';
 import 'package:mobile/src/views/utils/helpers/helper.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
@@ -89,9 +90,9 @@ class _IndividualWalletState extends State<IndividualWallet> {
     return ScaffoldMessenger(
       key: _scaffoldKey,
       child: Scaffold(
-          appBar: privateWalletAppBar(),
+          appBar: _privateWalletAppBar(),
           drawer: widget.sidebar,
-          floatingActionButton: privateWalletActionButton(),
+          floatingActionButton: _privateWalletActionButton(),
           body: SingleChildScrollView(
             child: Container(
               // height: MediaQuery.of(context).size.height,
@@ -266,7 +267,11 @@ class _IndividualWalletState extends State<IndividualWallet> {
                                 : '')),
                         Padding(
                           padding: const EdgeInsets.only(left: 15.0),
-                          child: TextButton(onPressed: () {}, child: Text('Xem chi tiết')),
+                          child: TextButton(
+                              onPressed: () {
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => ViewTransaction(walletID: widget.user['WalletID'], tx: tx, fullCategoryList: _categoryList['fullList'], eventList: _eventList)));
+                              },
+                              child: Text('Xem chi tiết')),
                         )
                       ],
                     ))
@@ -290,7 +295,7 @@ class _IndividualWalletState extends State<IndividualWallet> {
             ),
       );
 
-  AppBar privateWalletAppBar() => AppBar(
+  AppBar _privateWalletAppBar() => AppBar(
       iconTheme: IconThemeData(color: Colors.white),
       title: Text('Ví cá nhân', style: TextStyle(color: Colors.white)),
       actions: [
@@ -302,7 +307,7 @@ class _IndividualWalletState extends State<IndividualWallet> {
       backgroundColor: primary,
       centerTitle: true);
 
-  FloatingActionButton privateWalletActionButton() => FloatingActionButton(
+  FloatingActionButton _privateWalletActionButton() => FloatingActionButton(
       onPressed: () {
         Navigator.push(
             context,
