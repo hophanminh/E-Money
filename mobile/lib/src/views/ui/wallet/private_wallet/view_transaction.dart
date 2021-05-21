@@ -226,6 +226,9 @@ class _ViewTransactionState extends State<ViewTransaction> {
                   childAspectRatio: (4 / 3),
                 ),
                 itemBuilder: (context, index) {
+                  for(String key in _imageList[index].keys) {
+                    print('${key} - ${_imageList[index][key]}');
+                  }
                   return GestureDetector(
                     onTap: () {},
                     onLongPress: () {
@@ -242,9 +245,8 @@ class _ViewTransactionState extends State<ViewTransaction> {
                     child: Container(
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.all(Radius.circular(10)),
-                            // color: primary,
                             image:
-                            DecorationImage(image: NetworkImage(_imageList[index]['URL']), fit: BoxFit.fill, colorFilter: ColorFilter.mode(Colors.white10, BlendMode.darken)))),
+                            DecorationImage(image: NetworkImage(_imageList[index]['URL']), fit: BoxFit.fill))),
                   );
                 },
               )

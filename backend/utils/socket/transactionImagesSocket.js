@@ -31,6 +31,7 @@ module.exports = function (socket, decoded_userID) {
         throw new Error('Image not found by given id');
       }
 
+      console.log(images);
       const removed = await cloudinary.uploader.destroy(images[0].PublicID);
 
       if (removed.result !== 'ok') {
