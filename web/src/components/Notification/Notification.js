@@ -30,11 +30,16 @@ export default function Notification() {
   const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
   const [currentAmountToLoad, setCurrentAmountToLoad] = useState(config.NOTIFICATION_AMOUNT_TO_LOAD);
 
-  useEffect(async () => {
+  useEffect(() => {
     socket.emit('get_notification', { userID, limit: currentAmountToLoad }, ({ notificationList, count }) => {
       setNotifications(notificationList);
       setUnreadNotificationCount(count);
     });
+
+    // socket.on(`new_notification_added_${userID}`, ({ notificationList, count }) => {
+    //   setNotifications(notificationList);
+    //   setUnreadNotificationCount(count);
+    // });
   }, []);
 
   const handleMarkNotification = (notification) => {
@@ -99,11 +104,11 @@ export default function Notification() {
                     return (
                       <div key={notification.ID}>
                         <Card key={notification.ID} className={classes.notifyCard} style={{ backgroundColor: notification.IsRead ? '#ffffff' : '#eaeaea' }}>
-                          <CardContent className={classes.notifyContent}>
+                          <CardContent style={{ padding: '10px' }}>
                             <div className={classes.notifyText} style={{ fontWeight: notification.IsRead ? 'normal' : 'bold' }}>
                               <FiberManualRecordIcon className={classes.unreadMessageIcon} style={{ visibility: notification.IsRead ? 'hidden' : 'visible' }} />
                               <div>
-                                <p style={{ margin: '5px 5px 5px 0px', wordBreak: 'break-all', fontSize: '11pt' }}>{notification.Content}</p>
+                                <p className={classes.notifyContent}>{notification.Content}</p>
                                 <Typography variant="body2" color="textSecondary" component="p" style={{ fontSize: '9pt' }}>
                                   {moment(notification.DateNotified).format(config.DATE_TIME_FORMAT)}
                                 </Typography>
@@ -171,7 +176,10 @@ const useStyles = makeStyles((theme) => ({
     }
   },
   notifyContent: {
-    padding: '10px'
+    margin: '5px 5px 5px 0px',
+    wordWrap: 'break-word',
+    textAlign: 'justify',
+    fontSize: '11pt'
   },
   notifyText: {
     display: 'flex',
