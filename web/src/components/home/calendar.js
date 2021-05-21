@@ -46,16 +46,16 @@ export default function Calendar() {
 
   return (
     <div className={classes.container}>
-      <div style={{ display: 'flex', alignItems: 'center' }}>
-        <div style={{ width: '40%', float: 'left', textAlign: 'justify', marginRight: '50px' }}>
-          <Typography style={{ color: '#172755', fontSize: '36px', fontWeight: 'bold' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ width: '40%', textAlign: 'justify', marginRight: '50px' }}>
+          <Typography style={{ color: '#172755', fontSize: '32px', fontWeight: 'bold' }}>
             Nhắc nhở các sự kiện thu chi định kì
           </Typography>
           <Typography style={{ color: '#8794ba', marginTop: '20px' }}>
             Người dùng sẽ không phải quên những chi tiêu cần thiết của mỗi tuần hoặc mỗi tháng. E-Money sẽ lên lịch nhắc nhớ người dùng trước ngày diễn ra các hoạt động này.
           </Typography>
         </div>
-        <div style={{ width: '60%', float: 'right', textAlign: 'center' }}>
+        <div style={{ width: '60%', textAlign: 'center' }}>
           <Paper className={classes.paper}>
             <Scheduler data={appointments}>
               <ViewState currentDate={currentDate} />

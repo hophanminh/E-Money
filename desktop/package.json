@@ -6,6 +6,7 @@
     "build": "concurrently \"yarn build:main\" \"yarn build:renderer\"",
     "build:main": "cross-env NODE_ENV=production webpack --config ./.erb/configs/webpack.config.main.prod.babel.js",
     "build:renderer": "cross-env NODE_ENV=production webpack --config ./.erb/configs/webpack.config.renderer.prod.babel.js",
+    "dev": "cross-env START_HOT=1 node -r @babel/register ./.erb/scripts/CheckPortInUse.js && cross-env START_HOT=1 yarn start-renderer-dev",
     "rebuild": "electron-rebuild --parallel --types prod,dev,optional --module-dir src",
     "lint": "cross-env NODE_ENV=development eslint . --cache --ext .js,.jsx,.ts,.tsx",
     "package": "yarn build && electron-builder build --publish never",
@@ -13,6 +14,7 @@
     "start": "node -r @babel/register ./.erb/scripts/CheckPortInUse.js && yarn start:renderer",
     "start:main": "cross-env NODE_ENV=development electron -r ./.erb/scripts/BabelRegister ./src/main.dev.ts",
     "start:renderer": "cross-env NODE_ENV=development webpack serve --config ./.erb/configs/webpack.config.renderer.dev.babel.js",
+    "start-renderer-dev": "cross-env NODE_ENV=development webpack-dev-server --config ./.erb/configs/webpack.config.renderer.dev.babel.js",
     "test": "jest"
   },
   "lint-staged": {
@@ -231,7 +233,7 @@
     "husky": "^4.2.5",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^26.1.0",
-    "lint-staged": "^10.2.11",
+    "lint-staged": "^10.5.4",
     "mini-css-extract-plugin": "^1.3.1",
     "node-sass": "^5.0.0",
     "opencollective-postinstall": "^2.0.3",
@@ -252,15 +254,7 @@
     "yarn-deduplicate": "^3.1.0"
   },
   "dependencies": {
-    "electron-debug": "^3.1.0",
-    "electron-log": "^4.2.4",
-    "electron-updater": "^4.3.4",
-    "history": "^5.0.0",
-    "react": "^17.0.1",
-    "react-dom": "^17.0.1",
-    "react-router-dom": "^5.2.0",
-    "regenerator-runtime": "^0.13.5",
-    "source-map-support": "^0.5.19",
+    "@date-io/date-fns": "1.3.13",
     "@devexpress/dx-core": "^2.7.4",
     "@devexpress/dx-react-chart": "^2.7.4",
     "@devexpress/dx-react-chart-material-ui": "^2.7.4",
@@ -268,7 +262,24 @@
     "@devexpress/dx-react-scheduler": "^2.7.4",
     "@devexpress/dx-react-scheduler-material-ui": "^2.7.4",
     "@material-ui/core": "^4.11.3",
-    "@material-ui/icons": "^4.11.2"
+    "@material-ui/icons": "^4.11.2",
+    "accounting": "^0.4.1",
+    "electron-debug": "^3.1.0",
+    "electron-log": "^4.2.4",
+    "electron-updater": "^4.3.4",
+    "history": "^5.0.0",
+    "material-ui-dropzone": "^3.5.0",
+    "material-ui-popup-state": "^1.8.3",
+    "moment": "^2.29.1",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
+    "react-horizontal-timeline": "^1.5.3",
+    "react-material-ui-carousel": "^2.2.6",
+    "react-number-format": "^4.5.5",
+    "react-router-dom": "^5.2.0",
+    "regenerator-runtime": "^0.13.5",
+    "socket.io-client": "3.1.2",
+    "source-map-support": "^0.5.19"
   },
   "devEngines": {
     "node": ">=10.x",
@@ -301,10 +312,7 @@
     "baseBranches": [
       "next"
     ]
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
   }
 }
+
+

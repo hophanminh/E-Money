@@ -60,12 +60,20 @@ module.exports = {
     }
 
     if (eventType === config.EVENTTYPE.MONTHLY) {
-      const today = new_date.date();
-      if (today <= value) {
-        new_date.date(value + 1);
-      } else {
-        new_date.add(1, 'months').date(value + 1);
-      }
+      let temp = moment(new_date).date(value);
+      let i = 0;
+      do {
+        if (temp.isValid && temp.isAfter(new_date) && temp.date() === value) {
+          new_date = temp
+          break;
+        }
+        else {
+          i++;
+          temp = moment(new_date)
+          temp.add(i, 'months')
+          temp.date(value)
+        }
+      } while (true)
     }
 
     if (eventType === config.EVENTTYPE.YEARLY) {
@@ -77,7 +85,6 @@ module.exports = {
       }
 
     }
-
     return new_date.format("YYYY-MM-DD HH:mm:ss")
   },
 

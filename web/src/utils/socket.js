@@ -1,13 +1,12 @@
 import socketIOClient from "socket.io-client";
 import config from '../constants/config.json';
-import { useHistory } from 'react-router-dom';
 const API_URL = config.API_LOCAL;
 
 // connect to server
 let socket = null;
 let errMessage = null;
 export const startSocket = () => {
-    const token = window.localStorage.getItem('jwtToken');
+    const token = localStorage.getItem('jwtToken');
     socket = socketIOClient(API_URL, {
         query: { token }
     });
@@ -18,11 +17,17 @@ export const startSocket = () => {
 }
 
 export const getSocket = () => {
-    const token = window.localStorage.getItem('jwtToken');
+    const token = localStorage.getItem('jwtToken');
     if (!socket && token) {
         startSocket();
     }
     return socket;
+}
+
+export const clearSocket = () => {
+    if (socket) {
+        socket = null;
+    }
 }
 
 export const getError = () => {

@@ -5,6 +5,7 @@ const config = require("../../config/default.json");
 
 const { v4: uuidv4 } = require('uuid');
 const { ISO_8601 } = require("moment");
+const historyModel = require('../../models/historyModel');
 
 module.exports = function (socket, io, decoded_userID) {
 
@@ -76,6 +77,7 @@ module.exports = function (socket, io, decoded_userID) {
                 // change transaction in deleted category to default category
                 await transactionModel.updateTransactionCategory(walletID, id, config.CATEGORY.DEFAULT_ID)
                 await eventModel.updateEventCategory(walletID, id, config.CATEGORY.DEFAULT_ID)
+                await historyModel.updateHistoryCategory(walletID, id, config.CATEGORY.DEFAULT_ID)
 
                 await categoryModel.deleteCategory(id);
 

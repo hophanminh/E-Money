@@ -1,9 +1,9 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import PhoneIcon from '@material-ui/icons/Phone';
-import Config from '../../Config/default.json'
 import MailIcon from '@material-ui/icons/Mail';
 import FacebookIcon from '@material-ui/icons/Facebook';
 import TwitterIcon from '@material-ui/icons/Twitter';
@@ -31,21 +31,11 @@ function ContactInfo() {
       <PhoneInfo />
       <MailInfo />
     </Typography>
-  )
+  );
 }
 
 function PhoneInfo() {
-  const classes = useStyles();
   return (
-    // <Typography className={`${classes.phoneCss}`}>
-    //   <Typography>
-    //     <PhoneIcon />
-    //   </Typography>
-    //   <Typography>
-    //     <p> {`${Config.PHONE_1}`}</p>
-    //     <p> {`${Config.PHONE_2}`}</p>
-    //   </Typography>
-    // </Typography>
     <div style={{ display: 'table', margin: '5px' }}>
       <div style={{ display: 'table-cell', verticalAlign: 'middle', paddingRight: '0' }}>
         <PhoneIcon />
@@ -53,20 +43,17 @@ function PhoneInfo() {
       <div style={{ display: 'table-cell', verticalAlign: 'middle' }}>
         <div>
           0909789651
-                  </div>
+        </div>
         <div>
           0709855627
-                  </div>
+        </div>
       </div>
     </div>
-  )
+  );
 }
 
 function MailInfo() {
   return (
-    // <Typography>
-    //   <MailIcon /> {Config.EMAIL}
-    // </Typography>
     <div style={{ display: 'table', margin: '5px' }}>
       <div style={{ display: 'table-cell', verticalAlign: 'middle', paddingRight: '16px' }}>
         <MailIcon />
@@ -77,7 +64,7 @@ function MailInfo() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 function SocialConnect() {
@@ -91,7 +78,7 @@ function SocialConnect() {
         <TwitterIcon fontSize="large" />
       </div>
     </Typography>
-  )
+  );
 }
 
 function FastConnect() {
@@ -103,21 +90,20 @@ function FastConnect() {
         {`Truy cập nhanh`}
       </h4>
       <div className={`${classes.flexColumn} ${classes.flexStart}`}>
-        <a className={`${classes.hyperLink} ${classes.textFormat}`} href={'/'}>
+        <Link className={`${classes.hyperLink} ${classes.textFormat}`} to="/">
           Trang chủ
-        </a>
-        <a className={`${classes.hyperLink}  ${classes.textFormat}`} href={'/signin'}>
+        </Link>
+        <Link className={`${classes.hyperLink} ${classes.textFormat}`} to="/signin">
           Đăng Nhập
-        </a>
-        <a className={`${classes.hyperLink}  ${classes.textFormat}`} href={'/signup'}>
+        </Link>
+        <Link className={`${classes.hyperLink} ${classes.textFormat}`} to="/signup">
           Đăng ký
-        </a>
-        <a className={`${classes.hyperLink}  ${classes.textFormat}`} href={'/wallet'}>
+        </Link>
+        <Link className={`${classes.hyperLink} ${classes.textFormat}`} to="/wallet">
           Ví cá nhân
-        </a>
+        </Link>
       </div>
     </Typography>
-
   )
 }
 
@@ -200,14 +186,11 @@ export default function StickyFooter() {
             </Grid>
             <Grid item sm={6} md={4}>
               <SocialConnect />
-
             </Grid>
             <Grid item md={4}>
               <ContactInfo />
-
             </Grid>
           </Grid>
-
         </div>
         <div style={{ textAlign: 'center' }}>
           <Copyright />

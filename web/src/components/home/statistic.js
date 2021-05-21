@@ -38,11 +38,11 @@ export default function Statistic() {
 
   return (
     <div className={classes.container}>
-      <div style={{ display: 'flex', alignItems: 'center' }}>
-        <div style={{ width: '60%', float: 'left' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ width: '50%' }}>
           <Paper className={classes.paper}>
             <Chart data={chartData}>
-              <PieSeries valueField="value" argumentField="type" />
+              <PieSeries valueField="value" argumentField="type" outerRadius={0.75} />
               <Title text="Thống kê chi tiêu tháng" />
               <Legend />
               <Animation />
@@ -51,8 +51,8 @@ export default function Statistic() {
             </Chart>
           </Paper>
         </div>
-        <div style={{ width: '40%', float: 'right', textAlign: 'justify', marginLeft: '50px' }}>
-          <Typography style={{ color: '#172755', fontSize: '36px', fontWeight: 'bold' }}>
+        <div style={{ width: '50%', textAlign: 'justify', marginLeft: '50px' }}>
+          <Typography style={{ color: '#172755', fontSize: '32px', fontWeight: 'bold' }}>
             Thống kê tài chính
           </Typography>
           <Typography style={{ color: '#8794ba', marginTop: '20px' }}>

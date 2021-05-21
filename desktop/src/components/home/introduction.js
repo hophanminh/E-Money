@@ -44,17 +44,6 @@ export default function Introduction() {
           >
             Tìm hiểu thêm
           </Button>
-
-          <Button className={classes.button}
-            style={{
-              height: '60px', width: '220px', fontSize: '24px', color: 'black',
-              border: '1px solid #ccc'
-            }}
-          >
-            <Link to="/">
-              Move to test page
-            </Link>
-          </Button>
         </div>
       </div>
 
