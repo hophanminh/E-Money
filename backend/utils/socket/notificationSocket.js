@@ -2,8 +2,9 @@ const notificationModel = require('../../models/notificationModel');
 
 module.exports = function (socket, io, decoded_userID) {
     socket.on('get_notification', async ({ userID, limit }, callback) => {
+        socket.join(userID);
         try {
-            const count = await notificationModel.countUnreadNotification();
+            const count = await notificationModel.countUnreadNotification(userID);
             const notificationList = await notificationModel.getNotificationByUserID(userID, limit);
             callback({ notificationList, count: count[0].count });
         } catch (error) {
@@ -24,7 +25,7 @@ module.exports = function (socket, io, decoded_userID) {
         const listIDs = notificationIDs.map(id => "'" + id.replace("'", "''") + "'").join();
         try {
             await notificationModel.updateListNotification(listIDs);
-            const count = await notificationModel.countUnreadNotification();
+            const count = await notificationModel.countUnreadNotification(userID);
             const notificationList = await notificationModel.getNotificationByUserID(userID, limit);
             callback({ notificationList, count: count[0].count });
         } catch (error) {

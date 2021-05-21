@@ -45,8 +45,10 @@ app.use(function (req, res, next) {
   next(createError(404));
 });
 
+require('./utils/cron')(io);
+
 server.listen(process.env.PORT || config.PORT, () => {
-  console.log(`Backend APIs is running at http://localhost:${config.PORT}`)
-})
+  console.log(`Backend APIs is running at http://localhost:${config.PORT}`);
+});
 
 module.exports = io;

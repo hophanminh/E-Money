@@ -28,4 +28,6 @@ module.exports = {
                 FROM Events as e
                 WHERE e.ID = ?`, [eventID]),
 
+    getAllEvents: () => db.load(`SELECT * FROM Events`)
+
 }
