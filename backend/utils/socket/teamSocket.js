@@ -23,5 +23,5 @@ module.exports = function (socket, io, decoded_userID) {
             console.log(error);
         }
 
-    });
+  });
 };

@@ -6,6 +6,16 @@ const secondary = Color(0xFFFDA92C);
 const error = Colors.redAccent;
 const warning = error;
 
+Map<String, dynamic> parseMap(dynamic data) => new Map<String, dynamic>.from(data);
+
+final double max = 999999999;
+var formatter = new NumberFormat.simpleCurrency(locale: 'vi');
+var _formatter = new NumberFormat.currency(locale: 'vi', symbol: '');
+
+String formatMoneyWithSymbol(dynamic amount) => amount != null ? (amount > max ? _formatter.format(max) : formatter.format(amount)) : "";
+
+String formatMoneyWithoutSymbol(dynamic amount) => amount != null ? (amount > max ? _formatter.format(max) : _formatter.format(amount).replaceAll(new RegExp("\\s+"), '')) : ""; // format xong có dấu cách ở cuối nên replace để bỏ
+
 bool isEmailPattern(String token) {
   RegExp emailPattern = new RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
   return emailPattern.hasMatch(token);
@@ -81,11 +91,31 @@ String convertToDDMMYYYY(String input) {
   }
 }
 
+String convertToDDMMYYYYHHMM(String input) {
+  try {
+    DateTime tempDate = DateTime.parse(input);
+    return DateFormat('dd/MM/yyyy - HH:mm').format(tempDate.toLocal());
+  } catch (error) {
+    return "";
+  }
+}
+
+String getThisMonth() => DateFormat('MM/yyyy').format(new DateTime.now());
+
 String convertRegularDateToNormalDate(String input) {
   try {
     DateTime tempDate = new DateFormat("yyyy-MM-dd HH:mm:ss.SSS").parse(input);
     return DateFormat('dd/MM/yyyy').format(tempDate);
   } catch (error) {
     return "";
+  }
+}
+
+DateTime parseInput(String input) {
+  try {
+    DateTime tempDate = DateTime.parse(input);
+    return tempDate;
+  } catch (error) {
+    return null;
   }
 }

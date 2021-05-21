@@ -109,8 +109,8 @@ function FastConnect() {
 
 function Description() {
   return (
-    <Typography style={{ width: `30vw` }}>
-      {`E-money giải pháp giúp bạn dễ dàng quản lý việc thu chi rõ ràng, minh bạch. Quản lý quỹ nhóm cũng đã trở nên dễ dàng hơn với E-money.`}
+    <Typography style={{ width: `30vw`, textAlign: 'justify' }}>
+      {`E-money giải pháp giúp bạn dễ dàng quản lý việc thu chi rõ ràng, minh bạch. Quản lý quỹ nhóm cũng đã trở nên dễ dàng hơn với E-Money.`}
     </Typography>
   )
 }

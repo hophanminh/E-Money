@@ -12,19 +12,17 @@ Align myLabelText(String title, {AlignmentGeometry position = Alignment.centerLe
       ),
     );
 
-InputDecoration myInputDecoration(String placeholder, {Color inputBorder = primary}) => InputDecoration(
+InputDecoration myInputDecoration(String placeholder, {Color inputBorder = primary, Widget suffix = null}) => InputDecoration(
       hintText: placeholder,
       contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
-      focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: inputBorder, width: 1.0), borderRadius: BorderRadius.circular(12)),
-      enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: inputBorder, width: 1.0), borderRadius: BorderRadius.circular(12)),
-      errorBorder: OutlineInputBorder(borderSide: BorderSide(color: error, width: 1.0), borderRadius: BorderRadius.circular(12)),
-      focusedErrorBorder: OutlineInputBorder(borderSide: BorderSide(color: error, width: 1.0), borderRadius: BorderRadius.circular(12)),
+      focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: inputBorder, width: 1.0), borderRadius: BorderRadius.circular(10)),
+      enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: inputBorder, width: 1.0), borderRadius: BorderRadius.circular(10)),
+      errorBorder: OutlineInputBorder(borderSide: BorderSide(color: error, width: 1.0), borderRadius: BorderRadius.circular(10)),
+      focusedErrorBorder: OutlineInputBorder(borderSide: BorderSide(color: error, width: 1.0), borderRadius: BorderRadius.circular(10)),
       filled: true,
       fillColor: Colors.white,
       errorStyle: myErrorTextStyle,
-      // border: OutlineInputBorder(
-      //   borderRadius: BorderRadius.circular(200),
-      // ),
+      suffix: suffix
     );
 
 AppBar mySimpleAppBar(String title) => AppBar(
@@ -71,6 +69,13 @@ Drawer mySideBar({BuildContext context, @required bool isChoosingPrivateWallet, 
                     onTap: () {
                       Navigator.pop(context);
                       Navigator.pushNamed(context, '/profile');
+                    }),
+                _createDrawerItem(
+                    title: 'Đổi mật khẩu',
+                    icon: Icons.lock,
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.pushNamed(context, '/changepassword');
                     }),
                 Divider(
                   thickness: 0.75,
@@ -143,6 +148,25 @@ Align myAlignedButton(
           text,
           style: TextStyle(color: textColor),
         ),
+      ),
+    );
+
+ElevatedButton myFullWidthButton(
+    String text, {
+      Function action,
+      AlignmentGeometry alignment = Alignment.center,
+      Color backgroundColor = primary,
+      Color textColor = Colors.white,
+      double fontSize = 17.0,
+      BorderSide borderSide,
+      EdgeInsetsGeometry padding = const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
+    }) =>
+    ElevatedButton(
+      style: ElevatedButton.styleFrom(primary: backgroundColor, padding: padding, side: borderSide, textStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: fontSize)),
+      onPressed: action, // != null ? action : () {},
+      child: Text(
+        text,
+        style: TextStyle(color: textColor),
       ),
     );
 

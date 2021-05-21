@@ -16,7 +16,8 @@ module.exports = function (socket, decoded_userID) {
   });
 
   socket.on('add_transaction_image', ({ transactionID, urls }) => {
-    socket.broadcast.to(decoded_userID).emit(`wait_for_add_transaction_image_${transactionID}`, { urls });
+    console.log('thêm ảnh mới');
+    socket.broadcast.emit(`wait_for_add_transaction_image_${transactionID}`, { urls });
   });
 
   socket.on('remove_transaction_image', async (data, callback) => {
@@ -38,7 +39,7 @@ module.exports = function (socket, decoded_userID) {
 
       await transactionImagesModel.deleteImage(imageID);
       callback(200);
-      socket.broadcast.to(decoded_userID).emit(`wait_for_remove_transaction_image_${transactionID}`, { imageID });
+      socket.broadcast.emit(`wait_for_remove_transaction_image_${transactionID}`, { imageID });
     } catch (err) {
       console.log(err);
       callback(500);

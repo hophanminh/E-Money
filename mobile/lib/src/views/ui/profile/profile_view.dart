@@ -6,17 +6,14 @@ import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mobile/src/views/ui/profile/avatar_picker_menu.dart';
 import 'package:mobile/src/views/ui/profile/avatar_preview.dart';
-import 'package:mobile/src/views/ui/profile/change_password_dialog.dart';
 import 'package:mobile/src/views/utils/helpers/helper.dart';
 import 'package:mobile/src/services/restapiservices/user_service.dart';
+import 'package:mobile/src/services/restapiservices/auth_service.dart';
 import 'package:mobile/src/views/utils/widgets/widget.dart';
+import 'package:provider/provider.dart';
+import 'package:mobile/src/models/UsersProvider.dart';
 
 class ProfilePage extends StatefulWidget {
-  final Map<String, dynamic> user;
-  final void Function(Map<String, dynamic>) setUser;
-
-  const ProfilePage({this.user, this.setUser});
-
   @override
   _ProfilePageState createState() => _ProfilePageState();
 }
@@ -24,34 +21,48 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   var _formKey = GlobalKey<FormState>();
   var _scaffoldKey = GlobalKey<ScaffoldMessengerState>();
+  var _accountNameController = TextEditingController();
   var _nameController = TextEditingController();
   var _emailController = TextEditingController();
   var _dobController = TextEditingController();
   var _selectedDate = DateTime.now(); // example: 2021-04-15 23:58:18.949076
-  Map<String, dynamic> _user;
+  Users _info = new Users();
 
-  void setInfo() {
-    _nameController.text = widget.user['Name'];
-    _emailController.text = widget.user['Email'];
+  void setInfo(Users _info) {
+    _accountNameController.text = _info.username;
+    _nameController.text = _info.name;
+    _emailController.text = _info.email;
 
-    if (widget.user['DateOfBirth'] != null) {
-      print(widget.user['DateOfBirth']);
+    if (_info.dateOfBirth != null) {
       setState(() {
-        _selectedDate = DateTime.parse(widget.user['DateOfBirth']); // example: 1999-09-15 17:00:00.000Z
+        _selectedDate = DateTime.parse(_info.dateOfBirth); // example: 1999-09-15 17:00:00.000Z
       });
-      _dobController.text = convertToDDMMYYYY(widget.user['DateOfBirth']);
+      _dobController.text = convertToDDMMYYYY(_info.dateOfBirth);
     } else {
       print(_selectedDate.toString());
       print(_selectedDate.toIso8601String());
-      _dobController.text = convertToDDMMYYYY(_selectedDate.toLocal().toString());
+      _dobController.text =
+          convertToDDMMYYYY(_selectedDate.toLocal().toString());
     }
+  }
+
+  void _fetchData() async {
+    final UsersProvider myProvider =
+        Provider.of<UsersProvider>(context, listen: false);
+    Users data = await myProvider.fetchData();
+    _info = data;
+    setInfo(myProvider.info);
   }
 
   @override
   void initState() {
     super.initState();
-    _user = new Map<String, dynamic>.from(widget.user);
-    setInfo();
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      final UsersProvider myProvider =
+          Provider.of<UsersProvider>(context, listen: false);
+      setInfo(myProvider.info);
+    });
   }
 
   @override
@@ -62,7 +73,7 @@ class _ProfilePageState extends State<ProfilePage> {
     super.dispose();
   }
 
-  void handleChangeInfo() async {
+  void handleChangeInfo(Users _info) async {
     FocusScope.of(context).unfocus();
     String name = _nameController.text;
     String email = _emailController.text;
@@ -71,10 +82,11 @@ class _ProfilePageState extends State<ProfilePage> {
 
     if (res.statusCode == 200) {
       showSnack(_scaffoldKey, 'Cập nhật thành công');
-      _user['Name'] = name;
-      _user['Email'] = email;
-      _user['DateOfBirth'] = dob;
-      widget.setUser(_user);
+      _info.name = name;
+      _info.email = email;
+      _info.dateOfBirth = dob;
+      Provider.of<UsersProvider>(context, listen: false).updateInfo(_info);
+      //_infoInit = info;
     } else {
       showSnack(_scaffoldKey, 'Đã xảy ra sự cố, hãy thử lại');
     }
@@ -85,8 +97,12 @@ class _ProfilePageState extends State<ProfilePage> {
     if (pickedImage == null) {
       return;
     }
-    Navigator.push(context,
-        MaterialPageRoute(builder: (context) => AvatarPreview(image: File(pickedImage.path), user: widget.user, setUser: widget.setUser, profileScaffoldKey: _scaffoldKey)));
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => AvatarPreview(
+                image: File(pickedImage.path),
+                profileScaffoldKey: _scaffoldKey)));
   }
 
   void _imgFromGallery() async {
@@ -94,8 +110,12 @@ class _ProfilePageState extends State<ProfilePage> {
     if (pickedImage == null) {
       return;
     }
-    Navigator.push(context,
-        MaterialPageRoute(builder: (context) => AvatarPreview(image: File(pickedImage.path), setUser: widget.setUser, user: widget.user, profileScaffoldKey: _scaffoldKey)));
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => AvatarPreview(
+                image: File(pickedImage.path),
+                profileScaffoldKey: _scaffoldKey)));
   }
 
   @override
@@ -108,7 +128,7 @@ class _ProfilePageState extends State<ProfilePage> {
         body: RefreshIndicator(
           onRefresh: () => Future.delayed(Duration(milliseconds: 500), () {
             FocusScope.of(context).unfocus();
-            setInfo();
+            _fetchData();
           }),
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
@@ -146,7 +166,12 @@ class _ProfilePageState extends State<ProfilePage> {
                                   shape: BoxShape.circle),
                               width: MediaQuery.of(context).size.width * 0.35,
                               height: MediaQuery.of(context).size.width * 0.35,
-                              child: myCircleAvatar(widget.user['AvatarURL'], 50),
+                              child: Consumer<UsersProvider>(
+                                builder: (context, usersProvider, child) {
+                                  return myCircleAvatar(
+                                      usersProvider.info.avatarURL, 50);
+                                },
+                              ),
                             ),
                             Container(
                               // this container cover the above container to show ripple effect whan tapping on avatar
@@ -184,12 +209,25 @@ class _ProfilePageState extends State<ProfilePage> {
                               children: [
                                 Padding(
                                   padding: const EdgeInsets.only(bottom: 8.0),
-                                  child: Text(_user['Name'], style: TextStyle(fontWeight: FontWeight.bold, fontSize: 21), overflow: TextOverflow.ellipsis, maxLines: 4),
+                                  child: Consumer<UsersProvider>(
+                                    builder: (context, usersProvider, child) {
+                                      return Text(usersProvider.info.username,
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 21),
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 4);
+                                    },
+                                  ),
                                 ),
                                 FittedBox(
-                                  child: Text(
-                                    'Ngày tham gia: ${convertToDDMMYYYY(_user['ActivatedDate'])}',
-                                    style: TextStyle(fontSize: 15),
+                                  child: Consumer<UsersProvider>(
+                                    builder: (context, usersProvider, child) {
+                                      return Text(
+                                        'Ngày tham gia: ${convertToDDMMYYYY(usersProvider.info.activatedDate)}',
+                                        style: TextStyle(fontSize: 15),
+                                      );
+                                    },
                                   ),
                                 ),
                               ],
@@ -205,17 +243,8 @@ class _ProfilePageState extends State<ProfilePage> {
                   child: Form(
                     key: _formKey,
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        myLabelText('Tên tài khoản'),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-                          child: TextFormField(
-                            style: TextStyle(color: Colors.black26),
-                            initialValue: _user['Username'],
-                            readOnly: true,
-                            decoration: myInputDecoration('Tên tài khoản', inputBorder: Colors.black26),
-                          ),
-                        ),
                         myLabelText('Tên hiển thị'),
                         Padding(
                           padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
@@ -274,19 +303,16 @@ class _ProfilePageState extends State<ProfilePage> {
                             },
                           ),
                         ),
-                        myAlignedButton('Cập nhật', alignment: Alignment.centerRight, action: () {
-                          if (_formKey.currentState.validate()) {
-                            showSnack(_scaffoldKey, 'Đang xử lý...');
-                            handleChangeInfo();
-                          }
-                        }),
                         Padding(
-                          padding: const EdgeInsets.only(top: 20.0, bottom: 10),
-                          child: myLabelText('Mật khẩu'),
+                          padding: const EdgeInsets.only(top: 10.0),
+                          child: myFullWidthButton('Cập nhật',
+                              alignment: Alignment.centerRight, action: () {
+                            if (_formKey.currentState.validate()) {
+                              showSnack(_scaffoldKey, 'Đang xử lý...');
+                              handleChangeInfo(_info);
+                            }
+                          }),
                         ),
-                        myAlignedButton('Thay mật khẩu', alignment: Alignment.centerRight, backgroundColor: warning, action: () {
-                          showDialog(context: context, builder: (_) => ChangePasswordDialog(wrappingScaffoldKey: _scaffoldKey));
-                        }),
                       ],
                     ),
                   ),
