@@ -30,7 +30,7 @@ export default function TransactionDetail(props) {
   const { selected } = useContext(WalletContext)
   const { setOpen } = useContext(PopupContext)
 
-  const data = selected;
+  const [data, setData] = useState(selected);
 
   ///////////////////////////////////////////////////// imageList[0].URL to access
   const [imageList, setImageList] = useState([]);
@@ -42,6 +42,7 @@ export default function TransactionDetail(props) {
   // update data from parent and get list of images
   useEffect(() => {
     if (selected) {
+      setData(selected);
       socket.emit("get_transaction_image", { TransactionID: selected?.id }, ({ imageList }) => {
         handleSetImageList(imageList);
       });

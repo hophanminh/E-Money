@@ -110,3 +110,12 @@ String convertRegularDateToNormalDate(String input) {
     return "";
   }
 }
+
+DateTime parseInput(String input) {
+  try {
+    DateTime tempDate = DateTime.parse(input);
+    return tempDate;
+  } catch (error) {
+    return null;
+  }
+}

@@ -109,7 +109,7 @@ class _EditTransactionState extends State<EditTransaction> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Padding(
                   padding: const EdgeInsets.only(top: 10, bottom: 20.0),
@@ -242,7 +242,7 @@ class _EditTransactionState extends State<EditTransaction> {
                     ),
                   ),
                 ),
-                myAlignedButton('Thay đổi', backgroundColor: primary, action: () {
+                myFullWidthButton('Thay đổi', backgroundColor: primary, action: () {
                   if (_formKey.currentState.validate()) {
                     showSnack(_scaffoldKey, 'Đang xử lý...');
                     handleEditTx();

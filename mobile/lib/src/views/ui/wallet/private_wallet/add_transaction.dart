@@ -101,7 +101,7 @@ class _AddTransactionState extends State<AddTransaction> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Padding(
                   padding: const EdgeInsets.only(top: 10, bottom: 20.0),
@@ -234,7 +234,7 @@ class _AddTransactionState extends State<AddTransaction> {
                     ),
                   ),
                 ),
-                myAlignedButton('Thêm', backgroundColor: primary, action: () {
+                myFullWidthButton('Thêm', backgroundColor: primary, action: () {
                   if (_formKey.currentState.validate()) {
                     showSnack(_scaffoldKey, 'Đang xử lý...');
                     handleAddTx();
