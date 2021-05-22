@@ -30,12 +30,13 @@ const CategoryAccordion = (props) => {
   const { walletID, list, expanded, setExpanded } = useContext(WalletContext);
 
   const [catList, setCatList] = useState([]);
-  const extra = new Array(5 - catList?.length).fill(null)
+  const extra = catList?.length !== 5 ? new Array(5 - catList?.length).fill(null) : [];
 
   useEffect(() => {
       if (fullList) {
-          const temp = fullList?.sort((a, b) => b.count - a.count)?.slice(0, 5);
-          setCatList(temp);
+          const temp = fullList?.sort((a, b) => b.count - a.count);    
+          setCatList(temp?.slice(0, 5));
+
       }
   }, [fullList])
 
@@ -45,9 +46,9 @@ const CategoryAccordion = (props) => {
           for (let i = 0; i < temp?.length; i++) {
               const number = list.filter(j => j?.catID === temp[i]?.ID)?.length;
               temp[i] = { ...temp[i], count: number };
-              temp?.sort((a, b) => b.count - a.count).slice(0, 5);
-              setCatList(temp);
           }
+          temp?.sort((a, b) => b.count - a.count);
+          setCatList(temp?.slice(0, 5));
       }
   }, [list, fullList])
 
