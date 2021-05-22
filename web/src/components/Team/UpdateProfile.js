@@ -131,8 +131,6 @@ export default function TeamProfile() {
     return (
         <>
             <SnackBar open={showSnackbar} setOpen={(isOpen) => setShowSnackBar(isOpen)} content={content} />
-            {/* <div class="wallpaper" style={{ ...styles.wallpaper }}>
-            </div> */}
             <div style={styles.body}>
                 <Container xs={12} sm={12} md={6} component="main" maxWidth="lg">
                     <Grid align="center">
@@ -149,8 +147,8 @@ export default function TeamProfile() {
                                             margin="normal" required fullWidth autoFocus
                                             onChange={e => handleTeamNameChange(e.target.value)}
                                             value={teamName}
+                                            inputProps={{ maxLength: 100 }}
                                 />
-
                                 <div class="container margin-top-10">
                                     <Typography style={{ fontWeight: 'bold' }} variant="h6">Số lượng thành viên</Typography>
                                     <div class="input-invalid">{errors.numberUser}</div>
@@ -171,6 +169,7 @@ export default function TeamProfile() {
                                             onChange={e => handleDescription(e.target.value)}
                                             value={description}
                                             multiline
+                                            inputProps={{ maxLength: 1000 }}
                                 />
                             </div>
 

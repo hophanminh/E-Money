@@ -106,7 +106,7 @@ export default function TeamProfile() {
             <div style={styles.body}>
                 <Container xs={12} sm={12} md={6} component="main" maxWidth="lg">
                     <Grid align="center">
-                            <div style={{ textAlign: 'center', width: '80%' }}>
+                            <div style={{ textAlign: 'center', width: '50%' }}>
                                 <Typography component="h2" variant="h5" style={{ fontWeight: 'bold' }}>
                                     Thông tin tạo nhóm
                                 </Typography>
@@ -119,6 +119,7 @@ export default function TeamProfile() {
                                                margin="normal" required fullWidth autoFocus
                                                onChange={e => handleTeamNameChange(e.target.value)}
                                                value={teamName}
+                                               inputProps={{ maxLength: 100 }}
                                     />
 
                                     <div class="container margin-top-10">
@@ -139,6 +140,7 @@ export default function TeamProfile() {
                                                variant="outlined" margin="normal" required fullWidth
                                                onChange={e => handleDescription(e.target.value)}
                                                value={description}
+                                               inputProps={{ maxLength: 1000 }}
                                     />
                                 </div>
 

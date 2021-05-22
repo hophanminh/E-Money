@@ -24,6 +24,12 @@ export const getSocket = () => {
     return socket;
 }
 
+export const clearSocket = () => {
+  if (socket) {
+      socket = null;
+  }
+}
+
 export const getError = () => {
     return errMessage;
 }

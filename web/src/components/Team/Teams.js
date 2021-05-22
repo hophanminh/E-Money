@@ -72,6 +72,7 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: 'center',
         alignItems: 'center'
     },
+    
     // upper section
     title: {
         display: 'flex',
@@ -101,9 +102,10 @@ const useStyles = makeStyles((theme) => ({
     buttonAction: {
         display: 'flex',
         justifyContent: 'flex-end'
+    },
+    headerCard: {
+        background: '#E8E8E8'
     }
-
-
 }));
 
 export default function Teams() {
@@ -283,11 +285,9 @@ export default function Teams() {
                             {teams.map((card) => (
                                 <Grid item key={card} xs={12} sm={6} md={4}>
                                     <Card className={classes.card}>
+                                        <CardHeader className={classes.headerCard} title= {card.Name} />
+                                        <Divider variant="middle" />
                                         <CardContent className={classes.cardContent}>
-                                            <Typography gutterBottom variant="h5" component="h2">
-                                                    {card.Name}
-                                            </Typography>
-                                            <Divider />
                                             <Typography gutterBottom variant="h5" component="h2">
                                                 {card.TeamID}
                                             </Typography>
@@ -296,10 +296,10 @@ export default function Teams() {
                                             </Typography>
                                         </CardContent>
                                         <CardActions className={classes.buttonAction}>
-                                            <Button variant="outlined" size="small" color="primary" onClick={(TeamID) => walletTeam(card.WalletID)}>
+                                            <Button variant="outlined" onClick={(TeamID) => walletTeam(card.WalletID)}>
                                                 Ví nhóm
                                             </Button>
-                                            <Button variant="outlined" size="small" color="primary" onClick={(TeamID) => detailTeam(card.ID)}>
+                                            <Button variant="outlined" color="primary" onClick={(TeamID) => detailTeam(card.ID)}>
                                                 Thông tin nhóm
                                             </Button>
                                         </CardActions>
