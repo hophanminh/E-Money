@@ -334,7 +334,10 @@ class _IndividualWalletState extends State<IndividualWallet> {
                       '${convertToDDMMYYYYHHMM(tx['time'])}',
                       style: TextStyle(color: Colors.black, fontWeight: FontWeight.w300, fontSize: 14),
                     ),
-                  )
+                  ),
+                  Text(tx['description'] != null && tx['description'].length > 0
+                      ? '${tx['description'].length < 50 ? tx['description'] : tx['description'].toString().substring(0, 50) + ' ...'}'
+                      : '')
                 ]),
                 Expanded(
                     child: Padding(

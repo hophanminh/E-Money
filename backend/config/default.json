@@ -34,7 +34,7 @@
     "CUSTOM": 0,
     "DEFAULT_ID": 3
   },
-  "APPLOCAL": "http://localhost:3000",
+  "APPLOCAL": "http://192.168.1.93:3000",
   "APPPRODUCTION": "",
   "CLOUDINARY": {
     "cloud_name": "minhlaccloud",
@@ -49,11 +49,11 @@
     "ACTIVE": 1,
     "INACTIVE": 0
   },
-  "EVENTTYPE": {
-    "DAILY": "Hằng ngày",
-    "WEEKLY": "Hằng tuần",
-    "MONTHLY": "Hằng tháng",
-    "YEARLY": "Hằng năm"
+  "EVENT_TYPE": {
+    "DAILY": 1,
+    "WEEKLY": 2,
+    "MONTHLY": 3,
+    "YEARLY": 4
   },
   "EMAIL": {
     "EMAIL": "superuser4058@gmail.com",
@@ -62,5 +62,6 @@
   "FORMAT_DATETIME_PATTER": {
     "DATE": "YYYY-MM-DD",
     "DATE_TIME": "YYYY-MM-DD HH:mm:ss"
-  }
+  },
+  "NOTIFICATION_AMOUNT_TO_LOAD": 10
 }
