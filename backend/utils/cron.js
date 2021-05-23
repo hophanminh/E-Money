@@ -12,14 +12,21 @@ const { getNextEventDate } = require('../utils/helper');
 module.exports = io => {
   cron.schedule('* * * * *', async () => {
     console.log('running a task every minute');
-    const events = await eventModel.getAllEvents();
+    const events = await eventModel.getAllRunningEvents();
+    console.log('Checking ' + events.length + ' running event(s)');
     for (let i = 0; i < events.length; i++) {
+      console.log('Event #' + (i + 1));
       const event = events[i];
       let now = moment(Date.now());
       let nextDate = moment(event.NextDate);
-      if (nextDate > now) {
-        console.log('Gladly, there\'s nothing to do');
-        break;
+      let endDate = event.EndDate === null ? null : moment(event.EndDate);
+      if (endDate === null && nextDate > now) {
+        console.log('    + Gladly, there\'s nothing to do, NextDate: ' + nextDate.format(FORMAT_DATETIME_PATTER.DATE_TIME));
+        continue;
+      } else if (endDate !== null && endDate < nextDate) {
+        await eventModel.updateEvent(event.ID, { Status: 0 });
+        console.log('    + This event is overdue, auto changing its status, EndDate: ' + endDate.format(FORMAT_DATETIME_PATTER.DATE));
+        continue;
       }
 
       const user = await userModel.getUserByWalletID(event.WalletID);
@@ -69,13 +76,13 @@ module.exports = io => {
       await notificationModel.addNotification(notificationToAdd);
       await eventModel.updateEvent(event.ID, { NextDate: nextDate });
 
-      const notificationList = await notificationModel.getNotificationByUserID(userID, NOTIFICATION_AMOUNT_TO_LOAD);
-      const count = await notificationModel.countUnreadNotification(userID);
+      // const notificationList = await notificationModel.getNotificationByUserID(userID, NOTIFICATION_AMOUNT_TO_LOAD);
+      // const count = await notificationModel.countUnreadNotification(userID);
       // io.on("connection", (socket) => {
       //   socket.emit(`new_notification_added_${userID}`, { notificationList, count: count[0].count });
       // });
 
-      console.log('Auto-doing an event with ID: ' + event.ID);
+      console.log('    + Auto-doing an event with ID: ' + event.ID);
     }
   });
 }
