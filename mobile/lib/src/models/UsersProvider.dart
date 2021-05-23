@@ -49,7 +49,6 @@ class UsersProvider extends ChangeNotifier {
   }
 }
 
-@immutable
 class Users {
   String id;
   String name;

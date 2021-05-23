@@ -6,6 +6,7 @@ import 'package:mobile/src/views/ui/login_view.dart';
 import 'package:mobile/src/views/ui/profile/change_password.dart';
 import 'package:mobile/src/views/ui/profile/profile_view.dart';
 import 'package:mobile/src/views/ui/register_view.dart';
+import 'package:mobile/src/views/ui/team/team_list.dart';
 import 'package:mobile/src/views/ui/wallet/dashboard_view.dart';
 import 'package:provider/provider.dart';
 import 'package:mobile/src/models/UsersProvider.dart';
@@ -46,6 +47,7 @@ class _MyAppState extends State<MyApp> {
             '/profile': (context) => ProfilePage(),
             '/changepassword': (context) => ChangePasswordPage(),
             '/dashboard': (context) => Dashboard(user: user),
+            '/team': (context) => TeamList(user: user),
           },
         ));
   }
