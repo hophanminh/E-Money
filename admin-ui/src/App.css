@@ -1,0 +1,115 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.bgimg {
+  background-image: url('/src/resources/images/background1.jpg');
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  filter: brightness(60%);
+}
+
+.wallpaper {
+  background: linear-gradient(to bottom, rgba(255,255,255,0) 20%,
+  #fafafa), url('/src/resources/images/background1.jpg');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center; 
+}
+
+.avatar {
+  width: 18vw;
+  height: 18vw;
+  border-radius: 50%;
+  border: white solid 5px !important;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+.carousel {
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+}
+
+.trap-container {
+  position: relative;
+  /*Change this to test responsive*/
+  width: 100%;
+  /*change this to test responsive*/
+  height: 100vh;
+}
+
+.trap-content {
+  display: inline-block;
+  position: relative;
+  padding-top: 9.5%;
+  height: 80%;
+  width: 90%;
+  bottom: 10%;
+  color: white;
+}
+
+.input-invalid {
+  color: red;
+  font-style: italic;
+  font-size: small;
+  text-align: left;
+  margin-bottom: 5px;
+}
+
+.shadow {
+  box-shadow: 2px 4px 8px 2px rgba(0, 0, 0, 0.2), 4px 6px 20px 4px rgba(0, 0, 0, 0.19);
+  border: none;
+}
+
+.container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.margin-top-10 {
+  margin-top: 10px;
+}
+
+.margin-top-20 {
+  margin-top: 20px;
+}

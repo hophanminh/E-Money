@@ -10,10 +10,10 @@ module.exports = {
           SET CategoryID = ?
           WHERE WalletID = ? AND CategoryID = ?`, [final, walletID, categoryID]),
 
-        updateHistoryCategoryDefault: (categoryID, final) =>
-    db.loadSafe(`UPDATE transactionhistories
-        SET CategoryID = ?
-        WHERE CategoryID = ?`, [final, categoryID]),
+    updateHistoryCategoryDefault: (categoryID, final) =>
+        db.loadSafe(`UPDATE transactionhistories
+            SET CategoryID = ?
+            WHERE CategoryID = ?`, [final, categoryID]),
 
     getHistoryByWalletIDAndTransactionID: (walletID, TransactionID) =>
         db.loadSafe(`SELECT h.*, cat.Name as CategoryName, cat.IconID, events.Name as EventName

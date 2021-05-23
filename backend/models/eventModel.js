@@ -13,10 +13,10 @@ module.exports = {
               SET CategoryID = ?
               WHERE WalletID = ? AND CategoryID = ?`, [final, walletID, categoryID]),
 
-              updateEventCategoryDefault: (categoryID, final) =>
-              db.loadSafe(`UPDATE events
-                    SET CategoryID = ?
-                    WHERE CategoryID = ?`, [final, categoryID]),
+    updateEventCategoryDefault: (categoryID, final) =>
+            db.loadSafe(`UPDATE events
+                SET CategoryID = ?
+                WHERE CategoryID = ?`, [final, categoryID]),
 
     getEventByWalletID: (walletID) => {
         return db.loadSafe(`SELECT e.*, et.Name as TypeName, cat.Name as CategoryName, cat.IconID, SUM(t.Money) as TotalAmount
