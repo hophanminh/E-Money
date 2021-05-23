@@ -13,6 +13,11 @@ module.exports = {
               SET CategoryID = ?
               WHERE WalletID = ? AND CategoryID = ?`, [final, walletID, categoryID]),
 
+  updateTransactionCategoryDefault: (categoryID, final) =>
+    db.loadSafe(`UPDATE Transactions
+              SET CategoryID = ?
+              WHERE CategoryID = ?`, [final, categoryID]),
+
   getTransactionByWalletID: (walletID) =>
     db.loadSafe(`SELECT t.ID as id, t.Description as description, t.Money as price, t.DateAdded as time, t.DateAdded as timeModified, 
                         cat.ID as catID, cat.IconID as IconID, cat.Name as categoryName, 

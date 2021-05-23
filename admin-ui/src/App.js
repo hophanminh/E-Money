@@ -8,103 +8,25 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Home from './components/home/home';
-import Statistic from './components/statistic/statistic';
 import PrivateRoute from './components/PrivateRoute';
 import StickyFooter from './components/stickyFooter/StickyFooter';
-import Dashboard from './components/Dashboard/Dashboard';
-import TeamDashBoard from './components/TeamDashBoard/TeamDashBoard';
-import Category from './components/Category/Category';
-import Event from './components/Event/Event';
+import CategoryAdmin from './components/category/CategoryAdmin';
 import Menu from './components/SideBar/Menu';
-import SignIn from './components/signin/SignIn';
-import SignUp from './components/signup/SignUp';
-import ActivateDestination from './components/activedestination/ActiveDestination';
-import Profile from './components/profile/Profile';
-import TeamProfile from './components/Team/TeamProfile';
-import TeamStatistic from './components/Team/TeamStatistic';
 import MyContext from './components/mycontext/MyContext';
 import CombinedProvider from './components/mycontext/combineProvider'
-import Teams from './components/Team/Teams';
-import UpdateProfile from './components/Team/UpdateProfile';
-import ResetDestination from './components/signin/resetpassword/ResetDestination';
-import Admin from './components/admin/admin';
 import { getListIcon } from './utils/DefaultIcon';
+import SignIn from './components/signin/SignIn';
 
 const routes = [
   {
-    path: "/Wallet/:id/category",
-    private: true,
-    main: () => <Category />
-  },
-  {
-    path: "/Wallet/:id/event",
-    private: true,
-    main: () => <Event />
-  },
-  {
-    path: "/Wallet/:id",
-    private: true,
-    main: () => <TeamDashBoard />
-  },
-  {
-    path: "/Wallet",
-    private: true,
-    main: () => <Dashboard />
-  },
-  {
-    path: "/statistic",
-    private: true,
-    main: () => <Statistic />
+    path: "/Category",
+    private: false,
+    main: () => <CategoryAdmin />
   },
   {
     path: "/signin",
     private: false,
     main: () => <SignIn />
-  },
-  {
-    path: '/signup',
-    private: false,
-    main: () => <SignUp />
-  },
-  {
-    path: '/active/:id',
-    private: false,
-    main: () => <ActivateDestination />
-  },
-  {
-    path: '/profile',
-    private: true,
-    main: () => <Profile />
-  },
-  {
-    path: '/teams/create',
-    private: true,
-    main: () => <TeamProfile />
-  },
-  {
-    path: '/teams/:TeamID/details',
-    private: true,
-    main: () => <UpdateProfile />
-  },
-  {
-    path: '/teams/:TeamID/statistic',
-    private: true,
-    main: () => <TeamStatistic />
-  },
-  {
-    path: '/teams',
-    private: true,
-    main: () => <Teams />
-  },
-  {
-    path: '/admin',
-    private: true,
-    main: () => <Admin />
-  },
-  {
-    path: '/reset',
-    private: false,
-    main: () => <ResetDestination />
   },
   {
     path: "/",
