@@ -56,7 +56,7 @@ module.exports = function (socket, io, decoded_userID) {
   });
 
   // delete event
-  socket.on('end_event', async ({ walletID, id }) => {
+  socket.on('end_event', async ({ walletID, id }, callback) => {
     try {
       const temp = {
         Status: 0,
@@ -66,7 +66,7 @@ module.exports = function (socket, io, decoded_userID) {
       if (ended.length === 1) {
         await eventModel.updateEvent(id, temp);
       }
-
+      callback ? callback() : console.log('ko có call back khi end event');
       // annouce to other players
       const eventList = await eventModel.getEventByWalletID(walletID);
       io.in(walletID).emit('wait_for_update_event', { eventList });

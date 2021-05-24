@@ -9,88 +9,90 @@ const historyModel = require('../../models/historyModel');
 
 module.exports = function (socket, io, decoded_userID) {
 
-    // get category of wallet
-    socket.on('get_category', async ({ walletID }, callback) => {
-        socket.join(walletID);
-        try {
-            const defaultList = await categoryModel.getDefaultCategory(walletID) || [];
-            const customList = await categoryModel.getCustomCategoryFromWalletID(walletID) || [];
-            const fullList = defaultList.concat(customList);
-            callback({ defaultList, customList, fullList });
-        } catch (error) {
-            console.log(error);
-        }
+  // get category of wallet
+  socket.on('get_category', async ({ walletID }, callback) => {
+    socket.join(walletID);
+    try {
+      const defaultList = await categoryModel.getDefaultCategory(walletID) || [];
+      const customList = await categoryModel.getCustomCategoryFromWalletID(walletID) || [];
+      const fullList = defaultList.concat(customList);
+      callback({ defaultList, customList, fullList });
+    } catch (error) {
+      console.log(error);
+    }
 
-    });
+  });
 
-    // add category
-    socket.on('add_category', async ({ walletID, newCategory }) => {
-        try {
-            const ID = uuidv4();
-            const temp = {
-                ID: ID,
-                Name: newCategory.Name,
-                IsDefault: false,
-                WalletID: walletID,
-                IconID: newCategory.IconID,
-            }
-            await categoryModel.addCategory(temp);
+  // add category
+  socket.on('add_category', async ({ walletID, newCategory }) => {
+    try {
+      const ID = uuidv4();
+      const temp = {
+        ID: ID,
+        Name: newCategory.Name,
+        IsDefault: false,
+        WalletID: walletID,
+        IconID: newCategory.IconID,
+      }
+      await categoryModel.addCategory(temp);
 
-            // annouce to other players
-            const defaultList = await categoryModel.getDefaultCategory(walletID) || [];
-            const customList = await categoryModel.getCustomCategoryFromWalletID(walletID) || [];
-            const fullList = defaultList.concat(customList);
-            io.in(walletID).emit('wait_for_update_category', { defaultList, customList, fullList });
-        } catch (error) {
-            console.log(error);
-        }
-    });
+      // annouce to other players
+      const defaultList = await categoryModel.getDefaultCategory(walletID) || [];
+      const customList = await categoryModel.getCustomCategoryFromWalletID(walletID) || [];
+      const fullList = defaultList.concat(customList);
+      io.in(walletID).emit('wait_for_update_category', { defaultList, customList, fullList });
+    } catch (error) {
+      console.log(error);
+    }
+  });
 
-    // update category
-    socket.on('update_category', async ({ walletID, categoryID, newCategory }) => {
-        try {
-            const temp = {
-                Name: newCategory.Name,
-                IsDefault: false,
-                IconID: newCategory.IconID,
-            }
-            const updated = await categoryModel.getCategoryByID(categoryID);
-            if (updated.length === 1) {
-                await categoryModel.updateCategory(categoryID, temp);
+  // update category
+  socket.on('update_category', async ({ walletID, categoryID, newCategory }) => {
+    try {
+      const temp = {
+        Name: newCategory.Name,
+        IsDefault: false,
+        IconID: newCategory.IconID,
+      }
+      const updated = await categoryModel.getCategoryByID(categoryID);
+      if (updated.length === 1) {
+        await categoryModel.updateCategory(categoryID, temp);
 
-                // annouce to other players
-                const defaultList = await categoryModel.getDefaultCategory(walletID) || [];
-                const customList = await categoryModel.getCustomCategoryFromWalletID(walletID) || [];
-                const fullList = defaultList.concat(customList);
-                io.in(walletID).emit('wait_for_update_category', { defaultList, customList, fullList });
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    });
+        // annouce to other players
+        const defaultList = await categoryModel.getDefaultCategory(walletID) || [];
+        const customList = await categoryModel.getCustomCategoryFromWalletID(walletID) || [];
+        const fullList = defaultList.concat(customList);
+        io.in(walletID).emit('wait_for_update_category', { defaultList, customList, fullList });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  });
 
-    // delete category
-    socket.on('delete_category', async ({ walletID, id }) => {
-        try {
-            const deleted = await categoryModel.getCategoryByID(id);
-            if (deleted.length === 1) {
-                // change transaction in deleted category to default category
-                await transactionModel.updateTransactionCategory(walletID, id, config.CATEGORY.DEFAULT_ID)
-                await eventModel.updateEventCategory(walletID, id, config.CATEGORY.DEFAULT_ID)
-                await historyModel.updateHistoryCategory(walletID, id, config.CATEGORY.DEFAULT_ID)
+  // delete category
+  socket.on('delete_category', async ({ walletID, id }, callback) => {
+    try {
+      const deleted = await categoryModel.getCategoryByID(id);
+      if (deleted.length === 1) {
+        // change transaction in deleted category to default category
+        await transactionModel.updateTransactionCategory(walletID, id, config.CATEGORY.DEFAULT_ID)
+        await eventModel.updateEventCategory(walletID, id, config.CATEGORY.DEFAULT_ID)
+        await historyModel.updateHistoryCategory(walletID, id, config.CATEGORY.DEFAULT_ID)
 
-                await categoryModel.deleteCategory(id);
+        await categoryModel.deleteCategory(id);
 
-                // annouce to other players
-                const defaultList = await categoryModel.getDefaultCategory(walletID) || [];
-                const customList = await categoryModel.getCustomCategoryFromWalletID(walletID) || [];
-                const fullList = defaultList.concat(customList);
-                io.in(walletID).emit('wait_for_update_category', { defaultList, customList, fullList });
-            }
-        } catch (error) {
-            console.log(error);
-        }
+        callback ? callback() : console.log('ko có call back khi end event');
 
-    });
+        // annouce to other players
+        const defaultList = await categoryModel.getDefaultCategory(walletID) || [];
+        const customList = await categoryModel.getCustomCategoryFromWalletID(walletID) || [];
+        const fullList = defaultList.concat(customList);
+        io.in(walletID).emit('wait_for_update_category', { defaultList, customList, fullList });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+
+  });
 
 };

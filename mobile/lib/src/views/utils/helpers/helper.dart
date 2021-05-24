@@ -119,3 +119,13 @@ DateTime parseInput(String input) {
     return null;
   }
 }
+
+int timeRemaining(String input) {
+  DateTime temp = parseInput(input);
+
+  if(input == null) {
+    return -1;
+  }
+
+  return temp.difference(DateTime.now()).inDays;
+}
