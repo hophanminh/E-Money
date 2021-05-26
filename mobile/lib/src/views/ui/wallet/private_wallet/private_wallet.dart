@@ -29,20 +29,28 @@ class _IndividualWalletState extends State<IndividualWallet> {
   var _txs = [];
   var _stat = new Map<String, dynamic>();
   var _categoryList = {'fullList': [], 'defaultList': [], 'customList': []};
-  var _iconList = [];
-  var _eventList = [];
+  List<dynamic> _iconList = [];
+  List<dynamic> _eventList = [];
 
   void _setCategoryList(List<dynamic> fullList, List<dynamic> defaultList, List<dynamic> customList) {
+
+    _categoryList['fullList'].clear();
+    _categoryList['defaultList'].clear();
+    _categoryList['customList'].clear();
+
     setState(() {
-      _categoryList['fullList'] = fullList;
-      _categoryList['defaultList'] = defaultList;
-      _categoryList['customList'] = customList;
+      _categoryList['fullList'].addAll(fullList);
+
+      _categoryList['defaultList'].addAll(defaultList);
+
+      _categoryList['customList'].addAll(customList);
     });
   }
 
   void _setEventList(List<dynamic> eventList) {
+    _eventList.clear();
     setState(() {
-      _eventList = eventList;
+      _eventList.addAll(eventList);
     });
   }
 
@@ -64,8 +72,9 @@ class _IndividualWalletState extends State<IndividualWallet> {
 
     _socket.on('wait_for_update_transaction', (data) {
       print('on updating txs');
+      _txs.clear();
       setState(() {
-        _txs = data['transactionList'];
+        _txs.addAll(data['transactionList']);
         _stat = {"total": data['total'], "spend": data['spend'], "receive": data['receive']};
       });
     });

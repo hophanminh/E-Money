@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:mobile/src/views/ui/wallet/category/add_cat.dart';
 import 'package:mobile/src/views/ui/wallet/category/delete_cate.dart';
+import 'package:mobile/src/views/ui/wallet/category/edit_cat.dart';
 import 'package:mobile/src/views/utils/helpers/helper.dart';
 import 'package:mobile/src/views/utils/widgets/widget.dart';
 
@@ -22,14 +23,11 @@ class CategoryDashboard extends StatefulWidget {
 
 class _CategoryDashboardState extends State<CategoryDashboard> {
   var _scaffoldKey = GlobalKey<ScaffoldMessengerState>();
-  List<dynamic> _defaultList = [];
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    print(widget.defaultList.length);
-    _defaultList = widget.defaultList;
   }
 
   @override
@@ -182,28 +180,36 @@ class _CategoryDashboardState extends State<CategoryDashboard> {
                     caption: 'Sửa',
                     color: Colors.blue,
                     icon: Icons.edit,
-                    onTap: () {
-                      // showDialog(
-                      //     context: context,
-                      //     builder: (_) => DeleteCateDialog(
-                      //       wrappingScaffoldKey: _scaffoldKey,
-                      //       walletID: widget.user['WalletID'],
-                      //       cateID: widget.customList[index][],
-                      //     ));
+                    onTap: () async {
+                      await showDialog(
+                          context: context,
+                          builder: (_) => EditCatDialog(
+                                wrappingScaffoldKey: _scaffoldKey,
+                                walletID: widget.walletID,
+                                cat: widget.customList[index],
+                              ));
+
+                      setState(() {
+                        // _defaultList = widget.defaultList;
+                      });
                     },
                   ),
                   IconSlideAction(
                     caption: 'Xóa',
                     color: warning,
                     icon: Icons.delete_outline,
-                    onTap: () {
-                      showDialog(
+                    onTap: () async {
+                      await showDialog(
                           context: context,
                           builder: (_) => DeleteCateDialog(
-                            wrappingScaffoldKey: _scaffoldKey,
-                            walletID: widget.walletID,
-                            cateID: widget.customList[index]['ID'],
-                          ));
+                                wrappingScaffoldKey: _scaffoldKey,
+                                walletID: widget.walletID,
+                                cateID: widget.customList[index]['ID'],
+                              ));
+
+                      setState(() {
+                        // _defaultList = widget.defaultList;
+                      });
                     },
                   ),
                 ],

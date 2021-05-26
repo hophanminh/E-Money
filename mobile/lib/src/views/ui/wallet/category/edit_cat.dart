@@ -6,21 +6,23 @@ import 'package:mobile/src/config/config.dart';
 import 'package:mobile/src/services/restapiservices/user_service.dart';
 import 'package:mobile/src/services/restapiservices/wallet_service.dart';
 import 'package:mobile/src/services/socketservices/socket.dart';
+import 'package:mobile/src/views/ui/wallet/category/category_dashboard.dart';
 import 'package:mobile/src/views/utils/helpers/helper.dart';
 import 'package:mobile/src/views/utils/widgets/widget.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 
-class AddCatDialog extends StatefulWidget {
+class EditCatDialog extends StatefulWidget {
   final GlobalKey<ScaffoldMessengerState> wrappingScaffoldKey;
   final String walletID;
+  final Map<String, dynamic> cat;
 
-  const AddCatDialog({Key key, @required this.walletID, @required this.wrappingScaffoldKey}) : super(key: key);
+  const EditCatDialog({Key key, @required this.walletID, @required this.cat, @required this.wrappingScaffoldKey}) : super(key: key);
 
   @override
-  _AddCatDialogState createState() => _AddCatDialogState();
+  _EditCatDialogState createState() => _EditCatDialogState();
 }
 
-class _AddCatDialogState extends State<AddCatDialog> {
+class _EditCatDialogState extends State<EditCatDialog> {
   var _scaffoldKey = GlobalKey<ScaffoldMessengerState>();
   var _formKey = GlobalKey<FormState>();
 
@@ -33,6 +35,9 @@ class _AddCatDialogState extends State<AddCatDialog> {
   @override
   void initState() {
     super.initState();
+
+    for (String key in widget.cat.keys) print('${key} - ${widget.cat[key]}');
+
     _initPage();
   }
 
@@ -68,7 +73,7 @@ class _AddCatDialogState extends State<AddCatDialog> {
                   Padding(
                     padding: const EdgeInsets.only(bottom: 15.0),
                     child: Text(
-                      'Thêm loại mới',
+                      'Thay đổi thông tin loại giao dich',
                       style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                     ),
                   ),
@@ -84,9 +89,7 @@ class _AddCatDialogState extends State<AddCatDialog> {
                               value: _currentIcon,
                               items: _catMenuItems,
                               onChanged: (value) {
-                                setState(() {
-                                  _currentIcon = value;
-                                });
+                                _currentIcon = value;
                               },
                             ),
                           ),
@@ -112,10 +115,10 @@ class _AddCatDialogState extends State<AddCatDialog> {
                       ],
                     ),
                   ),
-                  myAlignedButton('Thêm', backgroundColor: primary, action: () {
+                  myAlignedButton('Sửa', backgroundColor: primary, action: () {
                     if (_formKey.currentState.validate()) {
                       showSnack(_scaffoldKey, 'Đang xử lý...');
-                      handleAddCat();
+                      handleEditCat();
                     }
                   })
                 ],
@@ -127,17 +130,25 @@ class _AddCatDialogState extends State<AddCatDialog> {
     );
   }
 
-  void handleAddCat() async {
-    print(_nameController.text);
-    print(_currentIcon);
+  void handleEditCat() async {
+    // print(_nameController.text);
+    // print(_currentIcon);
 
     Socket socket = await getSocket();
 
-    socket.emit('add_category', {
+    print(socket.id);
+    print(widget.cat['ID']);
+    print(widget.cat['WalletID']);
+    print(widget.cat['IsDefault']);
+
+    socket.emitWithAck('update_category', {
       'walletID': widget.walletID,
-      'newCategory': {'IconID': _currentIcon, 'Name': _nameController.text}
+      'categoryID': widget.cat['ID'],
+      'newCategory': {'IconID': _currentIcon, 'Name': _nameController.text, 'ID': widget.cat['ID'], 'WalletID': widget.cat['WalletID'], 'IsDefault': widget.cat['IsDefault']}
+    }, ack: () {
+      Navigator.pop(context);
+      showSnack(widget.wrappingScaffoldKey, 'Cập nhật thành công');
     });
-    Navigator.pop(context);
   }
 
   void _initPage() async {
@@ -151,8 +162,11 @@ class _AddCatDialogState extends State<AddCatDialog> {
         ));
       }
 
-      _currentIcon = _catMenuItems[0].value;
+      // print(widget.cat['IconID']);
+      _currentIcon = widget.cat['IconID'];
+      _nameController.text = widget.cat['Name'];
     }
+
     setState(() {});
   }
 

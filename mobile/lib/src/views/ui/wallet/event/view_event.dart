@@ -117,7 +117,7 @@ class _ViewEventState extends State<ViewEvent> {
                   'Hạng mục', widget.event['CategoryName'], Icon(Icons.category_outlined)),
               _createDetail(
                   '${widget.event['ExpectingAmount'] < 0 ? 'Chi' : 'Thu'} định kỳ', formatMoneyWithSymbol(widget.event['ExpectingAmount']), Icon(Icons.attach_money_outlined)),
-              _createDetail('${widget.event['ExpectingAmount'] < 0 ? 'Tổng chi' : 'Tổng thu'}',
+              _createDetail('${widget.event['ExpectingAmount'] < 0 ? 'Tổng chi' : 'Tổng thu'} cho sự kiện',
                   formatMoneyWithSymbol(widget.event['TotalAmount'] != null ? widget.event['TotalAmount'] : 0), Icon(Icons.attach_money_outlined)),
               _createDetail('Ngày bắt đầu', convertToDDMMYYYYHHMM(widget.event['StartDate']), Icon(Icons.looks_one_outlined)),
               _createDetail('Ngày kết thúc', convertToDDMMYYYYHHMM(widget.event['EndDate']).length == 0 ? '--' : convertToDDMMYYYYHHMM(widget.event['EndDate']),

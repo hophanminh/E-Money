@@ -93,7 +93,7 @@ class _AddEventState extends State<AddEvent> {
     return ScaffoldMessenger(
       key: _scaffoldKey,
       child: Scaffold(
-        appBar: mySimpleAppBar('Thêm giao dịch mới'),
+        appBar: mySimpleAppBar('Thêm sự kiện mới'),
         // backgroundColor: Colors.transparent,
         body: SingleChildScrollView(
           child: Container(

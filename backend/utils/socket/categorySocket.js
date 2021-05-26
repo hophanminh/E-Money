@@ -47,7 +47,7 @@ module.exports = function (socket, io, decoded_userID) {
   });
 
   // update category
-  socket.on('update_category', async ({ walletID, categoryID, newCategory }) => {
+  socket.on('update_category', async ({ walletID, categoryID, newCategory }, callback) => {
     try {
       const temp = {
         Name: newCategory.Name,
@@ -57,6 +57,8 @@ module.exports = function (socket, io, decoded_userID) {
       const updated = await categoryModel.getCategoryByID(categoryID);
       if (updated.length === 1) {
         await categoryModel.updateCategory(categoryID, temp);
+
+        callback ? callback() : console.log('ko có call back khi end event');
 
         // annouce to other players
         const defaultList = await categoryModel.getDefaultCategory(walletID) || [];

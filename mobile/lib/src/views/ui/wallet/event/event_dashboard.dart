@@ -97,14 +97,18 @@ class _EventDashboardState extends State<EventDashboard> {
               caption: 'Kết thúc',
               color: warning,
               icon: Icons.stop,
-              onTap: () {
-                showDialog(
+              onTap: () async {
+                await showDialog(
                     context: context,
                     builder: (_) => DeleteEventDialog(
                       wrappingScaffoldKey: _scaffoldKey,
                       walletID: widget.walletID,
                       eventID: item['ID'],
                     ));
+
+                setState(() {
+
+                });
               },
             ),
           ],

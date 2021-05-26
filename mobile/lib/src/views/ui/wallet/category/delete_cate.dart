@@ -95,5 +95,7 @@ class _DeleteCateDialogState extends State<DeleteCateDialog> {
       Navigator.pop(context);
       showSnack(widget.wrappingScaffoldKey, 'Đã xóa');
     });
+    // socket.emit("delete_category", {'walletID': widget.walletID, 'id': widget.cateID});
+    // Navigator.pop(context);
   }
 }
