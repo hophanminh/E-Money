@@ -119,3 +119,48 @@ DateTime parseInput(String input) {
     return null;
   }
 }
+
+String timeRemaining(String input) {
+  DateTime temp = parseInput(input);
+
+  if(input == null) {
+    return "-1";
+  }
+
+  Duration remaining= temp.difference(DateTime.now());
+  int days = remaining.inDays;
+  int hours = remaining.inHours;
+  return days > 0 ? '${days} ngày' : '${hours} giờ';
+}
+
+
+final everyWeek = [
+  'thứ 2',
+  'thứ 3',
+  'thứ 4',
+  'thứ 5',
+  'thứ 6',
+  'thứ 7',
+  'chủ nhật',
+];
+
+getValueOfEventType(String eventType) {
+  List<String> tempList = [];
+  if (eventType == "1") {
+    tempList = [];
+  }
+  if (eventType == "2") {
+    tempList = ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'Chủ nhật'];
+  }
+  if (eventType == "3") {
+    for (int i = 0; i < 31; i++) {
+      tempList.add("Ngày ${i+1}");
+    }
+  }
+  if (eventType == "4") {
+    for (int i = 0; i < 12; i++) {
+      tempList.add("Tháng ${i + 1}");
+    }
+  }
+  return tempList;
+}

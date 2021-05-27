@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:mobile/src/services/restapiservices/wallet_service.dart';
 import 'package:mobile/src/services/socketservices/socket.dart';
+import 'package:mobile/src/views/ui/wallet/category/category_dashboard.dart';
+import 'package:mobile/src/views/ui/wallet/event/event_dashboard.dart';
 import 'package:mobile/src/views/ui/wallet/private_wallet/add_transaction.dart';
 import 'package:mobile/src/views/ui/wallet/private_wallet/delete_transaction.dart';
 import 'package:mobile/src/views/ui/wallet/private_wallet/edit_transaction.dart';
@@ -27,20 +29,28 @@ class _IndividualWalletState extends State<IndividualWallet> {
   var _txs = [];
   var _stat = new Map<String, dynamic>();
   var _categoryList = {'fullList': [], 'defaultList': [], 'customList': []};
-  var _iconList = [];
-  var _eventList = [];
+  List<dynamic> _iconList = [];
+  List<dynamic> _eventList = [];
 
   void _setCategoryList(List<dynamic> fullList, List<dynamic> defaultList, List<dynamic> customList) {
+
+    _categoryList['fullList'].clear();
+    _categoryList['defaultList'].clear();
+    _categoryList['customList'].clear();
+
     setState(() {
-      _categoryList['fullList'] = fullList;
-      _categoryList['defaultList'] = defaultList;
-      _categoryList['customList'] = customList;
+      _categoryList['fullList'].addAll(fullList);
+
+      _categoryList['defaultList'].addAll(defaultList);
+
+      _categoryList['customList'].addAll(customList);
     });
   }
 
   void _setEventList(List<dynamic> eventList) {
+    _eventList.clear();
     setState(() {
-      _eventList = eventList;
+      _eventList.addAll(eventList);
     });
   }
 
@@ -62,27 +72,44 @@ class _IndividualWalletState extends State<IndividualWallet> {
 
     _socket.on('wait_for_update_transaction', (data) {
       print('on updating txs');
+      _txs.clear();
       setState(() {
-        _txs = data['transactionList'];
+        _txs.addAll(data['transactionList']);
         _stat = {"total": data['total'], "spend": data['spend'], "receive": data['receive']};
       });
     });
 
     _socket.emitWithAck("get_category", {'walletID': walletID}, ack: (data) => {_setCategoryList(data['fullList'], data['defaultList'], data['customList'])});
 
-    _socket.on('wait_for_update_category', (data) => {_setCategoryList(data['fullList'], data['defaultList'], data['customList'])});
+    _socket.on('wait_for_update_category', (data) {
+      print('update cate');
+      _setCategoryList(data['fullList'], data['defaultList'], data['customList']);
+    });
 
     _socket.emitWithAck("get_event", {'walletID': walletID}, ack: (data) {
       _setEventList(data['eventList']);
     });
 
-    _socket.on('wait_for_update_event', (data) => {_setEventList(data['eventList'])});
+    _socket.on('wait_for_update_event', (data) {
+      print('update event');
+      _setEventList(data['eventList']);
+    });
+
   }
 
   @override
   void initState() {
-    _initPage();
     super.initState();
+    _initPage();
+  }
+
+  @override
+  void dispose() {
+    // _socket.off('wait_for_update_transaction');
+    // _socket.off('wait_for_update_category');
+    // _socket.off('wait_for_update_event');
+
+    super.dispose();
   }
 
   @override
@@ -226,155 +253,38 @@ class _IndividualWalletState extends State<IndividualWallet> {
               margin: const EdgeInsets.symmetric(vertical: 10.0),
               child: Container(
                 padding: EdgeInsets.fromLTRB(10, 15, 10, 5),
-                child: Column(
-                  children: [
-                    Row(children: [
-                      SizedBox(width: 50, height: 50, child: createCircleIcon(selectedIcon['Name'], selectedIcon['BackgroundColor'], selectedIcon['Color'])),
-                      Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                        Text(
-                          '${tx['categoryName']}',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                child: Row(children: [
+                  SizedBox(width: 50, height: 50, child: createCircleIcon(selectedIcon['Name'], selectedIcon['BackgroundColor'], selectedIcon['Color'])),
+                  Expanded(
+                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      Text(
+                        '${tx['categoryName']}',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: Text(
+                          '${convertToDDMMYYYYHHMM(tx['time'])}',
+                          style: TextStyle(color: Colors.black, fontWeight: FontWeight.w300, fontSize: 14),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 8.0),
-                          child: Text(
-                            '${convertToDDMMYYYYHHMM(tx['time'])}',
-                            style: TextStyle(color: Colors.black, fontWeight: FontWeight.w300, fontSize: 14),
-                          ),
-                        )
-                      ]),
-                      Expanded(
-                          child: Padding(
-                              padding: const EdgeInsets.only(left: 10.0, right: 8),
-                              child: Align(
-                                  alignment: Alignment.centerRight,
-                                  child: Text(
-                                    '${formatMoneyWithSymbol(tx['price'])}',
-                                    style: TextStyle(color: tx['price'] < 0 ? Colors.red : Colors.green, fontWeight: FontWeight.bold),
-                                  ))))
+                      ),
+                      Padding(
+                          padding: const EdgeInsets.only(top: 10),
+                          child: tx['description'] != null && tx['description'].length > 0
+                              ? Text(tx['description'].length < 50 ? tx['description'] : tx['description'].toString().substring(0, 50) + ' ...')
+                              : Container())
                     ]),
-                    Padding(
-                        padding: const EdgeInsets.only(top: 10, left: 10),
-                        child: Row(
-                          children: [
-                            Expanded(
-                                child: Text(tx['description'] != null && tx['description'].length > 0
-                                    ? 'Mô tả: ${tx['description'].length < 50 ? tx['description'] : tx['description'].toString().substring(0, 50) + ' ...'}'
-                                    : 'Mô tả:')),
-                          ],
-                        )),
-                  ],
-                ),
-              )),
-        ),
-      ),
-    );
-  }
-
-  _createCompactTxn1(Map<String, dynamic> tx) {
-    var selectedIcon = _iconList.firstWhere((element) => element['ID'] == tx['IconID']);
-    return Card(
-      child: Slidable(
-        actionPane: SlidableDrawerActionPane(),
-        actionExtentRatio: 0.25,
-        secondaryActions: <Widget>[
-          IconSlideAction(
-            caption: 'Sửa',
-            color: Colors.blue,
-            icon: Icons.edit,
-            onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => EditTransaction(
-                          walletID: widget.user['WalletID'], tx: tx, fullCategoryList: _categoryList['fullList'], eventList: _eventList, wrappingScaffoldKey: _scaffoldKey)));
-            },
-          ),
-          IconSlideAction(
-            caption: 'Xóa',
-            color: warning,
-            icon: Icons.delete_outline,
-            onTap: () {
-              showDialog(
-                  context: context,
-                  builder: (_) => DeleteTransactionDialog(
-                        wrappingScaffoldKey: _scaffoldKey,
-                        walletID: widget.user['WalletID'],
-                        txID: tx['id'],
-                      ));
-            },
-          ),
-        ],
-        child: Container(
-          margin: const EdgeInsets.symmetric(vertical: 10.0),
-          child: Theme(
-            data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
-            child: ExpansionTile(
-              tilePadding: EdgeInsets.all(10),
-              backgroundColor: Colors.transparent,
-              title: Row(children: [
-                SizedBox(width: 50, height: 50, child: createCircleIcon(selectedIcon['Name'], selectedIcon['BackgroundColor'], selectedIcon['Color'])),
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text(
-                    '${tx['categoryName']}',
-                    style: TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  // tx['eventName'] != null
-                  //     ? Padding(
-                  //       padding: const EdgeInsets.only(top: 8.0),
-                  //       child: Text(
-                  //           'Sự kiện: ${tx['eventName']}',
-                  //           style: TextStyle(fontWeight: FontWeight.w300, fontSize: 14),
-                  //         ),
-                  //     )
-                  //     : Container(),
                   Padding(
-                    padding: const EdgeInsets.only(top: 8.0),
-                    child: Text(
-                      '${convertToDDMMYYYYHHMM(tx['time'])}',
-                      style: TextStyle(color: Colors.black, fontWeight: FontWeight.w300, fontSize: 14),
-                    ),
-                  ),
-                  Text(tx['description'] != null && tx['description'].length > 0
-                      ? '${tx['description'].length < 50 ? tx['description'] : tx['description'].toString().substring(0, 50) + ' ...'}'
-                      : '')
+                      padding: const EdgeInsets.only(top: 10, left: 10),
+                      child: Align(
+                          alignment: Alignment.centerRight,
+                          child: Text(
+                            '${formatMoneyWithSymbol(tx['price'])}',
+                            style: TextStyle(color: tx['price'] < 0 ? Colors.red : Colors.green, fontWeight: FontWeight.bold),
+                          )))
                 ]),
-                Expanded(
-                    child: Padding(
-                        padding: const EdgeInsets.only(left: 8.0),
-                        child: Align(
-                            alignment: Alignment.centerRight,
-                            child: Text(
-                              '${formatMoneyWithSymbol(tx['price'])}',
-                              style: TextStyle(color: tx['price'] < 0 ? Colors.red : Colors.green, fontWeight: FontWeight.bold),
-                            ))))
-              ]),
-              children: [
-                Padding(
-                    padding: const EdgeInsets.only(left: 20.0, right: 20, top: 10),
-                    child: Row(
-                      children: [
-                        Expanded(
-                            child: Text(tx['description'] != null && tx['description'].length > 0
-                                ? 'Mô tả: ${tx['description'].length < 50 ? tx['description'] : tx['description'].toString().substring(0, 50) + ' ...'}'
-                                : '')),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 15.0),
-                          child: TextButton(
-                              onPressed: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            ViewTransaction(walletID: widget.user['WalletID'], tx: tx, fullCategoryList: _categoryList['fullList'], eventList: _eventList)));
-                              },
-                              child: Text('Xem chi tiết')),
-                        )
-                      ],
-                    ))
-              ],
-            ),
-          ),
+              )),
         ),
       ),
     );
@@ -396,10 +306,48 @@ class _IndividualWalletState extends State<IndividualWallet> {
       iconTheme: IconThemeData(color: Colors.white),
       title: Text('Ví cá nhân', style: TextStyle(color: Colors.white)),
       actions: [
-        IconButton(
-          icon: Icon(Icons.arrow_drop_down_sharp, size: 30),
-          onPressed: () {},
-        )
+        // IconButton(
+        //   icon: Icon(Icons.arrow_drop_down_sharp, size: 30),
+        //   onPressed: () {},
+        // )
+        PopupMenuButton(
+          itemBuilder: (BuildContext bc) => [
+            PopupMenuItem(child: Text("Hạng mục thu - chi"), value: "1"),
+            PopupMenuItem(child: Text("Sự kiện"), value: "2"),
+            PopupMenuItem(child: Text("Thống kê ví"), value: "3"),
+          ],
+          onSelected: (route) {
+            print(route);
+            // Note You must create respective pages for navigation
+
+            switch (int.parse(route)) {
+              case 1:
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => CategoryDashboard(
+                            walletID: widget.user['WalletID'],
+                            txs: _txs,
+                            defaultList: _categoryList['defaultList'],
+                            customList: _categoryList['customList'],
+                            setCategoryList: _setCategoryList)));
+                break;
+              case 2:
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => EventDashboard(
+                            walletID: widget.user['WalletID'],
+                            fullCatList: _categoryList['fullList'],
+                            setCategoryList: _setCategoryList,
+                            eventList: _eventList,
+                            setEventList: _setEventList)));
+                break;
+              case 3:
+                break;
+            }
+          },
+        ),
       ],
       backgroundColor: primary,
       centerTitle: true);

@@ -163,15 +163,15 @@ Align myAlignedButton(
     );
 
 ElevatedButton myFullWidthButton(
-    String text, {
-      Function action,
-      AlignmentGeometry alignment = Alignment.center,
-      Color backgroundColor = primary,
-      Color textColor = Colors.white,
-      double fontSize = 17.0,
-      BorderSide borderSide,
-      EdgeInsetsGeometry padding = const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
-    }) =>
+  String text, {
+  Function action,
+  AlignmentGeometry alignment = Alignment.center,
+  Color backgroundColor = primary,
+  Color textColor = Colors.white,
+  double fontSize = 17.0,
+  BorderSide borderSide,
+  EdgeInsetsGeometry padding = const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
+}) =>
     ElevatedButton(
       style: ElevatedButton.styleFrom(primary: backgroundColor, padding: padding, side: borderSide, textStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: fontSize)),
       onPressed: action, // != null ? action : () {},
