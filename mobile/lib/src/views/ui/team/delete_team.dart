@@ -53,7 +53,7 @@ class _DeleteTeamDialogState extends State<DeleteTeamDialog> {
                     child: Text(
                       'Bạn có muốn xóa nhóm?',
                       style:
-                      TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                     ),
                   ),
                 ),
@@ -91,9 +91,8 @@ class _DeleteTeamDialogState extends State<DeleteTeamDialog> {
 
     if (res.statusCode == 200) {
       FocusScope.of(context).unfocus();
-      await Future.delayed(const Duration(seconds: 1), () {});
-      Navigator.pop(context, true); // trở về private wallet
-      //_infoInit = info;
+      Provider.of<TeamsProvider>(context, listen: false).fetchData();
+      Navigator.pop(context, true);
     } else {
       Map<String, dynamic> body = jsonDecode(res.body);
       await Future.delayed(const Duration(seconds: 1), () {});

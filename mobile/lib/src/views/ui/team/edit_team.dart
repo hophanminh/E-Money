@@ -63,7 +63,7 @@ class _EditTeamState extends State<EditTeam> {
       child: ScaffoldMessenger(
         key: _scaffoldKey,
         child: Scaffold(
-          appBar: mySimpleAppBar('Thay đổi thông tin'),
+          appBar: _appBar(),
           // backgroundColor: Colors.transparent,
           body: RefreshIndicator(
             onRefresh: () => Future.delayed(Duration(milliseconds: 500), () {
@@ -165,8 +165,14 @@ class _EditTeamState extends State<EditTeam> {
     );
   }
 
+  AppBar _appBar() => AppBar(
+      iconTheme: IconThemeData(color: Colors.white),
+      title: Text('Danh sách nhóm', style: TextStyle(color: Colors.white)),
+      backgroundColor: primary,
+      centerTitle: true);
+
   void handleEditTeam() async {
-    FocusScope.of(context).unfocus();
+    FocusManager.instance.primaryFocus.unfocus();
     String name = _nameController.text;
     String max = _maxController.text;
     String description = _descriptionController.text;
@@ -177,7 +183,7 @@ class _EditTeamState extends State<EditTeam> {
     print(res.statusCode);
     print(res.body);
     if (res.statusCode == 200) {
-      await Future.delayed(const Duration(seconds: 1), () {});
+      Provider.of<TeamsProvider>(context, listen: false).fetchData();
       Navigator.pop(context, true); // trở về private wallet
       showSnack(widget.wrappingScaffoldKey, "Thay đổi thành công");
       //_infoInit = info;

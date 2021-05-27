@@ -3,9 +3,11 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart';
+import 'package:mobile/src/models/TeamsProvider.dart';
 import 'package:mobile/src/services/restapiservices/team_service.dart';
 import 'package:mobile/src/views/utils/helpers/helper.dart';
 import 'package:mobile/src/views/utils/widgets/widget.dart';
+import 'package:provider/provider.dart';
 
 class AddTeam extends StatefulWidget {
   final GlobalKey<ScaffoldMessengerState> wrappingScaffoldKey;
@@ -53,7 +55,7 @@ class _AddTeamState extends State<AddTeam> {
           // backgroundColor: Colors.transparent,
           body: SingleChildScrollView(
             child: Container(
-              margin: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+              margin: const EdgeInsets.fromLTRB(20, 10, 20, 20),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -67,13 +69,16 @@ class _AddTeamState extends State<AddTeam> {
                       child: Column(
                         children: [
                           Container(
-                            margin: EdgeInsets.symmetric(vertical: 10),
+                            margin: EdgeInsets.symmetric(vertical: 15),
                             child: TextFormField(
                               controller: _nameController,
-                              decoration: myInputDecoration('Tên nhóm',
-                                  inputBorder: Colors.black26),
+                              decoration: myInputDecoration('',
+                                  inputBorder: Colors.black26,
+                                  labelText: 'Tên nhóm'),
                               validator: (String value) {
-                                if (value == null || value.isEmpty || isBlankString(value)) {
+                                if (value == null ||
+                                    value.isEmpty ||
+                                    isBlankString(value)) {
                                   return 'Tên không được để trống';
                                 }
                                 if (value.length > 30) {
@@ -84,18 +89,22 @@ class _AddTeamState extends State<AddTeam> {
                             ),
                           ),
                           Container(
-                            margin: EdgeInsets.symmetric(vertical: 10),
+                            margin: EdgeInsets.symmetric(vertical: 15),
                             child: TextFormField(
                               controller: _maxController,
                               keyboardType: TextInputType.number,
                               decoration: myInputDecoration(
-                                  'Số thành viên tối đa',
-                                  inputBorder: Colors.black26),
+                                '',
+                                inputBorder: Colors.black26,
+                                labelText: 'Số người tối đa',
+                              ),
                               inputFormatters: <TextInputFormatter>[
                                 FilteringTextInputFormatter.digitsOnly
                               ],
                               validator: (String value) {
-                                if (value == null || value.isEmpty || isBlankString(value)) {
+                                if (value == null ||
+                                    value.isEmpty ||
+                                    isBlankString(value)) {
                                   return 'Số người tối đa không được để trống';
                                 }
                                 if (int.parse(value) > 200) {
@@ -109,13 +118,16 @@ class _AddTeamState extends State<AddTeam> {
                             ),
                           ),
                           Container(
-                            margin: EdgeInsets.symmetric(vertical: 10),
+                            margin: EdgeInsets.symmetric(vertical: 15),
                             child: TextFormField(
                               maxLines: 5,
                               maxLength: 500,
                               controller: _descriptionController,
-                              decoration: myInputDecoration('Mô tả',
-                                  inputBorder: Colors.black26),
+                              decoration: myInputDecoration(
+                                '',
+                                inputBorder: Colors.black26,
+                                labelText: 'Mô tả',
+                              ),
                               validator: (String value) {
                                 if (value.length > 500) {
                                   return 'Mô tả không được quá 500 ký tự';
@@ -152,10 +164,9 @@ class _AddTeamState extends State<AddTeam> {
     Response res = await TeamService.instance.addTeam(name, max, description);
 
     if (res.statusCode == 201) {
-      await Future.delayed(const Duration(seconds: 1), () {});
-      Navigator.pop(context, true); // trở về private wallet
+      Provider.of<TeamsProvider>(context, listen: false).fetchData();
+      Navigator.pop(context, true);
       showSnack(widget.wrappingScaffoldKey, "Tạo nhóm thành công");
-      //_infoInit = info;
     } else {
       Map<String, dynamic> body = jsonDecode(res.body);
       showSnack(_scaffoldKey, body['msg']);

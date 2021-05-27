@@ -10,16 +10,15 @@ import 'package:mobile/src/services/restapiservices/team_service.dart';
 import 'package:mobile/src/views/ui/team/edit_team.dart';
 import 'package:mobile/src/views/ui/team/team_user.dart';
 import 'package:mobile/src/views/utils/helpers/helper.dart';
+import 'package:provider/provider.dart';
 
 import 'delete_team.dart';
 import 'leave_team.dart';
 
 class TeamDetail extends StatefulWidget {
   final GlobalKey<ScaffoldMessengerState> wrappingScaffoldKey;
-  final Teams team;
 
-  const TeamDetail(
-      {Key key, @required this.team, @required this.wrappingScaffoldKey})
+  const TeamDetail({Key key, @required this.wrappingScaffoldKey})
       : super(key: key);
 
   @override
@@ -28,7 +27,7 @@ class TeamDetail extends StatefulWidget {
 
 class _TeamDetailState extends State<TeamDetail> {
   var _scaffoldKey = GlobalKey<ScaffoldMessengerState>();
-  bool roles = false;
+  bool roles = true;
 
   @override
   void initState() {
@@ -37,7 +36,8 @@ class _TeamDetailState extends State<TeamDetail> {
   }
 
   _initPage() async {
-    Response res = await TeamService.instance.getRoles(widget.team.id);
+    String id = Provider.of<TeamsProvider>(context, listen: false).selected.id;
+    Response res = await TeamService.instance.getRoles(id);
     if (res == null || res.statusCode != 200) {
       throw Exception("Không lấy được dữ liệu từ server");
     }
@@ -57,10 +57,10 @@ class _TeamDetailState extends State<TeamDetail> {
 
   @override
   Widget build(BuildContext context) {
-    print(MediaQuery.of(context).size.height);
     return ScaffoldMessenger(
       key: _scaffoldKey,
       child: Scaffold(
+        resizeToAvoidBottomInset : false,
         backgroundColor: Colors.white,
         appBar: _appBar(),
         body: Padding(
@@ -69,88 +69,101 @@ class _TeamDetailState extends State<TeamDetail> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Expanded(
-                child: Column(children: [
-                  Padding(
-                    padding: const EdgeInsets.only(
-                        top: 0, left: 16, bottom: 8, right: 16),
-                    child: Text(
-                      'Nhóm\n${widget.team.name}',
-                      textAlign: TextAlign.center,
-                      maxLines: 3,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 22,
-                        letterSpacing: 0.27,
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(
-                        top: 0, left: 16, bottom: 8, right: 16),
-                    child: Text(
-                      'Tạo lúc:  ${convertToDDMMYYYY(widget.team.createdDate)}',
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w300,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(
-                        left: 16, right: 16, bottom: 8, top: 16),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        createPeopleBox(
-                            widget.team.currentUsers.toString(), "Hiện tại"),
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(
-                        top: 20.0, left: 16, bottom: 8, right: 16),
-                    child: Text(
-                      'Mô tả',
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                        fontSize: 18,
-                        letterSpacing: 0.27,
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: Padding(
+              Consumer<TeamsProvider>(
+                builder: (context, teamsProvider, child) {
+                  return teamsProvider.selected != null
+                      ? Expanded(
+                          child: Column(children: [
+                            Padding(
                               padding: const EdgeInsets.only(
-                                  left: 16, right: 16, top: 8, bottom: 8),
-                              child: Scrollbar(
-                                isAlwaysShown: true,
-                                child: SingleChildScrollView(
-                                  child: Padding(
-                                      padding: const EdgeInsets.only(right: 8),
-                                      child: Container(
-                                        child: Text(
-                                          widget.team.description,
-                                          textAlign: TextAlign.justify,
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                          ),
-                                        ),
-                                      )),
+                                  top: 0, left: 16, bottom: 8, right: 16),
+                              child: Text(
+                                'Nhóm\n${teamsProvider.selected.name}',
+                                textAlign: TextAlign.center,
+                                maxLines: 2,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 22,
                                 ),
                               ),
                             ),
-                          ),
-                        ]),
-                  ),
-                ]),
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  top: 0, left: 16, bottom: 8, right: 16),
+                              child: Text(
+                                'Tạo lúc:  ${convertToDDMMYYYY(teamsProvider.selected.createdDate)}',
+                                textAlign: TextAlign.left,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w300,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 16, right: 16, bottom: 8, top: 16),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>[
+                                  createPeopleBox(
+                                      teamsProvider.selected.currentUsers
+                                          .toString(),
+                                      "Hiện tại"),
+                                ],
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  top: 20.0, left: 16, bottom: 8, right: 16),
+                              child: Text(
+                                'Mô tả',
+                                textAlign: TextAlign.left,
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  letterSpacing: 0.27,
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 16,
+                                            right: 16,
+                                            top: 8,
+                                            bottom: 8),
+                                        child: Scrollbar(
+                                          isAlwaysShown: true,
+                                          child: SingleChildScrollView(
+                                            child: Padding(
+                                                padding: const EdgeInsets.only(
+                                                    right: 8),
+                                                child: Container(
+                                                  child: Text(
+                                                    teamsProvider
+                                                        .selected.description,
+                                                    textAlign:
+                                                        TextAlign.justify,
+                                                    style: TextStyle(
+                                                      fontSize: 14,
+                                                    ),
+                                                  ),
+                                                )),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ]),
+                            ),
+                          ]),
+                        )
+                      : Container();
+                },
               ),
               Padding(
                 padding: const EdgeInsets.only(
@@ -165,11 +178,13 @@ class _TeamDetailState extends State<TeamDetail> {
                           var result = await showDialog(
                               context: context,
                               builder: (_) => LeaveTeamDialog(
-                                    team: widget.team,
+                                    team: Provider.of<TeamsProvider>(context,
+                                            listen: false)
+                                        .selected,
                                     wrappingScaffoldKey: _scaffoldKey,
                                   ));
-                          if (result) {
-                            Navigator.pop(context, true);
+                          if (result != null && result) {
+                            Navigator.pop(context);
                             showSnack(widget.wrappingScaffoldKey,
                                 "Rời nhóm thành công");
                           }
@@ -193,9 +208,10 @@ class _TeamDetailState extends State<TeamDetail> {
                           ),
                         ),
                       ),
-                    const SizedBox(
-                      width: 16,
-                    ),
+                    if (!roles)
+                      const SizedBox(
+                        width: 16,
+                      ),
                     Expanded(
                       child: GestureDetector(
                         onTap: () {},
@@ -242,10 +258,6 @@ class _TeamDetailState extends State<TeamDetail> {
       shadowColor: Colors.transparent,
       iconTheme: IconThemeData(color: Colors.white),
       title: Text('Thông tin nhóm', style: TextStyle(color: Colors.white)),
-      leading: IconButton(
-        icon: Icon(Icons.arrow_back),
-        onPressed: () => Navigator.of(context).pop(false),
-      ),
       actions: [
         PopupMenuButton(
           itemBuilder: (BuildContext bc) => [
@@ -298,37 +310,37 @@ class _TeamDetailState extends State<TeamDetail> {
             ),
           ],
           onSelected: (route) async {
+            Teams temp =
+                Provider.of<TeamsProvider>(context, listen: false).selected;
             if (route == '/edit') {
-              var res = await Navigator.push(
+              Navigator.push(
                   context,
                   MaterialPageRoute(
                       builder: (context) => EditTeam(
-                            team: widget.team,
+                            team: temp,
                             wrappingScaffoldKey: _scaffoldKey,
                           )));
-              if (res) {}
             }
             if (route == '/delete') {
               var result = await showDialog(
                   context: context,
                   builder: (_) => DeleteTeamDialog(
-                        team: widget.team,
+                        team: temp,
                         wrappingScaffoldKey: _scaffoldKey,
                       ));
-              if (result) {
-                Navigator.pop(context, true);
+              if (result != null && result) {
+                Navigator.pop(context);
                 showSnack(widget.wrappingScaffoldKey, "Xóa nhóm thành công");
               }
             }
             if (route == '/list') {
-              var res = await Navigator.push(
+              Navigator.push(
                   context,
                   MaterialPageRoute(
                       builder: (context) => TeamUser(
-                            team: widget.team,
+                            team: temp,
                             wrappingScaffoldKey: _scaffoldKey,
                           )));
-              if (res) {}
             }
           },
         ),

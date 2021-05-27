@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/src/models/TeamsProvider.dart';
 import 'package:mobile/src/views/ui/auth_view.dart';
 import 'package:mobile/src/views/ui/forgotpassword/generate_request_view.dart';
 import 'package:mobile/src/views/ui/forgotpassword/reset_view.dart';
@@ -31,7 +32,10 @@ class _MyAppState extends State<MyApp> {
         providers: [
           ChangeNotifierProvider(
             create: (_) => UsersProvider(),
-          )
+          ),
+          ChangeNotifierProvider(
+            create: (_) => TeamsProvider(),
+          ),
         ],
         child: MaterialApp(
           debugShowCheckedModeBanner: false,

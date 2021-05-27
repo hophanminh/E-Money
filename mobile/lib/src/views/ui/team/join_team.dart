@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:provider/provider.dart';
+import 'package:mobile/src/models/TeamsProvider.dart';
 import 'package:mobile/src/services/restapiservices/team_service.dart';
 import 'package:mobile/src/views/utils/helpers/helper.dart';
 import 'package:mobile/src/views/utils/widgets/widget.dart';
@@ -79,7 +81,9 @@ class _JoinTeamDialogState extends State<JoinTeamDialog> {
                     child: TextFormField(
                       controller: _idController,
                       decoration: myInputDecoration('',
-                          inputBorder: Colors.black26, maxErrorLine: 2, labelText: 'Mã nhóm'),
+                          inputBorder: Colors.black26,
+                          maxErrorLine: 2,
+                          labelText: 'Mã nhóm'),
                       validator: (String value) {
                         if (value == null ||
                             value.isEmpty ||
@@ -132,10 +136,9 @@ class _JoinTeamDialogState extends State<JoinTeamDialog> {
 
     if (res.statusCode == 201) {
       FocusScope.of(context).unfocus();
-      await Future.delayed(const Duration(seconds: 1), () {});
-      Navigator.pop(context, true); // trở về private wallet
+      Provider.of<TeamsProvider>(context, listen: false).fetchData();
+      Navigator.pop(context);
       showSnack(widget.wrappingScaffoldKey, "Tham gia thành công");
-      //_infoInit = info;
     } else {
       Map<String, dynamic> body = jsonDecode(res.body);
       setState(() {

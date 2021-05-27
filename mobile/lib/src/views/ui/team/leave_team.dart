@@ -91,12 +91,10 @@ class _LeaveTeamDialogState extends State<LeaveTeamDialog> {
 
     if (res.statusCode == 200) {
       FocusScope.of(context).unfocus();
-      await Future.delayed(const Duration(seconds: 1), () {});
-      Navigator.pop(context, true); // trở về private wallet
-      //_infoInit = info;
+      await Provider.of<TeamsProvider>(context, listen: false).fetchData();
+      Navigator.pop(context, true);
     } else {
       Map<String, dynamic> body = jsonDecode(res.body);
-      await Future.delayed(const Duration(seconds: 1), () {});
       showSnack(widget.wrappingScaffoldKey, body['msg']);
     }
   }
