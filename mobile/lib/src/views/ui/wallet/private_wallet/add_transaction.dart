@@ -234,7 +234,7 @@ class _AddTransactionState extends State<AddTransaction> {
                     ),
                   ),
                 ),
-                myFullWidthButton('Thêm', backgroundColor: primary, action: () {
+                myFullWidthButton('Thêm giao dịch', backgroundColor: primary, action: () {
                   if (_formKey.currentState.validate()) {
                     showSnack(_scaffoldKey, 'Đang xử lý...');
                     handleAddTx();

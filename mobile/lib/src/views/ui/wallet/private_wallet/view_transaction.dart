@@ -36,6 +36,13 @@ class _ViewTransactionState extends State<ViewTransaction> {
     _initPage();
   }
 
+  @override
+  void dispose() {
+    _socket.off('wait_for_add_transaction_image_${widget.tx['id']}');
+    _socket.off('wait_for_remove_transaction_image_${widget.tx['id']}');
+    super.dispose();
+  }
+
   List<dynamic> _sortImageList(List<dynamic> imgs) {
     imgs.sort((img1, img2) => parseInput(img1['DateAdded']).isBefore(parseInput(img2['DateAdded'])) ? 1 : -1);
     return imgs;
@@ -43,16 +50,10 @@ class _ViewTransactionState extends State<ViewTransaction> {
 
   _initPage() async {
     _socket = await getSocket();
-
     _socket.emitWithAck('get_transaction_image', {'TransactionID': widget.tx['id']}, ack: (data) {
       // print(_sortImageList(data['imageList'])[0]);
       setState(() {
-        _imageList = _sortImageList(data['imageList']); // 1 list các map
-        // [
-        //   'https://img.freepik.com/free-vector/colorful-palm-silhouettes-background_23-2148541792.jpg?size=626&ext=jpg',
-        //   'https://wallpapercave.com/wp/wp1993619.jpg',
-        //   'https://i1.wp.com/hoixuatnhapkhau.com/wp-content/uploads/2019/03/bill-of-lading.jpg?fit=660%2C934'
-        // ];
+        _imageList = _sortImageList(data['imageList']);
       });
     });
 
@@ -68,7 +69,6 @@ class _ViewTransactionState extends State<ViewTransaction> {
     _socket.on('wait_for_remove_transaction_image_${widget.tx['id']}', (data) {
       print('XÓA ẢNH');
       // data['imageID'] là 1 string
-
       _removeImgById(data['imageID']);
     });
   }
@@ -99,6 +99,7 @@ class _ViewTransactionState extends State<ViewTransaction> {
         backgroundColor: Colors.white,
         appBar: _appBar(),
         body: SingleChildScrollView(
+          padding: EdgeInsets.only(bottom: 10),
           child: Column(
             children: [
               Container(
@@ -107,11 +108,8 @@ class _ViewTransactionState extends State<ViewTransaction> {
                     color: primary,
                     // gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [primary, const Color(0xFFb4dc63)])
                   ),
-                  width: MediaQuery
-                      .of(context)
-                      .size
-                      .width,
-                  height: 40),
+                  width: MediaQuery.of(context).size.width,
+                  height: 60),
               Container(
                 decoration: BoxDecoration(
                     border: Border(
@@ -133,17 +131,14 @@ class _ViewTransactionState extends State<ViewTransaction> {
                       ),
                     ),
                     color: primary),
-                width: MediaQuery
-                    .of(context)
-                    .size
-                    .width,
+                width: MediaQuery.of(context).size.width,
                 child: Container(
                   decoration: BoxDecoration(borderRadius: BorderRadius.only(topLeft: Radius.circular(20.0), topRight: Radius.circular(20.0)), color: Colors.white),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Transform.translate(
-                          offset: Offset(0, -30),
+                          offset: Offset(0, -45),
                           child: Container(
                             padding: EdgeInsets.all(10),
                             decoration: BoxDecoration(
@@ -159,7 +154,7 @@ class _ViewTransactionState extends State<ViewTransaction> {
                               ],
                             ),
                             child: FlutterLogo(
-                              size: 50,
+                              size: 90,
                             ),
                           )),
                       Text(
@@ -212,44 +207,7 @@ class _ViewTransactionState extends State<ViewTransaction> {
                   ),
                 ),
               ),
-              GridView.builder(
-                padding: EdgeInsets.all(20),
-                scrollDirection: Axis.vertical,
-                shrinkWrap: true,
-                itemCount: _imageList.length,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: MediaQuery
-                      .of(context)
-                      .orientation == Orientation.landscape ? 4 : 3,
-                  crossAxisSpacing: 8,
-                  mainAxisSpacing: 8,
-                  childAspectRatio: (4 / 3),
-                ),
-                itemBuilder: (context, index) {
-                  for(String key in _imageList[index].keys) {
-                    print('${key} - ${_imageList[index][key]}');
-                  }
-                  return GestureDetector(
-                    onTap: () {},
-                    onLongPress: () {
-                      showDialog(
-                          context: context,
-                          builder: (_) =>
-                              DeleteTransactionImageDialog(
-                                wrappingScaffoldKey: _scaffoldKey,
-                                imageID: _imageList[index]['ID'],
-                                txID: widget.tx['id'],
-                                removeImageByID: _removeImgById,
-                              ));
-                    },
-                    child: Container(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(10)),
-                            image:
-                            DecorationImage(image: NetworkImage(_imageList[index]['URL']), fit: BoxFit.fill))),
-                  );
-                },
-              )
+              _createTxImageListView()
             ],
           ),
         ),
@@ -316,28 +274,53 @@ class _ViewTransactionState extends State<ViewTransaction> {
     );
   }
 
-  AppBar _appBar() =>
-      AppBar(
-          shadowColor: Colors.transparent,
-          iconTheme: IconThemeData(color: Colors.white),
-          title: Text('Chi tiết giao dịch', style: TextStyle(color: Colors.white)),
-          actions: [
-            IconButton(
-              icon: Icon(Icons.edit, size: 26),
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            EditTransaction(
-                                walletID: widget.walletID,
-                                tx: widget.tx,
-                                fullCategoryList: widget.fullCategoryList,
-                                eventList: widget.eventList,
-                                wrappingScaffoldKey: _scaffoldKey)));
+  _createTxImageListView() => GridView.builder(
+        padding: EdgeInsets.all(20),
+        scrollDirection: Axis.vertical,
+        shrinkWrap: true,
+        itemCount: _imageList.length,
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: MediaQuery.of(context).orientation == Orientation.landscape ? 4 : 3,
+          crossAxisSpacing: 8,
+          mainAxisSpacing: 8,
+          childAspectRatio: (4 / 3),
+        ),
+        itemBuilder: (context, index) {
+          for (String key in _imageList[index].keys) {
+            print('${key} - ${_imageList[index][key]}');
+          }
+          return GestureDetector(
+              onTap: () {},
+              onLongPress: () {
+                showDialog(
+                    context: context,
+                    builder: (_) => DeleteTransactionImageDialog(
+                          wrappingScaffoldKey: _scaffoldKey,
+                          imageID: _imageList[index]['ID'],
+                          txID: widget.tx['id'],
+                          removeImageByID: _removeImgById,
+                        ));
               },
-            )
-          ],
-          backgroundColor: primary,
-          centerTitle: true);
+              child: ClipRRect(child: Image(image: NetworkImage(_imageList[index]['URL']), fit: BoxFit.fill), borderRadius: BorderRadius.all(Radius.circular(10))));
+        },
+      );
+
+  AppBar _appBar() => AppBar(
+      shadowColor: Colors.transparent,
+      iconTheme: IconThemeData(color: Colors.white),
+      title: Text('Chi tiết giao dịch', style: TextStyle(color: Colors.white)),
+      actions: [
+        IconButton(
+          icon: Icon(Icons.edit, size: 26),
+          onPressed: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => EditTransaction(
+                        walletID: widget.walletID, tx: widget.tx, fullCategoryList: widget.fullCategoryList, eventList: widget.eventList, wrappingScaffoldKey: _scaffoldKey)));
+          },
+        )
+      ],
+      backgroundColor: primary,
+      centerTitle: true);
 }
