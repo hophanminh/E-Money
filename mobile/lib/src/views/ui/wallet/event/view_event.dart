@@ -92,20 +92,16 @@ class _ViewEventState extends State<ViewEvent> {
                               size: 90,
                             ),
                           )),
-                      Row(
+                      Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Expanded(
-                            child: Text(
-                              widget.event['Name'],
-                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 27), textAlign: TextAlign.right,
-                            ),
+                          Text(
+                            widget.event['Name'],
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 27), textAlign: TextAlign.right,
                           ),
-                          Expanded(
-                            child: Text(
-                              ' (${widget.event['Status'] == 1 ? 'Đang diễn ra' : 'Đã ngưng'})',
-                              style: TextStyle(fontWeight: FontWeight.w300, fontSize: 18, fontStyle: FontStyle.italic),
-                            ),
+                          Text(
+                            ' (${widget.event['Status'] == 1 ? 'Đang diễn ra' : 'Đã ngưng'})',
+                            style: TextStyle(fontWeight: FontWeight.w300, fontSize: 18, fontStyle: FontStyle.italic),
                           )
                         ],
                       )
@@ -132,7 +128,7 @@ class _ViewEventState extends State<ViewEvent> {
                 }
                 if (type == 2) {
                   // hằng tuần
-                  return widget.event['TypeName'] + ' (vào thứ ${widget.event['Value']})';
+                  return widget.event['TypeName'] + ' (vào ${everyWeek[widget.event['Value']]})';
                 }
                 if (type == 3) {
                   // hằng tháng

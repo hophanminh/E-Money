@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:mobile/src/services/socketservices/socket.dart';
 import 'package:mobile/src/views/ui/wallet/category/add_cat.dart';
+import 'package:mobile/src/views/ui/wallet/event/add_event.dart';
 import 'package:mobile/src/views/ui/wallet/event/delete_event.dart';
 import 'package:mobile/src/views/ui/wallet/event/view_event.dart';
 import 'package:mobile/src/views/utils/helpers/helper.dart';
@@ -84,10 +85,7 @@ class _EventDashboardState extends State<EventDashboard> {
       margin: EdgeInsets.symmetric(vertical: 10),
       child: GestureDetector(
         onTap: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => ViewEvent(event: item)));
+          Navigator.push(context, MaterialPageRoute(builder: (context) => ViewEvent(event: item)));
         },
         child: Slidable(
           actionPane: SlidableDrawerActionPane(),
@@ -101,14 +99,12 @@ class _EventDashboardState extends State<EventDashboard> {
                 await showDialog(
                     context: context,
                     builder: (_) => DeleteEventDialog(
-                      wrappingScaffoldKey: _scaffoldKey,
-                      walletID: widget.walletID,
-                      eventID: item['ID'],
-                    ));
+                          wrappingScaffoldKey: _scaffoldKey,
+                          walletID: widget.walletID,
+                          eventID: item['ID'],
+                        ));
 
-                setState(() {
-
-                });
+                setState(() {});
               },
             ),
           ],
@@ -121,37 +117,40 @@ class _EventDashboardState extends State<EventDashboard> {
                 Container(
                     padding: const EdgeInsets.only(top: 10),
                     child: Text(
-                      item['Name'], style: TextStyle(fontSize: 20),
+                      item['Name'],
+                      style: TextStyle(fontSize: 20),
                     )),
                 Padding(
                     padding: const EdgeInsets.only(top: 20),
                     child: Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
-                          '${item['ExpectingAmount'] < 0 ? '': '+'}${formatMoneyWithSymbol(item['ExpectingAmount'])}',
+                          '${item['ExpectingAmount'] < 0 ? '' : '+'}${formatMoneyWithSymbol(item['ExpectingAmount'])}',
                           style: TextStyle(color: item['ExpectingAmount'] < 0 ? Colors.redAccent : Colors.lightGreenAccent, fontWeight: FontWeight.bold, fontSize: 35),
                         ))),
                 Padding(
                   padding: const EdgeInsets.only(top: 20.0),
                   child: Row(
                     children: [
-                      Expanded(child: Column(
+                      Expanded(
+                          child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text('Giao dịch kế tiếp'),
                           Padding(
-                            padding: const EdgeInsets.only(top:8.0),
+                            padding: const EdgeInsets.only(top: 8.0),
                             child: Text('${convertToDDMMYYYYHHMM(item['NextDate'])}', style: TextStyle(fontWeight: FontWeight.w300)),
                           )
                         ],
                       )),
-                      Expanded(child: Column(
+                      Expanded(
+                          child: Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Text('Thời gian còn lại'),
                           Padding(
-                            padding: const EdgeInsets.only(top:8.0),
-                            child: Text('${timeRemaining(item['NextDate'])} ngày', style: TextStyle(fontWeight: FontWeight.w300)),
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: Text('${timeRemaining(item['NextDate'])}', style: TextStyle(fontWeight: FontWeight.w300)),
                           )
                         ],
                       ))
@@ -171,10 +170,7 @@ class _EventDashboardState extends State<EventDashboard> {
       margin: EdgeInsets.symmetric(vertical: 10),
       child: GestureDetector(
         onTap: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => ViewEvent(event: item)));
+          Navigator.push(context, MaterialPageRoute(builder: (context) => ViewEvent(event: item)));
         },
         child: DefaultTextStyle(
           style: TextStyle(fontSize: 15, color: Colors.white),
@@ -185,7 +181,8 @@ class _EventDashboardState extends State<EventDashboard> {
               Container(
                   padding: const EdgeInsets.only(top: 10),
                   child: Text(
-                    item['Name'], style: TextStyle(fontSize: 20),
+                    item['Name'],
+                    style: TextStyle(fontSize: 20),
                   )),
               Padding(
                   padding: const EdgeInsets.only(top: 20),
@@ -199,22 +196,24 @@ class _EventDashboardState extends State<EventDashboard> {
                 padding: const EdgeInsets.only(top: 20.0),
                 child: Row(
                   children: [
-                    Expanded(child: Column(
+                    Expanded(
+                        child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('Ngày bắt đầu'),
                         Padding(
-                          padding: const EdgeInsets.only(top:8.0),
+                          padding: const EdgeInsets.only(top: 8.0),
                           child: Text('${convertToDDMMYYYYHHMM(item['StartDate'])}', style: TextStyle(fontWeight: FontWeight.w300)),
                         )
                       ],
                     )),
-                    Expanded(child: Column(
+                    Expanded(
+                        child: Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Text('Ngày kết thúc'),
                         Padding(
-                          padding: const EdgeInsets.only(top:8.0),
+                          padding: const EdgeInsets.only(top: 8.0),
                           child: Text('${convertToDDMMYYYYHHMM(item['EndDate'])}', style: TextStyle(fontWeight: FontWeight.w300)),
                         )
                       ],
@@ -241,12 +240,14 @@ class _EventDashboardState extends State<EventDashboard> {
       );
 
   FloatingActionButton _catDashboardActionButton() => FloatingActionButton(
-        // Navigator.push(
-        //     context,
-        //     MaterialPageRoute(
-        //         builder: (context) =>
-        //             AddTransaction(walletID: widget.user['WalletID'], fullCategoryList: _categoryList['fullList'], eventList: _eventList, wrappingScaffoldKey: _scaffoldKey)));
-      // },
+      onPressed: () async {
+        await Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => AddEvent(walletID: widget.walletID, fullCategoryList: widget.fullCatList, eventTypeList: _typeList, wrappingScaffoldKey: _scaffoldKey)));
+
+        setState(() {});
+      },
       tooltip: 'Thêm loại giao dịch mới',
       child: Icon(Icons.add),
       backgroundColor: secondary,

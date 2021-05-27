@@ -7,10 +7,10 @@ import 'package:socket_io_client/socket_io_client.dart';
 class AddEvent extends StatefulWidget {
   final GlobalKey<ScaffoldMessengerState> wrappingScaffoldKey;
   final String walletID;
-  final List<dynamic> eventList;
+  final List<dynamic> eventTypeList;
   final List<dynamic> fullCategoryList;
 
-  const AddEvent({Key key, @required this.walletID, @required this.fullCategoryList, @required this.eventList, @required this.wrappingScaffoldKey}) : super(key: key);
+  const AddEvent({Key key, @required this.walletID, @required this.fullCategoryList, @required this.eventTypeList, @required this.wrappingScaffoldKey}) : super(key: key);
 
   @override
   _AddEventState createState() => _AddEventState();
@@ -20,44 +20,75 @@ class _AddEventState extends State<AddEvent> {
   var _scaffoldKey = GlobalKey<ScaffoldMessengerState>();
   var _formKey = GlobalKey<FormState>();
 
-  // data section for new transaction
+  // data section for new event
+
+  var _nameController = new TextEditingController();
+
+  // loại sự kiện
+  List<DropdownMenuItem<String>> _availableEventTypeItems = [];
+  String _currentEventType;
+
+  // giá trị của loại sự kiện tương ứng
+  List<DropdownMenuItem<String>> _values = [];
+  String _currentValue;
+
+  // thời gian kết thúc sự kiện
+  List _endDateList = ['Vô thời hạn', 'Vào lúc'];
+  List<DropdownMenuItem<String>> _availableEndDateItems = [];
+  String _currentEndDateType;
 
   // thu hoắc chi
-  List<DropdownMenuItem<String>> _txTypeMenuItems = [];
+  List<DropdownMenuItem<String>> _availableTxTypeItems = [];
   List _typeList = ['Chi', 'Thu'];
-  String _currentType;
+  String _currentTxType;
 
   var _priceController = TextEditingController(text: formatMoneyWithoutSymbol(0));
 
-  var _selectedDatetime = DateTime.now().toLocal(); // ex: 2021-05-19 23:17:11.279652
+  var _selectedEndDatetime = DateTime.now().toLocal(); // ex: 2021-05-19 23:17:11.279652
 
-  var _datetimeController = TextEditingController();
+  var _endDatetimeController = TextEditingController();
 
   // thể loại giao dịch
-  List<DropdownMenuItem<String>> _txCategoryMenuItems = [];
+  List<DropdownMenuItem<String>> _availableCatItems = [];
   String _currentCategory;
-
-  // tên sự kiện
-  List<DropdownMenuItem<String>> _availableEventMenuItems = [];
-  String _currentEvent;
 
   var _descriptionController = TextEditingController(text: "");
 
   @override
   void initState() {
     super.initState();
+
+    for (dynamic eventType in widget.eventTypeList) {
+      _availableEventTypeItems.add(new DropdownMenuItem(
+        child: Text(eventType['Name']),
+        value: eventType['ID'],
+      ));
+    }
+    _currentEventType = _availableEventTypeItems[0].value;
+
+    _handleChangeEventType(_currentEventType);
+
+    for (String endDate in _endDateList) {
+      _availableEndDateItems.add(new DropdownMenuItem(
+          child: Text(
+            endDate,
+          ),
+          value: endDate == 'Vô thời hạn' ? 'false' : 'true'));
+    }
+    _currentEndDateType = _availableEndDateItems[0].value;
+
     for (String type in _typeList) {
-      _txTypeMenuItems.add(new DropdownMenuItem(
+      _availableTxTypeItems.add(new DropdownMenuItem(
           child: Text(
             type,
             style: TextStyle(color: type == 'Chi' ? Colors.red : Colors.green),
           ),
           value: type));
     }
-    _currentType = _txTypeMenuItems[0].value;
+    _currentTxType = _availableTxTypeItems[0].value;
 
     for (Map<String, dynamic> cat in widget.fullCategoryList) {
-      _txCategoryMenuItems.add(new DropdownMenuItem(
+      _availableCatItems.add(new DropdownMenuItem(
         child: Row(
           children: [
             FlutterLogo(size: 24),
@@ -70,22 +101,39 @@ class _AddEventState extends State<AddEvent> {
         value: cat['ID'],
       ));
     }
-    _currentCategory = _txCategoryMenuItems[0].value;
+    _currentCategory = _availableCatItems[0].value;
 
-    for (Map<String, dynamic> event in widget.eventList) {
-      _availableEventMenuItems.add(new DropdownMenuItem(child: Text(event['Name']), value: event['ID']));
-    }
-    _currentEvent = null;
-
-    _datetimeController.text = convertToDDMMYYYYHHMM(_selectedDatetime.toLocal().toString());
+    _endDatetimeController.text = convertToDDMMYYYYHHMM(_selectedEndDatetime.toLocal().toString());
   }
 
   @override
   void dispose() {
+    _nameController.dispose();
     _priceController.dispose();
     _descriptionController.dispose();
-    _datetimeController.dispose();
+    _endDatetimeController.dispose();
     super.dispose();
+  }
+
+  _handleChangeEventType(String newEventType) {
+    List<String> _valuesOfEventType = getValueOfEventType(newEventType);
+    List<DropdownMenuItem<String>> values = [];
+
+    if (newEventType == '3') {
+      for (int i = 0; i < _valuesOfEventType.length; i++) {
+        values.add(new DropdownMenuItem(child: Text(_valuesOfEventType[i]), value: '${i + 1}'));
+      }
+    } else {
+      for (int i = 0; i < _valuesOfEventType.length; i++) {
+        values.add(new DropdownMenuItem(child: Text(_valuesOfEventType[i]), value: '$i'));
+      }
+    }
+
+    setState(() {
+      _currentEventType = newEventType;
+      _values = values;
+      _currentValue = null;
+    });
   }
 
   @override
@@ -97,83 +145,87 @@ class _AddEventState extends State<AddEvent> {
         // backgroundColor: Colors.transparent,
         body: SingleChildScrollView(
           child: Container(
-            margin: const EdgeInsets.fromLTRB(10, 0, 10, 20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 10, bottom: 20.0),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 10.0),
-                          child: Row(
-                            children: [
-                              Container(
-                                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
-                                decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), border: Border.all(width: 1, color: Colors.black26)),
-                                child: DropdownButtonHideUnderline(
-                                  child: DropdownButton(
-                                    value: _currentType,
-                                    items: _txTypeMenuItems,
-                                    onChanged: changeType,
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                child: Container(
-                                  margin: EdgeInsets.only(left: 10),
-                                  child: TextFormField(
-                                    controller: _priceController,
-                                    keyboardType: TextInputType.number,
-                                    decoration: myInputDecoration('Số tiền', inputBorder: Colors.black26, suffix: Text(formatter.currencySymbol)),
-                                    style: TextStyle(color: _currentType == 'Chi' ? Colors.red : Colors.green),
-                                    onChanged: (value) {
-                                      TextSelection cursorPos = _priceController.selection;
-
-                                      String copy = value.replaceAll(new RegExp(r'[^0-9]'), ''); // bỏ tất cả chỉ giữ lại số
-                                      try {
-                                        copy = formatMoneyWithoutSymbol(double.parse(copy));
-                                      } on FormatException {
-                                        copy = '0';
-                                      }
-                                      _priceController.text = copy;
-
-                                      // đưa cursor về chỗ hợp lý
-                                      // if (cursorPos.start > _priceController.text.length) {
-                                      cursorPos = new TextSelection.fromPosition(new TextPosition(offset: _priceController.text.length));
-                                      // } else {
-                                      //   cursorPos = new TextSelection.fromPosition(
-                                      //       new TextPosition(offset: _priceController.text.length + 1));
-                                      // }
-                                      _priceController.selection = cursorPos;
-                                    },
-                                    validator: (String value) {
-                                      if (value.isEmpty) {
-                                        return 'Số tiền không được để trống';
-                                      }
-                                      if (double.parse(value.replaceAll(new RegExp(r'[^0-9]'), '')) == 0) {
-                                        return 'Số tiền không hợp lệ';
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 10),
+            margin: const EdgeInsets.fromLTRB(10, 20, 10, 20),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Align(alignment: Alignment.centerLeft, child: Text('Thông tin sự kiện', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25))),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: TextFormField(
+                      controller: _nameController,
+                      decoration: myInputDecoration('Tên sự kiện', inputBorder: Colors.black26),
+                      validator: (String value) {
+                        if (value.isEmpty || value.trim().length == 0) {
+                          return 'Tên sự kiện không được để trống';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.symmetric(vertical: 10),
+                    // padding: EdgeInsets.symmetric(horizontal: 10),
+                    // decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), border: Border.all(width: 1, color: Colors.black26)),
+                    child: DropdownButtonFormField(
+                      hint: Text('Loại sự kiện'),
+                      decoration: myInputDecoration('', label: 'Loại sự kiện', inputBorder: Colors.black26),
+                      value: _currentEventType,
+                      items: _availableEventTypeItems,
+                      onChanged: (value) {
+                        _handleChangeEventType(value);
+                      },
+                    ),
+                  ),
+                  _currentEventType != '1'
+                      ? Container(
+                          margin: EdgeInsets.symmetric(vertical: 10),
+                          // padding: EdgeInsets.symmetric(horizontal: 10),
+                          // decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), border: Border.all(width: 1, color: Colors.black26)),
+                          child: DropdownButtonFormField(
+                            hint: Text('Vào thời điểm'),
+                            decoration: myInputDecoration('', inputBorder: Colors.black26),
+                            value: _currentValue,
+                            items: _values,
+                            onChanged: (value) {
+                              setState(() {
+                                _currentValue = value;
+                              });
+                            },
+                            validator: (String value) {
+                              if (value == null) {
+                                return 'Thời điểm không dược để trống';
+                              }
+                              return null;
+                            },
+                          ))
+                      : Container(),
+                  Container(
+                    margin: EdgeInsets.symmetric(vertical: 10),
+                    // padding: EdgeInsets.symmetric(horizontal: 10),
+                    // decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), border: Border.all(width: 1, color: Colors.black26)),
+                    child: DropdownButtonFormField(
+                      hint: Text('Kết thúc'),
+                      decoration: myInputDecoration('', label: 'Kết thúc', inputBorder: Colors.black26),
+                      value: _currentEndDateType,
+                      items: _availableEndDateItems,
+                      onChanged: (value) {
+                        setState(() {
+                          _currentEndDateType = value;
+                        });
+                      },
+                    ),
+                  ),
+                  _currentEndDateType == 'true'
+                      ? Padding(
+                          padding: const EdgeInsets.only(top: 10),
                           child: TextFormField(
-                            controller: _datetimeController,
+                            controller: _endDatetimeController,
                             showCursor: true,
                             readOnly: true,
-                            // keyboardType: TextInputType.datetime,
                             decoration: myInputDecoration('Bạn chưa chọn thời gian', inputBorder: Colors.black26),
                             onTap: () {
                               _selectDatetime();
@@ -182,65 +234,107 @@ class _AddEventState extends State<AddEvent> {
                               return null;
                             },
                           ),
-                        ),
+                        )
+                      : Container(),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 30.0),
+                    child: Align(alignment: Alignment.centerLeft, child: Text('Thông tin giao dịch định kỳ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25))),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10.0),
+                    child: Row(
+                      children: [
                         Container(
-                          margin: EdgeInsets.symmetric(vertical: 10),
-                          padding: EdgeInsets.symmetric(horizontal: 10),
+                          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
                           decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), border: Border.all(width: 1, color: Colors.black26)),
-                          child: DropdownButtonFormField(
-                            hint: Text('Chọn hạng mục chi tiêu'),
-                            decoration: InputDecoration(
-                              enabledBorder: InputBorder.none,
+                          child: DropdownButtonHideUnderline(
+                            child: DropdownButton(
+                              value: _currentTxType,
+                              items: _availableTxTypeItems,
+                              onChanged: _changeTxType,
                             ),
-                            value: _currentCategory,
-                            items: _txCategoryMenuItems,
-                            onChanged: changeCat,
                           ),
                         ),
-                        Container(
-                          margin: EdgeInsets.symmetric(vertical: 10),
-                          padding: EdgeInsets.symmetric(horizontal: 10),
-                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), border: Border.all(width: 1, color: Colors.black26)),
-                          child: DropdownButtonFormField(
-                            hint: Text('Chọn sự kiện'),
-                            decoration: InputDecoration(
-                              enabledBorder: InputBorder.none,
+                        Expanded(
+                          child: Container(
+                            margin: EdgeInsets.only(left: 10),
+                            child: TextFormField(
+                              controller: _priceController,
+                              keyboardType: TextInputType.number,
+                              decoration: myInputDecoration('Số tiền', inputBorder: Colors.black26, suffix: Text(formatter.currencySymbol)),
+                              style: TextStyle(color: _currentTxType == 'Chi' ? Colors.red : Colors.green),
+                              onChanged: (value) {
+                                TextSelection cursorPos = _priceController.selection;
+
+                                String copy = value.replaceAll(new RegExp(r'[^0-9]'), ''); // bỏ tất cả chỉ giữ lại số
+                                try {
+                                  copy = formatMoneyWithoutSymbol(double.parse(copy));
+                                } on FormatException {
+                                  copy = '0';
+                                }
+                                _priceController.text = copy;
+
+                                // đưa cursor về chỗ hợp lý
+                                // if (cursorPos.start > _priceController.text.length) {
+                                cursorPos = new TextSelection.fromPosition(new TextPosition(offset: _priceController.text.length));
+                                // } else {
+                                //   cursorPos = new TextSelection.fromPosition(
+                                //       new TextPosition(offset: _priceController.text.length + 1));
+                                // }
+                                _priceController.selection = cursorPos;
+                              },
+                              validator: (String value) {
+                                if (value.isEmpty) {
+                                  return 'Số tiền không được để trống';
+                                }
+                                if (double.parse(value.replaceAll(new RegExp(r'[^0-9]'), '')) == 0) {
+                                  return 'Số tiền không hợp lệ';
+                                }
+                                return null;
+                              },
                             ),
-                            value: _currentEvent,
-                            items: _availableEventMenuItems,
-                            onChanged: (value) {
-                              setState(() {
-                                _currentEvent = value;
-                              });
-                            },
-                          ),
-                        ),
-                        Container(
-                          margin: EdgeInsets.symmetric(vertical: 10),
-                          child: TextFormField(
-                            maxLines: 5,
-                            maxLength: 500,
-                            controller: _descriptionController,
-                            decoration: myInputDecoration('Mô tả', inputBorder: Colors.black26),
-                            validator: (String value) {
-                              if (value.length > 500) {
-                                return 'Mô tả không được quá 500 ký tự';
-                              }
-                              return null;
-                            },
                           ),
                         )
                       ],
                     ),
                   ),
-                ),
-                myFullWidthButton('Thêm', backgroundColor: primary, action: () {
-                  if (_formKey.currentState.validate()) {
-                    showSnack(_scaffoldKey, 'Đang xử lý...');
-                    handleAddTx();
-                  }
-                })
-              ],
+                  Container(
+                    margin: EdgeInsets.symmetric(vertical: 10),
+                    padding: EdgeInsets.symmetric(horizontal: 10),
+                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), border: Border.all(width: 1, color: Colors.black26)),
+                    child: DropdownButtonFormField(
+                      hint: Text('Chọn hạng mục chi tiêu'),
+                      decoration: InputDecoration(
+                        enabledBorder: InputBorder.none,
+                      ),
+                      value: _currentCategory,
+                      items: _availableCatItems,
+                      onChanged: _changeTxCat,
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.symmetric(vertical: 10),
+                    child: TextFormField(
+                      maxLines: 5,
+                      maxLength: 500,
+                      controller: _descriptionController,
+                      decoration: myInputDecoration('Mô tả', inputBorder: Colors.black26),
+                      validator: (String value) {
+                        if (value.length > 500) {
+                          return 'Mô tả không được quá 500 ký tự';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                  myFullWidthButton('Thêm sự kiện', backgroundColor: primary, action: () {
+                    if (_formKey.currentState.validate()) {
+                      showSnack(_scaffoldKey, 'Đang xử lý...');
+                      _handleAddEvent();
+                    }
+                  })
+                ],
+              ),
             ),
           ),
         ),
@@ -250,50 +344,53 @@ class _AddEventState extends State<AddEvent> {
 
   void _selectDatetime() async {
     final currentDatetime = DateTime.now();
-    final DateTime picked = await showDatePicker(
+    final DateTime pickedDate = await showDatePicker(
       context: context,
-      initialDate: _selectedDatetime,
-      firstDate: DateTime(1900),
-      lastDate: currentDatetime,
-      helpText: 'Chọn ngày giao dịch',
+      initialDate: _selectedEndDatetime,
+      firstDate: currentDatetime,
+      lastDate: DateTime(2100),
+      helpText: 'Chọn ngày kết thúc sự kiện',
       cancelText: 'Hủy',
       confirmText: 'Chọn',
       errorFormatText: 'Thời gian không đúng định dạng',
       errorInvalidText: 'Thời gian không hợp lệ',
-      initialDatePickerMode: DatePickerMode.day,
+      initialDatePickerMode: DatePickerMode.year,
     );
 
-    final TimeOfDay pickedTime =
-        await showTimePicker(context: context, initialTime: TimeOfDay(hour: _selectedDatetime.hour, minute: _selectedDatetime.minute), helpText: 'Chọn giờ giao dịch', cancelText: 'Hủy', confirmText: 'Chọn');
+    final TimeOfDay pickedTime = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay(hour: _selectedEndDatetime.hour, minute: _selectedEndDatetime.minute),
+        helpText: 'Chọn giờ kết thúc sự kiện',
+        cancelText: 'Hủy',
+        confirmText: 'Chọn');
 
-    if (picked != null && pickedTime != null) {
-      DateTime result = DateTime(picked.year, picked.month, picked.day, pickedTime.hour, pickedTime.minute);
+    if (pickedDate != null && pickedTime != null) {
+      DateTime result = DateTime(pickedDate.year, pickedDate.month, pickedDate.day, pickedTime.hour, pickedTime.minute);
 
-      if (result.isAfter(currentDatetime)) {
+      if (result.isBefore(currentDatetime)) {
         result = currentDatetime;
       }
 
       setState(() {
-        _selectedDatetime = result;
+        _selectedEndDatetime = result;
       });
-      print(result);
-      _datetimeController.text = convertToDDMMYYYYHHMM(result.toString());
+      _endDatetimeController.text = convertToDDMMYYYYHHMM(result.toString());
     }
   }
 
-  void changeType(String selectedType) {
+  void _changeTxType(String selectedType) {
     setState(() {
-      _currentType = selectedType;
+      _currentTxType = selectedType;
     });
   }
 
-  void changeCat(String selectedType) {
+  void _changeTxCat(String selectedType) {
     setState(() {
       _currentCategory = selectedType;
     });
   }
 
-  void handleAddTx() async {
+  void _handleAddEvent() async {
     Socket socket = await getSocket();
     double price;
 
@@ -304,21 +401,24 @@ class _AddEventState extends State<AddEvent> {
       return;
     }
 
-    final Map<String, dynamic> newTx = {
-      'catID': _currentCategory,
-      'eventID': _currentEvent,
-      'price': _currentType == 'Chi' ? price * -1 : price,
-      'time': _selectedDatetime.toIso8601String(),
-      'description': _descriptionController.text
+    String eventTypeName = widget.eventTypeList.where((element) => element['ID'] == _currentEventType).first['Name'];
+
+    final Map<String, dynamic> newEvent = {
+      'Name': _nameController.text,
+      'StartDate': DateTime.now().toIso8601String(),
+      'EndDate': _currentEndDateType == 'true' ? _selectedEndDatetime.toIso8601String() : null,
+      'Value': _currentValue == null ? 0 : int.parse(_currentValue),
+      'ExpectingAmount': _currentTxType == 'Chi' ? price * -1 : price,
+      'CategoryID': _currentCategory,
+      'EventTypeID': _currentEventType,
+      'TypeName': eventTypeName,
+      'Description': _descriptionController.text
     };
 
     showSnack(_scaffoldKey, 'Đang xử lý...');
-    socket.emitWithAck('add_transaction', {'walletID': widget.walletID, 'newTransaction': newTx}, ack: (data) {
+    socket.emitWithAck('add_event', {'walletID': widget.walletID, 'newEvent': newEvent}, ack: () {
       Navigator.pop(context);
       showSnack(widget.wrappingScaffoldKey, "Thêm thành công");
     });
-    // for (String key in newTx.keys) {
-    //   print('${key} - ${newTx[key]}');
-    // }
   }
 }
