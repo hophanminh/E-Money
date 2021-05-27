@@ -31,6 +31,20 @@ export const WalletProvider = (props) => {
     }
   }
 
+  const updateTxCategory = (catList) => {
+    setList(list => {
+      let newList = list.slice();
+      for (let i = 0; i < newList.length; i++) {
+        const newCat = catList.find(cat => cat.ID === newList[i].catID);
+        if(newCat) {
+          newList[i].IconID = newCat.IconID;
+          newList[i].categoryName = newCat.Name;
+        }
+      }
+      return [...newList]
+    });
+  }
+
   const setSimpleOption = (status) => {
     const check = status ? '1' : '0'
     window.localStorage.setItem('isSimple', check);
@@ -54,6 +68,7 @@ export const WalletProvider = (props) => {
         setExpanded,
         setFilterList,
         setSimpleOption,
+        updateTxCategory,
       }}>
       {props.children}
     </WalletContext.Provider>

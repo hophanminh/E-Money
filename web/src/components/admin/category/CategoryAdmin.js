@@ -39,7 +39,7 @@ export default function CategoryAdmin(props) {
   const socket = getSocket();
   const { setOpen } = useContext(PopupContext);
   const { defaultList, customList, setAllList, setSelected } = useContext(CategoryContext);
-  const { list, setList } = useContext(WalletContext);
+  const { list, setList, updateTxCategory } = useContext(WalletContext);
 
   const [countList, setCountList] = useState();
   const [team, setTeam] = useState();
@@ -65,7 +65,8 @@ export default function CategoryAdmin(props) {
     });
 
     socket.on('wait_for_update_category', ({ defaultList, customList, fullList }) => {
-      setAllList(defaultList, customList, fullList)
+      setAllList(defaultList, customList, fullList);
+      updateTxCategory(fullList);
     });
 
     return () => {

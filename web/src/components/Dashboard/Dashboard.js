@@ -43,7 +43,7 @@ export default function Dashboard() {
   const classes = useStyles();
   const socket = getSocket();
   const { info } = useContext(MyContext);
-  const { setWalletID, selected, setSelected, list, setList, filterList, updateSelected } = useContext(WalletContext);
+  const { setWalletID, selected, setSelected, list, setList, filterList, updateSelected, updateTxCategory } = useContext(WalletContext);
   const { setOpen } = useContext(PopupContext);
   const { setAllList } = useContext(CategoryContext);
   const { setEventList } = useContext(EventContext);
@@ -83,7 +83,8 @@ export default function Dashboard() {
 
 
     socket.on('wait_for_update_category', ({ defaultList, customList, fullList }) => {
-      setAllList(defaultList, customList, fullList)
+      setAllList(defaultList, customList, fullList);
+      updateTxCategory(fullList);
     });
 
     socket.emit("get_event", { walletID: info?.WalletID }, ({ eventList }) => {

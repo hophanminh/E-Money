@@ -51,7 +51,7 @@ const TeamDashBoard = () => {
   const { id } = useParams();
   const history = useHistory();
   const socket = getSocket();
-  const { setWalletID, selected, setSelected, list, setList, filterList, updateSelected } = useContext(WalletContext);
+  const { setWalletID, selected, setSelected, list, setList, filterList, updateSelected, updateTxCategory } = useContext(WalletContext);
   const { setOpen } = useContext(PopupContext);
   const { setAllList } = useContext(CategoryContext);
   const { setEventList } = useContext(EventContext);
@@ -98,7 +98,8 @@ const TeamDashBoard = () => {
 
 
     socket.on('wait_for_update_category', ({ defaultList, customList, fullList }) => {
-      setAllList(defaultList, customList, fullList)
+      setAllList(defaultList, customList, fullList);
+      updateTxCategory(fullList);
     });
 
     socket.emit("get_event", { walletID: id }, ({ eventList }) => {

@@ -30,7 +30,7 @@ module.exports = function (socket, io, decoded_userID) {
             const temp = {
                 ID: ID,
                 Name: newCategory.Name,
-                IsDefault: newCategory.IsDefault,
+                IsDefault: newCategory.IsDefault ? newCategory.IsDefault : false,
                 WalletID: walletID,
                 IconID: newCategory.IconID,
             }
