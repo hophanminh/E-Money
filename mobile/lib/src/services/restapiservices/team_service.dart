@@ -27,4 +27,31 @@ class TeamService {
         .get(Uri.http(_baseURL, '/teams/$userID'), headers: {HttpHeaders.authorizationHeader: "Bearer $token", HttpHeaders.contentTypeHeader: 'application/json; charset=UTF-8'});
   }
 
+  Future<http.Response> addTeam(String name, String max, String description) async {
+    String userID = await SecureStorage.readSecureData('userID');
+    String token = await SecureStorage.readSecureData('jwtToken');
+
+    return await http.post(Uri.http(_baseURL, '/teams/$userID'),
+        headers: {HttpHeaders.contentTypeHeader: 'application/json; charset=UTF-8', HttpHeaders.authorizationHeader: 'Bearer $token'},
+        body: jsonEncode(<String, String>{'Name': name, 'MaxUsers': max, 'Description': description}));
+  }
+
+  Future<http.Response> editTeam(String name, String max, String description, String teamID) async {
+    String userID = await SecureStorage.readSecureData('userID');
+    String token = await SecureStorage.readSecureData('jwtToken');
+
+    return await http.put(Uri.http(_baseURL, '/teams/details/$teamID'),
+        headers: {HttpHeaders.contentTypeHeader: 'application/json; charset=UTF-8', HttpHeaders.authorizationHeader: 'Bearer $token'},
+        body: jsonEncode(<String, String>{'Name': name, 'MaxUsers': max, 'Description': description, 'UserID': userID}));
+  }
+
+  Future<http.Response> joinTeam(String id) async {
+    String userID = await SecureStorage.readSecureData('userID');
+    String token = await SecureStorage.readSecureData('jwtToken');
+
+    return await http.post(Uri.http(_baseURL, '/teams/join/$userID'),
+        headers: {HttpHeaders.contentTypeHeader: 'application/json; charset=UTF-8', HttpHeaders.authorizationHeader: 'Bearer $token'},
+        body: jsonEncode(<String, String>{'teamID': id}));
+  }
+
 }

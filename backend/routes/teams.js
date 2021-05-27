@@ -199,10 +199,14 @@ router.post('/join/:userId', async (req, res) => {
 
     const team = await TeamModel.getTeamById(teamID);
     const thu = await TeamHasUserModel.getTHUByTeamId(teamID);
-    console.log(team[0].MaxUsers)
+    console.log(thu)
     if(team.length === 0) {
         return res.status(404).send({msg: "Không tìm thấy nhóm."});
     }
+    if (thu && thu.find(i => i.UserID === userID)) {
+        return res.status(500).send({msg: "Bạn đã là thành viên của nhóm."});
+    }
+
     if((team[0].MaxUsers > thu.length) && (!thu.includes(userID))) {
         const thuObject = {
             TeamID: teamID,
