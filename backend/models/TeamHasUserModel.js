@@ -8,9 +8,18 @@ module.exports = {
         return db.load(sql);
     },
     getTHUByTeamId: (id) => {
-        const sql = `SELECT * from teams_has_users t WHERE t.TeamID = '${id}'`;
+        const sql = `SELECT t.*, Users.Name
+                    FROM teams_has_users t JOIN Users on t.UserID = Users.ID
+                    WHERE t.TeamID = '${id}'`;
         return db.load(sql);
     },
+
+    getTHUByUserIdAndTeamID: (userId, teamID) => {
+        return db.loadSafe(`SELECT * FROM
+         teams_has_users t 
+         WHERE t.UserID = ? AND t.TeamID = ?`, [userId, teamID]);
+    },
+
     createTHU(newTeam) {
         return db.add('teams_has_users', newTeam);
     },

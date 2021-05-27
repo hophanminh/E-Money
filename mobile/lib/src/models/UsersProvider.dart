@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:flutter/foundation.dart';
-import 'package:mobile/src/services/secure_storage_service.dart';
-import 'package:mobile/src/views/utils/helpers/helper.dart';
+import 'package:provider/provider.dart';
+import 'package:mobile/src/models/TeamsProvider.dart';
 import 'package:mobile/src/services/restapiservices/auth_service.dart';
 
 class UsersProvider extends ChangeNotifier {

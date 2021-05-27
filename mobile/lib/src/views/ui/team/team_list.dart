@@ -1,10 +1,15 @@
 import 'dart:convert';
 import 'package:http/http.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:mobile/src/models/TeamsProvider.dart';
-import 'package:mobile/src/services/restapiservices/auth_service.dart';
 import 'package:mobile/src/services/restapiservices/team_service.dart';
+import 'package:mobile/src/views/ui/team/add_team.dart';
+import 'package:mobile/src/views/ui/team/join_team.dart';
+import 'package:mobile/src/views/ui/team/team_detail.dart';
 import 'package:mobile/src/views/utils/helpers/helper.dart';
+
+import 'edit_team.dart';
 
 class TeamList extends StatefulWidget {
   final Drawer sidebar;
@@ -18,50 +23,17 @@ class TeamList extends StatefulWidget {
 
 class _TeamListState extends State<TeamList> {
   var _scaffoldKey = GlobalKey<ScaffoldMessengerState>();
-  List<Teams> _teamList = [];
-  List<Teams> _filterList = [];
 
-  final _searchController = TextEditingController();
-
-  void _setTeamList(List<dynamic> teamList) {
-    setState(() {
-      _teamList = teamList;
-      _filterList = teamList;
-    });
-  }
+  final _searchController =
+      TextEditingController(text: "00610aa0-a9d5-11eb-8133-9f8c9ea76fad");
 
   void _onHandleChangeSearchBar() {
-    if (_searchController.text.trim() != '') {
-      setState(() {
-        _filterList = _teamList
-            .where((i) => i.name
-                .toLowerCase()
-                .contains(_searchController.text.toLowerCase()))
-            .toList();
-      });
-    } else {
-      setState(() {
-        _filterList = _teamList;
-        ;
-      });
-    }
+    Provider.of<TeamsProvider>(context, listen: false)
+        .changeSearchString(_searchController.text.trim());
   }
 
   void _fetchData() async {
-    Response res = await TeamService.instance.getTeamList();
-    if (res == null || res.statusCode != 200) {
-      throw Exception("Không lấy được dữ liệu từ server");
-    }
-    Map<String, dynamic> body = jsonDecode(res.body);
-    //Teams newTeam = Teams.fromJson(body["teams"][0]);
-
-    List<Teams> teamList = [];
-    for (int i = 0; i < body['teams'].length; i++) {
-      teamList.add(Teams.fromJson(body['teams'][i]));
-    }
-
-    print(body['teams'][0]);
-    _setTeamList(teamList);
+    Provider.of<TeamsProvider>(context, listen: false).fetchData();
   }
 
   @override
@@ -79,29 +51,108 @@ class _TeamListState extends State<TeamList> {
 
   @override
   Widget build(BuildContext context) {
-    return ScaffoldMessenger(
-        key: _scaffoldKey,
-        child: Scaffold(
-            appBar: _privateWalletAppBar(),
-            drawer: widget.sidebar,
-            floatingActionButton: _privateWalletActionButton(),
-            body: RefreshIndicator(
-              onRefresh: () => Future.delayed(Duration(milliseconds: 500), () {
-                FocusScope.of(context).unfocus();
-                setState(() {
-                  _searchController.clear();
-                  _setTeamList(getTeamList());
-                });
-              }),
-              child: Stack(
-                fit: StackFit.expand,
+    return GestureDetector(
+        onTap: () {
+          FocusManager.instance.primaryFocus.unfocus();
+        },
+        child: ScaffoldMessenger(
+            key: _scaffoldKey,
+            child: Scaffold(
+                appBar: _privateWalletAppBar(),
+                drawer: widget.sidebar,
+                floatingActionButton: _privateWalletActionButton(),
+                body: RefreshIndicator(
+                    onRefresh: () =>
+                        Future.delayed(Duration(milliseconds: 500), () {
+                          FocusScope.of(context).unfocus();
+                          _searchController.clear();
+                          _fetchData();
+                        }),
+                    child: Consumer<TeamsProvider>(
+                      builder: (context, teamsProvider, child) {
+                        return Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            makeList(teamsProvider.getFilterList()),
+                            child,
+                          ],
+                        );
+                      },
+                      child: makeSearchBar(),
+                    )))));
+  }
+
+  ListView makeList(List<Teams> _list) => ListView.builder(
+        scrollDirection: Axis.vertical,
+        shrinkWrap: true,
+        itemCount: _list.length,
+        itemBuilder: (BuildContext context, int index) {
+          if (index == 0) {
+            return Container(
+              child: Column(
                 children: [
-                  makeList(),
-                  makeSearchBar(),
+                  SizedBox(height: 75),
+                  makeCard(_list[index]),
                 ],
               ),
-            )));
-  }
+            );
+          }
+          return makeCard(_list[index]);
+        },
+      );
+
+  Card makeCard(Teams team) => Card(
+        elevation: 0,
+        color: Colors.transparent,
+        margin: new EdgeInsets.symmetric(horizontal: 20.0, vertical: 6.0),
+        child: Material(
+            borderRadius: BorderRadius.circular(15.0),
+            color: Color.fromRGBO(64, 75, 96, .9),
+            clipBehavior: Clip.hardEdge,
+            child: makeListTile(team)),
+      );
+
+  ListTile makeListTile(Teams team) => ListTile(
+        contentPadding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+        leading: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Container(
+                padding: EdgeInsets.only(right: 12.0),
+                decoration: new BoxDecoration(
+                    border: new Border(
+                        right:
+                            new BorderSide(width: 1.0, color: Colors.white24))),
+                child: Column(children: <Widget>[
+                  Text(team.currentUsers.toString(),
+                      style: TextStyle(color: Colors.white)),
+                  Text('Người',
+                      style: TextStyle(color: Colors.white, fontSize: 10)),
+                ])),
+          ],
+        ),
+        title: Text(
+          team.name,
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+        // subtitle: Text("Intermediate", style: TextStyle(color: Colors.white)),
+        trailing: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Icon(Icons.keyboard_arrow_right, color: Colors.white, size: 30.0),
+          ],
+        ),
+        onTap: () async {
+          FocusScope.of(context).unfocus();
+          Provider.of<TeamsProvider>(context, listen: false)
+              .changeSelected(team);
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      TeamDetail(wrappingScaffoldKey: _scaffoldKey)));
+        },
+      );
 
   Widget makeSearchBar() => Container(
         child: Column(
@@ -140,183 +191,35 @@ class _TeamListState extends State<TeamList> {
         ),
       );
 
-  ListView makeList() => ListView.builder(
-        scrollDirection: Axis.vertical,
-        shrinkWrap: true,
-        itemCount: _filterList.length,
-        itemBuilder: (BuildContext context, int index) {
-          if (index == 0) {
-            return Container(
-              child: Column(
-                children: [
-                  SizedBox(height: 75),
-                  makeCard(_filterList[index]),
-                ],
-              ),
-            );
-          }
-          return makeCard(_filterList[index]);
-        },
-      );
-
-  Card makeCard(Teams lesson) => Card(
-        elevation: 0,
-        color: Colors.transparent,
-        margin: new EdgeInsets.symmetric(horizontal: 20.0, vertical: 6.0),
-        child: Material(
-            child: Ink(
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15.0),
-                    color: Color.fromRGBO(64, 75, 96, .9)),
-                child: InkWell(
-                    onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        content: Text(lesson.toString()),
-                      ));
-                    },
-                    child: makeListTile(lesson)))),
-      );
-
-  ListTile makeListTile(Teams lesson) => ListTile(
-        contentPadding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-        leading: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Container(
-                padding: EdgeInsets.only(right: 12.0),
-                decoration: new BoxDecoration(
-                    border: new Border(
-                        right:
-                            new BorderSide(width: 1.0, color: Colors.white24))),
-                child: Column(children: <Widget>[
-                  Text(lesson.currentUsers.toString(),
-                      style: TextStyle(color: Colors.white)),
-                  Text('Người',
-                      style: TextStyle(color: Colors.white, fontSize: 10)),
-                ])),
-          ],
-        ),
-        isThreeLine: lesson.description != '',
-        title: Text(
-          lesson.name,
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-        ),
-        // subtitle: Text("Intermediate", style: TextStyle(color: Colors.white)),
-        subtitle: lesson.description != ''
-            ? Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Flexible(
-                        child: Text(
-                          lesson.description,
-                          style: TextStyle(color: Colors.white),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              )
-            : null,
-        trailing: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Icon(Icons.keyboard_arrow_right, color: Colors.white, size: 30.0),
-          ],
-        ),
-        onTap: () {},
-      );
-
   AppBar _privateWalletAppBar() => AppBar(
       iconTheme: IconThemeData(color: Colors.white),
       title: Text('Danh sách nhóm', style: TextStyle(color: Colors.white)),
+      actions: [
+        IconButton(
+          icon: Icon(Icons.group_add, size: 26),
+          onPressed: () {
+            showDialog(
+                context: context,
+                builder: (_) => JoinTeamDialog(
+                      wrappingScaffoldKey: _scaffoldKey,
+                    ));
+          },
+        ),
+      ],
       backgroundColor: primary,
       centerTitle: true);
 
   FloatingActionButton _privateWalletActionButton() => FloatingActionButton(
-      onPressed: () {},
-      tooltip: 'Thêm giao dịch',
+      onPressed: () {
+        FocusScope.of(context).unfocus();
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    AddTeam(wrappingScaffoldKey: _scaffoldKey)));
+      },
+      tooltip: 'Thêm nhóm',
       child: Icon(Icons.add),
       backgroundColor: secondary,
       foregroundColor: Colors.white);
-
-  List<Teams> getTeamList() {
-    return [
-      Teams(
-          id: '1',
-          name: 'name3',
-          maxUsers: 1,
-          currentUsers: 12,
-          description: '1',
-          createdDate: '1/1/1',
-          walletID: '1'),
-      Teams(
-          id: '1',
-          name: 'name1',
-          maxUsers: 1,
-          currentUsers: 12,
-          description: '1',
-          createdDate: '1/1/1',
-          walletID: '1'),
-      Teams(
-          id: '1',
-          name: 'name1',
-          maxUsers: 1,
-          currentUsers: 12,
-          description: '1',
-          createdDate: '1/1/1',
-          walletID: '1'),
-      Teams(
-          id: '1',
-          name: 'name1',
-          maxUsers: 1,
-          currentUsers: 12,
-          description: '1',
-          createdDate: '1/1/1',
-          walletID: '1'),
-      Teams(
-          id: '1',
-          name: 'name1',
-          maxUsers: 1,
-          currentUsers: 12,
-          description: '1',
-          createdDate: '1/1/1',
-          walletID: '1'),
-      Teams(
-          id: '1',
-          name: 'name1',
-          maxUsers: 1,
-          currentUsers: 12,
-          description: '1',
-          createdDate: '1/1/1',
-          walletID: '1'),
-      Teams(
-          id: '1',
-          name: 'name1',
-          maxUsers: 1,
-          currentUsers: 12,
-          description: '1',
-          createdDate: '1/1/1',
-          walletID: '1'),
-      Teams(
-          id: '1',
-          name: 'name1',
-          maxUsers: 1,
-          currentUsers: 12,
-          description: '1',
-          createdDate: '1/1/1',
-          walletID: '1'),
-      Teams(
-          id: '1',
-          name: 'name1',
-          maxUsers: 1,
-          currentUsers: 12,
-          description: '1',
-          createdDate: '1/1/1',
-          walletID: '1'),
-    ];
-  }
 }

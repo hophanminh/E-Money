@@ -42,6 +42,27 @@ router.get('/details/:teamID', async (req, res) => {
     }
 })
 
+router.get('/:teamID/users', async (req, res) => {
+    const teamID = req.params.teamID;
+    const users = await TeamHasUserModel.getTHUByTeamId(teamID);
+    if (users.length === 1) {
+        return res.status(200).send({users});
+    } else {
+        return res.status(404).send({msg: "Không tìm thấy nhóm."})
+    }
+})
+
+router.post('/:teamID/roles', async (req, res) => {
+    const teamID = req.params.teamID;
+    const { userID } = req.body;
+    const info = await TeamHasUserModel.getTHUByUserIdAndTeamID(userID, teamID);
+    if (info.length === 1) {
+        return res.status(200).send({info: info[0]});
+    } else {
+        return res.status(400).send({msg: "Không tìm thấy nhóm."})
+    }
+})
+
 router.post('/:userID', async (req, res) => {
     console.log('Create team');
     const { Name, MaxUsers, Description } = req.body;
@@ -199,10 +220,14 @@ router.post('/join/:userId', async (req, res) => {
 
     const team = await TeamModel.getTeamById(teamID);
     const thu = await TeamHasUserModel.getTHUByTeamId(teamID);
-    console.log(team[0].MaxUsers)
+    console.log(thu)
     if(team.length === 0) {
         return res.status(404).send({msg: "Không tìm thấy nhóm."});
     }
+    if (thu && thu.find(i => i.UserID === userID)) {
+        return res.status(500).send({msg: "Bạn đã là thành viên của nhóm."});
+    }
+
     if((team[0].MaxUsers > thu.length) && (!thu.includes(userID))) {
         const thuObject = {
             TeamID: teamID,

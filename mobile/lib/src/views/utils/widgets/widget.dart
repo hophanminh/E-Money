@@ -12,18 +12,21 @@ Align myLabelText(String title, {AlignmentGeometry position = Alignment.centerLe
       ),
     );
 
-InputDecoration myInputDecoration(String placeholder, {String label, Color inputBorder = primary, Widget suffix = null}) => InputDecoration(
-    hintText: placeholder,
-    contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
-    focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: inputBorder, width: 1.0), borderRadius: BorderRadius.circular(10)),
-    enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: inputBorder, width: 1.0), borderRadius: BorderRadius.circular(10)),
-    errorBorder: OutlineInputBorder(borderSide: BorderSide(color: error, width: 1.0), borderRadius: BorderRadius.circular(10)),
-    focusedErrorBorder: OutlineInputBorder(borderSide: BorderSide(color: error, width: 1.0), borderRadius: BorderRadius.circular(10)),
-    filled: true,
-    fillColor: Colors.white,
-    errorStyle: myErrorTextStyle,
-    suffix: suffix,
-    labelText: label);
+InputDecoration myInputDecoration(String placeholder, {String label, Color inputBorder = primary, Widget suffix = null, int maxErrorLine = 1}) => InputDecoration(
+      hintText: placeholder,
+      contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+      focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: inputBorder, width: 1.0), borderRadius: BorderRadius.circular(10)),
+      enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: inputBorder, width: 1.0), borderRadius: BorderRadius.circular(10)),
+      errorBorder: OutlineInputBorder(borderSide: BorderSide(color: error, width: 1.0), borderRadius: BorderRadius.circular(10)),
+      focusedErrorBorder: OutlineInputBorder(borderSide: BorderSide(color: error, width: 1.0), borderRadius: BorderRadius.circular(10)),
+      filled: true,
+      fillColor: Colors.white,
+      errorStyle: myErrorTextStyle,
+      suffix: suffix,
+      errorMaxLines: maxErrorLine != null ? maxErrorLine : 1,
+      labelText: label,
+      alignLabelWithHint: true,
+    );
 
 AppBar mySimpleAppBar(String title) => AppBar(
       // app bar without 'action' property
