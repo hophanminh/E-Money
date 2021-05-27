@@ -27,6 +27,7 @@ import CombinedProvider from './components/mycontext/combineProvider'
 import Teams from './components/Team/Teams';
 import UpdateProfile from './components/Team/UpdateProfile';
 import ResetDestination from './components/signin/resetpassword/ResetDestination';
+import Admin from './components/admin/admin';
 import { getListIcon } from './utils/DefaultIcon';
 
 const routes = [
@@ -94,6 +95,11 @@ const routes = [
     path: '/teams',
     private: true,
     main: () => <Teams />
+  },
+  {
+    path: '/admin',
+    private: true,
+    main: () => <Admin />
   },
   {
     path: '/reset',

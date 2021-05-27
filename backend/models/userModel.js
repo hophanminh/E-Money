@@ -6,6 +6,8 @@ module.exports = {
 
   getUserByID: id => db.load(`SELECT * FROM Users WHERE ID = '${id}'`),
 
+  getUserByWalletID: walletID => db.load(`SELECT * FROM Users WHERE WalletID = ${walletID}`),
+
   getNameByID: id => db.load(`SELECT Name FROM Users WHERE ID = '${id}'`),
 
   getActivatedDateByID: id => db.load(`SELECT DATE_FORMAT(ActivatedDate, '%Y-%m-%d') AS ActivatedDate FROM Users WHERE ID = '${id}'`),

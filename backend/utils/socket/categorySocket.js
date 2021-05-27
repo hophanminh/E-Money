@@ -23,18 +23,18 @@ module.exports = function (socket, io, decoded_userID) {
 
   });
 
-  // add category
-  socket.on('add_category', async ({ walletID, newCategory }) => {
-    try {
-      const ID = uuidv4();
-      const temp = {
-        ID: ID,
-        Name: newCategory.Name,
-        IsDefault: false,
-        WalletID: walletID,
-        IconID: newCategory.IconID,
-      }
-      await categoryModel.addCategory(temp);
+    // add category
+    socket.on('add_category', async ({ walletID, newCategory }) => {
+        try {
+            const ID = uuidv4();
+            const temp = {
+                ID: ID,
+                Name: newCategory.Name,
+                IsDefault: newCategory.IsDefault,
+                WalletID: walletID,
+                IconID: newCategory.IconID,
+            }
+            await categoryModel.addCategory(temp);
 
       // annouce to other players
       const defaultList = await categoryModel.getDefaultCategory(walletID) || [];
@@ -70,6 +70,31 @@ module.exports = function (socket, io, decoded_userID) {
       console.log(error);
     }
   });
+  
+        // update category
+        socket.on('update_category_default', async ({ walletID, categoryID, newCategory, IsDefault }) => {
+            try {
+                console.log(IsDefault);
+                const temp = {
+                    Name: newCategory.Name,
+                    IsDefault: true,
+                    IconID: newCategory.IconID,
+                }
+                const updated = await categoryModel.getCategoryByID(categoryID);
+                if (updated.length === 1) {
+                    await categoryModel.updateCategory(categoryID, temp);
+    
+                    // annouce to other players
+                    const defaultList = await categoryModel.getDefaultCategory(walletID) || [];
+                    const customList = [];
+                    const fullList = defaultList.concat(customList);
+                    io.in(walletID).emit('wait_for_update_category', { defaultList, customList, fullList });
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        });
+
 
   // delete category
   socket.on('delete_category', async ({ walletID, id }, callback) => {
@@ -96,5 +121,30 @@ module.exports = function (socket, io, decoded_userID) {
     }
 
   });
+
+    // delete category
+    socket.on('delete_category_default', async ({ id }) => {
+        try {
+            const deleted = await categoryModel.getCategoryByID(id);
+            if (deleted.length === 1) {
+                console.log("Here")
+                // change transaction in deleted category to default category
+                await transactionModel.updateTransactionCategoryDefault(id, config.CATEGORY.DEFAULT_ID)
+                await eventModel.updateEventCategoryDefault(id, config.CATEGORY.DEFAULT_ID)
+                await historyModel.updateHistoryCategoryDefault(id, config.CATEGORY.DEFAULT_ID)
+
+                await categoryModel.deleteCategory(id);
+
+                // annouce to other players
+                const defaultList = await categoryModel.getDefaultCategory(walletID) || [];
+                const customList = [];
+                const fullList = defaultList.concat(customList);
+                io.in(walletID).emit('wait_for_update_category', { defaultList, customList, fullList });
+            }
+        } catch (error) {
+            console.log(error);
+        }
+
+    });
 
 };

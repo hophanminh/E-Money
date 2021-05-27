@@ -146,11 +146,10 @@ export default function AddEvent(props) {
     if (isEndless) {
       newEvent.EndDate = null;
     }
-    console.log(newEvent)
+    console.log(newEvent);
     socket.emit("add_event", { walletID: id, newEvent });
     setOpen(null);
   }
-
 
   // event 
   const handleChangeIsEndless = (event) => {
@@ -174,7 +173,6 @@ export default function AddEvent(props) {
         TypeName: selected[0]?.Name,
         Value: 0
       });
-
     }
   }
 
@@ -236,7 +234,6 @@ export default function AddEvent(props) {
       ...newEvent,
       ExpectingAmount: type === "Thu" ? temp : temp * -1,
     });
-
   }
 
   const valueList = getValueOfEventType(newEvent.TypeName);

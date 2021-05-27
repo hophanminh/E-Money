@@ -1,6 +1,5 @@
 const config = require('../config/default.json');
 const moment = require("moment");
-const accountModel = require('../models/accountModel');
 
 module.exports = {
   isBlankString: (token) => token.trim().length === 0,
@@ -13,11 +12,11 @@ module.exports = {
   },
 
   convertToRegularDate: (date) => {
-    return moment(date).format("YYYY-MM-DD");
+    return moment(date).format(config.FORMAT_DATETIME_PATTER.DATE);
   },
 
   convertToRegularDateTime: (date) => {
-    return moment(date).format("YYYY-MM-DD HH:mm:ss");
+    return moment(date).format(config.FORMAT_DATETIME_PATTER.DATE_TIME);
   },
 
   digitGeneration: (length) => {
@@ -41,16 +40,16 @@ module.exports = {
     return digits;
   },
 
-  getNextEventDate: (date, eventType, value) => {
+  getNextEventDate: (date, eventTypeID, value) => {
     let new_date = moment(date);
-    new_date.hours(0).minutes(0).seconds(0)
-    console.log(new_date.format("YYYY-MM-DD HH:mm:ss"))
+    new_date.hours(0).minutes(0).seconds(0);
+    console.log(new_date.format(config.FORMAT_DATETIME_PATTER.DATE_TIME));
 
-    if (eventType === config.EVENTTYPE.DAILY) {
-      new_date.add(1, 'days')
+    if (+eventTypeID === config.EVENT_TYPE.DAILY) {
+      new_date.add(1, 'days');
     }
 
-    if (eventType === config.EVENTTYPE.WEEKLY) {
+    if (+eventTypeID === config.EVENT_TYPE.WEEKLY) {
       const today = new_date.isoWeekday();
       if (today <= value) {
         new_date.isoWeekday(value + 1);
@@ -59,35 +58,33 @@ module.exports = {
       }
     }
 
-    if (eventType === config.EVENTTYPE.MONTHLY) {
+    if (+eventTypeID === config.EVENT_TYPE.MONTHLY) {
       let temp = moment(new_date).date(value);
       let i = 0;
       do {
         if (temp.isValid && temp.isAfter(new_date) && temp.date() === value) {
-          new_date = temp
+          new_date = temp;
           break;
         }
         else {
           i++;
-          temp = moment(new_date)
-          temp.add(i, 'months')
-          temp.date(value)
+          temp = moment(new_date);
+          temp.add(i, 'months');
+          temp.date(value);
         }
-      } while (true)
+      } while (true);
     }
 
-    if (eventType === config.EVENTTYPE.YEARLY) {
+    if (+eventTypeID === config.EVENT_TYPE.YEARLY) {
       const today = new_date.month();
       if (today <= value) {
         new_date.month(value).date(1);
       } else {
         new_date.add(1, 'years').month(value).date(1);
       }
-
     }
-    return new_date.format("YYYY-MM-DD HH:mm:ss")
+    return new_date.format(config.FORMAT_DATETIME_PATTER.DATE_TIME);
   },
-
 
 }
 

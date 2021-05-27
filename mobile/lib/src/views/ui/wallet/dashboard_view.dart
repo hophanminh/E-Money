@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mobile/src/views/ui/team/team_list.dart';
 import 'package:mobile/src/views/ui/wallet/private_wallet/private_wallet.dart';
-import 'package:mobile/src/views/ui/wallet/team_wallet/private_wallet.dart';
+import 'package:mobile/src/views/ui/wallet/team_wallet/team_wallet.dart';
 import 'package:mobile/src/views/utils/widgets/widget.dart';
 import 'package:provider/provider.dart';
 import 'package:mobile/src/models/UsersProvider.dart';
@@ -16,16 +17,16 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
-  bool isChoosingPrivateWallet = true;
+  String mainRouteName = 'privateWallet';
 
   @override
   void initState() {
     super.initState();
   }
 
-  void handleChangeWallet(bool privateWallet) {
+  void setMainRoute(String name) {
     setState(() {
-      isChoosingPrivateWallet = privateWallet;
+      mainRouteName = name;
     });
   }
 
@@ -34,12 +35,22 @@ class _DashboardState extends State<Dashboard> {
     SystemChrome.setSystemUIOverlayStyle(
         SystemUiOverlayStyle(statusBarColor: Colors.transparent));
     Drawer sideBar = mySideBar(
-        context: context, name: widget.user['Name'], avatarURL: widget.user['AvatarURL'], isChoosingPrivateWallet: isChoosingPrivateWallet, switchWalletMode: handleChangeWallet);
+        context: context, name: widget.user['Name'], avatarURL: widget.user['AvatarURL'], setMainRoute: setMainRoute, mainRouteName: mainRouteName);
     return ScaffoldMessenger(
-        child: isChoosingPrivateWallet
-            ? IndividualWallet(sidebar: sideBar, user: widget.user)
-            : TeamWallet(
-                sidebar: sideBar,
-              ));
+        child: createDashboardPage(sideBar, widget.user)
+    );
+  }
+
+  Widget createDashboardPage(sidebar, user) {
+    if (mainRouteName == 'privateWallet') {
+      return IndividualWallet(sidebar: sidebar, user: user);
+    }
+    else if (mainRouteName == 'teamWallet') {
+      return TeamWallet(sidebar: sidebar);
+
+    }
+    else if (mainRouteName == 'teamList') {
+      return TeamList(sidebar: sidebar, user: user);
+    }
   }
 }

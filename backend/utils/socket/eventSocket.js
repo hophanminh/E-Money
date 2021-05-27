@@ -23,7 +23,6 @@ module.exports = function (socket, io, decoded_userID) {
     } catch (error) {
       console.log(error);
     }
-
   });
 
   // add event
@@ -36,7 +35,7 @@ module.exports = function (socket, io, decoded_userID) {
         Name: newEvent.Name,
         StartDate: convertToRegularDateTime(newEvent.StartDate),
         EndDate: newEvent.EndDate ? convertToRegularDateTime(newEvent.EndDate) : null,
-        NextDate: getNextEventDate(newEvent.StartDate, newEvent.TypeName, newEvent.Value),
+        NextDate: getNextEventDate(newEvent.StartDate, newEvent.EventTypeID, newEvent.Value),
         Status: 1,
         Value: newEvent.Value,
         ExpectingAmount: newEvent.ExpectingAmount,

@@ -3,9 +3,10 @@ const config = require('../config/default.json');
 
 module.exports = {
     getTeamsByUserId: (userId) => {
-        const sql = `SELECT t.* 
+        const sql = `SELECT t.*, COUNT(thu.UserID) as CurrentUsers
                         FROM teams t join teams_has_users thu on t.ID = thu.TeamID
-                        WHERE thu.status = ${config.STATUS.ACTIVE} AND thu.UserID = '${userId}'`;
+                        WHERE thu.status = ${config.STATUS.ACTIVE} AND thu.UserID = '${userId}'
+                        GROUP BY t.ID`;
         return db.load(sql);
     },
     getTeamByWalletId: (id) => {

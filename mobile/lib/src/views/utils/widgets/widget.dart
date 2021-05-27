@@ -33,7 +33,7 @@ AppBar mySimpleAppBar(String title) => AppBar(
       centerTitle: true,
     );
 
-Drawer mySideBar({BuildContext context, @required bool isChoosingPrivateWallet, String avatarURL, @required String name, Function switchWalletMode}) => Drawer(
+Drawer mySideBar({BuildContext context, @required String mainRouteName, String avatarURL, @required String name, Function setMainRoute}) => Drawer(
       child: Column(
         children: <Widget>[
           DrawerHeader(
@@ -83,18 +83,26 @@ Drawer mySideBar({BuildContext context, @required bool isChoosingPrivateWallet, 
                 _createDrawerItem(
                     title: 'Ví cá nhân',
                     icon: Icons.account_balance_wallet_outlined,
-                    isChoosingPrivateWallet: isChoosingPrivateWallet,
+                    mainRouteName: 'privateWallet' == mainRouteName,
                     onTap: () {
                       Navigator.pop(context);
-                      switchWalletMode(true);
+                      setMainRoute('privateWallet');
                     }),
                 _createDrawerItem(
                     title: 'Ví nhóm',
                     icon: Icons.group_outlined,
-                    isChoosingPrivateWallet: !isChoosingPrivateWallet,
+                    mainRouteName: 'teamWallet' == mainRouteName,
                     onTap: () {
                       Navigator.pop(context);
-                      switchWalletMode(false);
+                      setMainRoute('teamWallet');
+                    }),
+                _createDrawerItem(
+                    title: 'Danh sách nhóm',
+                    icon: Icons.group_outlined,
+                    mainRouteName: 'teamList' == mainRouteName,
+                    onTap: () {
+                      Navigator.pop(context);
+                      setMainRoute('teamList');
                     }),
               ],
             ),
@@ -113,7 +121,7 @@ Drawer mySideBar({BuildContext context, @required bool isChoosingPrivateWallet, 
       ),
     );
 
-Widget _createDrawerItem({IconData icon, String title, Function onTap, bool isChoosingPrivateWallet}) => ListTile(
+Widget _createDrawerItem({IconData icon, String title, Function onTap, bool mainRouteName}) => ListTile(
       title: Row(
         children: <Widget>[
           Icon(icon),
@@ -123,9 +131,9 @@ Widget _createDrawerItem({IconData icon, String title, Function onTap, bool isCh
           ),
         ],
       ),
-      selected: isChoosingPrivateWallet == true,
+      selected: mainRouteName == true,
       selectedTileColor: Colors.black12,
-      trailing: isChoosingPrivateWallet == true ? Icon(Icons.chevron_right_outlined) : null,
+      trailing: mainRouteName == true ? Icon(Icons.chevron_right_outlined) : null,
       onTap: () => onTap(),
     );
 

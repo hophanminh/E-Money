@@ -69,6 +69,7 @@ export default function Category(props) {
     });
 
     return () => {
+      socket.off("wait_for_update_transaction");
       socket.off("wait_for_update_category");
       setOpen(null);
     }
