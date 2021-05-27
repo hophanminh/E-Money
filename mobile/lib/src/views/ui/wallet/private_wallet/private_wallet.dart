@@ -95,7 +95,6 @@ class _IndividualWalletState extends State<IndividualWallet> {
       _setEventList(data['eventList']);
     });
 
-    setState(() {});
   }
 
   @override
