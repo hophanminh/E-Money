@@ -211,15 +211,18 @@ class _TeamListState extends State<TeamList> {
             Icon(Icons.keyboard_arrow_right, color: Colors.white, size: 30.0),
           ],
         ),
-        onTap: () {
+        onTap: () async {
           FocusScope.of(context).unfocus();
-          Navigator.push(
+          var result = await Navigator.push(
               context,
               MaterialPageRoute(
                   builder: (context) => TeamDetail(
-                        team: team,
-                        wrappingScaffoldKey: _scaffoldKey,
-                      )));
+                    team: team,
+                    wrappingScaffoldKey: _scaffoldKey,
+                  )));
+          if (result) {
+            _fetchData();
+          }
         },
       );
 

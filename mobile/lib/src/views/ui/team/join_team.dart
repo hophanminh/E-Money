@@ -78,8 +78,8 @@ class _JoinTeamDialogState extends State<JoinTeamDialog> {
                     margin: EdgeInsets.symmetric(vertical: 10),
                     child: TextFormField(
                       controller: _idController,
-                      decoration: myInputDecoration('Mã nhóm',
-                          inputBorder: Colors.black26, maxErrorLine: 2),
+                      decoration: myInputDecoration('',
+                          inputBorder: Colors.black26, maxErrorLine: 2, labelText: 'Mã nhóm'),
                       validator: (String value) {
                         if (value == null ||
                             value.isEmpty ||
@@ -107,9 +107,7 @@ class _JoinTeamDialogState extends State<JoinTeamDialog> {
                       TextButton(
                           onPressed: () {
                             if (_formKey.currentState.validate()) {
-                              showSnack(_scaffoldKey, 'Đang xử lý...');
                               handleJoinTeam();
-                              Navigator.of(context).pop();
                             }
                           },
                           child: Text(

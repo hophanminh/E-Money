@@ -27,6 +27,23 @@ class TeamService {
         .get(Uri.http(_baseURL, '/teams/$userID'), headers: {HttpHeaders.authorizationHeader: "Bearer $token", HttpHeaders.contentTypeHeader: 'application/json; charset=UTF-8'});
   }
 
+  Future<http.Response> getTeamUsers(String teamID) async {
+    String userID = await SecureStorage.readSecureData('userID');
+    String token = await SecureStorage.readSecureData('jwtToken');
+
+    return await http.get(Uri.http(_baseURL, '/teams/$teamID/users'),
+        headers: {HttpHeaders.authorizationHeader: "Bearer $token", HttpHeaders.contentTypeHeader: 'application/json; charset=UTF-8'});
+  }
+
+  Future<http.Response> getRoles(String teamID) async {
+    String userID = await SecureStorage.readSecureData('userID');
+    String token = await SecureStorage.readSecureData('jwtToken');
+
+    return await http.post(Uri.http(_baseURL, '/teams/$teamID/roles'),
+        headers: {HttpHeaders.authorizationHeader: "Bearer $token", HttpHeaders.contentTypeHeader: 'application/json; charset=UTF-8'},
+        body: jsonEncode(<String, String>{'userID': userID}));
+  }
+
   Future<http.Response> addTeam(String name, String max, String description) async {
     String userID = await SecureStorage.readSecureData('userID');
     String token = await SecureStorage.readSecureData('jwtToken');
@@ -52,6 +69,24 @@ class TeamService {
     return await http.post(Uri.http(_baseURL, '/teams/join/$userID'),
         headers: {HttpHeaders.contentTypeHeader: 'application/json; charset=UTF-8', HttpHeaders.authorizationHeader: 'Bearer $token'},
         body: jsonEncode(<String, String>{'teamID': id}));
+  }
+
+  Future<http.Response> leaveTeam(String teamWalletID) async {
+    String userID = await SecureStorage.readSecureData('userID');
+    String token = await SecureStorage.readSecureData('jwtToken');
+
+    return await http.post(Uri.http(_baseURL, '/teams/$teamWalletID/leave'),
+        headers: {HttpHeaders.contentTypeHeader: 'application/json; charset=UTF-8', HttpHeaders.authorizationHeader: 'Bearer $token'},
+        body: jsonEncode(<String, String>{'UserID': userID}));
+  }
+
+  Future<http.Response> deleteTeam(String teamWalletID) async {
+    String userID = await SecureStorage.readSecureData('userID');
+    String token = await SecureStorage.readSecureData('jwtToken');
+
+    return await http.post(Uri.http(_baseURL, '/teams/$teamWalletID/delete'),
+        headers: {HttpHeaders.contentTypeHeader: 'application/json; charset=UTF-8', HttpHeaders.authorizationHeader: 'Bearer $token'},
+        body: jsonEncode(<String, String>{'UserID': userID}));
   }
 
 }

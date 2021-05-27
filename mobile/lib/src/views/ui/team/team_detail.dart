@@ -4,14 +4,15 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:mobile/src/config/config.dart';
 import 'package:mobile/src/models/TeamsProvider.dart';
-import 'package:mobile/src/services/restapiservices/wallet_service.dart';
-import 'package:mobile/src/services/socketservices/socket.dart';
-import 'package:mobile/src/views/ui/profile/avatar_picker_menu.dart';
+import 'package:mobile/src/services/restapiservices/team_service.dart';
 import 'package:mobile/src/views/ui/team/edit_team.dart';
+import 'package:mobile/src/views/ui/team/team_user.dart';
 import 'package:mobile/src/views/utils/helpers/helper.dart';
-import 'package:mobile/src/views/utils/widgets/widget.dart';
+
+import 'delete_team.dart';
+import 'leave_team.dart';
 
 class TeamDetail extends StatefulWidget {
   final GlobalKey<ScaffoldMessengerState> wrappingScaffoldKey;
@@ -27,6 +28,7 @@ class TeamDetail extends StatefulWidget {
 
 class _TeamDetailState extends State<TeamDetail> {
   var _scaffoldKey = GlobalKey<ScaffoldMessengerState>();
+  bool roles = false;
 
   @override
   void initState() {
@@ -34,7 +36,24 @@ class _TeamDetailState extends State<TeamDetail> {
     super.initState();
   }
 
-  _initPage() async {}
+  _initPage() async {
+    Response res = await TeamService.instance.getRoles(widget.team.id);
+    if (res == null || res.statusCode != 200) {
+      throw Exception("Không lấy được dữ liệu từ server");
+    }
+    Map<String, dynamic> body = jsonDecode(res.body);
+
+    if (body['info']['Role'] == Properties.ROLE_ADMIN &&
+        body['info']['Status'] == Properties.ROLE_ACTIVE) {
+      setState(() {
+        roles = true;
+      });
+    } else {
+      setState(() {
+        roles = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,9 +104,8 @@ class _TeamDetailState extends State<TeamDetail> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
-                        getTimeBoxUI(
+                        createPeopleBox(
                             widget.team.currentUsers.toString(), "Hiện tại"),
-                        getTimeBoxUI(widget.team.maxUsers.toString(), "Tối đa"),
                       ],
                     ),
                   ),
@@ -141,27 +159,40 @@ class _TeamDetailState extends State<TeamDetail> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
-                    GestureDetector(
-                      onTap: () {},
-                      child: Container(
-                        width: 48,
-                        height: 48,
+                    if (!roles)
+                      GestureDetector(
+                        onTap: () async {
+                          var result = await showDialog(
+                              context: context,
+                              builder: (_) => LeaveTeamDialog(
+                                    team: widget.team,
+                                    wrappingScaffoldKey: _scaffoldKey,
+                                  ));
+                          if (result) {
+                            Navigator.pop(context, true);
+                            showSnack(widget.wrappingScaffoldKey,
+                                "Rời nhóm thành công");
+                          }
+                        },
                         child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white10,
-                            borderRadius: const BorderRadius.all(
-                              Radius.circular(16.0),
+                          width: 48,
+                          height: 48,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white10,
+                              borderRadius: const BorderRadius.all(
+                                Radius.circular(16.0),
+                              ),
+                              border: Border.all(color: Colors.red),
                             ),
-                            border: Border.all(color: Colors.red),
-                          ),
-                          child: Icon(
-                            Icons.exit_to_app,
-                            color: Colors.red,
-                            size: 28,
+                            child: Icon(
+                              Icons.exit_to_app,
+                              color: Colors.red,
+                              size: 28,
+                            ),
                           ),
                         ),
                       ),
-                    ),
                     const SizedBox(
                       width: 16,
                     ),
@@ -211,56 +242,101 @@ class _TeamDetailState extends State<TeamDetail> {
       shadowColor: Colors.transparent,
       iconTheme: IconThemeData(color: Colors.white),
       title: Text('Thông tin nhóm', style: TextStyle(color: Colors.white)),
+      leading: IconButton(
+        icon: Icon(Icons.arrow_back),
+        onPressed: () => Navigator.of(context).pop(false),
+      ),
       actions: [
         PopupMenuButton(
           itemBuilder: (BuildContext bc) => [
-            PopupMenuItem(
-              value: "/edit",
-              child: Row(
-                children: <Widget>[
-                  Icon(Icons.edit),
-                  Text("Sửa thông tin"),
-                ],
+            if (roles)
+              PopupMenuItem(
+                value: "/edit",
+                child: Row(
+                  children: <Widget>[
+                    Padding(
+                        padding: const EdgeInsets.only(right: 20),
+                        child: Icon(
+                          Icons.edit,
+                          size: 24,
+                          color: Colors.black,
+                        )),
+                    Text(" Sửa thông tin"),
+                  ],
+                ),
               ),
-            ),
-            PopupMenuItem(
-              value: "/delete",
-              child: Row(
-                children: <Widget>[
-                  Icon(Icons.delete),
-                  Text("Xóa nhóm"),
-                ],
+            if (roles)
+              PopupMenuItem(
+                value: "/delete",
+                child: Row(
+                  children: <Widget>[
+                    Padding(
+                        padding: const EdgeInsets.only(right: 20),
+                        child: Icon(
+                          Icons.delete,
+                          size: 24,
+                          color: Colors.black,
+                        )),
+                    Text("Xóa nhóm"),
+                  ],
+                ),
               ),
-            ),
             PopupMenuItem(
               value: "/list",
               child: Row(
                 children: <Widget>[
-                  Icon(Icons.people),
-                  Text("Danh sách thành viên"),
+                  Padding(
+                      padding: const EdgeInsets.only(right: 20),
+                      child: Icon(
+                        Icons.people,
+                        size: 24,
+                        color: Colors.black,
+                      )),
+                  Text("Xem thành viên"),
                 ],
               ),
             ),
           ],
           onSelected: (route) async {
             if (route == '/edit') {
-              Navigator.push(
+              var res = await Navigator.push(
                   context,
                   MaterialPageRoute(
                       builder: (context) => EditTeam(
                             team: widget.team,
                             wrappingScaffoldKey: _scaffoldKey,
                           )));
+              if (res) {}
             }
-            if (route == '/delete') {}
-            if (route == '/list') {}
+            if (route == '/delete') {
+              var result = await showDialog(
+                  context: context,
+                  builder: (_) => DeleteTeamDialog(
+                        team: widget.team,
+                        wrappingScaffoldKey: _scaffoldKey,
+                      ));
+              if (result) {
+                Navigator.pop(context, true);
+                showSnack(widget.wrappingScaffoldKey, "Xóa nhóm thành công");
+              }
+            }
+            if (route == '/list') {
+              var res = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => TeamUser(
+                            team: widget.team,
+                            wrappingScaffoldKey: _scaffoldKey,
+                          )));
+              if (res) {}
+            }
           },
         ),
       ],
       backgroundColor: primary,
       centerTitle: true);
 
-  Widget getTimeBoxUI(String text1, String txt2) {
+  Widget createPeopleBox(String text1, String txt2) {
     return Padding(
         padding: const EdgeInsets.only(right: 10),
         child: Container(

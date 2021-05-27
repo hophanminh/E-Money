@@ -12,7 +12,7 @@ Align myLabelText(String title, {AlignmentGeometry position = Alignment.centerLe
       ),
     );
 
-InputDecoration myInputDecoration(String placeholder, {Color inputBorder = primary, Widget suffix = null, maxErrorLine = 1}) => InputDecoration(
+InputDecoration myInputDecoration(String placeholder, {Color inputBorder = primary, Widget suffix = null, maxErrorLine = 1, labelText = ''}) => InputDecoration(
       hintText: placeholder,
       contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
       focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: inputBorder, width: 1.0), borderRadius: BorderRadius.circular(10)),
@@ -23,7 +23,9 @@ InputDecoration myInputDecoration(String placeholder, {Color inputBorder = prima
       fillColor: Colors.white,
       errorStyle: myErrorTextStyle,
       suffix: suffix,
-      errorMaxLines: maxErrorLine != null ? maxErrorLine : 1
+      errorMaxLines: maxErrorLine != null ? maxErrorLine : 1,
+      labelText: labelText,
+      alignLabelWithHint: true,
     );
 
 AppBar mySimpleAppBar(String title) => AppBar(

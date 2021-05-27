@@ -5,7 +5,8 @@ import 'package:http/http.dart';
 import 'package:mobile/src/models/TeamsProvider.dart';
 import 'package:mobile/src/services/restapiservices/team_service.dart';
 import 'package:mobile/src/views/utils/helpers/helper.dart';
-import 'package:mobile/src/views/utils/widgets/widget.dart';
+import 'package:provider/provider.dart';
+import 'package:mobile/src/models/UsersProvider.dart';
 
 class DeleteTeamDialog extends StatefulWidget {
   final GlobalKey<ScaffoldMessengerState> wrappingScaffoldKey;
@@ -50,9 +51,9 @@ class _DeleteTeamDialogState extends State<DeleteTeamDialog> {
                   child: Padding(
                     padding: const EdgeInsets.only(top: 20, bottom: 15),
                     child: Text(
-                      'Bạn có chắc muốn xóa nhóm?',
+                      'Bạn có muốn xóa nhóm?',
                       style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                      TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                     ),
                   ),
                 ),
@@ -70,10 +71,9 @@ class _DeleteTeamDialogState extends State<DeleteTeamDialog> {
                     TextButton(
                         onPressed: () {
                           handleDeleteTeam();
-                          Navigator.of(context).pop();
                         },
                         child: Text(
-                          'Xóa',
+                          'Xóa nhóm',
                           style: TextStyle(fontSize: 16),
                         )),
                   ],
@@ -87,21 +87,17 @@ class _DeleteTeamDialogState extends State<DeleteTeamDialog> {
   }
 
   void handleDeleteTeam() async {
-    // Response res = await TeamService.instance.deleteTeam(id);
-    //
-    // if (res.statusCode == 201) {
-    //   FocusScope.of(context).unfocus();
-    //   await Future.delayed(const Duration(seconds: 1), () {});
-    //   Navigator.pop(context, true); // trở về private wallet
-    //   showSnack(widget.wrappingScaffoldKey, "Tham gia thành công");
-    //   //_infoInit = info;
-    // } else {
-    //   Map<String, dynamic> body = jsonDecode(res.body);
-    //   setState(() {
-    //     customError = body['msg'];
-    //   });
-    //   _formKey.currentState.validate();
-    //   await Future.delayed(const Duration(seconds: 1), () {});
-    // }
+    Response res = await TeamService.instance.deleteTeam(widget.team.walletID);
+
+    if (res.statusCode == 200) {
+      FocusScope.of(context).unfocus();
+      await Future.delayed(const Duration(seconds: 1), () {});
+      Navigator.pop(context, true); // trở về private wallet
+      //_infoInit = info;
+    } else {
+      Map<String, dynamic> body = jsonDecode(res.body);
+      await Future.delayed(const Duration(seconds: 1), () {});
+      showSnack(widget.wrappingScaffoldKey, body['msg']);
+    }
   }
 }

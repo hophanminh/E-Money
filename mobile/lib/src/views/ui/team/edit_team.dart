@@ -73,7 +73,7 @@ class _EditTeamState extends State<EditTeam> {
             child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
               child: Container(
-                margin: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                margin: const EdgeInsets.fromLTRB(20, 10, 20, 20),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -87,11 +87,11 @@ class _EditTeamState extends State<EditTeam> {
                         child: Column(
                           children: [
                             Container(
-                              margin: EdgeInsets.symmetric(vertical: 10),
+                              margin: EdgeInsets.symmetric(vertical: 15),
                               child: TextFormField(
                                 controller: _nameController,
-                                decoration: myInputDecoration('Tên nhóm',
-                                    inputBorder: Colors.black26),
+                                decoration: myInputDecoration('',
+                                    inputBorder: Colors.black26, labelText: 'Tên nhóm'),
                                 validator: (String value) {
                                   if (value == null || value.isEmpty || isBlankString(value)) {
                                     return 'Tên không được để trống';
@@ -104,13 +104,13 @@ class _EditTeamState extends State<EditTeam> {
                               ),
                             ),
                             Container(
-                              margin: EdgeInsets.symmetric(vertical: 10),
+                              margin: EdgeInsets.symmetric(vertical: 15),
                               child: TextFormField(
                                 controller: _maxController,
                                 keyboardType: TextInputType.number,
                                 decoration: myInputDecoration(
-                                    'Số thành viên tối đa',
-                                    inputBorder: Colors.black26),
+                                    '',
+                                    inputBorder: Colors.black26, labelText: 'Số người tối đa',),
                                 inputFormatters: <TextInputFormatter>[
                                   FilteringTextInputFormatter.digitsOnly
                                 ],
@@ -129,13 +129,13 @@ class _EditTeamState extends State<EditTeam> {
                               ),
                             ),
                             Container(
-                              margin: EdgeInsets.symmetric(vertical: 10),
+                              margin: EdgeInsets.symmetric(vertical: 15),
                               child: TextFormField(
                                 maxLines: 5,
                                 maxLength: 500,
                                 controller: _descriptionController,
-                                decoration: myInputDecoration('Mô tả',
-                                    inputBorder: Colors.black26),
+                                decoration: myInputDecoration('',
+                                    inputBorder: Colors.black26, labelText: 'Mô tả',),
                                 validator: (String value) {
                                   if (value.length > 500) {
                                     return 'Mô tả không được quá 500 ký tự';

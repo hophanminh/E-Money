@@ -5,7 +5,8 @@ import 'package:http/http.dart';
 import 'package:mobile/src/models/TeamsProvider.dart';
 import 'package:mobile/src/services/restapiservices/team_service.dart';
 import 'package:mobile/src/views/utils/helpers/helper.dart';
-import 'package:mobile/src/views/utils/widgets/widget.dart';
+import 'package:provider/provider.dart';
+import 'package:mobile/src/models/UsersProvider.dart';
 
 class LeaveTeamDialog extends StatefulWidget {
   final GlobalKey<ScaffoldMessengerState> wrappingScaffoldKey;
@@ -70,7 +71,6 @@ class _LeaveTeamDialogState extends State<LeaveTeamDialog> {
                     TextButton(
                         onPressed: () {
                           handleLeaveTeam();
-                          Navigator.of(context).pop();
                         },
                         child: Text(
                           'Rời nhóm',
@@ -87,21 +87,17 @@ class _LeaveTeamDialogState extends State<LeaveTeamDialog> {
   }
 
   void handleLeaveTeam() async {
-    // Response res = await TeamService.instance.leaveTeam(id);
-    //
-    // if (res.statusCode == 201) {
-    //   FocusScope.of(context).unfocus();
-    //   await Future.delayed(const Duration(seconds: 1), () {});
-    //   Navigator.pop(context, true); // trở về private wallet
-    //   showSnack(widget.wrappingScaffoldKey, "Tham gia thành công");
-    //   //_infoInit = info;
-    // } else {
-    //   Map<String, dynamic> body = jsonDecode(res.body);
-    //   setState(() {
-    //     customError = body['msg'];
-    //   });
-    //   _formKey.currentState.validate();
-    //   await Future.delayed(const Duration(seconds: 1), () {});
-    // }
+    Response res = await TeamService.instance.leaveTeam(widget.team.walletID);
+
+    if (res.statusCode == 200) {
+      FocusScope.of(context).unfocus();
+      await Future.delayed(const Duration(seconds: 1), () {});
+      Navigator.pop(context, true); // trở về private wallet
+      //_infoInit = info;
+    } else {
+      Map<String, dynamic> body = jsonDecode(res.body);
+      await Future.delayed(const Duration(seconds: 1), () {});
+      showSnack(widget.wrappingScaffoldKey, body['msg']);
+    }
   }
 }
