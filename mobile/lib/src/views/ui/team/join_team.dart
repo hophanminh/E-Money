@@ -83,7 +83,7 @@ class _JoinTeamDialogState extends State<JoinTeamDialog> {
                       decoration: myInputDecoration('',
                           inputBorder: Colors.black26,
                           maxErrorLine: 2,
-                          labelText: 'Mã nhóm'),
+                          label: 'Mã nhóm'),
                       validator: (String value) {
                         if (value == null ||
                             value.isEmpty ||

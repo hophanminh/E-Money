@@ -74,7 +74,7 @@ class _AddTeamState extends State<AddTeam> {
                               controller: _nameController,
                               decoration: myInputDecoration('',
                                   inputBorder: Colors.black26,
-                                  labelText: 'Tên nhóm'),
+                                  label: 'Tên nhóm'),
                               validator: (String value) {
                                 if (value == null ||
                                     value.isEmpty ||
@@ -96,7 +96,7 @@ class _AddTeamState extends State<AddTeam> {
                               decoration: myInputDecoration(
                                 '',
                                 inputBorder: Colors.black26,
-                                labelText: 'Số người tối đa',
+                                label: 'Số người tối đa',
                               ),
                               inputFormatters: <TextInputFormatter>[
                                 FilteringTextInputFormatter.digitsOnly
@@ -126,7 +126,7 @@ class _AddTeamState extends State<AddTeam> {
                               decoration: myInputDecoration(
                                 '',
                                 inputBorder: Colors.black26,
-                                labelText: 'Mô tả',
+                                label: 'Mô tả',
                               ),
                               validator: (String value) {
                                 if (value.length > 500) {

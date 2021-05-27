@@ -91,7 +91,7 @@ class _EditTeamState extends State<EditTeam> {
                               child: TextFormField(
                                 controller: _nameController,
                                 decoration: myInputDecoration('',
-                                    inputBorder: Colors.black26, labelText: 'Tên nhóm'),
+                                    inputBorder: Colors.black26, label: 'Tên nhóm'),
                                 validator: (String value) {
                                   if (value == null || value.isEmpty || isBlankString(value)) {
                                     return 'Tên không được để trống';
@@ -110,7 +110,7 @@ class _EditTeamState extends State<EditTeam> {
                                 keyboardType: TextInputType.number,
                                 decoration: myInputDecoration(
                                     '',
-                                    inputBorder: Colors.black26, labelText: 'Số người tối đa',),
+                                    inputBorder: Colors.black26, label: 'Số người tối đa',),
                                 inputFormatters: <TextInputFormatter>[
                                   FilteringTextInputFormatter.digitsOnly
                                 ],
@@ -135,7 +135,7 @@ class _EditTeamState extends State<EditTeam> {
                                 maxLength: 500,
                                 controller: _descriptionController,
                                 decoration: myInputDecoration('',
-                                    inputBorder: Colors.black26, labelText: 'Mô tả',),
+                                    inputBorder: Colors.black26, label: 'Mô tả',),
                                 validator: (String value) {
                                   if (value.length > 500) {
                                     return 'Mô tả không được quá 500 ký tự';
