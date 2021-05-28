@@ -1,6 +1,9 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useHistory,useParams  } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
+import {
+    makeStyles,
+  } from '@material-ui/core/';
 // import ImageUploader from './ImageUploader';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
@@ -12,8 +15,10 @@ import palette from '../../constants/palette.json';
 import MyContext from '../mycontext/MyContext';
 import SnackBar from '../snackbar/SnackBar';
 import config from '../../constants/config.json';
+import MembersOfTeam from '../Team/Members';
+
 const API_URL = config.API_LOCAL;
-const styles = {
+const useStyles = makeStyles((theme) => ({
     wallpaper: {
         width: '100%',
         height: '50vh'
@@ -24,10 +29,17 @@ const styles = {
         display: 'flex',
         justifyContent: 'center',
         align: 'center'
-    }
-}
+    },
+    buttonColumn: {
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+      },
+}))
 
 export default function TeamProfile() {
+    const classes = useStyles();
 
     const userID = localStorage.getItem('userID');
     const token = localStorage.getItem('jwtToken');
@@ -133,54 +145,61 @@ export default function TeamProfile() {
             <SnackBar open={showSnackbar} setOpen={(isOpen) => setShowSnackBar(isOpen)} content={content} />
             {/* <div class="wallpaper" style={{ ...styles.wallpaper }}>
             </div> */}
-            <div style={styles.body}>
+            <div className={classes.body}>
                 <Container xs={12} sm={12} md={6} component="main" maxWidth="lg">
-                    <Grid align="center">
-                        <div style={{ textAlign: 'center', width: '80%' }}>
-                            <Typography component="h2" variant="h5" style={{ fontWeight: 'bold' }}>
-                                Thông tin tạo nhóm
-                            </Typography>
-                            <div style={{ margin: '20px 0 20px' }}>
-                                <div class="container">
-                                    <Typography style={{ fontWeight: 'bold' }} variant="h6">Tên nhóm</Typography>
-                                    <div class="input-invalid">{errors.teamName}</div>
-                                </div>
-                                <TextField placeholder="Tên nhóm" variant="outlined"
-                                            margin="normal" required fullWidth autoFocus
-                                            onChange={e => handleTeamNameChange(e.target.value)}
-                                            value={teamName}
-                                />
+                    <Grid container spacing={5} className={classes.grid}>
+                        <Grid item align="center" lg={9} sm={12}>
+                            <div style={{ textAlign: 'center', width: '80%' }}>
+                                <Typography component="h2" variant="h5" style={{ fontWeight: 'bold' }}>
+                                    Thông tin tạo nhóm
+                                </Typography>
+                                <div style={{ margin: '20px 0 20px' }}>
+                                    <div className="container">
+                                        <Typography style={{ fontWeight: 'bold' }} variant="h6">Tên nhóm</Typography>
+                                        <div className="input-invalid">{errors.teamName}</div>
+                                    </div>
+                                    <TextField placeholder="Tên nhóm" variant="outlined"
+                                                margin="normal" required fullWidth autoFocus
+                                                onChange={e => handleTeamNameChange(e.target.value)}
+                                                value={teamName}
+                                    />
 
-                                <div class="container margin-top-10">
-                                    <Typography style={{ fontWeight: 'bold' }} variant="h6">Số lượng thành viên</Typography>
-                                    <div class="input-invalid">{errors.numberUser}</div>
-                                </div>
-                                <TextField placeholder="Số lượng" variant="outlined"
-                                            margin="normal" required fullWidth
-                                            value={numberUser}
-                                            onChange={e => handleNumberUsers(e.target.value)}
-                                />
+                                    <div className="container margin-top-10">
+                                        <Typography style={{ fontWeight: 'bold' }} variant="h6">Số lượng thành viên</Typography>
+                                        <div className="input-invalid">{errors.numberUser}</div>
+                                    </div>
+                                    <TextField placeholder="Số lượng" variant="outlined"
+                                                margin="normal" required fullWidth
+                                                value={numberUser}
+                                                onChange={e => handleNumberUsers(e.target.value)}
+                                    />
 
-                                <div class="container margin-top-10">
-                                    <Typography style={{ fontWeight: 'bold' }} variant="h6">Mô tả</Typography>
+                                    <div className="container margin-top-10">
+                                        <Typography style={{ fontWeight: 'bold' }} variant="h6">Mô tả</Typography>
+                                    </div>
+                                    <TextField placeholder="Mô tả"
+                                                variant="outlined" 
+                                                margin="normal" 
+                                                required fullWidth
+                                                onChange={e => handleDescription(e.target.value)}
+                                                value={description}
+                                                multiline
+                                    />
                                 </div>
-                                <TextField placeholder="Mô tả"
-                                            variant="outlined" 
-                                            margin="normal" 
-                                            required fullWidth
-                                            onChange={e => handleDescription(e.target.value)}
-                                            value={description}
-                                            multiline
-                                />
+
+                                <Button type="submit" fullWidth variant="contained" style={{ backgroundColor: palette.primary, color: 'white', fontWeight: 'bold', marginTop: '20px' }}
+                                        onClick={handleSaveChange}
+                                        startIcon={<SaveIcon />}
+                                >
+                                    Cập nhật thông tin
+                                </Button>
                             </div>
-
-                            <Button type="submit" fullWidth variant="contained" style={{ backgroundColor: palette.primary, color: 'white', fontWeight: 'bold', marginTop: '20px' }}
-                                    onClick={handleSaveChange}
-                                    startIcon={<SaveIcon />}
-                            >
-                                Cập nhật thông tin
-                            </Button>
-                        </div>
+                        </Grid>
+                        <Grid item lg={3} sm={12}>
+                            <div className={classes.buttonColumn}>
+                            <MembersOfTeam teamID = {teamID}></MembersOfTeam>
+                            </div>
+                        </Grid>
                     </Grid>
                 </Container>
             </div>

@@ -42,24 +42,15 @@ router.get('/details/:teamID', async (req, res) => {
     }
 })
 
-router.get('/:teamID/users', async (req, res) => {
+router.get('/:teamID/members', async (req, res) => {
     const teamID = req.params.teamID;
-    const users = await TeamHasUserModel.getTHUByTeamId(teamID);
-    if (users.length === 1) {
-        return res.status(200).send({users});
+    console.log('Get member belong to team ', teamID);
+    const thu = await TeamHasUserModel.GetMembersByTeamId(teamID);
+    console.log(thu);
+    if (thu.length !== 0) {
+        return res.status(200).send({members: thu});
     } else {
         return res.status(404).send({msg: "Không tìm thấy nhóm."})
-    }
-})
-
-router.post('/:teamID/roles', async (req, res) => {
-    const teamID = req.params.teamID;
-    const { userID } = req.body;
-    const info = await TeamHasUserModel.getTHUByUserIdAndTeamID(userID, teamID);
-    if (info.length === 1) {
-        return res.status(200).send({info: info[0]});
-    } else {
-        return res.status(400).send({msg: "Không tìm thấy nhóm."})
     }
 })
 
@@ -193,6 +184,15 @@ router.post('/:id/leave', async (req, res) => {
 
 });
 
+router.post('/remove/:userId', async (req, res) => {
+    const userID = req.params.userId;
+    const {teamID} = req.body;
+    console.log(teamID)
+    console.log(userID)
+    const c = await TeamHasUserModel.leaveTHU(teamID, userID)
+    return res.status(200).send({msg: "Thành công."})
+})
+
 //TODO Delete all team member
 
 router.post('/:id/delete', async (req, res) => {
@@ -220,14 +220,10 @@ router.post('/join/:userId', async (req, res) => {
 
     const team = await TeamModel.getTeamById(teamID);
     const thu = await TeamHasUserModel.getTHUByTeamId(teamID);
-    console.log(thu)
+    console.log(team[0].MaxUsers)
     if(team.length === 0) {
         return res.status(404).send({msg: "Không tìm thấy nhóm."});
     }
-    if (thu && thu.find(i => i.UserID === userID)) {
-        return res.status(500).send({msg: "Bạn đã là thành viên của nhóm."});
-    }
-
     if((team[0].MaxUsers > thu.length) && (!thu.includes(userID))) {
         const thuObject = {
             TeamID: teamID,

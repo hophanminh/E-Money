@@ -31,8 +31,20 @@ module.exports = {
         return db.load(sql);
 
     },
+    removeTHU: (TeamID, UserID) => {
+        const sql = `DELETE from teams_has_users WHERE TeamID = '${TeamID}' AND UserID = '${UserID}' AND Role <> ${config.PERMISSION.ADMIN} `
+        return db.load(sql);
+
+    },
     deleteTHU: (TeamID, UserID) => {
         const sql = `DELETE from teams_has_users WHERE TeamID = '${TeamID}'`
+        return db.load(sql);
+    },
+    GetMembersByTeamId: (teamID) => {
+        const sql = `SELECT u.ID, u.Name, u.Username, t.Role 
+        from teams_has_users t 
+        join users u on t.UserID = u.ID
+        WHERE t.TeamID = '${teamID}'`
         return db.load(sql);
     }
 }
