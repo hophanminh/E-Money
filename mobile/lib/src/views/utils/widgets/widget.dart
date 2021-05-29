@@ -25,12 +25,13 @@ InputDecoration myInputDecoration(String placeholder, {String label, Color input
     suffix: suffix,
     labelText: label);
 
-AppBar mySimpleAppBar(String title) => AppBar(
+AppBar mySimpleAppBar(String title, {Color shadow}) => AppBar(
       // app bar without 'action' property
       iconTheme: IconThemeData(color: Colors.white),
       title: Text(title, style: TextStyle(color: Colors.white)),
       backgroundColor: primary,
       centerTitle: true,
+      shadowColor: shadow,
     );
 
 Drawer mySideBar({BuildContext context, @required String mainRouteName, String avatarURL, @required String name, Function setMainRoute}) => Drawer(

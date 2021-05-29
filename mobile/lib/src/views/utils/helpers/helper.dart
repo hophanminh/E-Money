@@ -14,7 +14,9 @@ var _formatter = new NumberFormat.currency(locale: 'vi', symbol: '');
 
 String formatMoneyWithSymbol(dynamic amount) => amount != null ? (amount > max ? _formatter.format(max) : formatter.format(amount)) : "";
 
-String formatMoneyWithoutSymbol(dynamic amount) => amount != null ? (amount > max ? _formatter.format(max) : _formatter.format(amount).replaceAll(new RegExp("\\s+"), '')) : ""; // format xong có dấu cách ở cuối nên replace để bỏ
+String formatMoneyWithoutSymbol(dynamic amount) => amount != null
+    ? (amount > max ? _formatter.format(max) : _formatter.format(amount).replaceAll(new RegExp("\\s+"), ''))
+    : ""; // format xong có dấu cách ở cuối nên replace để bỏ
 
 bool isEmailPattern(String token) {
   RegExp emailPattern = new RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
@@ -91,10 +93,28 @@ String convertToDDMMYYYY(String input) {
   }
 }
 
+String convertToYYYYMMDD(String input) {
+  try {
+    DateTime tempDate = DateTime.parse(input);
+    return DateFormat('yyyy-MM-dd').format(tempDate.toLocal());
+  } catch (error) {
+    return "";
+  }
+}
+
 String convertToDDMMYYYYHHMM(String input) {
   try {
     DateTime tempDate = DateTime.parse(input);
     return DateFormat('dd/MM/yyyy - HH:mm').format(tempDate.toLocal());
+  } catch (error) {
+    return "";
+  }
+}
+
+String convertToMMYYYYY(String input, {bool isShortYear = false}) {
+  try {
+    DateTime tempDate = DateTime.parse(input);
+    return DateFormat(isShortYear ? 'MM/yy' : 'MM/yyyy').format(tempDate.toLocal());
   } catch (error) {
     return "";
   }
@@ -123,16 +143,15 @@ DateTime parseInput(String input) {
 String timeRemaining(String input) {
   DateTime temp = parseInput(input);
 
-  if(input == null) {
+  if (input == null) {
     return "-1";
   }
 
-  Duration remaining= temp.difference(DateTime.now());
+  Duration remaining = temp.difference(DateTime.now());
   int days = remaining.inDays;
   int hours = remaining.inHours;
   return days > 0 ? '${days} ngày' : '${hours} giờ';
 }
-
 
 final everyWeek = [
   'thứ 2',
@@ -154,7 +173,7 @@ getValueOfEventType(String eventType) {
   }
   if (eventType == "3") {
     for (int i = 0; i < 31; i++) {
-      tempList.add("Ngày ${i+1}");
+      tempList.add("Ngày ${i + 1}");
     }
   }
   if (eventType == "4") {
