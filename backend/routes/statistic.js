@@ -20,10 +20,9 @@ router.post('/barChart', async (req, res) => {
   }
 
   if (chartData.length === 0) {
-    return res.status(400).end();
-  }
-
-  if (chartData.length === 1) {
+    chartData.push({ Title: 'Chi', Money: 0 });
+    chartData.push({ Title: 'Thu', Money: 0 });
+  } else if (chartData.length === 1) {
     if (chartData[0].Title === 'Chi') {
       chartData.push({ Title: 'Thu', Money: 0 });
     } else {
