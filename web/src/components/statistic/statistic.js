@@ -49,7 +49,7 @@ export default function Statistic() {
     if (dates.length > 0) {
       changeDate(dates.length - 1);
     }
-  }, [dates]);
+  }, [dates, currentIndex]);
 
   const getBarChartData = async (date) => {
     const data = {
@@ -110,8 +110,9 @@ export default function Statistic() {
       });
       let temp = [];
       chartData.forEach(data => {
-        if (data.value > 0)
+        if (data.value > 0) {
           temp.push(data);
+        }
       });
       if (isSpent) {
         setPieChartSpentData(temp);

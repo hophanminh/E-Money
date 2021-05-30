@@ -6,10 +6,12 @@ import PieChart, {
   Label,
   Font,
   Connector,
-  Tooltip
+  Tooltip,
+  Export
 } from 'devextreme-react/pie-chart';
 import { makeStyles } from '@material-ui/core/styles';
 import { PIE_CHART_PALETTE } from '../../constants/palette.json';
+import { MARKER_SIZE, FONT_SIZE } from '../../constants/config.json';
 import { customizeTextForLegend, customizeTextForLabel, customizeTextForTooltip } from '../../utils/helper';
 
 const useStyles = makeStyles((theme) => ({
@@ -18,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
   },
   paper: {
     boxShadow: '0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23)',
-    borderRadius: '20px'
+    borderRadius: '20px',
   },
   chart: {
     padding: 20
@@ -48,18 +50,24 @@ export default function PieChartSpent({ date, chartData }) {
                 verticalAlignment="bottom"
                 customizeText={arg => customizeTextForLegend(arg.pointName, chartData[arg.pointIndex].value)}
                 columnCount={4}
-              />
+                markerSize={MARKER_SIZE}
+              >
+                <Font size={FONT_SIZE.LEGEND_FONT_SIZE} />
+              </Legend>
               <Series argumentField="type" valueField="value">
                 <Label
                   visible={true}
                   position="columns"
                   customizeText={customizeTextForLabel}
                 >
-                  <Font size={16} />
+                  <Font size={FONT_SIZE.LABEL_FONT_SIZE} />
                   <Connector visible={true} width={0.5} />
                 </Label>
               </Series>
-              <Tooltip enabled={true} customizeTooltip={customizeTextForTooltip} />
+              <Tooltip enabled={true} customizeTooltip={customizeTextForTooltip}>
+                <Font size={FONT_SIZE.TOOLTIP_FONT_SIZE} />
+              </Tooltip>
+              <Export enabled={true} />
             </PieChart>
           }
         </Paper>

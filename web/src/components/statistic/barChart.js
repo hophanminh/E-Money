@@ -6,10 +6,13 @@ import {
   CommonSeriesSettings,
   Title,
   Legend,
-  Tooltip
+  Tooltip,
+  Font,
+  Export
 } from 'devextreme-react/chart';
 import { makeStyles } from '@material-ui/core/styles';
 import { customizeTextForTooltip } from '../../utils/helper';
+import { MARKER_SIZE, FONT_SIZE } from '../../constants/config.json';
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -51,9 +54,15 @@ export default function BarChart({ date, chartData }) {
               horizontalAlignment="center"
               verticalAlignment="bottom"
               columnCount={2}
-            />
+              markerSize={MARKER_SIZE}
+            >
+              <Font size={FONT_SIZE.LEGEND_FONT_SIZE} />
+            </Legend>
             <SeriesTemplate nameField="title" />
-            <Tooltip enabled={true} customizeTooltip={customizeTextForTooltip} />
+            <Tooltip enabled={true} customizeTooltip={customizeTextForTooltip}>
+              <Font size={FONT_SIZE.TOOLTIP_FONT_SIZE} />
+            </Tooltip>
+            <Export enabled={true} />
           </Chart>
         </Paper>
       </div>
