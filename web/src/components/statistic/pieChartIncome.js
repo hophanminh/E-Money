@@ -1,14 +1,16 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Paper from '@material-ui/core/Paper';
-import {
-  Chart,
-  PieSeries,
-  Title,
+import PieChart, {
   Legend,
+  Series,
+  Label,
+  Font,
+  Connector,
   Tooltip
-} from '@devexpress/dx-react-chart-material-ui';
-import { Animation, EventTracker, Palette } from '@devexpress/dx-react-chart';
+} from 'devextreme-react/pie-chart';
 import { makeStyles } from '@material-ui/core/styles';
+import { PIE_CHART_PALETTE } from '../../constants/palette.json';
+import { customizeTextForLegend, customizeTextForLabel, customizeTextForTooltip } from '../../utils/helper';
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -17,19 +19,14 @@ const useStyles = makeStyles((theme) => ({
   paper: {
     boxShadow: '0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23)',
     borderRadius: '20px'
+  },
+  chart: {
+    padding: 20
   }
 }));
 
-const scheme = ["#9ec98d", "#4d774e", "#eae45a", "#fda92c", "#164a41", "#6df670", "#1b5804", "#1daf1a", "#a0cf1a", "#9fff01"];
-
 export default function PieChartSpent({ date, chartData }) {
   const classes = useStyles();
-
-  const [targetItem, setTargetItem] = useState(null);
-
-  const changeTargetItem = (target) => {
-    setTargetItem(target);
-  }
 
   return (
     <div className={classes.container}>
@@ -37,15 +34,33 @@ export default function PieChartSpent({ date, chartData }) {
         <Paper className={classes.paper}>
           {chartData.length === 0 ?
             <div style={{ textAlign: 'center' }}>Không có dữ liệu</div> :
-            <Chart data={chartData}>
-              <Palette scheme={scheme} />
-              <PieSeries valueField="value" argumentField="type" outerRadius={0.6} />
-              <Title text={"Thống kê các khoản thu tháng " + (date.getMonth() + 1) + "/" + date.getFullYear()} />
-              <Legend />
-              <Animation />
-              <EventTracker />
-              <Tooltip targetItem={targetItem} onTargetItemChange={(target) => changeTargetItem(target)} />
-            </Chart>
+            <PieChart
+              id="pie"
+              className={classes.chart}
+              palette={PIE_CHART_PALETTE}
+              dataSource={chartData}
+              title={"Thống kê các khoản thu tháng " + (date.getMonth() + 1) + "/" + date.getFullYear()}
+            >
+              <Legend
+                orientation="horizontal"
+                itemTextPosition="right"
+                horizontalAlignment="center"
+                verticalAlignment="bottom"
+                customizeText={arg => customizeTextForLegend(arg.pointName, chartData[arg.pointIndex].value)}
+                columnCount={4}
+              />
+              <Series argumentField="type" valueField="value">
+                <Label
+                  visible={true}
+                  position="columns"
+                  customizeText={customizeTextForLabel}
+                >
+                  <Font size={16} />
+                  <Connector visible={true} width={0.5} />
+                </Label>
+              </Series>
+              <Tooltip enabled={true} customizeTooltip={customizeTextForTooltip} />
+            </PieChart>
           }
         </Paper>
       </div>

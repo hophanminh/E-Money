@@ -21,22 +21,12 @@ module.exports = {
 
   digitGeneration: (length) => {
     let digits = "";
-    // while (true) {
 
     for (let i = 0; i < length; i++) {
       const digit = Math.floor(Math.random() * 10);
       digits += digit;
     }
 
-    // const result = await accountModel.findByCode(digits);
-
-    // if (result.length !== 0) {
-    // digits = "";
-    // continue;
-    // }
-
-    // break;
-    // }
     return digits;
   },
 
@@ -65,8 +55,7 @@ module.exports = {
         if (temp.isValid && temp.isAfter(new_date) && temp.date() === value) {
           new_date = temp;
           break;
-        }
-        else {
+        } else {
           i++;
           temp = moment(new_date);
           temp.add(i, 'months');
@@ -85,7 +74,4 @@ module.exports = {
     }
     return new_date.format(config.FORMAT_DATETIME_PATTER.DATE_TIME);
   },
-
 }
-
-

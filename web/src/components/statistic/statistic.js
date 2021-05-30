@@ -74,8 +74,7 @@ export default function Statistic() {
       const chartData = result.chartData.map(data => {
         return {
           title: data.Title,
-          spent: data.Money >= 0 ? 0 : data.Money * -1,
-          earned: data.Money >= 0 ? data.Money : 0
+          money: data.Money >= 0 ? data.Money : data.Money * -1
         };
       });
       setBarChartData(chartData);

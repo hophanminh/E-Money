@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Paper from '@material-ui/core/Paper';
 import {
   Chart,
-  BarSeries,
+  SeriesTemplate,
+  CommonSeriesSettings,
   Title,
-  ArgumentAxis,
-  ValueAxis,
+  Legend,
   Tooltip
-} from '@devexpress/dx-react-chart-material-ui';
-import { Animation, EventTracker } from '@devexpress/dx-react-chart';
+} from 'devextreme-react/chart';
 import { makeStyles } from '@material-ui/core/styles';
+import { customizeTextForTooltip } from '../../utils/helper';
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -19,45 +19,42 @@ const useStyles = makeStyles((theme) => ({
     boxShadow: '0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23)',
     borderRadius: '20px',
   },
-
+  chart: {
+    padding: 20
+  }
 }));
 
 export default function BarChart({ date, chartData }) {
   const classes = useStyles();
 
-  const [targetItem, setTargetItem] = useState(null);
-
-  const changeTargetItem = (target) => {
-    setTargetItem(target);
-  }
-
   return (
     <div className={classes.container}>
       <div style={{ margin: 'auto' }}>
         <Paper className={classes.paper}>
-          {!chartData ?
-            <div style={{ textAlign: 'center' }}>Không có dữ liệu</div> :
-            <Chart data={chartData}>
-              <ArgumentAxis />
-              <ValueAxis />
-              <BarSeries
-                valueField="spent"
-                argumentField="title"
-                color="#ff2626"
-                barWidth={0.5}
-              />
-              <BarSeries
-                valueField="earned"
-                argumentField="title"
-                color="#1daf1a"
-                barWidth={0.5}
-              />
-              <Title text={"Thu nhập trong tháng " + (date.getMonth() + 1) + "/" + date.getFullYear()} />
-              <EventTracker />
-              <Tooltip targetItem={targetItem} onTargetItemChange={(target) => changeTargetItem(target)} />
-              <Animation />
-            </Chart>
-          }
+          <Chart
+            id="chart"
+            className={classes.chart}
+            palette={['#ff2626', '#1daf1a']}
+            dataSource={chartData}
+          >
+            <Title text={"Thu nhập trong tháng " + (date.getMonth() + 1) + "/" + date.getFullYear()} />
+            <CommonSeriesSettings
+              argumentField="title"
+              valueField="money"
+              type="bar"
+              barWidth={100}
+              ignoreEmptyPoints={true}
+            />
+            <Legend
+              orientation="horizontal"
+              itemTextPosition="right"
+              horizontalAlignment="center"
+              verticalAlignment="bottom"
+              columnCount={2}
+            />
+            <SeriesTemplate nameField="title" />
+            <Tooltip enabled={true} customizeTooltip={customizeTextForTooltip} />
+          </Chart>
         </Paper>
       </div>
     </div>
