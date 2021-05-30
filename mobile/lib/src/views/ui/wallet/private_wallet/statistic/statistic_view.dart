@@ -28,16 +28,13 @@ class _StatisticState extends State<Statistic> {
   bool _nothingToShow = true;
   List<DateTime> _dates = [];
   DateTime _selectedDate;
-  List<dynamic> _barChartData; //  1 list các hashmap
-  List<dynamic> _spentPieChart;
-  List<dynamic> _incomePieChart;
 
   List<charts.Series<dynamic, String>> _barChartSeries = [];
   List<charts.Series<dynamic, String>> _spentPieChartSeries = [];
   List<charts.Series<dynamic, String>> _incomePieChartSeries = [];
 
-  _countPercent(double total, double partial) {
-    return partial * 100 / total;
+  _countPercent(int total, int partial) {
+    return double.parse((partial * 100 / total).toStringAsFixed(2));
   }
 
   handleSelectMonth(DateTime date) async {
@@ -59,13 +56,26 @@ class _StatisticState extends State<Statistic> {
     Map<String, dynamic> spentPieChartDataBody = jsonDecode(responses[1].body);
     Map<String, dynamic> incomePieChartDataBody = jsonDecode(responses[2].body);
 
+    List<dynamic> _barChartData = barChartDataBody['chartData']; //  1 list các hashmap
+
+    incomePieChartDataBody['chartData'].removeWhere((item) => item['Money'] == 0);
+    List<dynamic> _incomePieChart = incomePieChartDataBody['chartData'];
+
+    spentPieChartDataBody['chartData'].removeWhere((item) => item['Money'] == 0);
+    List<dynamic> _spentPieChart = spentPieChartDataBody['chartData'];
+
+    int totalIcome = 0;
+    for (dynamic data in _incomePieChart) {
+      totalIcome += data['Money'];
+    }
+
+    int totalOutCome = 0;
+    for (dynamic data in _spentPieChart) {
+      totalOutCome += data['Money'];
+    }
+
     setState(() {
       _nothingToShow = false;
-
-      _barChartData = barChartDataBody['chartData'];
-      _incomePieChart = incomePieChartDataBody['chartData'].removeWhere((item) => item['Money'] == 0);
-      _spentPieChart = spentPieChartDataBody['chartData'].removeWhere((item) => item['Money'] == 0);
-
       _barChartSeries = [
         charts.Series(
             domainFn: (dynamic data, _) => data['Title'],
@@ -73,12 +83,9 @@ class _StatisticState extends State<Statistic> {
             measureFn: (dynamic data, _) => data['Money'].abs(),
             colorFn: (dynamic data, _) => data['Title'] == 'Chi' ? charts.MaterialPalette.deepOrange.makeShades(1)[0] : charts.MaterialPalette.lime.makeShades(1)[0],
             id: 'Money',
-            data: barChartDataBody['chartData'],
+            data: _barChartData,
             labelAccessorFn: (dynamic data, _) => '${formatMoneyWithoutSymbol(data['Money'].abs())}')
       ];
-
-      // double totalIcome = incomePieChartDataBody['chartData'].fold(0, (p, c) => p + c);
-      // double totalOutCome = spentPieChartDataBody['chartData'].fold(0, (p, c) => p + c);
 
       _incomePieChartSeries = [
         charts.Series(
@@ -86,9 +93,10 @@ class _StatisticState extends State<Statistic> {
             // dynamic ở dây là 1 hashmap
             measureFn: (dynamic data, _) => data['Money'].abs(),
             id: 'Money1',
-            data: incomePieChartDataBody['chartData'],
-            labelAccessorFn: (dynamic data, _) => '${formatMoneyWithSymbol(data['Money'].abs())}',
-            colorFn: (_, index) => charts.MaterialPalette.lime.makeShades(incomePieChartDataBody['chartData'].length)[index])
+            data: _incomePieChart,
+            labelAccessorFn: (dynamic data, _) => '${_countPercent(totalIcome, data['Money'])}%',
+            colorFn: (_, index) => charts.MaterialPalette.lime.makeShades(incomePieChartDataBody['chartData'].length)[index],
+            insideLabelStyleAccessorFn: (_, __) => charts.TextStyleSpec(color: charts.MaterialPalette.black)),
       ];
 
       _spentPieChartSeries = [
@@ -97,9 +105,10 @@ class _StatisticState extends State<Statistic> {
             // dynamic ở dây là 1 hashmap
             measureFn: (dynamic data, _) => data['Money'].abs(),
             id: 'Money2',
-            data: spentPieChartDataBody['chartData'],
-            labelAccessorFn: (dynamic data, _) => '${formatMoneyWithSymbol(data['Money'].abs())}',
-            colorFn: (_, index) => charts.MaterialPalette.deepOrange.makeShades(spentPieChartDataBody['chartData'].length)[index])
+            data: _spentPieChart,
+            labelAccessorFn: (dynamic data, _) => '${_countPercent(totalOutCome, data['Money'])}%',
+            colorFn: (_, index) => charts.MaterialPalette.deepOrange.makeShades(spentPieChartDataBody['chartData'].length)[index],
+            insideLabelStyleAccessorFn: (_, __) => charts.TextStyleSpec(color: charts.MaterialPalette.black))
       ];
     });
   }
@@ -114,7 +123,7 @@ class _StatisticState extends State<Statistic> {
       List<DateTime> dates = [];
       DateTime activeDate = parseInput(myProvider.info.activatedDate).toLocal();
       DateTime current = DateTime.now();
-      DateTime temp = new DateTime(activeDate.year, 4);
+      DateTime temp = new DateTime(activeDate.year, activeDate.month);
 
       while (temp.isBefore(current)) {
         dates.insert(0, temp);
@@ -260,7 +269,7 @@ class _StatisticState extends State<Statistic> {
                                     spreadRadius: 4,
                                     blurRadius: 5,
                                     offset: Offset(0, 2), // changes position of shadow
-                                  ),
+                                  )
                                 ]),
                                 height: 350,
                                 child: charts.BarChart(
@@ -279,11 +288,14 @@ class _StatisticState extends State<Statistic> {
                                     ),
                                   ),
                                   behaviors: [
-                                    new charts.ChartTitle('Tổng quan tình hình thu chi tháng ${convertToMMYYYYY(_selectedDate.toString())}',
-                                        subTitle: '(Đơn vị: ${formatter.currencySymbol})',
-                                        behaviorPosition: charts.BehaviorPosition.top,
-                                        titleOutsideJustification: charts.OutsideJustification.start,
-                                        innerPadding: 50),
+                                    new charts.ChartTitle(
+                                      'Tổng quan tình hình thu chi tháng ${convertToMMYYYYY(_selectedDate.toString())}',
+                                      subTitle: '(Đơn vị: ${formatter.currencySymbol})',
+                                      behaviorPosition: charts.BehaviorPosition.top,
+                                      titleOutsideJustification: charts.OutsideJustification.middle,
+                                      innerPadding: 50,
+                                      titleStyleSpec: charts.TextStyleSpec(fontSize: 20),
+                                    ),
                                   ],
                                 )),
                           ),
@@ -306,11 +318,14 @@ class _StatisticState extends State<Statistic> {
                                   animate: true,
                                   defaultRenderer: new charts.ArcRendererConfig(arcWidth: 40, arcRendererDecorators: [new charts.ArcLabelDecorator()]),
                                   behaviors: [
-                                    new charts.ChartTitle('Phân tích thu',
-                                        // subTitle: '(Đơn vị: ${formatter.currencySymbol})',
-                                        behaviorPosition: charts.BehaviorPosition.top,
-                                        titleOutsideJustification: charts.OutsideJustification.start,
-                                        innerPadding: 35),
+                                    new charts.ChartTitle(
+                                      'Phân tích thu',
+                                      // subTitle: '(Đơn vị: ${formatter.currencySymbol})',
+                                      behaviorPosition: charts.BehaviorPosition.top,
+                                      titleOutsideJustification: charts.OutsideJustification.start,
+                                      innerPadding: 35,
+                                      titleStyleSpec: charts.TextStyleSpec(fontSize: 20),
+                                    ),
                                     new charts.DatumLegend(
                                       position: charts.BehaviorPosition.bottom,
                                       horizontalFirst: false,
@@ -342,11 +357,14 @@ class _StatisticState extends State<Statistic> {
                                   animate: true,
                                   defaultRenderer: new charts.ArcRendererConfig(arcWidth: 40, arcRendererDecorators: [new charts.ArcLabelDecorator()]),
                                   behaviors: [
-                                    new charts.ChartTitle('Phân tích chi',
-                                        // subTitle: '(Đơn vị: ${formatter.currencySymbol})',
-                                        behaviorPosition: charts.BehaviorPosition.top,
-                                        titleOutsideJustification: charts.OutsideJustification.start,
-                                        innerPadding: 35),
+                                    new charts.ChartTitle(
+                                      'Phân tích chi',
+                                      // subTitle: '(Đơn vị: ${formatter.currencySymbol})',
+                                      behaviorPosition: charts.BehaviorPosition.top,
+                                      titleOutsideJustification: charts.OutsideJustification.start,
+                                      innerPadding: 35,
+                                      titleStyleSpec: charts.TextStyleSpec(fontSize: 20),
+                                    ),
                                     new charts.DatumLegend(
                                       position: charts.BehaviorPosition.bottom,
                                       horizontalFirst: false,
