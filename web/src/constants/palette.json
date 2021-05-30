@@ -2,5 +2,17 @@
   "primary": "#1DAF1A",
   "secondary": "#FDA92C",
   "faded_primary": "#9EC98D",
-  "dark_grey": "#919190"
+  "dark_grey": "#919190",
+  "PIE_CHART_PALETTE": [
+    "#9ec98d",
+    "#4d774e",
+    "#eae45a",
+    "#fda92c",
+    "#164a41",
+    "#6df670",
+    "#1b5804",
+    "#1daf1a",
+    "#a0cf1a",
+    "#9fff01"
+  ]
 }

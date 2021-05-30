@@ -1,10 +1,9 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Container } from '@material-ui/core';
 import HorizontalTimeline from "react-horizontal-timeline";
 import moment from 'moment';
 
-import MyContext from '../mycontext/MyContext';
 import Charts from '../statistic/charts';
 import config from '../../constants/config.json';
 
@@ -15,7 +14,6 @@ export default function TeamStatistic() {
 
   const location = useLocation();
   const team = location.state.team;
-  const { info } = useContext(MyContext);
 
   const [dates, setDates] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -78,8 +76,7 @@ export default function TeamStatistic() {
       const chartData = result.chartData.map(data => {
         return {
           title: data.Title,
-          spent: data.Money >= 0 ? 0 : data.Money * -1,
-          earned: data.Money >= 0 ? data.Money : 0
+          money: data.Money >= 0 ? data.Money : data.Money * -1
         };
       });
       setBarChartData(chartData);
