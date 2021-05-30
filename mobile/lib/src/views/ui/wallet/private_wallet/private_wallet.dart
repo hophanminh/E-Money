@@ -9,6 +9,7 @@ import 'package:mobile/src/views/ui/wallet/event/event_dashboard.dart';
 import 'package:mobile/src/views/ui/wallet/private_wallet/add_transaction.dart';
 import 'package:mobile/src/views/ui/wallet/private_wallet/delete_transaction.dart';
 import 'package:mobile/src/views/ui/wallet/private_wallet/edit_transaction.dart';
+import 'package:mobile/src/views/ui/wallet/private_wallet/statistic/statistic_view.dart';
 import 'package:mobile/src/views/ui/wallet/private_wallet/view_transaction.dart';
 import 'package:mobile/src/views/utils/helpers/helper.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
@@ -33,7 +34,6 @@ class _IndividualWalletState extends State<IndividualWallet> {
   List<dynamic> _eventList = [];
 
   void _setCategoryList(List<dynamic> fullList, List<dynamic> defaultList, List<dynamic> customList) {
-
     _categoryList['fullList'].clear();
     _categoryList['defaultList'].clear();
     _categoryList['customList'].clear();
@@ -52,6 +52,18 @@ class _IndividualWalletState extends State<IndividualWallet> {
     setState(() {
       _eventList.addAll(eventList);
     });
+  }
+
+  void updateTxCatAfterUpdateCat(List<dynamic> fullList) {
+    List<dynamic> copyTxs = List.from(_txs);
+
+    for (int i = 0; i < copyTxs.length; i++) {
+      dynamic cat = fullList.where((cat) => cat['ID'] == copyTxs[i]['catID']).first;
+      if (cat != null) {
+        copyTxs[i]['IconID'] = cat['IconID'];
+        copyTxs[i]['categoryName'] = cat['Name'];
+      }
+    }
   }
 
   void _initPage() async {
@@ -84,6 +96,7 @@ class _IndividualWalletState extends State<IndividualWallet> {
     _socket.on('wait_for_update_category', (data) {
       print('update cate');
       _setCategoryList(data['fullList'], data['defaultList'], data['customList']);
+      updateTxCatAfterUpdateCat(_categoryList['fullList']);
     });
 
     _socket.emitWithAck("get_event", {'walletID': walletID}, ack: (data) {
@@ -94,7 +107,6 @@ class _IndividualWalletState extends State<IndividualWallet> {
       print('update event');
       _setEventList(data['eventList']);
     });
-
   }
 
   @override
@@ -196,9 +208,10 @@ class _IndividualWalletState extends State<IndividualWallet> {
                       ],
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(top: 40, bottom: 10),
+                      padding: const EdgeInsets.only(top: 40, bottom: 30),
                       child: Text('Danh sách tất cả giao dịch', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
                     ),
+                    _txs.length == 0 ? Text('(Chưa có giao dịch được ghi)') : Container(),
                     for (var tx in _txs) _createCompactTxn(tx)
                   ],
                 ),
@@ -302,6 +315,26 @@ class _IndividualWalletState extends State<IndividualWallet> {
             ),
       );
 
+  _createDetail(String value, Icon icon) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        icon,
+        Expanded(
+          child: SizedBox(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10.0),
+              child: Text(
+                value,
+                style: TextStyle(fontSize: 15, color: Colors.black54),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   AppBar _privateWalletAppBar() => AppBar(
       iconTheme: IconThemeData(color: Colors.white),
       title: Text('Ví cá nhân', style: TextStyle(color: Colors.white)),
@@ -312,9 +345,9 @@ class _IndividualWalletState extends State<IndividualWallet> {
         // )
         PopupMenuButton(
           itemBuilder: (BuildContext bc) => [
-            PopupMenuItem(child: Text("Hạng mục thu - chi"), value: "1"),
-            PopupMenuItem(child: Text("Sự kiện"), value: "2"),
-            PopupMenuItem(child: Text("Thống kê ví"), value: "3"),
+            PopupMenuItem(child: _createDetail("Hạng mục thu - chi", Icon(Icons.category_outlined, color: Colors.black)), value: "1"),
+            PopupMenuItem(child: _createDetail("Sự kiện", Icon(Icons.event, color: Colors.black)), value: "2"),
+            PopupMenuItem(child: _createDetail("Thống kê ví", Icon(Icons.bar_chart_outlined, color: Colors.black)), value: "3"),
           ],
           onSelected: (route) {
             print(route);
@@ -344,6 +377,16 @@ class _IndividualWalletState extends State<IndividualWallet> {
                             setEventList: _setEventList)));
                 break;
               case 3:
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => Statistic(
+                            // walletID: widget.user['WalletID'],
+                            // fullCatList: _categoryList['fullList'],
+                            // setCategoryList: _setCategoryList,
+                            // eventList: _eventList,
+                            // setEventList: _setEventList
+                            )));
                 break;
             }
           },

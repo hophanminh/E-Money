@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:mobile/src/config/config.dart';
@@ -32,4 +33,31 @@ class WalletService {
     req.files.add(multipartFile);
     return await req.send();
   }
+
+  Future<http.Response> getBarChartData(String date) async {
+    String token = await SecureStorage.readSecureData('jwtToken');
+    String userID = await SecureStorage.readSecureData('userID');
+
+    http.Response res = await http.post(
+      Uri.http(_baseURL, '/statistic/barChart'),
+      headers: {HttpHeaders.contentTypeHeader: 'application/json; charset=UTF-8', HttpHeaders.authorizationHeader: 'Bearer $token'},
+      body: jsonEncode({'userID': userID, 'date': date}),
+    );
+
+    return res;
+  }
+
+  Future<http.Response> getPieChartData(String date, bool isSpent) async {
+    String token = await SecureStorage.readSecureData('jwtToken');
+    String userID = await SecureStorage.readSecureData('userID');
+
+    http.Response res = await http.post(
+      Uri.http(_baseURL, '/statistic/pieChart'),
+      headers: {HttpHeaders.contentTypeHeader: 'application/json; charset=UTF-8', HttpHeaders.authorizationHeader: 'Bearer $token'},
+      body: jsonEncode({'userID': userID, 'date': date, 'isSpent': isSpent}),
+    );
+
+    return res;
+  }
+
 }
