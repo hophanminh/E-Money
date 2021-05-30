@@ -54,6 +54,18 @@ class _IndividualWalletState extends State<IndividualWallet> {
     });
   }
 
+  void updateTxCatAfterUpdateCat(List<dynamic> fullList) {
+    List<dynamic> copyTxs = List.from(_txs);
+
+    for (int i = 0; i < copyTxs.length; i++) {
+      dynamic cat = fullList.where((cat) => cat['ID'] == copyTxs[i]['catID']).first;
+      if (cat != null) {
+        copyTxs[i]['IconID'] = cat['IconID'];
+        copyTxs[i]['categoryName'] = cat['Name'];
+      }
+    }
+  }
+
   void _initPage() async {
     final walletID = widget.user['WalletID'];
     _iconList = jsonDecode(await WalletService.instance.getListIcon());
@@ -84,6 +96,7 @@ class _IndividualWalletState extends State<IndividualWallet> {
     _socket.on('wait_for_update_category', (data) {
       print('update cate');
       _setCategoryList(data['fullList'], data['defaultList'], data['customList']);
+      updateTxCatAfterUpdateCat(_categoryList['fullList']);
     });
 
     _socket.emitWithAck("get_event", {'walletID': walletID}, ack: (data) {
