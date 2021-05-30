@@ -38,26 +38,37 @@ class _StatisticState extends State<Statistic> {
   }
 
   handleSelectMonth(DateTime date) async {
+    bool nothingToShow = false;
     String toString = convertToYYYYMMDD(date.toString());
     List<Response> responses = await Future.wait(
         [WalletService.instance.getBarChartData(toString), WalletService.instance.getPieChartData(toString, true), WalletService.instance.getPieChartData(toString, false)]);
 
-    for (Response res in responses) {
-      if (res.statusCode != 200) {
-        setState(() {
-          _nothingToShow = true;
-        });
-
-        return;
-      }
+    if (responses[1].statusCode != 200 || responses[2].statusCode != 200) {
+      nothingToShow = true;
     }
 
     Map<String, dynamic> barChartDataBody = jsonDecode(responses[0].body);
-    Map<String, dynamic> spentPieChartDataBody = jsonDecode(responses[1].body);
-    Map<String, dynamic> incomePieChartDataBody = jsonDecode(responses[2].body);
-
     List<dynamic> _barChartData = barChartDataBody['chartData']; //  1 list các hashmap
 
+    if (nothingToShow) {
+      setState(() {
+        _nothingToShow = nothingToShow;
+        _barChartSeries = [
+          charts.Series(
+              domainFn: (dynamic data, _) => data['Title'],
+              // dynamic ở dây là 1 hashmap
+              measureFn: (dynamic data, _) => data['Money'].abs(),
+              colorFn: (dynamic data, _) => data['Title'] == 'Chi' ? charts.MaterialPalette.deepOrange.makeShades(1)[0] : charts.MaterialPalette.lime.makeShades(1)[0],
+              id: 'Money',
+              data: _barChartData,
+              labelAccessorFn: (dynamic data, _) => '${formatMoneyWithoutSymbol(data['Money'].abs())}')
+        ];
+      });
+      return;
+    }
+
+    Map<String, dynamic> spentPieChartDataBody = jsonDecode(responses[1].body);
+    Map<String, dynamic> incomePieChartDataBody = jsonDecode(responses[2].body);
     incomePieChartDataBody['chartData'].removeWhere((item) => item['Money'] == 0);
     List<dynamic> _incomePieChart = incomePieChartDataBody['chartData'];
 
@@ -75,7 +86,7 @@ class _StatisticState extends State<Statistic> {
     }
 
     setState(() {
-      _nothingToShow = false;
+      _nothingToShow = nothingToShow;
       _barChartSeries = [
         charts.Series(
             domainFn: (dynamic data, _) => data['Title'],
@@ -123,7 +134,7 @@ class _StatisticState extends State<Statistic> {
       List<DateTime> dates = [];
       DateTime activeDate = parseInput(myProvider.info.activatedDate).toLocal();
       DateTime current = DateTime.now();
-      DateTime temp = new DateTime(activeDate.year, activeDate.month);
+      DateTime temp = new DateTime(activeDate.year, 2);
 
       while (temp.isBefore(current)) {
         dates.insert(0, temp);
@@ -232,155 +243,159 @@ class _StatisticState extends State<Statistic> {
           ),
           Expanded(
             child: SingleChildScrollView(
-              child: _nothingToShow
-                  ? Container(
-                      padding: EdgeInsets.all(20),
-                      alignment: Alignment.topCenter,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 20.0),
-                            child: Icon(
-                              Icons.error_outline,
-                              size: 50,
+              child: Container(
+                padding: EdgeInsets.only(top: 20, bottom: 20, right: 6, left: 5),
+                width: MediaQuery.of(context).size.width,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    FittedBox(
+                      child: Container(
+                          constraints: BoxConstraints(maxWidth: 450),
+                          padding: EdgeInsets.all(10),
+                          decoration: BoxDecoration(color: const Color(0xfff2f2f2), borderRadius: BorderRadius.circular(10), boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.5),
+                              spreadRadius: 4,
+                              blurRadius: 5,
+                              offset: Offset(0, 2), // changes position of shadow
+                            )
+                          ]),
+                          height: 350,
+                          child: charts.BarChart(
+                            _barChartSeries,
+                            animate: true,
+                            barRendererDecorator: new charts.BarLabelDecorator<String>(
+                                //          insideLabelStyleSpec: new charts.TextStyleSpec(...),
+                                //          outsideLabelStyleSpec: new charts.TextStyleSpec(...)),
+                                ),
+                            primaryMeasureAxis: new charts.NumericAxisSpec(
+                              renderSpec: new charts.GridlineRendererSpec(
+                                axisLineStyle: charts.LineStyleSpec(thickness: 10),
+                                labelStyle: new charts.TextStyleSpec(
+                                    fontSize: 13, // size in Pts.
+                                    color: charts.MaterialPalette.black),
+                              ),
                             ),
-                          ),
-                          Text(
-                            'Chưa có dữ liệu hiển thị',
-                            style: TextStyle(fontSize: 20),
-                          ),
-                        ],
-                      ),
-                    )
-                  : Container(
-                      padding: EdgeInsets.only(top: 20, bottom: 20, right: 6, left: 5),
-                      width: MediaQuery.of(context).size.width,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          FittedBox(
-                            child: Container(
-                                constraints: BoxConstraints(maxWidth: 450),
-                                padding: EdgeInsets.all(10),
-                                decoration: BoxDecoration(color: const Color(0xfff2f2f2), borderRadius: BorderRadius.circular(10), boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.5),
-                                    spreadRadius: 4,
-                                    blurRadius: 5,
-                                    offset: Offset(0, 2), // changes position of shadow
-                                  )
-                                ]),
-                                height: 350,
-                                child: charts.BarChart(
-                                  _barChartSeries,
-                                  animate: true,
-                                  barRendererDecorator: new charts.BarLabelDecorator<String>(
-                                      //          insideLabelStyleSpec: new charts.TextStyleSpec(...),
-                                      //          outsideLabelStyleSpec: new charts.TextStyleSpec(...)),
-                                      ),
-                                  primaryMeasureAxis: new charts.NumericAxisSpec(
-                                    renderSpec: new charts.GridlineRendererSpec(
-                                      axisLineStyle: charts.LineStyleSpec(thickness: 10),
-                                      labelStyle: new charts.TextStyleSpec(
-                                          fontSize: 13, // size in Pts.
-                                          color: charts.MaterialPalette.black),
-                                    ),
-                                  ),
-                                  behaviors: [
-                                    new charts.ChartTitle(
-                                      'Tổng quan tình hình thu chi tháng ${convertToMMYYYYY(_selectedDate.toString())}',
-                                      subTitle: '(Đơn vị: ${formatter.currencySymbol})',
-                                      behaviorPosition: charts.BehaviorPosition.top,
-                                      titleOutsideJustification: charts.OutsideJustification.middle,
-                                      innerPadding: 50,
-                                      titleStyleSpec: charts.TextStyleSpec(fontSize: 20),
-                                    ),
-                                  ],
-                                )),
-                          ),
-                          FittedBox(
-                            child: Container(
-                                constraints: BoxConstraints(maxWidth: 450),
-                                padding: EdgeInsets.all(10),
-                                margin: EdgeInsets.symmetric(vertical: 20),
-                                decoration: BoxDecoration(color: const Color(0xfff2f2f2), borderRadius: BorderRadius.circular(10), boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.5),
-                                    spreadRadius: 4,
-                                    blurRadius: 5,
-                                    offset: Offset(0, 2), // changes position of shadow
-                                  ),
-                                ]),
-                                height: 350,
-                                child: charts.PieChart(
-                                  _incomePieChartSeries,
-                                  animate: true,
-                                  defaultRenderer: new charts.ArcRendererConfig(arcWidth: 40, arcRendererDecorators: [new charts.ArcLabelDecorator()]),
-                                  behaviors: [
-                                    new charts.ChartTitle(
-                                      'Phân tích thu',
-                                      // subTitle: '(Đơn vị: ${formatter.currencySymbol})',
-                                      behaviorPosition: charts.BehaviorPosition.top,
-                                      titleOutsideJustification: charts.OutsideJustification.start,
-                                      innerPadding: 35,
-                                      titleStyleSpec: charts.TextStyleSpec(fontSize: 20),
-                                    ),
-                                    new charts.DatumLegend(
-                                      position: charts.BehaviorPosition.bottom,
-                                      horizontalFirst: false,
-                                      cellPadding: new EdgeInsets.only(right: 4.0, bottom: 4.0),
-                                      showMeasures: true,
-                                      legendDefaultMeasure: charts.LegendDefaultMeasure.firstValue,
-                                      measureFormatter: (num value) {
-                                        return value == null ? '-' : '-   ${formatMoneyWithSymbol(value)}';
-                                      },
-                                    ),
-                                  ],
-                                )),
-                          ),
-                          FittedBox(
-                            child: Container(
-                                constraints: BoxConstraints(maxWidth: 450),
-                                padding: EdgeInsets.all(10),
-                                decoration: BoxDecoration(color: const Color(0xfff2f2f2), borderRadius: BorderRadius.circular(10), boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.5),
-                                    spreadRadius: 4,
-                                    blurRadius: 5,
-                                    offset: Offset(0, 2), // changes position of shadow
-                                  ),
-                                ]),
-                                height: 350,
-                                child: charts.PieChart(
-                                  _spentPieChartSeries,
-                                  animate: true,
-                                  defaultRenderer: new charts.ArcRendererConfig(arcWidth: 40, arcRendererDecorators: [new charts.ArcLabelDecorator()]),
-                                  behaviors: [
-                                    new charts.ChartTitle(
-                                      'Phân tích chi',
-                                      // subTitle: '(Đơn vị: ${formatter.currencySymbol})',
-                                      behaviorPosition: charts.BehaviorPosition.top,
-                                      titleOutsideJustification: charts.OutsideJustification.start,
-                                      innerPadding: 35,
-                                      titleStyleSpec: charts.TextStyleSpec(fontSize: 20),
-                                    ),
-                                    new charts.DatumLegend(
-                                      position: charts.BehaviorPosition.bottom,
-                                      horizontalFirst: false,
-                                      cellPadding: new EdgeInsets.only(right: 4.0, bottom: 4.0),
-                                      showMeasures: true,
-                                      legendDefaultMeasure: charts.LegendDefaultMeasure.firstValue,
-                                      measureFormatter: (num value) {
-                                        return value == null ? '-' : '-   ${formatMoneyWithSymbol(value)}';
-                                      },
-                                    ),
-                                  ],
-                                )),
-                          )
-                        ],
-                      ),
+                            behaviors: [
+                              new charts.ChartTitle(
+                                'Tổng quan tình hình thu chi tháng ${convertToMMYYYYY(_selectedDate.toString())}',
+                                subTitle: '(Đơn vị: ${formatter.currencySymbol})',
+                                behaviorPosition: charts.BehaviorPosition.top,
+                                titleOutsideJustification: charts.OutsideJustification.middle,
+                                innerPadding: 50,
+                                titleStyleSpec: charts.TextStyleSpec(fontSize: 20),
+                              ),
+                            ],
+                          )),
                     ),
+                    _nothingToShow
+                        ? Container(
+                            padding: EdgeInsets.all(20),
+                            alignment: Alignment.topCenter,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 20.0),
+                                  child: Icon(
+                                    Icons.error_outline,
+                                    size: 50,
+                                  ),
+                                ),
+                                Text(
+                                  'Chưa có dữ liệu hiển thị',
+                                  style: TextStyle(fontSize: 20),
+                                ),
+                              ],
+                            ),
+                          )
+                        : Column(
+                            children: [
+                              FittedBox(
+                                child: Container(
+                                    constraints: BoxConstraints(maxWidth: 450),
+                                    padding: EdgeInsets.all(10),
+                                    margin: EdgeInsets.symmetric(vertical: 20),
+                                    decoration: BoxDecoration(color: const Color(0xfff2f2f2), borderRadius: BorderRadius.circular(10), boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey.withOpacity(0.5),
+                                        spreadRadius: 4,
+                                        blurRadius: 5,
+                                        offset: Offset(0, 2), // changes position of shadow
+                                      ),
+                                    ]),
+                                    height: 350,
+                                    child: charts.PieChart(
+                                      _incomePieChartSeries,
+                                      animate: true,
+                                      defaultRenderer: new charts.ArcRendererConfig(arcWidth: 40, arcRendererDecorators: [new charts.ArcLabelDecorator()]),
+                                      behaviors: [
+                                        new charts.ChartTitle(
+                                          'Phân tích thu',
+                                          // subTitle: '(Đơn vị: ${formatter.currencySymbol})',
+                                          behaviorPosition: charts.BehaviorPosition.top,
+                                          titleOutsideJustification: charts.OutsideJustification.start,
+                                          innerPadding: 35,
+                                          titleStyleSpec: charts.TextStyleSpec(fontSize: 20),
+                                        ),
+                                        new charts.DatumLegend(
+                                          position: charts.BehaviorPosition.bottom,
+                                          horizontalFirst: false,
+                                          cellPadding: new EdgeInsets.only(right: 4.0, bottom: 4.0),
+                                          showMeasures: true,
+                                          legendDefaultMeasure: charts.LegendDefaultMeasure.firstValue,
+                                          measureFormatter: (num value) {
+                                            return value == null ? '-' : '-   ${formatMoneyWithSymbol(value)}';
+                                          },
+                                        ),
+                                      ],
+                                    )),
+                              ),
+                              FittedBox(
+                                child: Container(
+                                    constraints: BoxConstraints(maxWidth: 450),
+                                    padding: EdgeInsets.all(10),
+                                    decoration: BoxDecoration(color: const Color(0xfff2f2f2), borderRadius: BorderRadius.circular(10), boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey.withOpacity(0.5),
+                                        spreadRadius: 4,
+                                        blurRadius: 5,
+                                        offset: Offset(0, 2), // changes position of shadow
+                                      ),
+                                    ]),
+                                    height: 350,
+                                    child: charts.PieChart(
+                                      _spentPieChartSeries,
+                                      animate: true,
+                                      defaultRenderer: new charts.ArcRendererConfig(arcWidth: 40, arcRendererDecorators: [new charts.ArcLabelDecorator()]),
+                                      behaviors: [
+                                        new charts.ChartTitle(
+                                          'Phân tích chi',
+                                          // subTitle: '(Đơn vị: ${formatter.currencySymbol})',
+                                          behaviorPosition: charts.BehaviorPosition.top,
+                                          titleOutsideJustification: charts.OutsideJustification.start,
+                                          innerPadding: 35,
+                                          titleStyleSpec: charts.TextStyleSpec(fontSize: 20),
+                                        ),
+                                        new charts.DatumLegend(
+                                          position: charts.BehaviorPosition.bottom,
+                                          horizontalFirst: false,
+                                          cellPadding: new EdgeInsets.only(right: 4.0, bottom: 4.0),
+                                          showMeasures: true,
+                                          legendDefaultMeasure: charts.LegendDefaultMeasure.firstValue,
+                                          measureFormatter: (num value) {
+                                            return value == null ? '-' : '-   ${formatMoneyWithSymbol(value)}';
+                                          },
+                                        ),
+                                      ],
+                                    )),
+                              )
+                            ],
+                          )
+                  ],
+                ),
+              ),
             ),
           )
         ],
