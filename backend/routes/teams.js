@@ -26,6 +26,11 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
+router.get('/', async (req, res) => {
+    const teams = await TeamModel.getAllTeam();
+    return res.status(200).send({teams});
+})
+
 router.get('/:userId', async (req, res) => {
     const userID = req.params.userId;
     console.log('Get teams belong to user ', userID);
@@ -48,7 +53,6 @@ router.get('/:teamID/members', async (req, res) => {
     const teamID = req.params.teamID;
     console.log('Get member belong to team ', teamID);
     const thu = await TeamHasUserModel.GetMembersByTeamId(teamID);
-    console.log(thu);
     if (thu.length !== 0) {
         return res.status(200).send({members: thu});
     } else {
@@ -60,7 +64,6 @@ router.post('/:userID', async (req, res) => {
     console.log('Create team');
     const { Name, MaxUsers, Description } = req.body;
     const userID = req.params.userID;
-    console.log(userID);
     const newWallet = {
         ID: uuidv1(),
         TotalCount: 0,

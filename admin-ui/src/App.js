@@ -16,12 +16,17 @@ import MyContext from './components/mycontext/MyContext';
 import CombinedProvider from './components/mycontext/combineProvider'
 import { getListIcon } from './utils/DefaultIcon';
 import SignIn from './components/signin/SignIn';
-
+import TeamList from './components/Teams/TeamList.js'
 const routes = [
   {
     path: "/Category",
     private: false,
     main: () => <CategoryAdmin />
+  },
+  {
+    path: "/Teams",
+    private: false,
+    main: () => <TeamList />
   },
   {
     path: "/signin",
