@@ -36,7 +36,7 @@ module.exports = {
         return db.load(sql);
 
     },
-    deleteTHU: (TeamID, UserID) => {
+    deleteTHU: (TeamID) => {
         const sql = `DELETE from teams_has_users WHERE TeamID = '${TeamID}'`
         return db.load(sql);
     },

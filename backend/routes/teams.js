@@ -1,15 +1,18 @@
 const express = require('express');
 const router = express.Router();
+
 const WalletModel = require('../models/walletModel');
 const TeamModel = require('../models/teamModel');
 const TeamHasUserModel = require('../models/TeamHasUserModel');
+
+const config = require("../config/default.json");
+const {convertToRegularDateTime} = require("../utils/helper");
+
 const multer = require("multer");
 const fs = require('fs');
 const path = require('path');
-const config = require("../config/default.json");
 const cloudinary = require('cloudinary').v2;
 cloudinary.config(config.CLOUDINARY);
-const {convertToRegularDateTime} = require("../utils/helper");
 const { v1: uuidv1 } = require('uuid');
 const v1options = { msecs: Date.now() };
 uuidv1(v1options);
@@ -34,7 +37,6 @@ router.get('/details/:teamID', async (req, res) => {
     const teamID = req.params.teamID;
     console.log('Get team belong to user ', teamID);
     const teams = await TeamModel.getTeamById(teamID);
-    const thu = await TeamHasUserModel.getTHUByTeamId(teamID);
     if (teams.length === 1) {
         return res.status(200).send({teams});
     } else {
@@ -100,7 +102,7 @@ router.post('/:userID', async (req, res) => {
     if (result.affectedRows === 1) {
         console.log("Created successfully");
         return res.status(201)
-            .send({ msg: "Kiểm tra email để kích hoạt tài khoản." });
+            .send({ msg: "Tạo nhóm thành công." });
     } else {
         return res.status(500)
             .send({ msg: "Hãy thử lại." });
@@ -193,8 +195,6 @@ router.post('/remove/:userId', async (req, res) => {
     return res.status(200).send({msg: "Thành công."})
 })
 
-//TODO Delete all team member
-
 router.post('/:id/delete', async (req, res) => {
     const walletId = req.params.id;
     console.log("delete teams wallet " + walletId)
@@ -207,7 +207,7 @@ router.post('/:id/delete', async (req, res) => {
 
     const team = teamObject[0];
     // Remove user from team
-    const c = await TeamHasUserModel.deleteTHU(team.ID, UserID)
+    const c = await TeamHasUserModel.deleteTHU(team.ID)
     const d = await TeamModel.deleteTeam(team.ID);
     return res.status(200).send({msg: "Thành công."})
 
@@ -247,7 +247,6 @@ router.post('/join/:userId', async (req, res) => {
                 .send({ msg: "Nhóm đã đủ số lượng thành viên" });
     }
 
-   
 })
 
 module.exports = router;
