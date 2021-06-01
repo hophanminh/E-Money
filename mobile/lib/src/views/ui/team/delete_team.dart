@@ -51,9 +51,18 @@ class _DeleteTeamDialogState extends State<DeleteTeamDialog> {
                   child: Padding(
                     padding: const EdgeInsets.only(top: 20, bottom: 15),
                     child: Text(
-                      'Bạn có muốn xóa nhóm?',
+                      'Xác nhận',
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                    ),
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 20.0),
+                    child: Text(
+                      'Bạn có chắc chắn muốn xóa nhóm này?',
                     ),
                   ),
                 ),
@@ -66,7 +75,7 @@ class _DeleteTeamDialogState extends State<DeleteTeamDialog> {
                         },
                         child: Text(
                           'Hủy',
-                          style: TextStyle(fontSize: 16),
+                          style: TextStyle(fontSize: 16, color: Colors.red),
                         )),
                     TextButton(
                         onPressed: () {
@@ -74,7 +83,7 @@ class _DeleteTeamDialogState extends State<DeleteTeamDialog> {
                         },
                         child: Text(
                           'Xóa nhóm',
-                          style: TextStyle(fontSize: 16),
+                          style: TextStyle(fontSize: 16, color: Colors.red),
                         )),
                   ],
                 )

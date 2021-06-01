@@ -3,18 +3,19 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:mobile/src/config/config.dart';
+import 'package:mobile/src/models/UsersProvider.dart';
 import 'package:mobile/src/services/restapiservices/user_service.dart';
 import 'package:mobile/src/services/socketservices/socket.dart';
 import 'package:mobile/src/views/utils/helpers/helper.dart';
 import 'package:mobile/src/views/utils/widgets/widget.dart';
+import 'package:provider/provider.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 
 class DeleteTransactionDialog extends StatefulWidget {
   final GlobalKey<ScaffoldMessengerState> wrappingScaffoldKey;
-  final String walletID;
   final String txID;
 
-  const DeleteTransactionDialog({Key key, @required this.walletID, @required this.txID, @required this.wrappingScaffoldKey}) : super(key: key);
+  const DeleteTransactionDialog({Key key, @required this.txID, @required this.wrappingScaffoldKey}) : super(key: key);
 
   @override
   _DeleteTransactionDialogState createState() => _DeleteTransactionDialogState();
@@ -27,9 +28,7 @@ class _DeleteTransactionDialogState extends State<DeleteTransactionDialog> {
   Widget build(BuildContext context) {
     return ScaffoldMessenger(
       key: _scaffoldKey,
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: Dialog(
+      child: Dialog(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
           ),
@@ -44,37 +43,51 @@ class _DeleteTransactionDialogState extends State<DeleteTransactionDialog> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Align(
-                    alignment: Alignment.centerRight,
-                    child: IconButton(
-                      icon: Icon(Icons.close),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
+                    alignment: Alignment.centerLeft,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 20, bottom: 15),
+                      child: Text(
+                        'Xác nhận',
+                        style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                      ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 15.0),
-                    child: Text(
-                      'Xác nhận',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 20.0),
+                      child: Text(
+                        'Bạn có chắc chắn muốn xóa giao dịch này?',
+                      ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 20.0),
-                    child: Text(
-                      'Bạn có chắc chắn muốn xóa giao dịch này?',
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  myAlignedButton('Xóa', backgroundColor: warning, action: () {
-                    handleDeleteTx();
-                  })
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: Text(
+                            'Hủy',
+                            style: TextStyle(fontSize: 16, color: Colors.red),
+                          )),
+                      TextButton(
+                          onPressed: () {
+                            handleDeleteTx();
+                          },
+                          child: Text(
+                            'Xóa',
+                            style: TextStyle(fontSize: 16, color: Colors.red),
+                          )),
+                    ],
+                  )
                 ],
               ),
             ),
           ),
         ),
-      ),
     );
   }
 
@@ -82,7 +95,8 @@ class _DeleteTransactionDialogState extends State<DeleteTransactionDialog> {
     print('delete tx');
     Socket socket = await getSocket();
 
-    socket.emit('delete_transaction', {'walletID': widget.walletID, 'id': widget.txID});
+    String walletID = Provider.of<UsersProvider>(context, listen: false).info.walletID;
+    socket.emit('delete_transaction', {'walletID': walletID, 'id': widget.txID});
     showSnack(widget.wrappingScaffoldKey, "Xóa giao dịch thành công");
     Navigator.pop(context);
   }

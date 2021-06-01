@@ -33,6 +33,5 @@ Future<IO.Socket> getSocket() async {
 
     socket.on('connect_error', (err) => print(err));
   }
-  // print(socket.id);
   return socket;
 }

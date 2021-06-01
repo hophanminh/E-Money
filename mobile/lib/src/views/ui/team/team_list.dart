@@ -13,9 +13,8 @@ import 'edit_team.dart';
 
 class TeamList extends StatefulWidget {
   final Drawer sidebar;
-  final Map<String, dynamic> user;
 
-  const TeamList({this.sidebar, this.user});
+  const TeamList({this.sidebar});
 
   @override
   _TeamListState createState() => _TeamListState();
@@ -25,7 +24,7 @@ class _TeamListState extends State<TeamList> {
   var _scaffoldKey = GlobalKey<ScaffoldMessengerState>();
 
   final _searchController =
-      TextEditingController(text: "00610aa0-a9d5-11eb-8133-9f8c9ea76fad");
+      TextEditingController(text: "");
 
   void _onHandleChangeSearchBar() {
     Provider.of<TeamsProvider>(context, listen: false)

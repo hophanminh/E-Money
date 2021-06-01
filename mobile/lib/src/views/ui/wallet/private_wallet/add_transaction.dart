@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/src/models/UsersProvider.dart';
 import 'package:mobile/src/services/socketservices/socket.dart';
 import 'package:mobile/src/views/utils/helpers/helper.dart';
 import 'package:mobile/src/views/utils/widgets/widget.dart';
+import 'package:provider/provider.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 
 class AddTransaction extends StatefulWidget {
   final GlobalKey<ScaffoldMessengerState> wrappingScaffoldKey;
-  final String walletID;
   final List<dynamic> eventList;
   final List<dynamic> fullCategoryList;
 
-  const AddTransaction({Key key, @required this.walletID, @required this.fullCategoryList, @required this.eventList, @required this.wrappingScaffoldKey}) : super(key: key);
+  const AddTransaction({Key key, @required this.fullCategoryList, @required this.eventList, @required this.wrappingScaffoldKey}) : super(key: key);
 
   @override
   _AddTransactionState createState() => _AddTransactionState();
@@ -90,161 +91,175 @@ class _AddTransactionState extends State<AddTransaction> {
 
   @override
   Widget build(BuildContext context) {
-    return ScaffoldMessenger(
-      key: _scaffoldKey,
-      child: Scaffold(
-        appBar: mySimpleAppBar('Thêm giao dịch mới'),
-        // backgroundColor: Colors.transparent,
-        body: SingleChildScrollView(
-          child: Container(
-            margin: const EdgeInsets.fromLTRB(10, 0, 10, 20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 10, bottom: 20.0),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 10.0),
-                          child: Row(
-                            children: [
-                              Container(
-                                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
-                                decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), border: Border.all(width: 1, color: Colors.black26)),
-                                child: DropdownButtonHideUnderline(
-                                  child: DropdownButton(
-                                    value: _currentType,
-                                    items: _txTypeMenuItems,
-                                    onChanged: changeType,
+    return GestureDetector(
+        onTap: () {
+      FocusManager.instance.primaryFocus.unfocus();
+    },
+      child: ScaffoldMessenger(
+        key: _scaffoldKey,
+        child: Scaffold(
+          appBar: mySimpleAppBar('Thêm giao dịch mới'),
+          // backgroundColor: Colors.transparent,
+          body: SingleChildScrollView(
+            child: Container(
+              margin: const EdgeInsets.fromLTRB(10, 0, 10, 20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10, bottom: 20.0),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 10.0),
+                            child: Row(
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), border: Border.all(width: 1, color: Colors.black26)),
+                                  child: DropdownButtonHideUnderline(
+                                    child: DropdownButton(
+                                      value: _currentType,
+                                      items: _txTypeMenuItems,
+                                      onChanged: changeType,
+                                      onTap: () {
+                                        FocusManager.instance.primaryFocus.unfocus();
+                                      },
+                                    ),
                                   ),
                                 ),
+                                Expanded(
+                                  child: Container(
+                                    margin: EdgeInsets.only(left: 10),
+                                    child: TextFormField(
+                                      controller: _priceController,
+                                      keyboardType: TextInputType.number,
+                                      decoration: myInputDecoration('Số tiền', inputBorder: Colors.black26, suffix: Text(formatter.currencySymbol)),
+                                      style: TextStyle(color: _currentType == 'Chi' ? Colors.red : Colors.green),
+                                      onChanged: (value) {
+                                        TextSelection cursorPos = _priceController.selection;
+
+                                        String copy = value.replaceAll(new RegExp(r'[^0-9]'), ''); // bỏ tất cả chỉ giữ lại số
+                                        try {
+                                          copy = formatMoneyWithoutSymbol(double.parse(copy));
+                                        } on FormatException {
+                                          copy = '0';
+                                        }
+                                        _priceController.text = copy;
+
+                                        // đưa cursor về chỗ hợp lý
+                                        // if (cursorPos.start > _priceController.text.length) {
+                                        cursorPos = new TextSelection.fromPosition(new TextPosition(offset: _priceController.text.length));
+                                        // } else {
+                                        //   cursorPos = new TextSelection.fromPosition(
+                                        //       new TextPosition(offset: _priceController.text.length + 1));
+                                        // }
+                                        _priceController.selection = cursorPos;
+                                      },
+                                      validator: (String value) {
+                                        if (value.isEmpty) {
+                                          return 'Số tiền không được để trống';
+                                        }
+                                        if (double.parse(value.replaceAll(new RegExp(r'[^0-9]'), '')) == 0) {
+                                          return 'Số tiền không hợp lệ';
+                                        }
+                                        return null;
+                                      },
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            child: TextFormField(
+                              controller: _datetimeController,
+                              showCursor: true,
+                              readOnly: true,
+                              // keyboardType: TextInputType.datetime,
+                              decoration: myInputDecoration('Bạn chưa chọn thời gian', inputBorder: Colors.black26),
+                              onTap: () {
+                                _selectDatetime();
+                              },
+                              validator: (String value) {
+                                return null;
+                              },
+                            ),
+                          ),
+                          Container(
+                            margin: EdgeInsets.symmetric(vertical: 10),
+                            padding: EdgeInsets.symmetric(horizontal: 10),
+                            decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), border: Border.all(width: 1, color: Colors.black26)),
+                            child: DropdownButtonFormField(
+                              hint: Text('Chọn hạng mục chi tiêu'),
+                              decoration: InputDecoration(
+                                enabledBorder: InputBorder.none,
                               ),
-                              Expanded(
-                                child: Container(
-                                  margin: EdgeInsets.only(left: 10),
-                                  child: TextFormField(
-                                    controller: _priceController,
-                                    keyboardType: TextInputType.number,
-                                    decoration: myInputDecoration('Số tiền', inputBorder: Colors.black26, suffix: Text(formatter.currencySymbol)),
-                                    style: TextStyle(color: _currentType == 'Chi' ? Colors.red : Colors.green),
-                                    onChanged: (value) {
-                                      TextSelection cursorPos = _priceController.selection;
-
-                                      String copy = value.replaceAll(new RegExp(r'[^0-9]'), ''); // bỏ tất cả chỉ giữ lại số
-                                      try {
-                                        copy = formatMoneyWithoutSymbol(double.parse(copy));
-                                      } on FormatException {
-                                        copy = '0';
-                                      }
-                                      _priceController.text = copy;
-
-                                      // đưa cursor về chỗ hợp lý
-                                      // if (cursorPos.start > _priceController.text.length) {
-                                      cursorPos = new TextSelection.fromPosition(new TextPosition(offset: _priceController.text.length));
-                                      // } else {
-                                      //   cursorPos = new TextSelection.fromPosition(
-                                      //       new TextPosition(offset: _priceController.text.length + 1));
-                                      // }
-                                      _priceController.selection = cursorPos;
-                                    },
-                                    validator: (String value) {
-                                      if (value.isEmpty) {
-                                        return 'Số tiền không được để trống';
-                                      }
-                                      if (double.parse(value.replaceAll(new RegExp(r'[^0-9]'), '')) == 0) {
-                                        return 'Số tiền không hợp lệ';
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          child: TextFormField(
-                            controller: _datetimeController,
-                            showCursor: true,
-                            readOnly: true,
-                            // keyboardType: TextInputType.datetime,
-                            decoration: myInputDecoration('Bạn chưa chọn thời gian', inputBorder: Colors.black26),
-                            onTap: () {
-                              _selectDatetime();
-                            },
-                            validator: (String value) {
-                              return null;
-                            },
-                          ),
-                        ),
-                        Container(
-                          margin: EdgeInsets.symmetric(vertical: 10),
-                          padding: EdgeInsets.symmetric(horizontal: 10),
-                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), border: Border.all(width: 1, color: Colors.black26)),
-                          child: DropdownButtonFormField(
-                            hint: Text('Chọn hạng mục chi tiêu'),
-                            decoration: InputDecoration(
-                              enabledBorder: InputBorder.none,
+                              value: _currentCategory,
+                              items: _txCategoryMenuItems,
+                              onChanged: changeCat,
+                              onTap: () {
+                                FocusManager.instance.primaryFocus.unfocus();
+                              },
                             ),
-                            value: _currentCategory,
-                            items: _txCategoryMenuItems,
-                            onChanged: changeCat,
                           ),
-                        ),
-                        Container(
-                          margin: EdgeInsets.symmetric(vertical: 10),
-                          padding: EdgeInsets.symmetric(horizontal: 10),
-                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), border: Border.all(width: 1, color: Colors.black26)),
-                          child: DropdownButtonFormField(
-                            hint: Text('Chọn sự kiện'),
-                            decoration: InputDecoration(
-                              enabledBorder: InputBorder.none,
+                          Container(
+                            margin: EdgeInsets.symmetric(vertical: 10),
+                            padding: EdgeInsets.symmetric(horizontal: 10),
+                            decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), border: Border.all(width: 1, color: Colors.black26)),
+                            child: DropdownButtonFormField(
+                              hint: Text('Chọn sự kiện'),
+                              decoration: InputDecoration(
+                                enabledBorder: InputBorder.none,
+                              ),
+                              value: _currentEvent,
+                              items: _availableEventMenuItems,
+                              onChanged: (value) {
+                                setState(() {
+                                  _currentEvent = value;
+                                });
+                              },
+                              onTap: () {
+                                FocusManager.instance.primaryFocus.unfocus();
+                              },
                             ),
-                            value: _currentEvent,
-                            items: _availableEventMenuItems,
-                            onChanged: (value) {
-                              setState(() {
-                                _currentEvent = value;
-                              });
-                            },
                           ),
-                        ),
-                        Container(
-                          margin: EdgeInsets.symmetric(vertical: 10),
-                          child: TextFormField(
-                            maxLines: 5,
-                            maxLength: 500,
-                            controller: _descriptionController,
-                            decoration: myInputDecoration('Mô tả', inputBorder: Colors.black26),
-                            validator: (String value) {
-                              if (value.length > 500) {
-                                return 'Mô tả không được quá 500 ký tự';
-                              }
-                              return null;
-                            },
-                          ),
-                        )
-                      ],
+                          Container(
+                            margin: EdgeInsets.symmetric(vertical: 10),
+                            child: TextFormField(
+                              maxLines: 5,
+                              maxLength: 500,
+                              controller: _descriptionController,
+                              decoration: myInputDecoration('Mô tả', inputBorder: Colors.black26),
+                              validator: (String value) {
+                                if (value.length > 500) {
+                                  return 'Mô tả không được quá 500 ký tự';
+                                }
+                                return null;
+                              },
+                            ),
+                          )
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                myFullWidthButton('Thêm giao dịch', backgroundColor: primary, action: () {
-                  if (_formKey.currentState.validate()) {
-                    showSnack(_scaffoldKey, 'Đang xử lý...');
-                    handleAddTx();
-                  }
-                })
-              ],
+                  myFullWidthButton('Thêm giao dịch', backgroundColor: primary, action: () {
+                    if (_formKey.currentState.validate()) {
+                      showSnack(_scaffoldKey, 'Đang xử lý...');
+                      handleAddTx();
+                    }
+                  })
+                ],
+              ),
             ),
           ),
         ),
-      ),
+      )
     );
   }
 
@@ -313,7 +328,8 @@ class _AddTransactionState extends State<AddTransaction> {
     };
 
     showSnack(_scaffoldKey, 'Đang xử lý...');
-    socket.emitWithAck('add_transaction', {'walletID': widget.walletID, 'newTransaction': newTx}, ack: (data) {
+    String walletID = Provider.of<UsersProvider>(context, listen: false).info.walletID;
+    socket.emitWithAck('add_transaction', {'walletID': walletID, 'newTransaction': newTx}, ack: (data) {
       Navigator.pop(context);
       showSnack(widget.wrappingScaffoldKey, "Thêm thành công");
     });
