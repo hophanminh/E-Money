@@ -17,10 +17,9 @@ import 'package:socket_io_client/socket_io_client.dart';
 
 class ViewTransaction extends StatefulWidget {
   final List<dynamic> eventList;
-  final List<dynamic> fullCategoryList;
   final String txId;
 
-  const ViewTransaction({Key key, @required this.txId, @required this.eventList, @required this.fullCategoryList}) : super(key: key);
+  const ViewTransaction({Key key, @required this.txId, @required this.eventList}) : super(key: key);
 
   @override
   _ViewTransactionState createState() => _ViewTransactionState();
@@ -366,7 +365,7 @@ class _ViewTransactionState extends State<ViewTransaction> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => EditTransaction(
-                        fullCategoryList: widget.fullCategoryList, eventList: widget.eventList, wrappingScaffoldKey: _scaffoldKey)));
+                        eventList: widget.eventList, wrappingScaffoldKey: _scaffoldKey)));
           },
         )
       ],

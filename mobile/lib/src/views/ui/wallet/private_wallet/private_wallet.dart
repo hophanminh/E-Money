@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:mobile/src/models/CatsProvider.dart';
 import 'package:mobile/src/models/UsersProvider.dart';
 import 'package:mobile/src/models/WalletsProvider.dart';
 import 'package:mobile/src/services/restapiservices/wallet_service.dart';
@@ -29,23 +30,8 @@ class IndividualWallet extends StatefulWidget {
 class _IndividualWalletState extends State<IndividualWallet> {
   IO.Socket _socket;
   var _scaffoldKey = GlobalKey<ScaffoldMessengerState>();
-  var _categoryList = {'fullList': [], 'defaultList': [], 'customList': []};
   List<dynamic> _iconList = [];
   List<dynamic> _eventList = [];
-
-  void _setCategoryList(List<dynamic> fullList, List<dynamic> defaultList, List<dynamic> customList) {
-    _categoryList['fullList'].clear();
-    _categoryList['defaultList'].clear();
-    _categoryList['customList'].clear();
-
-    setState(() {
-      _categoryList['fullList'].addAll(fullList);
-
-      _categoryList['defaultList'].addAll(defaultList);
-
-      _categoryList['customList'].addAll(customList);
-    });
-  }
 
   void _setEventList(List<dynamic> eventList) {
     _eventList.clear();
@@ -54,21 +40,11 @@ class _IndividualWalletState extends State<IndividualWallet> {
     });
   }
 
-  void updateTxCatAfterUpdateCat(List<dynamic> fullList) {
-    // List<dynamic> copyTxs = List.from(_txs);
-    //
-    // for (int i = 0; i < copyTxs.length; i++) {
-    //   dynamic cat = fullList.where((cat) => cat['ID'] == copyTxs[i]['catID']).first;
-    //   if (cat != null) {
-    //     copyTxs[i]['IconID'] = cat['IconID'];
-    //     copyTxs[i]['categoryName'] = cat['Name'];
-    //   }
-    // }
-  }
 
   void _initPage() async {
     UsersProvider usersProvider = Provider.of<UsersProvider>(context, listen: false);
     WalletsProvider walletsProvider = Provider.of<WalletsProvider>(context, listen: false);
+    CatsProvider catsProvider = Provider.of<CatsProvider>(context, listen: false);
 
     final walletID = usersProvider.info.walletID;
     _iconList = jsonDecode(await WalletService.instance.getListIcon());
@@ -87,12 +63,14 @@ class _IndividualWalletState extends State<IndividualWallet> {
       walletsProvider.fetchData(data);
     });
 
-    _socket.emitWithAck("get_category", {'walletID': walletID}, ack: (data) => {_setCategoryList(data['fullList'], data['defaultList'], data['customList'])});
+    _socket.emitWithAck("get_category", {'walletID': walletID}, ack: (data) {
+      catsProvider.fetchData(data);
+    });
 
     _socket.on('wait_for_update_category', (data) {
-      print('update cate');
-      _setCategoryList(data['fullList'], data['defaultList'], data['customList']);
-      updateTxCatAfterUpdateCat(_categoryList['fullList']);
+      print('on updating cate');
+      catsProvider.fetchData(data);
+      walletsProvider.updateTxCatAfterUpdateCat(data['fullList']);
     });
 
     _socket.emitWithAck("get_event", {'walletID': walletID}, ack: (data) {
@@ -258,7 +236,7 @@ class _IndividualWalletState extends State<IndividualWallet> {
           Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => ViewTransaction(txId: tx.id, fullCategoryList: _categoryList['fullList'], eventList: _eventList)));
+                  builder: (context) => ViewTransaction(txId: tx.id, eventList: _eventList)));
         },
         child: Slidable(
           actionPane: SlidableDrawerActionPane(),
@@ -274,7 +252,7 @@ class _IndividualWalletState extends State<IndividualWallet> {
                     context,
                     MaterialPageRoute(
                         builder: (context) => EditTransaction(
-                            fullCategoryList: _categoryList['fullList'], eventList: _eventList, wrappingScaffoldKey: _scaffoldKey)));
+                            eventList: _eventList, wrappingScaffoldKey: _scaffoldKey)));
                 }
             ),
             IconSlideAction(
@@ -381,18 +359,14 @@ class _IndividualWalletState extends State<IndividualWallet> {
           onSelected: (route) {
             print(route);
             // Note You must create respective pages for navigation
+            String walletId = Provider.of<UsersProvider>(context, listen: false).info.walletID;
 
             switch (int.parse(route)) {
               case 1:
-                // Navigator.push(
-                //     context,
-                //     MaterialPageRoute(
-                //         builder: (context) => CategoryDashboard(
-                //             walletID: widget.user['WalletID'],
-                //             txs: _txs,
-                //             defaultList: _categoryList['defaultList'],
-                //             customList: _categoryList['customList'],
-                //             setCategoryList: _setCategoryList)));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => CategoryDashboard(walletID: walletId)));
                 break;
               case 2:
                 // Navigator.push(
@@ -430,7 +404,7 @@ class _IndividualWalletState extends State<IndividualWallet> {
             context,
             MaterialPageRoute(
                 builder: (context) =>
-                    AddTransaction(fullCategoryList: _categoryList['fullList'], eventList: _eventList, wrappingScaffoldKey: _scaffoldKey)));
+                    AddTransaction(eventList: _eventList, wrappingScaffoldKey: _scaffoldKey)));
       },
       tooltip: 'Thêm giao dịch',
       child: Icon(Icons.add),

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:mobile/src/config/config.dart';
+import 'package:mobile/src/models/CatsProvider.dart';
 import 'package:mobile/src/services/restapiservices/user_service.dart';
 import 'package:mobile/src/services/restapiservices/wallet_service.dart';
 import 'package:mobile/src/services/socketservices/socket.dart';
@@ -14,7 +15,7 @@ import 'package:socket_io_client/socket_io_client.dart';
 class EditCatDialog extends StatefulWidget {
   final GlobalKey<ScaffoldMessengerState> wrappingScaffoldKey;
   final String walletID;
-  final Map<String, dynamic> cat;
+  final Categories cat;
 
   const EditCatDialog({Key key, @required this.walletID, @required this.cat, @required this.wrappingScaffoldKey}) : super(key: key);
 
@@ -34,20 +35,15 @@ class _EditCatDialogState extends State<EditCatDialog> {
 
   @override
   void initState() {
-    super.initState();
-
-    for (String key in widget.cat.keys) print('${key} - ${widget.cat[key]}');
-
     _initPage();
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return ScaffoldMessenger(
       key: _scaffoldKey,
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: Dialog(
+      child: Dialog(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
           ),
@@ -55,26 +51,21 @@ class _EditCatDialogState extends State<EditCatDialog> {
           backgroundColor: Colors.white,
           child: SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(15, 0, 15, 20),
+              padding: const EdgeInsets.fromLTRB(15, 0, 15, 5),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Align(
-                    alignment: Alignment.centerRight,
-                    child: IconButton(
-                      icon: Icon(Icons.close),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 15.0),
-                    child: Text(
-                      'Thay đổi thông tin loại giao dich',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                    alignment: Alignment.centerLeft,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 20, bottom: 15),
+                      child: Text(
+                        'Thay đổi loại',
+                        style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                      ),
                     ),
                   ),
                   Padding(
@@ -115,18 +106,35 @@ class _EditCatDialogState extends State<EditCatDialog> {
                       ],
                     ),
                   ),
-                  myAlignedButton('Sửa', backgroundColor: primary, action: () {
-                    if (_formKey.currentState.validate()) {
-                      showSnack(_scaffoldKey, 'Đang xử lý...');
-                      handleEditCat();
-                    }
-                  })
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: Text(
+                            'Hủy',
+                            style: TextStyle(fontSize: 16, color: Colors.green),
+                          )),
+                      TextButton(
+                          onPressed: () {
+                            if (_formKey.currentState.validate()) {
+                              showSnack(_scaffoldKey, 'Đang xử lý...');
+                              handleEditCat();
+                            }
+                          },
+                          child: Text(
+                            'Sửa',
+                            style: TextStyle(fontSize: 16, color: Colors.green),
+                          )),
+                    ],
+                  )
                 ],
               ),
             ),
           ),
         ),
-      ),
     );
   }
 
@@ -136,15 +144,10 @@ class _EditCatDialogState extends State<EditCatDialog> {
 
     Socket socket = await getSocket();
 
-    print(socket.id);
-    print(widget.cat['ID']);
-    print(widget.cat['WalletID']);
-    print(widget.cat['IsDefault']);
-
     socket.emitWithAck('update_category', {
       'walletID': widget.walletID,
-      'categoryID': widget.cat['ID'],
-      'newCategory': {'IconID': _currentIcon, 'Name': _nameController.text, 'ID': widget.cat['ID'], 'WalletID': widget.cat['WalletID'], 'IsDefault': widget.cat['IsDefault']}
+      'categoryID': widget.cat.id,
+      'newCategory': {'IconID': _currentIcon, 'Name': _nameController.text, 'ID': widget.cat.id, 'WalletID': widget.cat.walletID, 'IsDefault': widget.cat.isDefault}
     }, ack: () {
       Navigator.pop(context);
       showSnack(widget.wrappingScaffoldKey, 'Cập nhật thành công');
@@ -152,6 +155,9 @@ class _EditCatDialogState extends State<EditCatDialog> {
   }
 
   void _initPage() async {
+    _currentIcon = widget.cat.iconID;
+    _nameController.text = widget.cat.name;
+
     _iconList = jsonDecode(await WalletService.instance.getListIcon());
 
     if (_iconList.length != 0) {
@@ -161,10 +167,7 @@ class _EditCatDialogState extends State<EditCatDialog> {
           value: icon['ID'],
         ));
       }
-
       // print(widget.cat['IconID']);
-      _currentIcon = widget.cat['IconID'];
-      _nameController.text = widget.cat['Name'];
     }
 
     setState(() {});

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/src/models/CatsProvider.dart';
 import 'package:mobile/src/models/UsersProvider.dart';
 import 'package:mobile/src/services/socketservices/socket.dart';
 import 'package:mobile/src/views/utils/helpers/helper.dart';
@@ -9,9 +10,8 @@ import 'package:socket_io_client/socket_io_client.dart';
 class AddTransaction extends StatefulWidget {
   final GlobalKey<ScaffoldMessengerState> wrappingScaffoldKey;
   final List<dynamic> eventList;
-  final List<dynamic> fullCategoryList;
 
-  const AddTransaction({Key key, @required this.fullCategoryList, @required this.eventList, @required this.wrappingScaffoldKey}) : super(key: key);
+  const AddTransaction({Key key, @required this.eventList, @required this.wrappingScaffoldKey}) : super(key: key);
 
   @override
   _AddTransactionState createState() => _AddTransactionState();
@@ -35,7 +35,6 @@ class _AddTransactionState extends State<AddTransaction> {
   var _datetimeController = TextEditingController();
 
   // thể loại giao dịch
-  List<DropdownMenuItem<String>> _txCategoryMenuItems = [];
   String _currentCategory;
 
   // tên sự kiện
@@ -57,21 +56,7 @@ class _AddTransactionState extends State<AddTransaction> {
     }
     _currentType = _txTypeMenuItems[0].value;
 
-    for (Map<String, dynamic> cat in widget.fullCategoryList) {
-      _txCategoryMenuItems.add(new DropdownMenuItem(
-        child: Row(
-          children: [
-            FlutterLogo(size: 24),
-            Padding(
-              padding: const EdgeInsets.only(left: 20.0),
-              child: Text(cat['Name']),
-            ),
-          ],
-        ),
-        value: cat['ID'],
-      ));
-    }
-    _currentCategory = _txCategoryMenuItems[0].value;
+    _currentCategory = '';
 
     for (Map<String, dynamic> event in widget.eventList) {
       _availableEventMenuItems.add(new DropdownMenuItem(child: Text(event['Name']), value: event['ID']));
@@ -195,18 +180,36 @@ class _AddTransactionState extends State<AddTransaction> {
                             margin: EdgeInsets.symmetric(vertical: 10),
                             padding: EdgeInsets.symmetric(horizontal: 10),
                             decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), border: Border.all(width: 1, color: Colors.black26)),
-                            child: DropdownButtonFormField(
-                              hint: Text('Chọn hạng mục chi tiêu'),
-                              decoration: InputDecoration(
-                                enabledBorder: InputBorder.none,
-                              ),
-                              value: _currentCategory,
-                              items: _txCategoryMenuItems,
-                              onChanged: changeCat,
-                              onTap: () {
-                                FocusManager.instance.primaryFocus.unfocus();
-                              },
-                            ),
+                              child: Consumer<CatsProvider>(
+                                  builder: (context, catsProvider, child) {
+                                    return DropdownButtonFormField(
+                                      hint: Text('Chọn hạng mục chi tiêu'),
+                                      decoration: InputDecoration(
+                                        enabledBorder: InputBorder.none,
+                                      ),
+                                      value: _currentCategory == '' ? catsProvider.fullList[0].id : _currentCategory,
+                                      items: catsProvider.fullList
+                                          .map<DropdownMenuItem<String>>((Categories cat) {
+                                        return DropdownMenuItem(
+                                          child: Row(
+                                            children: [
+                                              FlutterLogo(size: 24),
+                                              Padding(
+                                                padding: const EdgeInsets.only(left: 20.0),
+                                                child: Text(cat.name),
+                                              ),
+                                            ],
+                                          ),
+                                          value: cat.id,
+                                        );
+                                      }).toList(),
+                                      onChanged: changeCat,
+                                      onTap: () {
+                                        FocusManager.instance.primaryFocus
+                                            .unfocus();
+                                      },
+                                    );
+                                  })
                           ),
                           Container(
                             margin: EdgeInsets.symmetric(vertical: 10),
@@ -319,8 +322,9 @@ class _AddTransactionState extends State<AddTransaction> {
       return;
     }
 
+    List<Categories> fullList = Provider.of<CatsProvider>(context, listen: false).fullList;
     final Map<String, dynamic> newTx = {
-      'catID': _currentCategory,
+      'catID': _currentCategory == '' ? fullList[0].id : _currentCategory,
       'eventID': _currentEvent,
       'price': _currentType == 'Chi' ? price * -1 : price,
       'time': _selectedDatetime.toIso8601String(),

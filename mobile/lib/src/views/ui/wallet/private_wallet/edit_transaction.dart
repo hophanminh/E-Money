@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/src/models/CatsProvider.dart';
 import 'package:mobile/src/models/UsersProvider.dart';
 import 'package:mobile/src/models/WalletsProvider.dart';
 import 'package:mobile/src/services/socketservices/socket.dart';
@@ -10,9 +11,8 @@ import 'package:socket_io_client/socket_io_client.dart';
 class EditTransaction extends StatefulWidget {
   final GlobalKey<ScaffoldMessengerState> wrappingScaffoldKey;
   final List<dynamic> eventList;
-  final List<dynamic> fullCategoryList;
 
-  const EditTransaction({Key key, @required this.fullCategoryList, @required this.eventList, @required this.wrappingScaffoldKey})
+  const EditTransaction({Key key, @required this.eventList, @required this.wrappingScaffoldKey})
       : super(key: key);
 
   @override
@@ -36,7 +36,6 @@ class _EditTransactionState extends State<EditTransaction> {
   var _datetimeController = TextEditingController();
 
   // thể loại giao dịch
-  List<DropdownMenuItem<String>> _txCategoryMenuItems = [];
   String _currentCategory;
 
   // tên sự kiện
@@ -61,20 +60,6 @@ class _EditTransactionState extends State<EditTransaction> {
     _currentType = _clonedTx.price < 0 ? 'Chi' : 'Thu';
     _priceController.text = formatMoneyWithoutSymbol(_clonedTx.price.abs());
 
-    for (Map<String, dynamic> cat in widget.fullCategoryList) {
-      _txCategoryMenuItems.add(new DropdownMenuItem(
-        child: Row(
-          children: [
-            FlutterLogo(size: 24),
-            Padding(
-              padding: const EdgeInsets.only(left: 20.0),
-              child: Text(cat['Name']),
-            ),
-          ],
-        ),
-        value: cat['ID'],
-      ));
-    }
     _currentCategory = _clonedTx.catID;
 
     for (Map<String, dynamic> event in widget.eventList) {
@@ -202,18 +187,36 @@ class _EditTransactionState extends State<EditTransaction> {
                             margin: EdgeInsets.symmetric(vertical: 10),
                             padding: EdgeInsets.symmetric(horizontal: 10),
                             decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), border: Border.all(width: 1, color: Colors.black26)),
-                            child: DropdownButtonFormField(
-                              hint: Text('Chọn hạng mục chi tiêu'),
-                              decoration: InputDecoration(
-                                enabledBorder: InputBorder.none,
-                              ),
-                              value: _currentCategory,
-                              items: _txCategoryMenuItems,
-                              onChanged: changeCat,
-                              onTap: () {
-                                FocusManager.instance.primaryFocus.unfocus();
-                              },
-                            ),
+                              child: Consumer<CatsProvider>(
+                                  builder: (context, catsProvider, child) {
+                                    return DropdownButtonFormField(
+                                      hint: Text('Chọn hạng mục chi tiêu'),
+                                      decoration: InputDecoration(
+                                        enabledBorder: InputBorder.none,
+                                      ),
+                                      value: _currentCategory,
+                                      items: catsProvider.fullList
+                                          .map<DropdownMenuItem<String>>((Categories cat) {
+                                        return DropdownMenuItem(
+                                          child: Row(
+                                            children: [
+                                              FlutterLogo(size: 24),
+                                              Padding(
+                                                padding: const EdgeInsets.only(left: 20.0),
+                                                child: Text(cat.name),
+                                              ),
+                                            ],
+                                          ),
+                                          value: cat.id,
+                                        );
+                                      }).toList(),
+                                      onChanged: changeCat,
+                                      onTap: () {
+                                        FocusManager.instance.primaryFocus
+                                            .unfocus();
+                                      },
+                                    );
+                                  })
                           ),
                           Container(
                             margin: EdgeInsets.symmetric(vertical: 10),

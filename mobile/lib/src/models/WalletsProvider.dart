@@ -42,6 +42,21 @@ class WalletsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void updateTxCatAfterUpdateCat(List<dynamic> fullList) {
+    List<Transactions> copyTxs = List.from(this.txList);
+
+    for (int i = 0; i < copyTxs.length; i++) {
+      dynamic cat = fullList.where((cat) => cat['ID'] == copyTxs[i].catID).first;
+      if (cat != null) {
+        copyTxs[i].iconID = cat['IconID'];
+        copyTxs[i].categoryName = cat['Name'];
+      }
+    }
+    this._txList = copyTxs;
+    notifyListeners();
+  }
+
+
   Future<bool> changeSelected(Transactions selected) async {
     this._selected = selected;
     notifyListeners();

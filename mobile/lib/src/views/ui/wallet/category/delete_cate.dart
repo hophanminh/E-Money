@@ -46,38 +46,53 @@ class _DeleteCateDialogState extends State<DeleteCateDialog> {
           backgroundColor: Colors.white,
           child: SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(15, 0, 15, 20),
+              padding: const EdgeInsets.fromLTRB(15, 0, 15, 5),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Align(
-                    alignment: Alignment.centerRight,
-                    child: IconButton(
-                      icon: Icon(Icons.close),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
+                    alignment: Alignment.centerLeft,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 20, bottom: 15),
+                      child: Text(
+                        'Xác nhận',
+                        style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                      ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 15.0),
-                    child: Text(
-                      'Xác nhận',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 20.0),
+                      child: Text(
+                        'Những giao dịch của loại này sẽ tự động đổi sang loại mặc định "Khác".\nBạn có chắc chắn muốn xóa loại này?',
+                      ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 20.0),
-                    child: Text(
-                      'Những giao dịch của loại này sẽ tự động đổi sang loại mặc định "Khác". Bạn có chắc chắn muốn xóa loại này?',
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  myAlignedButton('Xóa', backgroundColor: warning, action: () {
-                    handleDeleteCate();
-                  })
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: Text(
+                            'Hủy',
+                            style: TextStyle(fontSize: 16, color: Colors.red),
+                          )),
+                      TextButton(
+                          onPressed: () {
+                            handleDeleteCate();
+                          },
+                          child: Text(
+                            'Xóa loại',
+                            style: TextStyle(fontSize: 16, color: Colors.red),
+                          )),
+                    ],
+                  )
                 ],
               ),
             ),
@@ -93,7 +108,7 @@ class _DeleteCateDialogState extends State<DeleteCateDialog> {
     Socket socket = await getSocket();
     socket.emitWithAck("delete_category", {'walletID': widget.walletID, 'id': widget.cateID}, ack: () {
       Navigator.pop(context);
-      showSnack(widget.wrappingScaffoldKey, 'Đã xóa');
+      showSnack(widget.wrappingScaffoldKey, 'Đã xóa thành công');
     });
     // socket.emit("delete_category", {'walletID': widget.walletID, 'id': widget.cateID});
     // Navigator.pop(context);
