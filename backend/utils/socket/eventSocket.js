@@ -2,6 +2,7 @@ const eventModel = require('../../models/eventModel');
 const eventTypeModel = require('../../models/eventTypeModel');
 const { v4: uuidv4 } = require('uuid');
 const { convertToRegularDate, convertToRegularDateTime, getNextEventDate } = require('../helper');
+const { FORMAT_DATETIME_PATTER } = require('../../config/default.json');
 module.exports = function (socket, io, decoded_userID) {
 
   // get event of wallet
@@ -35,7 +36,7 @@ module.exports = function (socket, io, decoded_userID) {
         Name: newEvent.Name,
         StartDate: convertToRegularDateTime(newEvent.StartDate),
         EndDate: newEvent.EndDate ? convertToRegularDateTime(newEvent.EndDate) : null,
-        NextDate: getNextEventDate(newEvent.StartDate, newEvent.EventTypeID, newEvent.Value),
+        NextDate: getNextEventDate(newEvent.StartDate, newEvent.EventTypeID, newEvent.Value).format(FORMAT_DATETIME_PATTER.DATE_TIME),
         Status: 1,
         Value: newEvent.Value,
         ExpectingAmount: newEvent.ExpectingAmount,

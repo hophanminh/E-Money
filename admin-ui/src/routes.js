@@ -1,6 +1,6 @@
 import DashboardLayout from './components/DashboardLayout';
 import CategoryAdmin from './pages/CategoryAdmin';
-// import SignIn from './components/signin/SignIn'
+import TeamList from './components/Teams/TeamList'
 
 const routes = [
   {
@@ -8,7 +8,7 @@ const routes = [
     element: <DashboardLayout />,
     children: [
       { path: 'category', element: <CategoryAdmin /> },
-      // { path: 'signin', element: <SignIn /> }
+      { path: 'teams', element: <TeamList /> },
     ]
   },
 ];

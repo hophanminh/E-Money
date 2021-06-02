@@ -14,12 +14,14 @@ module.exports = io => {
     console.log('running a task every minute');
     const events = await eventModel.getAllRunningEvents();
     console.log('Checking ' + events.length + ' running event(s)');
+
     for (let i = 0; i < events.length; i++) {
       console.log('Event #' + (i + 1));
       const event = events[i];
       let now = moment(Date.now());
       let nextDate = moment(event.NextDate);
       let endDate = event.EndDate === null ? null : moment(event.EndDate);
+
       if (endDate === null && nextDate > now) {
         console.log('    + Gladly, there\'s nothing to do, NextDate: ' + nextDate.format(FORMAT_DATETIME_PATTER.DATE_TIME));
         continue;
@@ -36,7 +38,7 @@ module.exports = io => {
       let transactionToAdd = {
         ID: uuidv4(),
         Money: event.ExpectingAmount,
-        Description: 'Được thêm tự động từ sự kiện đã lên lịch',
+        Description: 'Được thêm tự động từ sự kiện đã lên lịch cho ngày ' + nextDate.format(FORMAT_DATETIME_PATTER.DATE_FOR_FRONT_END),
         DateAdded: now.format(FORMAT_DATETIME_PATTER.DATE_TIME),
         DateModified: now.format(FORMAT_DATETIME_PATTER.DATE_TIME),
         EventID: event.ID,
@@ -53,36 +55,52 @@ module.exports = io => {
         UserID: userID
       }
 
+      notificationToAdd.Content = 'Ví của bạn đã tự động thêm 1 giao dịch loại ';
+
       switch (+event.EventTypeID) {
         case DAILY:
-          notificationToAdd.Content = 'Ví của bạn đã tự động thêm 1 giao dịch hằng ngày';
+          notificationToAdd.Content += 'hằng ngày';
           break;
         case WEEKLY:
-          notificationToAdd.Content = 'Ví của bạn đã tự động thêm 1 giao dịch hằng tuần';
+          notificationToAdd.Content += 'hằng tuần';
           break;
         case MONTHLY:
-          notificationToAdd.Content = 'Ví của bạn đã tự động thêm 1 giao dịch hằng tháng';
+          notificationToAdd.Content += 'hằng tháng';
           break;
         case YEARLY:
-          notificationToAdd.Content = 'Ví của bạn đã tự động thêm 1 giao dịch hằng năm';
+          notificationToAdd.Content += 'hằng năm';
           break;
         default:
           console.log('Do nothing');
       }
 
-      notificationToAdd.Content += ', với số tiền: ' + event.ExpectingAmount;
+      notificationToAdd.Content += ', với số tiền: ' + event.ExpectingAmount + ', cho ngày: ' + nextDate.format(FORMAT_DATETIME_PATTER.DATE_FOR_FRONT_END);
 
-      await transactionModel.addTransaction(transactionToAdd);
-      await notificationModel.addNotification(notificationToAdd);
-      await eventModel.updateEvent(event.ID, { NextDate: nextDate });
+      try {
+        await transactionModel.addTransaction(transactionToAdd);
+      } catch (e) {
+        console.log('Error while adding a new transaction', e);
+      }
 
-      // const notificationList = await notificationModel.getNotificationByUserID(userID, NOTIFICATION_AMOUNT_TO_LOAD);
-      // const count = await notificationModel.countUnreadNotification(userID);
-      // io.on("connection", (socket) => {
-      //   socket.emit(`new_notification_added_${userID}`, { notificationList, count: count[0].count });
-      // });
+      try {
+        await notificationModel.addNotification(notificationToAdd);
+      } catch (e) {
+        console.log('Error while adding a new notification', e);
+      }
 
-      console.log('    + Auto-doing an event with ID: ' + event.ID);
+      try {
+        await eventModel.updateEvent(event.ID, { NextDate: nextDate.format(FORMAT_DATETIME_PATTER.DATE_TIME) });
+      } catch (e) {
+        console.log('Error while updating event', e);
+      }
+
+      const notificationList = await notificationModel.getNotificationByUserID(userID, NOTIFICATION_AMOUNT_TO_LOAD);
+      const count = await notificationModel.countUnreadNotification(userID);
+      io.emit(`new_notification_added_${userID}`, { notificationList, count: count[0].count });
+      const eventList = await eventModel.getEventByWalletID(event.WalletID);
+      io.in(event.WalletID).emit('wait_for_update_event', { eventList });
+      
+      console.log('    + Auto-doing an event, NextDate: ' + nextDate.format(FORMAT_DATETIME_PATTER.DATE_TIME));
     }
   });
 }

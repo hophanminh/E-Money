@@ -163,7 +163,7 @@ CREATE TABLE TransactionImages(
 DROP TABLE IF EXISTS `Notifications`;
 CREATE TABLE Notifications(
     ID VARCHAR(100) NOT NULL, -- will store as UUID()
-    Content VARCHAR(200),
+    Content VARCHAR(1000),
     DateNotified DATETIME,
     IsRead BOOLEAN,
     UserID VARCHAR(100),
@@ -189,7 +189,14 @@ ALTER TABLE TransactionImages ADD CONSTRAINT FK_TransactionImages_Transactions F
 ALTER TABLE TransactionImages ADD CONSTRAINT FK_TransactionImages_Users FOREIGN KEY(UserID) REFERENCES Users(ID);
 ALTER TABLE Notifications ADD CONSTRAINT FK_Notifications_Users FOREIGN KEY(UserID) REFERENCES Users(ID);
 
-INSERT INTO icons VALUES ('1','school','#FFFFFF','#1DAF1A'),('2','fastfood','#FFFFFF','#FF2626'),('3','attach_money','#FFFFFF','#808080');
+INSERT INTO icons VALUES 
+('1','school','#FFFFFF','#1DAF1A'),
+('2','fastfood','#FFFFFF','#FF2626'),
+('3','attach_money','#FFFFFF','#808080'),
+('4','business','#FFFFFF','#003366'),
+('5','local_hospital','#FFFFFF','#f40505'),
+('6','store_mall_direction','#FFFFFF','#5AC18E'),
+('7','local_gas_station','#FFFFFF','#1D2021');
 INSERT INTO eventtypes VALUES ('1','Hằng ngày'),('2','Hằng tuần'),('3','Hằng tháng'),('4','Hằng năm');
 INSERT INTO categories VALUES ('1','Học tập',1,NULL,'1'),('2','Ăn uống',1,NULL,'2'),('3','Khác',1,NULL,'3');
 INSERT INTO wallets VALUES 
@@ -203,8 +210,6 @@ INSERT INTO wallets VALUES
 INSERT INTO teams VALUES
     ('30847550-aa43-11eb-9012-370ed11ba268', 'KHTN', 4, 'This is the description for team', '2021-05-01', NULL, '30764480-aa43-11eb-9012-370ed11ba268')
 ;
-
-
 
 -- Password: 123456
 INSERT INTO users VALUES 
