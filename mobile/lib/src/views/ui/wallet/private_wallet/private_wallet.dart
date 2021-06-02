@@ -2,6 +2,10 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:mobile/src/models/CatsProvider.dart';
+import 'package:mobile/src/models/EventsProvider.dart';
+import 'package:mobile/src/models/UsersProvider.dart';
+import 'package:mobile/src/models/WalletsProvider.dart';
 import 'package:mobile/src/services/restapiservices/wallet_service.dart';
 import 'package:mobile/src/services/socketservices/socket.dart';
 import 'package:mobile/src/views/ui/wallet/category/category_dashboard.dart';
@@ -12,14 +16,14 @@ import 'package:mobile/src/views/ui/wallet/private_wallet/edit_transaction.dart'
 import 'package:mobile/src/views/ui/wallet/private_wallet/statistic/statistic_view.dart';
 import 'package:mobile/src/views/ui/wallet/private_wallet/view_transaction.dart';
 import 'package:mobile/src/views/utils/helpers/helper.dart';
+import 'package:provider/provider.dart';
 import 'package:mobile/src/views/utils/widgets/widget.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class IndividualWallet extends StatefulWidget {
   final Drawer sidebar;
-  final Map<String, dynamic> user;
 
-  const IndividualWallet({this.sidebar, this.user});
+  const IndividualWallet({this.sidebar});
 
   @override
   _IndividualWalletState createState() => _IndividualWalletState();
@@ -28,47 +32,15 @@ class IndividualWallet extends StatefulWidget {
 class _IndividualWalletState extends State<IndividualWallet> {
   IO.Socket _socket;
   var _scaffoldKey = GlobalKey<ScaffoldMessengerState>();
-  var _txs = [];
-  var _stat = new Map<String, dynamic>();
-  var _categoryList = {'fullList': [], 'defaultList': [], 'customList': []};
   List<dynamic> _iconList = [];
-  List<dynamic> _eventList = [];
-
-  void _setCategoryList(List<dynamic> fullList, List<dynamic> defaultList, List<dynamic> customList) {
-    _categoryList['fullList'].clear();
-    _categoryList['defaultList'].clear();
-    _categoryList['customList'].clear();
-
-    setState(() {
-      _categoryList['fullList'].addAll(fullList);
-
-      _categoryList['defaultList'].addAll(defaultList);
-
-      _categoryList['customList'].addAll(customList);
-    });
-  }
-
-  void _setEventList(List<dynamic> eventList) {
-    _eventList.clear();
-    setState(() {
-      _eventList.addAll(eventList);
-    });
-  }
-
-  void updateTxCatAfterUpdateCat(List<dynamic> fullList) {
-    List<dynamic> copyTxs = List.from(_txs);
-
-    for (int i = 0; i < copyTxs.length; i++) {
-      dynamic cat = fullList.where((cat) => cat['ID'] == copyTxs[i]['catID']).first;
-      if (cat != null) {
-        copyTxs[i]['IconID'] = cat['IconID'];
-        copyTxs[i]['categoryName'] = cat['Name'];
-      }
-    }
-  }
 
   void _initPage() async {
-    final walletID = widget.user['WalletID'];
+    UsersProvider usersProvider = Provider.of<UsersProvider>(context, listen: false);
+    WalletsProvider walletsProvider = Provider.of<WalletsProvider>(context, listen: false);
+    CatsProvider catsProvider = Provider.of<CatsProvider>(context, listen: false);
+    EventsProvider eventsProvider = Provider.of<EventsProvider>(context, listen: false);
+
+    final walletID = usersProvider.info.walletID;
     _iconList = jsonDecode(await WalletService.instance.getListIcon());
     // print('${iconList[0]['ID']}');
 
@@ -77,36 +49,31 @@ class _IndividualWalletState extends State<IndividualWallet> {
     _socket.emitWithAck('get_transaction', {'walletID': walletID}, ack: (data) {
       //{ transactionList, total, spend, receive }
       // print(data['transactionList'][0]['id']);
-      setState(() {
-        _txs = data['transactionList'];
-        _stat = {"total": data['total'], "spend": data['spend'], "receive": data['receive']};
-      });
+      walletsProvider.fetchData(data);
     });
 
     _socket.on('wait_for_update_transaction', (data) {
       print('on updating txs');
-      _txs.clear();
-      setState(() {
-        _txs.addAll(data['transactionList']);
-        _stat = {"total": data['total'], "spend": data['spend'], "receive": data['receive']};
-      });
+      walletsProvider.fetchData(data);
     });
 
-    _socket.emitWithAck("get_category", {'walletID': walletID}, ack: (data) => {_setCategoryList(data['fullList'], data['defaultList'], data['customList'])});
+    _socket.emitWithAck("get_category", {'walletID': walletID}, ack: (data) {
+      catsProvider.fetchData(data);
+    });
 
     _socket.on('wait_for_update_category', (data) {
-      print('update cate');
-      _setCategoryList(data['fullList'], data['defaultList'], data['customList']);
-      updateTxCatAfterUpdateCat(_categoryList['fullList']);
+      print('on updating cate');
+      catsProvider.fetchData(data);
+      walletsProvider.updateTxCatAfterUpdateCat(data['fullList']);
     });
 
     _socket.emitWithAck("get_event", {'walletID': walletID}, ack: (data) {
-      _setEventList(data['eventList']);
+      eventsProvider.fetchData(data);
     });
 
     _socket.on('wait_for_update_event', (data) {
       print('update event');
-      _setEventList(data['eventList']);
+      eventsProvider.fetchData(data);
     });
   }
 
@@ -118,9 +85,9 @@ class _IndividualWalletState extends State<IndividualWallet> {
 
   @override
   void dispose() {
-    // _socket.off('wait_for_update_transaction');
-    // _socket.off('wait_for_update_category');
-    // _socket.off('wait_for_update_event');
+    _socket.off('wait_for_update_transaction');
+    _socket.off('wait_for_update_category');
+    _socket.off('wait_for_update_event');
 
     super.dispose();
   }
@@ -138,99 +105,132 @@ class _IndividualWalletState extends State<IndividualWallet> {
               // height: MediaQuery.of(context).size.height,
               padding: EdgeInsets.only(top: 20, bottom: 100),
               child: Center(
-                child: Column(
-                  children: [
-                    Container(
-                      padding: EdgeInsets.all(20),
-                      margin: EdgeInsets.only(bottom: 20, left: 5, right: 5),
-                      width: MediaQuery.of(context).size.width,
-                      decoration: BoxDecoration(
-                          gradient: LinearGradient(begin: Alignment.bottomLeft, end: Alignment.topRight, colors: [primary, Colors.lightGreenAccent]),
-                          borderRadius: BorderRadius.circular(12)),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                child:
+                Consumer<WalletsProvider>(
+                    builder: (context, walletsProvider, child) {
+                      return Column(
                         children: [
-                          Text(
-                            'Tổng số dư: ',
-                            style: TextStyle(fontSize: 20, color: Colors.white),
-                          ),
-                          Text(
-                            '${formatMoneyWithSymbol(_stat['total'])}',
-                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.white),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(15),
-                      child: Text('Báo cáo nhanh ${getThisMonth()}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
-                    ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Container(
-                            decoration: BoxDecoration(border: Border(right: BorderSide(width: 1, color: Colors.grey))),
-                            alignment: Alignment.center,
+                          Container(
+                            padding: EdgeInsets.all(20),
+                            margin: EdgeInsets.only(bottom: 20, left: 5, right: 5),
+                            width: MediaQuery.of(context).size.width,
+                            decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                    begin: Alignment.bottomLeft,
+                                    end: Alignment.topRight,
+                                    colors: [primary, Colors.lightGreenAccent]),
+                                borderRadius: BorderRadius.circular(12)),
                             child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('Tổng thu ${getThisMonth()}'),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(
-                                    '${formatMoneyWithSymbol(_stat['receive'])}',
-                                    style: TextStyle(fontWeight: FontWeight.bold, color: Colors.green, fontSize: 21),
-                                  ),
+                                Text(
+                                  'Tổng số dư: ',
+                                  style: TextStyle(fontSize: 20, color: Colors.white),
+                                ),
+                                Text(
+                                  '${formatMoneyWithSymbol(walletsProvider.total)}',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20,
+                                      color: Colors.white),
                                 ),
                               ],
                             ),
                           ),
-                        ),
-                        Expanded(
-                          child: Column(
+                          Padding(
+                            padding: const EdgeInsets.all(15),
+                            child: Text('Báo cáo nhanh ${getThisMonth()}',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 20)),
+                          ),
+                          Row(
                             children: [
-                              Container(
-                                alignment: Alignment.center,
-                                child: Column(
-                                  children: [
-                                    Text('Tổng chi ${getThisMonth()}'),
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Text(
-                                        '${formatMoneyWithSymbol(_stat['spend'])}',
-                                        style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red, fontSize: 21),
+                              Expanded(
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                      border: Border(
+                                          right: BorderSide(
+                                              width: 1, color: Colors.grey))),
+                                  alignment: Alignment.center,
+                                  child: Column(
+                                    children: [
+                                      Text('Tổng thu ${getThisMonth()}'),
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Text(
+                                          '${formatMoneyWithSymbol(walletsProvider.receive)}',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.green,
+                                              fontSize: 21),
+                                        ),
                                       ),
-                                    )
-                                  ],
+                                    ],
+                                  ),
                                 ),
                               ),
+                              Expanded(
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      alignment: Alignment.center,
+                                      child: Column(
+                                        children: [
+                                          Text('Tổng chi ${getThisMonth()}'),
+                                          Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Text(
+                                              '${formatMoneyWithSymbol(walletsProvider.spent)}',
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.red,
+                                                  fontSize: 21),
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )
                             ],
                           ),
-                        )
-                      ],
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 40, bottom: 30),
-                      child: Text('Danh sách tất cả giao dịch', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
-                    ),
-                    _txs.length == 0 ? Text('(Chưa có giao dịch được ghi)') : Container(),
-                    for (var tx in _txs) _createCompactTxn(tx)
-                  ],
-                ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 40, bottom: 30),
+                            child: Text('Danh sách tất cả giao dịch',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 20)),
+                          ),
+                          walletsProvider.txList.length == 0
+                              ? Text('(Chưa có giao dịch được ghi)')
+                              : Container(),
+                          for (var tx in walletsProvider.txList) _createCompactTxn(tx)
+                        ],
+                      );
+                    }
+                )
               ),
             ),
           )),
     );
   }
 
-  _createCompactTxn(Map<String, dynamic> tx) {
-    var selectedIcon = _iconList.firstWhere((element) => element['ID'] == tx['IconID']);
+  _createCompactTxn(Transactions tx) {
+    var selectedIcon = _iconList.firstWhere((element) => element['ID'] == tx.iconID, orElse: () => null);
+    if (selectedIcon == null) {
+      selectedIcon = {};
+      selectedIcon['Name'] = '';
+      selectedIcon['BackgroundColor'] = '';
+      selectedIcon['Color'] = '';
+    }
     return Card(
       child: GestureDetector(
         onTap: () {
+          Provider.of<WalletsProvider>(context, listen: false).changeSelected(tx);
           Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => ViewTransaction(walletID: widget.user['WalletID'], tx: tx, fullCategoryList: _categoryList['fullList'], eventList: _eventList)));
+                  builder: (context) => ViewTransaction(txId: tx.id)));
         },
         child: Slidable(
           actionPane: SlidableDrawerActionPane(),
@@ -240,13 +240,14 @@ class _IndividualWalletState extends State<IndividualWallet> {
               caption: 'Sửa',
               color: Colors.blue,
               icon: Icons.edit,
-              onTap: () {
+              onTap: () async {
+                Provider.of<WalletsProvider>(context, listen: false).changeSelected(tx);
                 Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (context) => EditTransaction(
-                            walletID: widget.user['WalletID'], tx: tx, fullCategoryList: _categoryList['fullList'], eventList: _eventList, wrappingScaffoldKey: _scaffoldKey)));
-              },
+                            wrappingScaffoldKey: _scaffoldKey)));
+                }
             ),
             IconSlideAction(
               caption: 'Xóa',
@@ -257,8 +258,7 @@ class _IndividualWalletState extends State<IndividualWallet> {
                     context: context,
                     builder: (_) => DeleteTransactionDialog(
                           wrappingScaffoldKey: _scaffoldKey,
-                          walletID: widget.user['WalletID'],
-                          txID: tx['id'],
+                          txID: tx.id,
                         ));
               },
             ),
@@ -273,20 +273,20 @@ class _IndividualWalletState extends State<IndividualWallet> {
                   Expanded(
                     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                       Text(
-                        '${tx['categoryName']}',
+                        '${tx.categoryName}',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 8.0),
                         child: Text(
-                          '${convertToDDMMYYYYHHMM(tx['time'])}',
+                          '${convertToDDMMYYYYHHMM(tx.time)}',
                           style: TextStyle(color: Colors.black, fontWeight: FontWeight.w300, fontSize: 14),
                         ),
                       ),
                       Padding(
                           padding: const EdgeInsets.only(top: 10),
-                          child: tx['description'] != null && tx['description'].length > 0
-                              ? Text(tx['description'].length < 50 ? tx['description'] : tx['description'].toString().substring(0, 50) + ' ...')
+                          child: tx.description != null && tx.description.length > 0
+                              ? Text(tx.description.length < 50 ? tx.description : tx.description.toString().substring(0, 50) + ' ...')
                               : Container())
                     ]),
                   ),
@@ -295,8 +295,8 @@ class _IndividualWalletState extends State<IndividualWallet> {
                       child: Align(
                           alignment: Alignment.centerRight,
                           child: Text(
-                            '${formatMoneyWithSymbol(tx['price'])}',
-                            style: TextStyle(color: tx['price'] < 0 ? Colors.red : Colors.green, fontWeight: FontWeight.bold),
+                            '${formatMoneyWithSymbol(tx.price)}',
+                            style: TextStyle(color: tx.price < 0 ? Colors.red : Colors.green, fontWeight: FontWeight.bold),
                           )))
                 ]),
               )),
@@ -342,41 +342,33 @@ class _IndividualWalletState extends State<IndividualWallet> {
           onSelected: (route) {
             print(route);
             // Note You must create respective pages for navigation
+            String walletId = Provider.of<UsersProvider>(context, listen: false).info.walletID;
 
             switch (int.parse(route)) {
               case 1:
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => CategoryDashboard(
-                            walletID: widget.user['WalletID'],
-                            txs: _txs,
-                            defaultList: _categoryList['defaultList'],
-                            customList: _categoryList['customList'],
-                            setCategoryList: _setCategoryList)));
+                        builder: (context) => CategoryDashboard(walletID: walletId)));
                 break;
               case 2:
                 Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (context) => EventDashboard(
-                            walletID: widget.user['WalletID'],
-                            fullCatList: _categoryList['fullList'],
-                            setCategoryList: _setCategoryList,
-                            eventList: _eventList,
-                            setEventList: _setEventList)));
+                            walletID: walletId)));
                 break;
               case 3:
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => Statistic(
-                            // walletID: widget.user['WalletID'],
-                            // fullCatList: _categoryList['fullList'],
-                            // setCategoryList: _setCategoryList,
-                            // eventList: _eventList,
-                            // setEventList: _setEventList
-                            )));
+                // Navigator.push(
+                //     context,
+                //     MaterialPageRoute(
+                //         builder: (context) => Statistic(
+                //             // walletID: widget.user['WalletID'],
+                //             // fullCatList: _categoryList['fullList'],
+                //             // setCategoryList: _setCategoryList,
+                //             // eventList: _eventList,
+                //             // setEventList: _setEventList
+                //             )));
                 break;
             }
           },
@@ -391,7 +383,7 @@ class _IndividualWalletState extends State<IndividualWallet> {
             context,
             MaterialPageRoute(
                 builder: (context) =>
-                    AddTransaction(walletID: widget.user['WalletID'], fullCategoryList: _categoryList['fullList'], eventList: _eventList, wrappingScaffoldKey: _scaffoldKey)));
+                    AddTransaction(wrappingScaffoldKey: _scaffoldKey)));
       },
       tooltip: 'Thêm giao dịch',
       child: Icon(Icons.add),

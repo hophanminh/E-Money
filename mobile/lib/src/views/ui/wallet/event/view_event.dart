@@ -1,11 +1,12 @@
 
 import 'package:flutter/material.dart';
+import 'package:mobile/src/models/EventsProvider.dart';
 import 'package:mobile/src/views/utils/helpers/helper.dart';
+import 'package:provider/provider.dart';
 
 class ViewEvent extends StatefulWidget {
-  final Map<String, dynamic> event;
 
-  const ViewEvent({Key key, @required this.event}) : super(key: key);
+  const ViewEvent({Key key}) : super(key: key);
 
   @override
   _ViewEventState createState() => _ViewEventState();
@@ -36,7 +37,10 @@ class _ViewEventState extends State<ViewEvent> {
         appBar: _appBar(),
         body: SingleChildScrollView(
           padding: EdgeInsets.only(bottom: 10),
-          child: Column(
+          child: Consumer<EventsProvider>(builder: (context, eventsProvider, child) {
+              return eventsProvider.selected != null
+              ?
+          Column(
             children: [
               Container(
                   decoration: BoxDecoration(
@@ -96,11 +100,11 @@ class _ViewEventState extends State<ViewEvent> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Text(
-                            widget.event['Name'],
+                            eventsProvider.selected.name,
                             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 27), textAlign: TextAlign.right,
                           ),
                           Text(
-                            ' (${widget.event['Status'] == 1 ? 'Đang diễn ra' : 'Đã ngưng'})',
+                            ' (${eventsProvider.selected.status ? 'Đang diễn ra' : 'Đã ngưng'})',
                             style: TextStyle(fontWeight: FontWeight.w300, fontSize: 18, fontStyle: FontStyle.italic),
                           )
                         ],
@@ -110,38 +114,40 @@ class _ViewEventState extends State<ViewEvent> {
                 ),
               ),
               _createDetail(
-                  'Hạng mục', widget.event['CategoryName'], Icon(Icons.category_outlined)),
+                  'Hạng mục', eventsProvider.selected.categoryName, Icon(Icons.category_outlined)),
               _createDetail(
-                  '${widget.event['ExpectingAmount'] < 0 ? 'Chi' : 'Thu'} định kỳ', formatMoneyWithSymbol(widget.event['ExpectingAmount']), Icon(Icons.attach_money_outlined)),
-              _createDetail('${widget.event['ExpectingAmount'] < 0 ? 'Tổng chi' : 'Tổng thu'} cho sự kiện',
-                  formatMoneyWithSymbol(widget.event['TotalAmount'] != null ? widget.event['TotalAmount'] : 0), Icon(Icons.attach_money_outlined)),
-              _createDetail('Ngày bắt đầu', convertToDDMMYYYYHHMM(widget.event['StartDate']), Icon(Icons.looks_one_outlined)),
-              _createDetail('Ngày kết thúc', convertToDDMMYYYYHHMM(widget.event['EndDate']).length == 0 ? '--' : convertToDDMMYYYYHHMM(widget.event['EndDate']),
+                  '${eventsProvider.selected.expectingAmount < 0 ? 'Chi' : 'Thu'} định kỳ', formatMoneyWithSymbol(eventsProvider.selected.expectingAmount), Icon(Icons.attach_money_outlined)),
+              _createDetail('${eventsProvider.selected.expectingAmount < 0 ? 'Tổng chi' : 'Tổng thu'} cho sự kiện',
+                  formatMoneyWithSymbol(eventsProvider.selected.totalAmount != null ? eventsProvider.selected.totalAmount : 0), Icon(Icons.attach_money_outlined)),
+              _createDetail('Ngày bắt đầu', convertToDDMMYYYYHHMM(eventsProvider.selected.startDate), Icon(Icons.looks_one_outlined)),
+              _createDetail('Ngày kết thúc', convertToDDMMYYYYHHMM(eventsProvider.selected.endDate).length == 0 ? '--' : convertToDDMMYYYYHHMM(eventsProvider.selected.endDate),
                   Icon(Icons.looks_two_outlined)),
-              widget.event['Status'] == 1 ? _createDetail('Ngày giao dịch kế tiếp', convertToDDMMYYYYHHMM(widget.event['NextDate']), Icon(Icons.next_plan_outlined)) : Container(),
+              eventsProvider.selected.status ? _createDetail('Ngày giao dịch kế tiếp', convertToDDMMYYYYHHMM(eventsProvider.selected.nextDate), Icon(Icons.next_plan_outlined)) : Container(),
               _createDetail('Loại', (() {
-                int type = int.parse(widget.event['EventTypeID']);
+                int type = int.parse(eventsProvider.selected.eventTypeID);
 
                 if (type == 1) {
                   // hằng ngày
-                  return widget.event['TypeName'];
+                  return eventsProvider.selected.typeName;
                 }
                 if (type == 2) {
                   // hằng tuần
-                  return widget.event['TypeName'] + ' (vào ${everyWeek[widget.event['Value']]})';
+                  return eventsProvider.selected.typeName + ' (vào ${everyWeek[eventsProvider.selected.value]})';
                 }
                 if (type == 3) {
                   // hằng tháng
-                  return widget.event['TypeName'] + ' (vào ngày ${widget.event['Value']})';
+                  return eventsProvider.selected.typeName + ' (vào ngày ${eventsProvider.selected.value})';
                 }
                 if (type == 4) {
                   // hằng năm
-                  return widget.event['TypeName'] + ' (vào tháng ${widget.event['Value'] + 1})';
+                  return eventsProvider.selected.typeName + ' (vào tháng ${eventsProvider.selected.value + 1})';
                 }
               })(), Icon(Icons.event_available)),
-              _createDetail('Ghi chú', widget.event['Description'].length == 0 ? 'Không có chú thích được tạo' : widget.event['Description'], Icon(Icons.textsms_outlined)),
+              _createDetail('Ghi chú', eventsProvider.selected.description.length == 0 ? 'Không có chú thích được tạo' : eventsProvider.selected.description, Icon(Icons.textsms_outlined)),
             ],
-          ),
+          )
+              : Container();
+          })
         ),
       ),
     );

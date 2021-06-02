@@ -1,20 +1,19 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:mobile/src/models/CatsProvider.dart';
+import 'package:mobile/src/models/WalletsProvider.dart';
 import 'package:mobile/src/views/ui/wallet/category/add_cat.dart';
 import 'package:mobile/src/views/ui/wallet/category/delete_cate.dart';
 import 'package:mobile/src/views/ui/wallet/category/edit_cat.dart';
 import 'package:mobile/src/views/utils/helpers/helper.dart';
 import 'package:mobile/src/views/utils/widgets/widget.dart';
+import 'package:provider/provider.dart';
 
 class CategoryDashboard extends StatefulWidget {
   final String walletID;
-  final List<dynamic> txs;
-  final List<dynamic> defaultList;
-  final List<dynamic> customList;
-  final Function(List<dynamic>, List<dynamic>, List<dynamic>) setCategoryList;
 
-  const CategoryDashboard({Key key, @required this.walletID, @required this.txs, @required this.defaultList, @required this.customList, @required this.setCategoryList})
+  const CategoryDashboard({Key key, @required this.walletID})
       : super(key: key);
 
   @override
@@ -23,6 +22,20 @@ class CategoryDashboard extends StatefulWidget {
 
 class _CategoryDashboardState extends State<CategoryDashboard> {
   var _scaffoldKey = GlobalKey<ScaffoldMessengerState>();
+
+  String countTx(List<Transactions> txList, String id) {
+    int sum = 0;
+    txList.forEach((tx) {
+      if (id == tx.catID) {
+        sum++;
+      }
+    });
+
+    if (sum > 999) {
+      return '999+';
+    }
+    return sum.toString();
+  }
 
   @override
   void initState() {
@@ -41,7 +54,7 @@ class _CategoryDashboardState extends State<CategoryDashboard> {
     return ScaffoldMessenger(
         key: _scaffoldKey,
         child: Scaffold(
-          appBar: mySimpleAppBar('Quản lý phân loại giao dịch'),
+          appBar: mySimpleAppBar('Loại giao dịch'),
           body: SingleChildScrollView(
             child: Container(
               padding: EdgeInsets.fromLTRB(10, 30, 10, 50),
@@ -64,35 +77,23 @@ class _CategoryDashboardState extends State<CategoryDashboard> {
   }
 
   _createDefaultCategoryListView() {
-    // if(widget.txs == null) {
-    //   return Container();
-    // }
-    List<int> catCount = [];
-
-    for (int i = 0; i < widget.defaultList.length; i++) {
-      int sum = 0;
-      widget.txs.forEach((tx) {
-        if (widget.defaultList[i]['ID'] == tx['catID']) {
-          sum++;
-        }
-      });
-
-      catCount.add(sum);
-    }
-
-    return widget.defaultList.length == 0
-        ? Container(
+    return Consumer<CatsProvider>(
+        builder: (context, catsProvider, child) {
+          return catsProvider.defaultList.length == 0
+              ? Container(
             padding: EdgeInsets.all(20),
             child: Text('Chưa có loại giao dịch mặc định nào'),
           )
-        : GridView.builder(
+              : GridView.builder(
             physics: ScrollPhysics(),
             padding: EdgeInsets.symmetric(vertical: 20, horizontal: 5),
             scrollDirection: Axis.vertical,
             shrinkWrap: true,
-            itemCount: widget.defaultList.length,
+            itemCount: catsProvider.defaultList.length,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: MediaQuery.of(context).orientation == Orientation.landscape ? 2 : 1,
+              crossAxisCount: MediaQuery
+                  .of(context)
+                  .orientation == Orientation.landscape ? 2 : 1,
               crossAxisSpacing: 20,
               mainAxisSpacing: 20,
               childAspectRatio: (30 / 8),
@@ -123,47 +124,49 @@ class _CategoryDashboardState extends State<CategoryDashboard> {
                     ),
                     Expanded(
                         child: Text(
-                      widget.defaultList[index]['Name'],
-                      style: TextStyle(fontSize: 18),
-                    )),
-                    Container(
-                      decoration: BoxDecoration(shape: BoxShape.circle, color: warning),
-                      padding: EdgeInsets.symmetric(horizontal: 15),
-                      child: Text('${catCount[index]}', style: TextStyle(fontSize: 18, color: Colors.white)),
-                    )
+                          catsProvider.defaultList[index].name,
+                          style: TextStyle(fontSize: 18),
+                        )),
+                    Consumer<WalletsProvider>(
+                        builder: (context, walletsProvider, child) {
+                          return Chip(
+                              padding: EdgeInsets.only(bottom: 3),
+                              backgroundColor: warning,
+                              label: Container(
+                                alignment: Alignment.center,
+                                width: 50,
+                                height: 40,
+                                child: Text(
+                                    countTx(walletsProvider.txList, catsProvider.defaultList[index].id),
+                                    style: TextStyle(color: Colors.white)),
+                              ));
+                        }),
                   ],
                 ),
               );
             },
           );
+        });
   }
 
   _createCustomCategoryListView() {
-    List<int> catCount = [];
-
-    for (int i = 0; i < widget.customList.length; i++) {
-      int sum = 0;
-      widget.txs.forEach((tx) {
-        if (widget.customList[i]['ID'] == tx['catID']) {
-          sum++;
-        }
-      });
-      catCount.add(sum);
-    }
-
-    return widget.customList.length == 0
-        ? Container(
+    return Consumer<CatsProvider>(
+        builder: (context, catsProvider, child) {
+          return catsProvider.customList.length == 0
+              ? Container(
             padding: EdgeInsets.all(20),
             child: Text('Chưa có loại giao dịch của riêng bạn'),
           )
-        : GridView.builder(
+              : GridView.builder(
             physics: ScrollPhysics(),
             padding: EdgeInsets.symmetric(vertical: 20, horizontal: 5),
             scrollDirection: Axis.vertical,
             shrinkWrap: true,
-            itemCount: widget.customList.length,
+            itemCount: catsProvider.customList.length,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: MediaQuery.of(context).orientation == Orientation.landscape ? 2 : 1,
+              crossAxisCount: MediaQuery
+                  .of(context)
+                  .orientation == Orientation.landscape ? 2 : 1,
               crossAxisSpacing: 20,
               mainAxisSpacing: 20,
               childAspectRatio: (30 / 8),
@@ -180,36 +183,31 @@ class _CategoryDashboardState extends State<CategoryDashboard> {
                     caption: 'Sửa',
                     color: Colors.blue,
                     icon: Icons.edit,
-                    onTap: () async {
-                      await showDialog(
+                    onTap: () {
+                      Provider.of<CatsProvider>(context, listen: false)
+                          .changeSelected(catsProvider.customList[index]);
+                      showDialog(
                           context: context,
                           builder: (_) => EditCatDialog(
-                                wrappingScaffoldKey: _scaffoldKey,
-                                walletID: widget.walletID,
-                                cat: widget.customList[index],
-                              ));
-
-                      setState(() {
-                        // _defaultList = widget.defaultList;
-                      });
+                            wrappingScaffoldKey: _scaffoldKey,
+                            walletID: widget.walletID,
+                            cat: catsProvider.customList[index],
+                          ));
                     },
                   ),
                   IconSlideAction(
                     caption: 'Xóa',
                     color: warning,
                     icon: Icons.delete_outline,
-                    onTap: () async {
-                      await showDialog(
+                    onTap: () {
+                      showDialog(
                           context: context,
-                          builder: (_) => DeleteCateDialog(
+                          builder: (_) =>
+                              DeleteCateDialog(
                                 wrappingScaffoldKey: _scaffoldKey,
                                 walletID: widget.walletID,
-                                cateID: widget.customList[index]['ID'],
+                                cateID: catsProvider.customList[index].id,
                               ));
-
-                      setState(() {
-                        // _defaultList = widget.defaultList;
-                      });
                     },
                   ),
                 ],
@@ -235,20 +233,31 @@ class _CategoryDashboardState extends State<CategoryDashboard> {
                       ),
                       Expanded(
                           child: Text(
-                        widget.customList[index]['Name'],
-                        style: TextStyle(fontSize: 18),
-                      )),
-                      Container(
-                        decoration: BoxDecoration(shape: BoxShape.circle, color: warning),
-                        padding: EdgeInsets.symmetric(horizontal: 15),
-                        child: Text('${catCount[index]}', style: TextStyle(fontSize: 18, color: Colors.white)),
-                      )
+                            catsProvider.customList[index].name,
+                            style: TextStyle(fontSize: 18),
+                          )),
+
+                      Consumer<WalletsProvider>(
+                          builder: (context, walletsProvider, child) {
+                            return Chip(
+                                padding: EdgeInsets.only(bottom: 3),
+                                backgroundColor: warning,
+                                label: Container(
+                                  alignment: Alignment.center,
+                                  width: 50,
+                                  height: 40,
+                                  child: Text(
+                                      countTx(walletsProvider.txList, catsProvider.customList[index].id),
+                                      style: TextStyle(color: Colors.white)),
+                                ));
+                          }),
                     ],
                   ),
                 ),
               );
             },
           );
+        });
   }
 
   FloatingActionButton _catDashboardActionButton() => FloatingActionButton(

@@ -12,6 +12,10 @@ import 'package:mobile/src/views/ui/wallet/dashboard_view.dart';
 import 'package:provider/provider.dart';
 import 'package:mobile/src/models/UsersProvider.dart';
 
+import 'models/CatsProvider.dart';
+import 'models/EventsProvider.dart';
+import 'models/WalletsProvider.dart';
+
 class MyApp extends StatefulWidget {
   @override
   _MyAppState createState() => _MyAppState();
@@ -36,6 +40,15 @@ class _MyAppState extends State<MyApp> {
           ChangeNotifierProvider(
             create: (_) => TeamsProvider(),
           ),
+          ChangeNotifierProvider(
+            create: (_) => WalletsProvider(),
+          ),
+          ChangeNotifierProvider(
+            create: (_) => CatsProvider(),
+          ),
+          ChangeNotifierProvider(
+            create: (_) => EventsProvider(),
+          ),
         ],
         child: MaterialApp(
           debugShowCheckedModeBanner: false,
@@ -51,7 +64,7 @@ class _MyAppState extends State<MyApp> {
             '/profile': (context) => ProfilePage(),
             '/changepassword': (context) => ChangePasswordPage(),
             '/dashboard': (context) => Dashboard(user: user),
-            '/team': (context) => TeamList(user: user),
+            '/team': (context) => TeamList(),
           },
         ));
   }

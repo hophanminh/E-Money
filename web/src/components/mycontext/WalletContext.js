@@ -23,6 +23,20 @@ export const WalletProvider = (props) => {
     setIsSimple(check)
   }, [])
 
+  useEffect(() => {
+    setSelected(selected => {
+      if (list && selected) {
+        const temp = list.find(i => i?.id === selected?.id)
+        if (temp) {
+          return temp;
+        }
+        else {
+          return null;
+        }
+      }
+    });
+  }, [list])
+
   //Wallet
   const updateSelected = () => {
     if (selected) {
@@ -36,7 +50,7 @@ export const WalletProvider = (props) => {
       let newList = list.slice();
       for (let i = 0; i < newList.length; i++) {
         const newCat = catList.find(cat => cat.ID === newList[i].catID);
-        if(newCat) {
+        if (newCat) {
           newList[i].IconID = newCat.IconID;
           newList[i].categoryName = newCat.Name;
         }

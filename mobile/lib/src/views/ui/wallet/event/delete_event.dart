@@ -27,9 +27,7 @@ class _DeleteEventDialogState extends State<DeleteEventDialog> {
   Widget build(BuildContext context) {
     return ScaffoldMessenger(
       key: _scaffoldKey,
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: Dialog(
+      child: Dialog(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
           ),
@@ -44,37 +42,51 @@ class _DeleteEventDialogState extends State<DeleteEventDialog> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Align(
-                    alignment: Alignment.centerRight,
-                    child: IconButton(
-                      icon: Icon(Icons.close),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
+                    alignment: Alignment.centerLeft,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 20, bottom: 15),
+                      child: Text(
+                        'Xác nhận',
+                        style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                      ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 15.0),
-                    child: Text(
-                      'Xác nhận',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 20.0),
+                      child: Text(
+                        'Sau khi kết thúc sẽ không thể phục hồi trạng thái sự kiện. Bạn có chắc chắn muốn kết thúc sự kiện này?',
+                      ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 20.0),
-                    child: Text(
-                      'Sau khi kết thúc sẽ không thể phục hồi trạng thái sự kiện. Bạn có chắc chắn muốn kết thúc sự kiện này?',
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  myAlignedButton('Kết thúc', backgroundColor: warning, action: () {
-                    handleDeleteEvent();
-                  })
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: Text(
+                            'Hủy',
+                            style: TextStyle(fontSize: 16, color: Colors.red),
+                          )),
+                      TextButton(
+                          onPressed: () {
+                            handleDeleteEvent();
+                          },
+                          child: Text(
+                            'Kết thúc',
+                            style: TextStyle(fontSize: 16, color: Colors.red),
+                          )),
+                    ],
+                  )
                 ],
               ),
             ),
           ),
         ),
-      ),
     );
   }
 

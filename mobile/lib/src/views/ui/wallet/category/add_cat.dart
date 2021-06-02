@@ -40,9 +40,7 @@ class _AddCatDialogState extends State<AddCatDialog> {
   Widget build(BuildContext context) {
     return ScaffoldMessenger(
       key: _scaffoldKey,
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: Dialog(
+      child: Dialog(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
           ),
@@ -50,26 +48,21 @@ class _AddCatDialogState extends State<AddCatDialog> {
           backgroundColor: Colors.white,
           child: SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(15, 0, 15, 20),
+              padding: const EdgeInsets.fromLTRB(15, 0, 15, 5),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Align(
-                    alignment: Alignment.centerRight,
-                    child: IconButton(
-                      icon: Icon(Icons.close),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 15.0),
-                    child: Text(
-                      'Thêm loại mới',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                    alignment: Alignment.centerLeft,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 20, bottom: 15),
+                      child: Text(
+                        'Thêm loại mới',
+                        style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                      ),
                     ),
                   ),
                   Padding(
@@ -112,25 +105,39 @@ class _AddCatDialogState extends State<AddCatDialog> {
                       ],
                     ),
                   ),
-                  myAlignedButton('Thêm', backgroundColor: primary, action: () {
-                    if (_formKey.currentState.validate()) {
-                      showSnack(_scaffoldKey, 'Đang xử lý...');
-                      handleAddCat();
-                    }
-                  })
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: Text(
+                            'Hủy',
+                            style: TextStyle(fontSize: 16, color: Colors.green),
+                          )),
+                      TextButton(
+                          onPressed: () {
+                            if (_formKey.currentState.validate()) {
+                              showSnack(_scaffoldKey, 'Đang xử lý...');
+                              handleAddCat();
+                            }
+                          },
+                          child: Text(
+                            'Thêm nhóm',
+                            style: TextStyle(fontSize: 16, color: Colors.green),
+                          )),
+                    ],
+                  )
                 ],
               ),
             ),
           ),
         ),
-      ),
     );
   }
 
   void handleAddCat() async {
-    print(_nameController.text);
-    print(_currentIcon);
-
     Socket socket = await getSocket();
 
     socket.emit('add_category', {
@@ -143,6 +150,9 @@ class _AddCatDialogState extends State<AddCatDialog> {
   void _initPage() async {
     _iconList = jsonDecode(await WalletService.instance.getListIcon());
 
+    if (!mounted) {
+      return;
+    }
     if (_iconList.length != 0) {
       for (dynamic icon in _iconList) {
         _catMenuItems.add(new DropdownMenuItem(

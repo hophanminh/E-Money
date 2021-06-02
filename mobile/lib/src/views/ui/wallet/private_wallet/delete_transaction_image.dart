@@ -34,9 +34,7 @@ class _DeleteTransactionImageDialogState extends State<DeleteTransactionImageDia
   Widget build(BuildContext context) {
     return ScaffoldMessenger(
       key: _scaffoldKey,
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: Dialog(
+      child: Dialog(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
           ),
@@ -44,44 +42,58 @@ class _DeleteTransactionImageDialogState extends State<DeleteTransactionImageDia
           backgroundColor: Colors.white,
           child: SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(15, 0, 15, 20),
+              padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Align(
-                    alignment: Alignment.centerRight,
-                    child: IconButton(
-                      icon: Icon(Icons.close),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
+                    alignment: Alignment.centerLeft,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 20, bottom: 15),
+                      child: Text(
+                        'Xác nhận',
+                        style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                      ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 15.0),
-                    child: Text(
-                      'Xác nhận',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 20.0),
+                      child: Text(
+                        'Bạn có chắc chắn muốn ảnh giao dịch này?',
+                      ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 20.0),
-                    child: Text(
-                      'Bạn có chắc chắn muốn xóa ảnh giao dịch này?',
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  myAlignedButton('Xóa', backgroundColor: warning, action: () {
-                    handleDeleteTxImage();
-                  })
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: Text(
+                            'Hủy',
+                            style: TextStyle(fontSize: 16, color: Colors.red),
+                          )),
+                      TextButton(
+                          onPressed: () {
+                            handleDeleteTxImage();
+                          },
+                          child: Text(
+                            'Xóa',
+                            style: TextStyle(fontSize: 16, color: Colors.red),
+                          )),
+                    ],
+                  )
                 ],
               ),
             ),
           ),
         ),
-      ),
     );
   }
 

@@ -37,20 +37,20 @@ class _DashboardState extends State<Dashboard> {
     Drawer sideBar = mySideBar(
         context: context, name: widget.user['Name'], avatarURL: widget.user['AvatarURL'], setMainRoute: setMainRoute, mainRouteName: mainRouteName);
     return ScaffoldMessenger(
-        child: createDashboardPage(sideBar, widget.user)
+        child: createDashboardPage(sideBar)
     );
   }
 
-  Widget createDashboardPage(sidebar, user) {
+  Widget createDashboardPage(sidebar) {
     if (mainRouteName == 'privateWallet') {
-      return IndividualWallet(sidebar: sidebar, user: user);
+      return IndividualWallet(sidebar: sidebar);
     }
     else if (mainRouteName == 'teamWallet') {
       return TeamWallet(sidebar: sidebar);
 
     }
     else if (mainRouteName == 'teamList') {
-      return TeamList(sidebar: sidebar, user: user);
+      return TeamList(sidebar: sidebar);
     }
   }
 }

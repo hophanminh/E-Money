@@ -43,6 +43,9 @@ class _TeamDetailState extends State<TeamDetail> {
     }
     Map<String, dynamic> body = jsonDecode(res.body);
 
+    if (!mounted) {
+      return;
+    }
     if (body['info']['Role'] == Properties.ROLE_ADMIN &&
         body['info']['Status'] == Properties.ROLE_ACTIVE) {
       setState(() {
