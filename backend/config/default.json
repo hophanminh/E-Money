@@ -61,7 +61,8 @@
   },
   "FORMAT_DATETIME_PATTER": {
     "DATE": "YYYY-MM-DD",
-    "DATE_TIME": "YYYY-MM-DD HH:mm:ss"
+    "DATE_TIME": "YYYY-MM-DD HH:mm:ss",
+    "DATE_FOR_FRONT_END": "DD/MM/YYYY"
   },
   "NOTIFICATION_AMOUNT_TO_LOAD": 10
 }

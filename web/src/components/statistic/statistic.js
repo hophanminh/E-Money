@@ -49,7 +49,7 @@ export default function Statistic() {
     if (dates.length > 0) {
       changeDate(dates.length - 1);
     }
-  }, [dates, currentIndex]);
+  }, [dates]);
 
   const getBarChartData = async (date) => {
     const data = {

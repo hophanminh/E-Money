@@ -36,10 +36,10 @@ export default function Notification() {
       setUnreadNotificationCount(count);
     });
 
-    // socket.on(`new_notification_added_${userID}`, ({ notificationList, count }) => {
-    //   setNotifications(notificationList);
-    //   setUnreadNotificationCount(count);
-    // });
+    socket.on(`new_notification_added_${userID}`, ({ notificationList, count }) => {
+      setNotifications(notificationList);
+      setUnreadNotificationCount(count);
+    });
   }, []);
 
   const handleMarkNotification = (notification) => {

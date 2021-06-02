@@ -33,7 +33,6 @@ module.exports = {
   getNextEventDate: (date, eventTypeID, value) => {
     let new_date = moment(date);
     new_date.hours(0).minutes(0).seconds(0);
-    console.log(new_date.format(config.FORMAT_DATETIME_PATTER.DATE_TIME));
 
     if (+eventTypeID === config.EVENT_TYPE.DAILY) {
       new_date.add(1, 'days');
@@ -72,6 +71,6 @@ module.exports = {
         new_date.add(1, 'years').month(value).date(1);
       }
     }
-    return new_date.format(config.FORMAT_DATETIME_PATTER.DATE_TIME);
+    return new_date;
   },
 }
