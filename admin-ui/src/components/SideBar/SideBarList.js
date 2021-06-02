@@ -7,6 +7,7 @@ import AccountBalanceWalletIcon from '@material-ui/icons/AccountBalanceWallet';
 import BarChartIcon from '@material-ui/icons/BarChart';
 import SettingsIcon from '@material-ui/icons/Settings';
 import CategoryIcon from '@material-ui/icons/Category';
+import GroupIcon from '@material-ui/icons/Group';
 import {
   NavLink
 } from "react-router-dom";
@@ -22,6 +23,12 @@ export default function SideBarList(props) {
         </ListItemIcon>
         <ListItemText primary="Loại" />
       </ListItem>
+      <ListItem button component={NavLink} to="/Teams">
+          <ListItemIcon>
+            <GroupIcon />
+          </ListItemIcon>
+          <ListItemText primary="Nhóm" />
+        </ListItem>
     </div>
   )
 };
