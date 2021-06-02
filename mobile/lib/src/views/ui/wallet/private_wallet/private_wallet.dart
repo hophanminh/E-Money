@@ -12,6 +12,7 @@ import 'package:mobile/src/views/ui/wallet/private_wallet/edit_transaction.dart'
 import 'package:mobile/src/views/ui/wallet/private_wallet/statistic/statistic_view.dart';
 import 'package:mobile/src/views/ui/wallet/private_wallet/view_transaction.dart';
 import 'package:mobile/src/views/utils/helpers/helper.dart';
+import 'package:mobile/src/views/utils/widgets/widget.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class IndividualWallet extends StatefulWidget {
@@ -229,7 +230,13 @@ class _IndividualWalletState extends State<IndividualWallet> {
           Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => ViewTransaction(walletID: widget.user['WalletID'], tx: tx, fullCategoryList: _categoryList['fullList'], eventList: _eventList)));
+                  builder: (context) => ViewTransaction(
+                        walletID: widget.user['WalletID'],
+                        tx: tx,
+                        fullCategoryList: _categoryList['fullList'],
+                        eventList: _eventList,
+                        icon: selectedIcon,
+                      )));
         },
         child: Slidable(
           actionPane: SlidableDrawerActionPane(),
@@ -244,7 +251,13 @@ class _IndividualWalletState extends State<IndividualWallet> {
                     context,
                     MaterialPageRoute(
                         builder: (context) => EditTransaction(
-                            walletID: widget.user['WalletID'], tx: tx, fullCategoryList: _categoryList['fullList'], eventList: _eventList, wrappingScaffoldKey: _scaffoldKey)));
+                              walletID: widget.user['WalletID'],
+                              tx: tx,
+                              fullCategoryList: _categoryList['fullList'],
+                              eventList: _eventList,
+                              wrappingScaffoldKey: _scaffoldKey,
+                              iconList: _iconList,
+                            )));
               },
             ),
             IconSlideAction(
@@ -267,7 +280,8 @@ class _IndividualWalletState extends State<IndividualWallet> {
               child: Container(
                 padding: EdgeInsets.fromLTRB(10, 15, 10, 5),
                 child: Row(children: [
-                  SizedBox(width: 50, height: 50, child: createCircleIcon(selectedIcon['Name'], selectedIcon['BackgroundColor'], selectedIcon['Color'])),
+                  Container(
+                      margin: EdgeInsets.all(6), width: 50, height: 50, child: createCircleIcon(selectedIcon['Name'], selectedIcon['BackgroundColor'], selectedIcon['Color'])),
                   Expanded(
                     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                       Text(
@@ -302,18 +316,6 @@ class _IndividualWalletState extends State<IndividualWallet> {
       ),
     );
   }
-
-  // color from database is hexadecimal : #123456; convert to int
-  CircleAvatar createCircleIcon(String name, String background, String foreground) => CircleAvatar(
-        backgroundColor: Color(int.parse('0x' + background.substring(2))),
-        foregroundColor: Color(int.parse('0x' + foreground.substring(2))),
-        child: FlutterLogo(size: 40.0
-            //     Icon(MdiIcons.fromString('sword'),
-            //       // color: Colors.pink,
-            //       // size: 40.0,
-            //       // semanticLabel: 'Text to announce in accessibility modes',
-            ),
-      );
 
   _createDetail(String value, Icon icon) {
     return Row(
@@ -359,22 +361,26 @@ class _IndividualWalletState extends State<IndividualWallet> {
                     context,
                     MaterialPageRoute(
                         builder: (context) => CategoryDashboard(
-                            walletID: widget.user['WalletID'],
-                            txs: _txs,
-                            defaultList: _categoryList['defaultList'],
-                            customList: _categoryList['customList'],
-                            setCategoryList: _setCategoryList)));
+                              walletID: widget.user['WalletID'],
+                              txs: _txs,
+                              defaultList: _categoryList['defaultList'],
+                              customList: _categoryList['customList'],
+                              setCategoryList: _setCategoryList,
+                              iconList: _iconList,
+                            )));
                 break;
               case 2:
                 Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (context) => EventDashboard(
-                            walletID: widget.user['WalletID'],
-                            fullCatList: _categoryList['fullList'],
-                            setCategoryList: _setCategoryList,
-                            eventList: _eventList,
-                            setEventList: _setEventList)));
+                              walletID: widget.user['WalletID'],
+                              fullCatList: _categoryList['fullList'],
+                              setCategoryList: _setCategoryList,
+                              eventList: _eventList,
+                              setEventList: _setEventList,
+                              iconList: _iconList,
+                            )));
                 break;
               case 3:
                 Navigator.push(
@@ -400,8 +406,12 @@ class _IndividualWalletState extends State<IndividualWallet> {
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) =>
-                    AddTransaction(walletID: widget.user['WalletID'], fullCategoryList: _categoryList['fullList'], eventList: _eventList, wrappingScaffoldKey: _scaffoldKey)));
+                builder: (context) => AddTransaction(
+                    walletID: widget.user['WalletID'],
+                    fullCategoryList: _categoryList['fullList'],
+                    eventList: _eventList,
+                    iconList: _iconList,
+                    wrappingScaffoldKey: _scaffoldKey)));
       },
       tooltip: 'Thêm giao dịch',
       child: Icon(Icons.add),

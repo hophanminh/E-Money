@@ -16,8 +16,16 @@ class EventDashboard extends StatefulWidget {
   final Function(List<dynamic>, List<dynamic>, List<dynamic>) setCategoryList;
   final List<dynamic> eventList;
   final Function(List<dynamic>) setEventList;
+  final List<dynamic> iconList;
 
-  const EventDashboard({Key key, @required this.walletID, @required this.fullCatList, @required this.setCategoryList, @required this.eventList, @required this.setEventList})
+  const EventDashboard(
+      {Key key,
+      @required this.walletID,
+      @required this.fullCatList,
+      @required this.setCategoryList,
+      @required this.eventList,
+      @required this.setEventList,
+      @required this.iconList})
       : super(key: key);
 
   @override
@@ -85,7 +93,7 @@ class _EventDashboardState extends State<EventDashboard> {
       margin: EdgeInsets.symmetric(vertical: 10),
       child: GestureDetector(
         onTap: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => ViewEvent(event: item)));
+          Navigator.push(context, MaterialPageRoute(builder: (context) => ViewEvent(event: item, icon: widget.iconList.firstWhere((element) => element['ID'] == item['IconID']),)));
         },
         child: Slidable(
           actionPane: SlidableDrawerActionPane(),
@@ -170,7 +178,10 @@ class _EventDashboardState extends State<EventDashboard> {
       margin: EdgeInsets.symmetric(vertical: 10),
       child: GestureDetector(
         onTap: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => ViewEvent(event: item)));
+          for(String key in widget.iconList[0].keys) {
+            print('${key}');
+          }
+          Navigator.push(context, MaterialPageRoute(builder: (context) => ViewEvent(event: item, icon: widget.iconList.firstWhere((element) => element['ID'] == item['IconID']),)));
         },
         child: DefaultTextStyle(
           style: TextStyle(fontSize: 15, color: Colors.white),
@@ -244,7 +255,7 @@ class _EventDashboardState extends State<EventDashboard> {
         await Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => AddEvent(walletID: widget.walletID, fullCategoryList: widget.fullCatList, eventTypeList: _typeList, wrappingScaffoldKey: _scaffoldKey)));
+                builder: (context) => AddEvent(walletID: widget.walletID, fullCategoryList: widget.fullCatList, eventTypeList: _typeList, wrappingScaffoldKey: _scaffoldKey, iconList: widget.iconList)));
 
         setState(() {});
       },

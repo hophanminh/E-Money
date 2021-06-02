@@ -12,9 +12,11 @@ class CategoryDashboard extends StatefulWidget {
   final List<dynamic> txs;
   final List<dynamic> defaultList;
   final List<dynamic> customList;
+  final List<dynamic> iconList;
   final Function(List<dynamic>, List<dynamic>, List<dynamic>) setCategoryList;
 
-  const CategoryDashboard({Key key, @required this.walletID, @required this.txs, @required this.defaultList, @required this.customList, @required this.setCategoryList})
+  const CategoryDashboard(
+      {Key key, @required this.walletID, @required this.txs, @required this.defaultList, @required this.customList, @required this.setCategoryList, @required this.iconList})
       : super(key: key);
 
   @override
@@ -98,11 +100,11 @@ class _CategoryDashboardState extends State<CategoryDashboard> {
               childAspectRatio: (30 / 8),
             ),
             itemBuilder: (context, index) {
-              // for (String key in _defaultList[index].keys) {
-              //   print('${key} - ${_defaultList[index][key]}');
-              // }
+
+              var selectedIcon = widget.iconList.firstWhere((element) => element['ID'] == widget.defaultList[index]['IconID']);
+
               return Container(
-                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 30),
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
                 decoration: BoxDecoration(
                   boxShadow: [
                     BoxShadow(
@@ -117,10 +119,11 @@ class _CategoryDashboardState extends State<CategoryDashboard> {
                 ),
                 child: Row(
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 10, right: 20.0),
-                      child: FlutterLogo(size: 45),
-                    ),
+                    Container(
+                        margin: EdgeInsets.symmetric(horizontal: 10),
+                        width: 50,
+                        height: 50,
+                        child: createCircleIcon(selectedIcon['Name'], selectedIcon['BackgroundColor'], selectedIcon['Color'])),
                     Expanded(
                         child: Text(
                       widget.defaultList[index]['Name'],
@@ -169,9 +172,11 @@ class _CategoryDashboardState extends State<CategoryDashboard> {
               childAspectRatio: (30 / 8),
             ),
             itemBuilder: (context, index) {
-              // for (String key in _defaultList[index].keys) {
-              //   print('${key} - ${_defaultList[index][key]}');
+              // for (String key in widget.customList[index].keys) {
+              //   print('${key} - ${widget.customList[index][key]}');
               // }
+              var selectedIcon = widget.iconList.firstWhere((element) => element['ID'] == widget.customList[index]['IconID']);
+
               return Slidable(
                 actionPane: SlidableDrawerActionPane(),
                 actionExtentRatio: 0.25,
@@ -214,7 +219,7 @@ class _CategoryDashboardState extends State<CategoryDashboard> {
                   ),
                 ],
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 30),
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 25),
                   decoration: BoxDecoration(
                     boxShadow: [
                       BoxShadow(
@@ -229,10 +234,11 @@ class _CategoryDashboardState extends State<CategoryDashboard> {
                   ),
                   child: Row(
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 10, right: 20.0),
-                        child: FlutterLogo(size: 45),
-                      ),
+                      Container(
+                          margin: EdgeInsets.symmetric(horizontal: 10),
+                          width: 50,
+                          height: 50,
+                          child: createCircleIcon(selectedIcon['Name'], selectedIcon['BackgroundColor'], selectedIcon['Color'])),
                       Expanded(
                           child: Text(
                         widget.customList[index]['Name'],

@@ -10,8 +10,9 @@ class EditTransaction extends StatefulWidget {
   final Map<String, dynamic> tx;
   final List<dynamic> eventList;
   final List<dynamic> fullCategoryList;
+  final List<dynamic> iconList;
 
-  const EditTransaction({Key key, @required this.walletID, @required this.tx, @required this.fullCategoryList, @required this.eventList, @required this.wrappingScaffoldKey})
+  const EditTransaction({Key key, @required this.walletID, @required this.tx, @required this.fullCategoryList, @required this.eventList, @required this.iconList, @required this.wrappingScaffoldKey})
       : super(key: key);
 
   @override
@@ -62,10 +63,12 @@ class _EditTransactionState extends State<EditTransaction> {
     _priceController.text = formatMoneyWithoutSymbol(_clonedTx['price'].abs());
 
     for (Map<String, dynamic> cat in widget.fullCategoryList) {
+      var selectedIcon = widget.iconList.firstWhere((element) => element['ID'] == cat['IconID']);
+
       _txCategoryMenuItems.add(new DropdownMenuItem(
         child: Row(
           children: [
-            FlutterLogo(size: 24),
+            Container(width: 30, height: 30,child: createCircleIcon(selectedIcon['Name'], selectedIcon['BackgroundColor'], selectedIcon['Color'], size:16)),
             Padding(
               padding: const EdgeInsets.only(left: 20.0),
               child: Text(cat['Name']),

@@ -9,8 +9,10 @@ class AddTransaction extends StatefulWidget {
   final String walletID;
   final List<dynamic> eventList;
   final List<dynamic> fullCategoryList;
+  final List<dynamic> iconList;
 
-  const AddTransaction({Key key, @required this.walletID, @required this.fullCategoryList, @required this.eventList, @required this.wrappingScaffoldKey}) : super(key: key);
+  const AddTransaction({Key key, @required this.walletID, @required this.fullCategoryList, @required this.eventList, @required this.iconList, @required this.wrappingScaffoldKey})
+      : super(key: key);
 
   @override
   _AddTransactionState createState() => _AddTransactionState();
@@ -56,13 +58,19 @@ class _AddTransactionState extends State<AddTransaction> {
     }
     _currentType = _txTypeMenuItems[0].value;
 
+    for (String key in widget.fullCategoryList[0].keys) {
+      print('${key}-${widget.fullCategoryList[0][key]}');
+    }
+
     for (Map<String, dynamic> cat in widget.fullCategoryList) {
+      var selectedIcon = widget.iconList.firstWhere((element) => element['ID'] == cat['IconID']);
+
       _txCategoryMenuItems.add(new DropdownMenuItem(
         child: Row(
           children: [
-            FlutterLogo(size: 24),
+            Container(width: 30, height: 30, child: createCircleIcon(selectedIcon['Name'], selectedIcon['BackgroundColor'], selectedIcon['Color'], size: 15)),
             Padding(
-              padding: const EdgeInsets.only(left: 20.0),
+              padding: const EdgeInsets.only(left: 10.0),
               child: Text(cat['Name']),
             ),
           ],
@@ -263,8 +271,12 @@ class _AddTransactionState extends State<AddTransaction> {
       initialDatePickerMode: DatePickerMode.day,
     );
 
-    final TimeOfDay pickedTime =
-        await showTimePicker(context: context, initialTime: TimeOfDay(hour: _selectedDatetime.hour, minute: _selectedDatetime.minute), helpText: 'Chọn giờ giao dịch', cancelText: 'Hủy', confirmText: 'Chọn');
+    final TimeOfDay pickedTime = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay(hour: _selectedDatetime.hour, minute: _selectedDatetime.minute),
+        helpText: 'Chọn giờ giao dịch',
+        cancelText: 'Hủy',
+        confirmText: 'Chọn');
 
     if (picked != null && pickedTime != null) {
       DateTime result = DateTime(picked.year, picked.month, picked.day, pickedTime.hour, pickedTime.minute);

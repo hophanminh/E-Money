@@ -27,7 +27,7 @@ class _StatisticState extends State<Statistic> {
   var _scaffoldKey = GlobalKey<ScaffoldMessengerState>();
   bool _nothingToShow = true;
   List<DateTime> _dates = [];
-  DateTime _selectedDate;
+  DateTime _selectedDate = null;
 
   List<charts.Series<dynamic, String>> _barChartSeries = [];
   List<charts.Series<dynamic, String>> _spentPieChartSeries = [];

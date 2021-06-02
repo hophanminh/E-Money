@@ -9,8 +9,9 @@ class AddEvent extends StatefulWidget {
   final String walletID;
   final List<dynamic> eventTypeList;
   final List<dynamic> fullCategoryList;
+  final List<dynamic> iconList;
 
-  const AddEvent({Key key, @required this.walletID, @required this.fullCategoryList, @required this.eventTypeList, @required this.wrappingScaffoldKey}) : super(key: key);
+  const AddEvent({Key key, @required this.walletID, @required this.fullCategoryList, @required this.eventTypeList, @required this.wrappingScaffoldKey,@required this.iconList}) : super(key: key);
 
   @override
   _AddEventState createState() => _AddEventState();
@@ -88,10 +89,12 @@ class _AddEventState extends State<AddEvent> {
     _currentTxType = _availableTxTypeItems[0].value;
 
     for (Map<String, dynamic> cat in widget.fullCategoryList) {
+      var selectedIcon = widget.iconList.firstWhere((element) => element['ID'] == cat['IconID']);
+
       _availableCatItems.add(new DropdownMenuItem(
         child: Row(
           children: [
-            FlutterLogo(size: 24),
+            Container(width: 30, height: 30, child: createCircleIcon(selectedIcon['Name'], selectedIcon['BackgroundColor'], selectedIcon['Color'], size: 15)),
             Padding(
               padding: const EdgeInsets.only(left: 20.0),
               child: Text(cat['Name']),

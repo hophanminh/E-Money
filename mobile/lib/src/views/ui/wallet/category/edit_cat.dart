@@ -89,7 +89,9 @@ class _EditCatDialogState extends State<EditCatDialog> {
                               value: _currentIcon,
                               items: _catMenuItems,
                               onChanged: (value) {
-                                _currentIcon = value;
+                                setState(() {
+                                  _currentIcon = value;
+                                });
                               },
                             ),
                           ),
@@ -154,10 +156,15 @@ class _EditCatDialogState extends State<EditCatDialog> {
   void _initPage() async {
     _iconList = jsonDecode(await WalletService.instance.getListIcon());
 
+    if(!mounted) {
+      print('unmounted');
+      return;
+    }
+
     if (_iconList.length != 0) {
       for (dynamic icon in _iconList) {
         _catMenuItems.add(new DropdownMenuItem(
-          child: _createCircleIcon(icon['Name'], icon['BackgroundColor'], icon['Color']),
+          child: Container(width: 30, height: 30, child: createCircleIcon(icon['Name'], icon['BackgroundColor'], icon['Color'], size: 18)),
           value: icon['ID'],
         ));
       }

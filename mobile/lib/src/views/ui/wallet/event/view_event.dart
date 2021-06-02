@@ -1,11 +1,12 @@
-
 import 'package:flutter/material.dart';
 import 'package:mobile/src/views/utils/helpers/helper.dart';
+import 'package:outline_material_icons/outline_material_icons.dart';
 
 class ViewEvent extends StatefulWidget {
   final Map<String, dynamic> event;
+  final Map<String, dynamic> icon;
 
-  const ViewEvent({Key key, @required this.event}) : super(key: key);
+  const ViewEvent({Key key, @required this.event, @required this.icon}) : super(key: key);
 
   @override
   _ViewEventState createState() => _ViewEventState();
@@ -18,6 +19,9 @@ class _ViewEventState extends State<ViewEvent> {
   void initState() {
     super.initState();
     _initPage();
+    for (String key in widget.event.keys) {
+      print('${key}-${widget.event[key]}');
+    }
   }
 
   @override
@@ -77,7 +81,8 @@ class _ViewEventState extends State<ViewEvent> {
                           child: Container(
                             padding: EdgeInsets.all(10),
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              border: Border.all(color: Colors.white, width: 5),
+                              color: Color(int.parse('0xff' + widget.icon['BackgroundColor'].substring(1))),
                               borderRadius: BorderRadius.all(Radius.circular(20)),
                               boxShadow: [
                                 BoxShadow(
@@ -88,8 +93,10 @@ class _ViewEventState extends State<ViewEvent> {
                                 ),
                               ],
                             ),
-                            child: FlutterLogo(
+                            child: Icon(
+                              IconData(int.parse('${OMIcons.codePoints[widget.icon['Name']]}'), fontFamily: 'outline_material_icons', fontPackage: 'outline_material_icons'),
                               size: 90,
+                              color: Colors.white,
                             ),
                           )),
                       Column(
@@ -97,7 +104,8 @@ class _ViewEventState extends State<ViewEvent> {
                         children: [
                           Text(
                             widget.event['Name'],
-                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 27), textAlign: TextAlign.right,
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 27),
+                            textAlign: TextAlign.right,
                           ),
                           Text(
                             ' (${widget.event['Status'] == 1 ? 'Đang diễn ra' : 'Đã ngưng'})',
@@ -109,8 +117,7 @@ class _ViewEventState extends State<ViewEvent> {
                   ),
                 ),
               ),
-              _createDetail(
-                  'Hạng mục', widget.event['CategoryName'], Icon(Icons.category_outlined)),
+              _createDetail('Hạng mục', widget.event['CategoryName'], Icon(Icons.category_outlined)),
               _createDetail(
                   '${widget.event['ExpectingAmount'] < 0 ? 'Chi' : 'Thu'} định kỳ', formatMoneyWithSymbol(widget.event['ExpectingAmount']), Icon(Icons.attach_money_outlined)),
               _createDetail('${widget.event['ExpectingAmount'] < 0 ? 'Tổng chi' : 'Tổng thu'} cho sự kiện',

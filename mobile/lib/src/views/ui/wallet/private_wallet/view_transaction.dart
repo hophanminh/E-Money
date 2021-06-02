@@ -11,6 +11,7 @@ import 'package:mobile/src/views/ui/wallet/private_wallet/delete_transaction_ima
 import 'package:mobile/src/views/ui/wallet/private_wallet/edit_transaction.dart';
 import 'package:mobile/src/views/utils/helpers/helper.dart';
 import 'package:mobile/src/views/utils/widgets/widget.dart';
+import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 
 class ViewTransaction extends StatefulWidget {
@@ -18,8 +19,9 @@ class ViewTransaction extends StatefulWidget {
   final Map<String, dynamic> tx;
   final List<dynamic> eventList;
   final List<dynamic> fullCategoryList;
+  final dynamic icon;
 
-  const ViewTransaction({Key key, @required this.walletID, @required this.tx, @required this.eventList, @required this.fullCategoryList}) : super(key: key);
+  const ViewTransaction({Key key, @required this.walletID, @required this.tx, @required this.eventList, @required this.fullCategoryList, @required this.icon}) : super(key: key);
 
   @override
   _ViewTransactionState createState() => _ViewTransactionState();
@@ -52,6 +54,9 @@ class _ViewTransactionState extends State<ViewTransaction> {
     _socket = await getSocket();
     _socket.emitWithAck('get_transaction_image', {'TransactionID': widget.tx['id']}, ack: (data) {
       // print(_sortImageList(data['imageList'])[0]);
+      if (!mounted) {
+        return;
+      }
       setState(() {
         _imageList = _sortImageList(data['imageList']);
       });
@@ -61,6 +66,10 @@ class _ViewTransactionState extends State<ViewTransaction> {
       print('CÓ ẢNH MỚI DC THÊM');
       List<dynamic> concatenatedList = List<dynamic>.from(_imageList);
       concatenatedList.addAll(data['urls']); // urls là 1 list các map
+
+      if (!mounted) {
+        return;
+      }
       setState(() {
         _imageList = _sortImageList(concatenatedList);
       });
@@ -142,7 +151,8 @@ class _ViewTransactionState extends State<ViewTransaction> {
                           child: Container(
                             padding: EdgeInsets.all(10),
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              border: Border.all(color: Colors.white, width: 5),
+                              color: Color(int.parse('0xff' + widget.icon['BackgroundColor'].substring(1))),
                               borderRadius: BorderRadius.all(Radius.circular(20)),
                               boxShadow: [
                                 BoxShadow(
@@ -153,8 +163,10 @@ class _ViewTransactionState extends State<ViewTransaction> {
                                 ),
                               ],
                             ),
-                            child: FlutterLogo(
+                            child: Icon(
+                              IconData(int.parse('${OMIcons.codePoints[widget.icon['Name']]}'), fontFamily: 'outline_material_icons', fontPackage: 'outline_material_icons'),
                               size: 90,
+                              color: Colors.white,
                             ),
                           )),
                       Text(
@@ -275,6 +287,7 @@ class _ViewTransactionState extends State<ViewTransaction> {
   }
 
   _createTxImageListView() => GridView.builder(
+        physics: ScrollPhysics(),
         padding: EdgeInsets.all(20),
         scrollDirection: Axis.vertical,
         shrinkWrap: true,
