@@ -189,7 +189,14 @@ ALTER TABLE TransactionImages ADD CONSTRAINT FK_TransactionImages_Transactions F
 ALTER TABLE TransactionImages ADD CONSTRAINT FK_TransactionImages_Users FOREIGN KEY(UserID) REFERENCES Users(ID);
 ALTER TABLE Notifications ADD CONSTRAINT FK_Notifications_Users FOREIGN KEY(UserID) REFERENCES Users(ID);
 
-INSERT INTO icons VALUES ('1','school','#FFFFFF','#1DAF1A'),('2','fastfood','#FFFFFF','#FF2626'),('3','attach_money','#FFFFFF','#808080');
+INSERT INTO icons VALUES 
+('1','school','#FFFFFF','#1DAF1A'),
+('2','fastfood','#FFFFFF','#FF2626'),
+('3','attach_money','#FFFFFF','#808080'),
+('4','business','#FFFFFF','#003366'),
+('5','local_hospital','#FFFFFF','#f40505'),
+('6','store_mall_direction','#FFFFFF','#5AC18E'),
+('7','local_gas_station','#FFFFFF','#1D2021');
 INSERT INTO eventtypes VALUES ('1','Hằng ngày'),('2','Hằng tuần'),('3','Hằng tháng'),('4','Hằng năm');
 INSERT INTO categories VALUES ('1','Học tập',1,NULL,'1'),('2','Ăn uống',1,NULL,'2'),('3','Khác',1,NULL,'3');
 INSERT INTO wallets VALUES 
