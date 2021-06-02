@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/src/services/secure_storage_service.dart';
 import 'package:mobile/src/views/utils/helpers/helper.dart';
+import 'package:outline_material_icons/outline_material_icons.dart';
 
 const TextStyle myErrorTextStyle = TextStyle(fontWeight: FontWeight.bold, color: error, fontSize: 13);
 
@@ -196,3 +197,17 @@ Widget myCircleAvatar(String avatarURL, double radius, {Key key}) => Container(
         radius: radius,
       ),
     );
+
+
+
+// color from database is hexadecimal : #123456; convert to int
+CircleAvatar createCircleIcon(String name, String background, String foreground, {double size = 28.0}) {
+  return CircleAvatar(
+      backgroundColor: Color(int.parse('0xff' + background.substring(1))),
+      // foregroundColor: Color(int.parse('0xff' + foreground.substring(1))),
+      child: Icon(
+        IconData(int.parse('${OMIcons.codePoints[name]}'), fontFamily: 'outline_material_icons', fontPackage: 'outline_material_icons'),
+        color: Colors.white,
+        size: size,
+      ));
+}

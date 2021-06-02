@@ -12,6 +12,7 @@ import 'package:mobile/src/views/ui/wallet/private_wallet/edit_transaction.dart'
 import 'package:mobile/src/views/ui/wallet/private_wallet/statistic/statistic_view.dart';
 import 'package:mobile/src/views/ui/wallet/private_wallet/view_transaction.dart';
 import 'package:mobile/src/views/utils/helpers/helper.dart';
+import 'package:mobile/src/views/utils/widgets/widget.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class IndividualWallet extends StatefulWidget {
@@ -267,7 +268,8 @@ class _IndividualWalletState extends State<IndividualWallet> {
               child: Container(
                 padding: EdgeInsets.fromLTRB(10, 15, 10, 5),
                 child: Row(children: [
-                  SizedBox(width: 50, height: 50, child: createCircleIcon(selectedIcon['Name'], selectedIcon['BackgroundColor'], selectedIcon['Color'])),
+                  Container(
+                      margin: EdgeInsets.all(6), width: 50, height: 50, child: createCircleIcon(selectedIcon['Name'], selectedIcon['BackgroundColor'], selectedIcon['Color'])),
                   Expanded(
                     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                       Text(
@@ -302,18 +304,6 @@ class _IndividualWalletState extends State<IndividualWallet> {
       ),
     );
   }
-
-  // color from database is hexadecimal : #123456; convert to int
-  CircleAvatar createCircleIcon(String name, String background, String foreground) => CircleAvatar(
-        backgroundColor: Color(int.parse('0x' + background.substring(2))),
-        foregroundColor: Color(int.parse('0x' + foreground.substring(2))),
-        child: FlutterLogo(size: 40.0
-            //     Icon(MdiIcons.fromString('sword'),
-            //       // color: Colors.pink,
-            //       // size: 40.0,
-            //       // semanticLabel: 'Text to announce in accessibility modes',
-            ),
-      );
 
   _createDetail(String value, Icon icon) {
     return Row(
