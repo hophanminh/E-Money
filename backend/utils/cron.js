@@ -97,7 +97,9 @@ module.exports = io => {
       const notificationList = await notificationModel.getNotificationByUserID(userID, NOTIFICATION_AMOUNT_TO_LOAD);
       const count = await notificationModel.countUnreadNotification(userID);
       io.emit(`new_notification_added_${userID}`, { notificationList, count: count[0].count });
-
+      const eventList = await eventModel.getEventByWalletID(event.WalletID);
+      io.in(event.WalletID).emit('wait_for_update_event', { eventList });
+      
       console.log('    + Auto-doing an event, NextDate: ' + nextDate.format(FORMAT_DATETIME_PATTER.DATE_TIME));
     }
   });
