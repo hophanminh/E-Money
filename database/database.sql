@@ -163,7 +163,7 @@ CREATE TABLE TransactionImages(
 DROP TABLE IF EXISTS `Notifications`;
 CREATE TABLE Notifications(
     ID VARCHAR(100) NOT NULL, -- will store as UUID()
-    Content VARCHAR(200),
+    Content VARCHAR(1000),
     DateNotified DATETIME,
     IsRead BOOLEAN,
     UserID VARCHAR(100),
@@ -210,8 +210,6 @@ INSERT INTO wallets VALUES
 INSERT INTO teams VALUES
     ('30847550-aa43-11eb-9012-370ed11ba268', 'KHTN', 4, 'This is the description for team', '2021-05-01', NULL, '30764480-aa43-11eb-9012-370ed11ba268')
 ;
-
-
 
 -- Password: 123456
 INSERT INTO users VALUES 
