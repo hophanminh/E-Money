@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/src/models/CatsProvider.dart';
+import 'package:mobile/src/models/EventsProvider.dart';
 import 'package:mobile/src/models/UsersProvider.dart';
 import 'package:mobile/src/services/socketservices/socket.dart';
 import 'package:mobile/src/views/utils/helpers/helper.dart';
@@ -9,9 +10,7 @@ import 'package:socket_io_client/socket_io_client.dart';
 
 class AddTransaction extends StatefulWidget {
   final GlobalKey<ScaffoldMessengerState> wrappingScaffoldKey;
-  final List<dynamic> eventList;
-
-  const AddTransaction({Key key, @required this.eventList, @required this.wrappingScaffoldKey}) : super(key: key);
+  const AddTransaction({Key key, @required this.wrappingScaffoldKey}) : super(key: key);
 
   @override
   _AddTransactionState createState() => _AddTransactionState();
@@ -38,7 +37,6 @@ class _AddTransactionState extends State<AddTransaction> {
   String _currentCategory;
 
   // tên sự kiện
-  List<DropdownMenuItem<String>> _availableEventMenuItems = [];
   String _currentEvent;
 
   var _descriptionController = TextEditingController(text: "");
@@ -56,11 +54,7 @@ class _AddTransactionState extends State<AddTransaction> {
     }
     _currentType = _txTypeMenuItems[0].value;
 
-    _currentCategory = '';
-
-    for (Map<String, dynamic> event in widget.eventList) {
-      _availableEventMenuItems.add(new DropdownMenuItem(child: Text(event['Name']), value: event['ID']));
-    }
+    _currentCategory = null;
     _currentEvent = null;
 
     _datetimeController.text = convertToDDMMYYYYHHMM(_selectedDatetime.toLocal().toString());
@@ -187,7 +181,7 @@ class _AddTransactionState extends State<AddTransaction> {
                                       decoration: InputDecoration(
                                         enabledBorder: InputBorder.none,
                                       ),
-                                      value: _currentCategory == '' ? catsProvider.fullList[0].id : _currentCategory,
+                                      value: _currentCategory == null ? catsProvider.fullList[0].id : _currentCategory,
                                       items: catsProvider.fullList
                                           .map<DropdownMenuItem<String>>((Categories cat) {
                                         return DropdownMenuItem(
@@ -215,22 +209,30 @@ class _AddTransactionState extends State<AddTransaction> {
                             margin: EdgeInsets.symmetric(vertical: 10),
                             padding: EdgeInsets.symmetric(horizontal: 10),
                             decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), border: Border.all(width: 1, color: Colors.black26)),
-                            child: DropdownButtonFormField(
-                              hint: Text('Chọn sự kiện'),
-                              decoration: InputDecoration(
-                                enabledBorder: InputBorder.none,
-                              ),
-                              value: _currentEvent,
-                              items: _availableEventMenuItems,
-                              onChanged: (value) {
-                                setState(() {
-                                  _currentEvent = value;
-                                });
-                              },
-                              onTap: () {
-                                FocusManager.instance.primaryFocus.unfocus();
-                              },
-                            ),
+                            child: Consumer<EventsProvider>(
+                                builder: (context, eventsProvider, child) {
+                                  return DropdownButtonFormField(
+                                    hint: Text('Chọn sự kiện'),
+                                    decoration: InputDecoration(
+                                      enabledBorder: InputBorder.none,
+                                    ),
+                                    value: _currentEvent,
+                                    items: eventsProvider.eventList
+                                        .map<DropdownMenuItem<String>>((Events event) {
+                                      return DropdownMenuItem(child: Text(event.name), value: event.id);
+                                    }).toList(),
+                                    onChanged: (value) {
+                                      setState(() {
+                                        _currentEvent = value;
+                                      });
+                                    },
+                                    onTap: () {
+                                      FocusManager.instance.primaryFocus
+                                          .unfocus();
+                                    },
+                                  );
+                                })
+
                           ),
                           Container(
                             margin: EdgeInsets.symmetric(vertical: 10),
@@ -324,7 +326,7 @@ class _AddTransactionState extends State<AddTransaction> {
 
     List<Categories> fullList = Provider.of<CatsProvider>(context, listen: false).fullList;
     final Map<String, dynamic> newTx = {
-      'catID': _currentCategory == '' ? fullList[0].id : _currentCategory,
+      'catID': _currentCategory == null ? fullList[0].id : _currentCategory,
       'eventID': _currentEvent,
       'price': _currentType == 'Chi' ? price * -1 : price,
       'time': _selectedDatetime.toIso8601String(),

@@ -31,6 +31,9 @@ class _TeamUserState extends State<TeamUser> {
     }
     Map<String, dynamic> body = jsonDecode(res.body);
 
+    if (!mounted) {
+      return;
+    }
     if (body['users'] != null && body['users'].length > 0) {
       setState(() {
         _userList = body['users'];

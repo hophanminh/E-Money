@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/src/models/CatsProvider.dart';
+import 'package:mobile/src/models/EventsProvider.dart';
 import 'package:mobile/src/models/UsersProvider.dart';
 import 'package:mobile/src/models/WalletsProvider.dart';
 import 'package:mobile/src/services/socketservices/socket.dart';
@@ -10,9 +11,8 @@ import 'package:socket_io_client/socket_io_client.dart';
 
 class EditTransaction extends StatefulWidget {
   final GlobalKey<ScaffoldMessengerState> wrappingScaffoldKey;
-  final List<dynamic> eventList;
 
-  const EditTransaction({Key key, @required this.eventList, @required this.wrappingScaffoldKey})
+  const EditTransaction({Key key, @required this.wrappingScaffoldKey})
       : super(key: key);
 
   @override
@@ -39,7 +39,6 @@ class _EditTransactionState extends State<EditTransaction> {
   String _currentCategory;
 
   // tên sự kiện
-  List<DropdownMenuItem<String>> _availableEventMenuItems = [];
   String _currentEvent;
 
   var _descriptionController = TextEditingController();
@@ -61,10 +60,6 @@ class _EditTransactionState extends State<EditTransaction> {
     _priceController.text = formatMoneyWithoutSymbol(_clonedTx.price.abs());
 
     _currentCategory = _clonedTx.catID;
-
-    for (Map<String, dynamic> event in widget.eventList) {
-      _availableEventMenuItems.add(new DropdownMenuItem(child: Text(event['Name']), value: event['ID']));
-    }
     _currentEvent = _clonedTx.eventID;
 
     _selectedDatetime = DateTime.parse(_clonedTx.time).toLocal();
@@ -222,22 +217,29 @@ class _EditTransactionState extends State<EditTransaction> {
                             margin: EdgeInsets.symmetric(vertical: 10),
                             padding: EdgeInsets.symmetric(horizontal: 10),
                             decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), border: Border.all(width: 1, color: Colors.black26)),
-                            child: DropdownButtonFormField(
-                              hint: Text('Chọn sự kiện'),
-                              decoration: InputDecoration(
-                                enabledBorder: InputBorder.none,
-                              ),
-                              value: _currentEvent,
-                              items: _availableEventMenuItems,
-                              onChanged: (value) {
-                                setState(() {
-                                  _currentEvent = value;
-                                });
-                              },
-                              onTap: () {
-                                FocusManager.instance.primaryFocus.unfocus();
-                              },
-                            ),
+                            child: Consumer<EventsProvider>(
+                                builder: (context, eventsProvider, child) {
+                                  return DropdownButtonFormField(
+                                    hint: Text('Chọn sự kiện'),
+                                    decoration: InputDecoration(
+                                      enabledBorder: InputBorder.none,
+                                    ),
+                                    value: _currentEvent,
+                                    items: eventsProvider.eventList
+                                        .map<DropdownMenuItem<String>>((Events event) {
+                                      return DropdownMenuItem(child: Text(event.name), value: event.id);
+                                    }).toList(),
+                                    onChanged: (value) {
+                                      setState(() {
+                                        _currentEvent = value;
+                                      });
+                                    },
+                                    onTap: () {
+                                      FocusManager.instance.primaryFocus
+                                          .unfocus();
+                                    },
+                                  );
+                                })
                           ),
                           Container(
                             margin: EdgeInsets.symmetric(vertical: 10),

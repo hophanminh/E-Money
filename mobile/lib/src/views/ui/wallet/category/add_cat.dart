@@ -150,6 +150,9 @@ class _AddCatDialogState extends State<AddCatDialog> {
   void _initPage() async {
     _iconList = jsonDecode(await WalletService.instance.getListIcon());
 
+    if (!mounted) {
+      return;
+    }
     if (_iconList.length != 0) {
       for (dynamic icon in _iconList) {
         _catMenuItems.add(new DropdownMenuItem(

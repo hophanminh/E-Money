@@ -1,16 +1,18 @@
+
 import 'package:flutter/material.dart';
+import 'package:mobile/src/models/CatsProvider.dart';
+import 'package:mobile/src/models/EventsProvider.dart';
 import 'package:mobile/src/services/socketservices/socket.dart';
 import 'package:mobile/src/views/utils/helpers/helper.dart';
 import 'package:mobile/src/views/utils/widgets/widget.dart';
+import 'package:provider/provider.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 
 class AddEvent extends StatefulWidget {
   final GlobalKey<ScaffoldMessengerState> wrappingScaffoldKey;
   final String walletID;
-  final List<dynamic> eventTypeList;
-  final List<dynamic> fullCategoryList;
 
-  const AddEvent({Key key, @required this.walletID, @required this.fullCategoryList, @required this.eventTypeList, @required this.wrappingScaffoldKey}) : super(key: key);
+  const AddEvent({Key key, @required this.walletID, @required this.wrappingScaffoldKey}) : super(key: key);
 
   @override
   _AddEventState createState() => _AddEventState();
@@ -58,13 +60,7 @@ class _AddEventState extends State<AddEvent> {
   void initState() {
     super.initState();
 
-    for (dynamic eventType in widget.eventTypeList) {
-      _availableEventTypeItems.add(new DropdownMenuItem(
-        child: Text(eventType['Name']),
-        value: eventType['ID'],
-      ));
-    }
-    _currentEventType = _availableEventTypeItems[0].value;
+    _currentEventType = null;
 
     _handleChangeEventType(_currentEventType);
 
@@ -87,21 +83,7 @@ class _AddEventState extends State<AddEvent> {
     }
     _currentTxType = _availableTxTypeItems[0].value;
 
-    for (Map<String, dynamic> cat in widget.fullCategoryList) {
-      _availableCatItems.add(new DropdownMenuItem(
-        child: Row(
-          children: [
-            FlutterLogo(size: 24),
-            Padding(
-              padding: const EdgeInsets.only(left: 20.0),
-              child: Text(cat['Name']),
-            ),
-          ],
-        ),
-        value: cat['ID'],
-      ));
-    }
-    _currentCategory = _availableCatItems[0].value;
+    _currentCategory = null;
 
     _endDatetimeController.text = convertToDDMMYYYYHHMM(_selectedEndDatetime.toLocal().toString());
   }
@@ -170,17 +152,31 @@ class _AddEventState extends State<AddEvent> {
                     margin: EdgeInsets.symmetric(vertical: 10),
                     // padding: EdgeInsets.symmetric(horizontal: 10),
                     // decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), border: Border.all(width: 1, color: Colors.black26)),
-                    child: DropdownButtonFormField(
-                      hint: Text('Loại sự kiện'),
-                      decoration: myInputDecoration('', label: 'Loại sự kiện', inputBorder: Colors.black26),
-                      value: _currentEventType,
-                      items: _availableEventTypeItems,
-                      onChanged: (value) {
-                        _handleChangeEventType(value);
-                      },
-                    ),
+                    child: Consumer<EventsProvider>(
+                        builder: (context, eventsProvider, child) {
+                          return DropdownButtonFormField(
+                            hint: Text('Loại sự kiện'),
+                            decoration: myInputDecoration('', label: 'Loại sự kiện', inputBorder: Colors.black26),
+                            value: _currentEventType == null ? eventsProvider.eventTypeList[0].id : _currentEventType,
+                            items: eventsProvider.eventTypeList
+                                .map<DropdownMenuItem<String>>((EventTypes type) {
+                              return DropdownMenuItem(
+                                child: Text(type.name),
+                                value: type.id,
+                              );
+                            }).toList(),
+                            onChanged: (value) {
+                              _handleChangeEventType(value);
+                            },
+                            onTap: () {
+                              FocusManager.instance.primaryFocus
+                                  .unfocus();
+                            },
+                          );
+                        })
+
                   ),
-                  _currentEventType != '1'
+                  _currentEventType != '1' || _currentEventType == null
                       ? Container(
                           margin: EdgeInsets.symmetric(vertical: 10),
                           // padding: EdgeInsets.symmetric(horizontal: 10),
@@ -302,15 +298,37 @@ class _AddEventState extends State<AddEvent> {
                     margin: EdgeInsets.symmetric(vertical: 10),
                     padding: EdgeInsets.symmetric(horizontal: 10),
                     decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), border: Border.all(width: 1, color: Colors.black26)),
-                    child: DropdownButtonFormField(
-                      hint: Text('Chọn hạng mục chi tiêu'),
-                      decoration: InputDecoration(
-                        enabledBorder: InputBorder.none,
-                      ),
-                      value: _currentCategory,
-                      items: _availableCatItems,
-                      onChanged: _changeTxCat,
-                    ),
+                    child: Consumer<CatsProvider>(
+                        builder: (context, catsProvider, child) {
+                          return DropdownButtonFormField(
+                            hint: Text('Chọn hạng mục chi tiêu'),
+                            decoration: InputDecoration(
+                              enabledBorder: InputBorder.none,
+                            ),
+                            value: _currentCategory == null ? catsProvider.fullList[0].id : _currentCategory,
+                            items: catsProvider.fullList
+                                .map<DropdownMenuItem<String>>((Categories cat) {
+                              return DropdownMenuItem(
+                                child: Row(
+                                  children: [
+                                    FlutterLogo(size: 24),
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 20.0),
+                                      child: Text(cat.name),
+                                    ),
+                                  ],
+                                ),
+                                value: cat.id,
+                              );
+                            }).toList(),
+                            onChanged: _changeTxCat,
+                            onTap: () {
+                              FocusManager.instance.primaryFocus
+                                  .unfocus();
+                            },
+                          );
+                        })
+
                   ),
                   Container(
                     margin: EdgeInsets.symmetric(vertical: 10),
@@ -401,17 +419,16 @@ class _AddEventState extends State<AddEvent> {
       return;
     }
 
-    String eventTypeName = widget.eventTypeList.where((element) => element['ID'] == _currentEventType).first['Name'];
-
+    EventsProvider eventsProvider = Provider.of<EventsProvider>(context, listen: false);
+    CatsProvider catsProvider = Provider.of<CatsProvider>(context, listen: false);
     final Map<String, dynamic> newEvent = {
       'Name': _nameController.text,
       'StartDate': DateTime.now().toIso8601String(),
       'EndDate': _currentEndDateType == 'true' ? _selectedEndDatetime.toIso8601String() : null,
       'Value': _currentValue == null ? 0 : int.parse(_currentValue),
       'ExpectingAmount': _currentTxType == 'Chi' ? price * -1 : price,
-      'CategoryID': _currentCategory,
-      'EventTypeID': _currentEventType,
-      'TypeName': eventTypeName,
+      'CategoryID': _currentCategory == null ? catsProvider.fullList[0].id :_currentCategory,
+      'EventTypeID': _currentEventType == null ? eventsProvider.eventTypeList[0].id : _currentEventType,
       'Description': _descriptionController.text
     };
 

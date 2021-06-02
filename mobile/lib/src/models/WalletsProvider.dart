@@ -3,6 +3,7 @@ import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
+import 'package:mobile/src/models/CatsProvider.dart';
 import 'package:mobile/src/services/restapiservices/wallet_service.dart';
 
 class WalletsProvider extends ChangeNotifier {
@@ -46,10 +47,16 @@ class WalletsProvider extends ChangeNotifier {
     List<Transactions> copyTxs = List.from(this.txList);
 
     for (int i = 0; i < copyTxs.length; i++) {
-      dynamic cat = fullList.where((cat) => cat['ID'] == copyTxs[i].catID).first;
-      if (cat != null) {
-        copyTxs[i].iconID = cat['IconID'];
-        copyTxs[i].categoryName = cat['Name'];
+      List<dynamic> cat = fullList.where((cat) => cat['ID'] == copyTxs[i].catID).toList();
+      if (cat.isNotEmpty) {
+        copyTxs[i].iconID = cat.first['IconID'];
+        copyTxs[i].categoryName = cat.first['Name'];
+      }
+      else {
+        List<dynamic> cat = fullList.where((cat) => cat['Name'] == "Khác").toList();
+        copyTxs[i].iconID = cat.first['IconID'];
+        copyTxs[i].categoryName = cat.first['Name'];
+        copyTxs[i].catID = cat.first['ID'];
       }
     }
     this._txList = copyTxs;

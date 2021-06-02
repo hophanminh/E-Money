@@ -160,6 +160,9 @@ class _EditCatDialogState extends State<EditCatDialog> {
 
     _iconList = jsonDecode(await WalletService.instance.getListIcon());
 
+    if (!mounted) {
+      return;
+    }
     if (_iconList.length != 0) {
       for (dynamic icon in _iconList) {
         _catMenuItems.add(new DropdownMenuItem(

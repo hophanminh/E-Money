@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:mobile/src/models/CatsProvider.dart';
+import 'package:mobile/src/models/EventsProvider.dart';
 import 'package:mobile/src/models/UsersProvider.dart';
 import 'package:mobile/src/models/WalletsProvider.dart';
 import 'package:mobile/src/services/restapiservices/wallet_service.dart';
@@ -31,20 +32,12 @@ class _IndividualWalletState extends State<IndividualWallet> {
   IO.Socket _socket;
   var _scaffoldKey = GlobalKey<ScaffoldMessengerState>();
   List<dynamic> _iconList = [];
-  List<dynamic> _eventList = [];
-
-  void _setEventList(List<dynamic> eventList) {
-    _eventList.clear();
-    setState(() {
-      _eventList.addAll(eventList);
-    });
-  }
-
 
   void _initPage() async {
     UsersProvider usersProvider = Provider.of<UsersProvider>(context, listen: false);
     WalletsProvider walletsProvider = Provider.of<WalletsProvider>(context, listen: false);
     CatsProvider catsProvider = Provider.of<CatsProvider>(context, listen: false);
+    EventsProvider eventsProvider = Provider.of<EventsProvider>(context, listen: false);
 
     final walletID = usersProvider.info.walletID;
     _iconList = jsonDecode(await WalletService.instance.getListIcon());
@@ -74,12 +67,12 @@ class _IndividualWalletState extends State<IndividualWallet> {
     });
 
     _socket.emitWithAck("get_event", {'walletID': walletID}, ack: (data) {
-      _setEventList(data['eventList']);
+      eventsProvider.fetchData(data);
     });
 
     _socket.on('wait_for_update_event', (data) {
       print('update event');
-      _setEventList(data['eventList']);
+      eventsProvider.fetchData(data);
     });
   }
 
@@ -236,7 +229,7 @@ class _IndividualWalletState extends State<IndividualWallet> {
           Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => ViewTransaction(txId: tx.id, eventList: _eventList)));
+                  builder: (context) => ViewTransaction(txId: tx.id)));
         },
         child: Slidable(
           actionPane: SlidableDrawerActionPane(),
@@ -252,7 +245,7 @@ class _IndividualWalletState extends State<IndividualWallet> {
                     context,
                     MaterialPageRoute(
                         builder: (context) => EditTransaction(
-                            eventList: _eventList, wrappingScaffoldKey: _scaffoldKey)));
+                            wrappingScaffoldKey: _scaffoldKey)));
                 }
             ),
             IconSlideAction(
@@ -369,15 +362,11 @@ class _IndividualWalletState extends State<IndividualWallet> {
                         builder: (context) => CategoryDashboard(walletID: walletId)));
                 break;
               case 2:
-                // Navigator.push(
-                //     context,
-                //     MaterialPageRoute(
-                //         builder: (context) => EventDashboard(
-                //             walletID: widget.user['WalletID'],
-                //             fullCatList: _categoryList['fullList'],
-                //             setCategoryList: _setCategoryList,
-                //             eventList: _eventList,
-                //             setEventList: _setEventList)));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => EventDashboard(
+                            walletID: walletId)));
                 break;
               case 3:
                 // Navigator.push(
@@ -404,7 +393,7 @@ class _IndividualWalletState extends State<IndividualWallet> {
             context,
             MaterialPageRoute(
                 builder: (context) =>
-                    AddTransaction(eventList: _eventList, wrappingScaffoldKey: _scaffoldKey)));
+                    AddTransaction(wrappingScaffoldKey: _scaffoldKey)));
       },
       tooltip: 'Thêm giao dịch',
       child: Icon(Icons.add),

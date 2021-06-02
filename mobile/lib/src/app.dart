@@ -13,6 +13,7 @@ import 'package:provider/provider.dart';
 import 'package:mobile/src/models/UsersProvider.dart';
 
 import 'models/CatsProvider.dart';
+import 'models/EventsProvider.dart';
 import 'models/WalletsProvider.dart';
 
 class MyApp extends StatefulWidget {
@@ -44,6 +45,9 @@ class _MyAppState extends State<MyApp> {
           ),
           ChangeNotifierProvider(
             create: (_) => CatsProvider(),
+          ),
+          ChangeNotifierProvider(
+            create: (_) => EventsProvider(),
           ),
         ],
         child: MaterialApp(
