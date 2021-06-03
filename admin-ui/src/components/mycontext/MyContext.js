@@ -19,7 +19,7 @@ export const MyProvider = (props) => {
   useEffect(() => {
 
     async function fetchInfo() {
-      const res = await fetch(`${API_URL}/users/${userID}`, {
+      const res = await fetch(`${API_URL}/admins/${userID}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
