@@ -2,19 +2,19 @@ const db = require('../utils/database');
 
 module.exports = {
 
-  countUnreadNotification: userID => db.load(`
+  countUnreadNotification: userID => db.loadSafe(`
     SELECT COUNT(*) AS count
     FROM Notifications
-    WHERE IsRead = FALSE AND UserID = ${userID}
-  `),
+    WHERE IsRead = FALSE AND UserID = ?
+  `, [userID]),
 
-  getNotificationByUserID: (userID, limit) => db.load(`
+  getNotificationByUserID: (userID, limit) => db.loadSafe(`
     SELECT *
     FROM Notifications
-    WHERE UserID = ${userID}
+    WHERE UserID = ?
     ORDER BY IsRead, DateNotified DESC
-    LIMIT ${limit}
-  `),
+    LIMIT ?
+  `, [userID, limit]),
 
   addNotification: entity => db.add('Notifications', entity),
 

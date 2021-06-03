@@ -3,6 +3,7 @@ import 'package:mobile/src/models/CatsProvider.dart';
 import 'package:mobile/src/models/EventsProvider.dart';
 import 'package:mobile/src/models/UsersProvider.dart';
 import 'package:mobile/src/models/WalletsProvider.dart';
+import 'package:mobile/src/services/icon_service.dart';
 import 'package:mobile/src/services/socketservices/socket.dart';
 import 'package:mobile/src/views/utils/helpers/helper.dart';
 import 'package:mobile/src/views/utils/widgets/widget.dart';
@@ -22,6 +23,7 @@ class EditTransaction extends StatefulWidget {
 class _EditTransactionState extends State<EditTransaction> {
   var _scaffoldKey = GlobalKey<ScaffoldMessengerState>();
   var _formKey = GlobalKey<FormState>();
+  List<IconCustom> _iconList = [];
 
   // data section for new transaction
   Transactions _clonedTx;
@@ -43,8 +45,15 @@ class _EditTransactionState extends State<EditTransaction> {
 
   var _descriptionController = TextEditingController();
 
+  _initPage() async {
+    _iconList = await IconService.instance.iconList;
+
+    setState(() {});
+  }
+
   @override
   void initState() {
+    _initPage();
     super.initState();
     _clonedTx = Provider.of<WalletsProvider>(context, listen: false).selected;
 
@@ -192,12 +201,24 @@ class _EditTransactionState extends State<EditTransaction> {
                                       value: _currentCategory,
                                       items: catsProvider.fullList
                                           .map<DropdownMenuItem<String>>((Categories cat) {
+                                        IconCustom selectedIcon = _iconList.firstWhere(
+                                                (element) => element.id == cat.iconID,
+                                            orElse: () => new IconCustom(
+                                                id: '', name: '', color: '', backgroundColor: ''));
+
                                         return DropdownMenuItem(
                                           child: Row(
                                             children: [
-                                              FlutterLogo(size: 24),
+                                              Container(
+                                                  width: 28,
+                                                  height: 28,
+                                                  child: createCircleIcon(
+                                                      selectedIcon.name,
+                                                      selectedIcon.backgroundColor,
+                                                      selectedIcon.color,
+                                                      size: 16)),
                                               Padding(
-                                                padding: const EdgeInsets.only(left: 20.0),
+                                                padding: const EdgeInsets.only(left: 10.0),
                                                 child: Text(cat.name),
                                               ),
                                             ],

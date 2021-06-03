@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mobile/src/models/WalletsProvider.dart';
+import 'package:mobile/src/services/icon_service.dart';
 import 'package:mobile/src/services/restapiservices/wallet_service.dart';
 import 'package:mobile/src/services/socketservices/socket.dart';
 import 'package:mobile/src/views/ui/profile/avatar_picker_menu.dart';
@@ -32,6 +33,7 @@ class _ViewTransactionState extends State<ViewTransaction> {
 
   Socket _socket;
   List<dynamic> _imageList = [];
+  List<IconCustom> _iconList = [];
 
   @override
   void initState() {
@@ -52,6 +54,8 @@ class _ViewTransactionState extends State<ViewTransaction> {
   }
 
   _initPage() async {
+    _iconList = await IconService.instance.iconList;
+
     _socket = await getSocket();
     _socket.emitWithAck('get_transaction_image', {'TransactionID': widget.txId}, ack: (data) {
       // print(_sortImageList(data['imageList'])[0]);
@@ -80,6 +84,8 @@ class _ViewTransactionState extends State<ViewTransaction> {
       // data['imageID'] là 1 string
       _removeImgById(data['imageID']);
     });
+
+    setState(() {});
   }
 
   _removeImgById(String imgId) {
@@ -105,8 +111,6 @@ class _ViewTransactionState extends State<ViewTransaction> {
 
   @override
   Widget build(BuildContext context) {
-    WalletsProvider walletsProvider123 = Provider.of<WalletsProvider>(context);
-    print(walletsProvider123.selected);
     return ScaffoldMessenger(
       key: _scaffoldKey,
       child: Scaffold(
@@ -115,6 +119,12 @@ class _ViewTransactionState extends State<ViewTransaction> {
         body: SingleChildScrollView(
           padding: EdgeInsets.only(bottom: 10),
           child: Consumer<WalletsProvider>(builder: (context, walletsProvider, child) {
+            String tempId = walletsProvider.selected != null ? walletsProvider.selected.iconID : '';
+            IconCustom selectedIcon = _iconList.firstWhere(
+                    (element) => element.id == tempId,
+                orElse: () => new IconCustom(
+                    id: '', name: '', color: '', backgroundColor: ''));
+
             return walletsProvider.selected != null
                 ? Column(
                     children: [
@@ -169,9 +179,14 @@ class _ViewTransactionState extends State<ViewTransaction> {
                                         ),
                                       ],
                                     ),
-                                    child: FlutterLogo(
-                                      size: 90,
-                                    ),
+                                    child: Container(
+                                        width: 90,
+                                        height: 90,
+                                        child: createCircleIcon(
+                                            selectedIcon.name,
+                                            selectedIcon.color,
+                                            selectedIcon.backgroundColor == '#FFFFFF' ? "#000000" : selectedIcon.backgroundColor,
+                                            size: 90)),
                                   )),
                               Text(
                                 walletsProvider.selected.categoryName,

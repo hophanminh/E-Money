@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:mobile/src/models/CatsProvider.dart';
 import 'package:mobile/src/models/WalletsProvider.dart';
+import 'package:mobile/src/services/icon_service.dart';
 import 'package:mobile/src/views/ui/wallet/category/add_cat.dart';
 import 'package:mobile/src/views/ui/wallet/category/delete_cate.dart';
 import 'package:mobile/src/views/ui/wallet/category/edit_cat.dart';
@@ -22,6 +23,7 @@ class CategoryDashboard extends StatefulWidget {
 
 class _CategoryDashboardState extends State<CategoryDashboard> {
   var _scaffoldKey = GlobalKey<ScaffoldMessengerState>();
+  List<IconCustom> _iconList = [];
 
   String countTx(List<Transactions> txList, String id) {
     int sum = 0;
@@ -31,21 +33,26 @@ class _CategoryDashboardState extends State<CategoryDashboard> {
       }
     });
 
-    if (sum > 999) {
-      return '999+';
+    if (sum > 99) {
+      return '99+';
     }
     return sum.toString();
   }
 
+  _initPage() async {
+    _iconList = await IconService.instance.iconList;
+
+    setState(() {});
+  }
+
   @override
   void initState() {
-    // TODO: implement initState
+    _initPage();
     super.initState();
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
   }
 
@@ -102,8 +109,12 @@ class _CategoryDashboardState extends State<CategoryDashboard> {
               // for (String key in _defaultList[index].keys) {
               //   print('${key} - ${_defaultList[index][key]}');
               // }
+              IconCustom selectedIcon = _iconList.firstWhere(
+                      (element) => element.id == catsProvider.defaultList[index].iconID,
+                  orElse: () => new IconCustom(
+                      id: '', name: '', color: '', backgroundColor: ''));
               return Container(
-                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 30),
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 25),
                 decoration: BoxDecoration(
                   boxShadow: [
                     BoxShadow(
@@ -120,7 +131,15 @@ class _CategoryDashboardState extends State<CategoryDashboard> {
                   children: [
                     Padding(
                       padding: const EdgeInsets.only(left: 10, right: 20.0),
-                      child: FlutterLogo(size: 45),
+                      child: Container(
+                          width: 40,
+                          height: 40,
+                          child: createCircleIcon(
+                              selectedIcon.name,
+                              selectedIcon.backgroundColor,
+                              selectedIcon.color,
+                              size: 24,
+                          )),
                     ),
                     Expanded(
                         child: Text(
@@ -130,12 +149,12 @@ class _CategoryDashboardState extends State<CategoryDashboard> {
                     Consumer<WalletsProvider>(
                         builder: (context, walletsProvider, child) {
                           return Chip(
-                              padding: EdgeInsets.only(bottom: 3),
+                              padding: EdgeInsets.all(0),
                               backgroundColor: warning,
                               label: Container(
                                 alignment: Alignment.center,
                                 width: 50,
-                                height: 40,
+                                height: 25,
                                 child: Text(
                                     countTx(walletsProvider.txList, catsProvider.defaultList[index].id),
                                     style: TextStyle(color: Colors.white)),
@@ -175,6 +194,11 @@ class _CategoryDashboardState extends State<CategoryDashboard> {
               // for (String key in _defaultList[index].keys) {
               //   print('${key} - ${_defaultList[index][key]}');
               // }
+              IconCustom selectedIcon = _iconList.firstWhere(
+                      (element) => element.id == catsProvider.customList[index].iconID,
+                  orElse: () => new IconCustom(
+                      id: '', name: '', color: '', backgroundColor: ''));
+
               return Slidable(
                 actionPane: SlidableDrawerActionPane(),
                 actionExtentRatio: 0.25,
@@ -212,7 +236,7 @@ class _CategoryDashboardState extends State<CategoryDashboard> {
                   ),
                 ],
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 30),
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 25),
                   decoration: BoxDecoration(
                     boxShadow: [
                       BoxShadow(
@@ -229,7 +253,15 @@ class _CategoryDashboardState extends State<CategoryDashboard> {
                     children: [
                       Padding(
                         padding: const EdgeInsets.only(left: 10, right: 20.0),
-                        child: FlutterLogo(size: 45),
+                        child: Container(
+                            width: 40,
+                            height: 40,
+                            child: createCircleIcon(
+                              selectedIcon.name,
+                              selectedIcon.backgroundColor,
+                              selectedIcon.color,
+                              size: 24,
+                            )),
                       ),
                       Expanded(
                           child: Text(
@@ -240,12 +272,12 @@ class _CategoryDashboardState extends State<CategoryDashboard> {
                       Consumer<WalletsProvider>(
                           builder: (context, walletsProvider, child) {
                             return Chip(
-                                padding: EdgeInsets.only(bottom: 3),
+                                padding: EdgeInsets.all(0),
                                 backgroundColor: warning,
                                 label: Container(
                                   alignment: Alignment.center,
                                   width: 50,
-                                  height: 40,
+                                  height: 25,
                                   child: Text(
                                       countTx(walletsProvider.txList, catsProvider.customList[index].id),
                                       style: TextStyle(color: Colors.white)),

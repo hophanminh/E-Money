@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:mobile/src/config/config.dart';
+import 'package:mobile/src/services/icon_service.dart';
 import 'package:mobile/src/services/restapiservices/user_service.dart';
 import 'package:mobile/src/services/restapiservices/wallet_service.dart';
 import 'package:mobile/src/services/socketservices/socket.dart';
@@ -25,7 +26,7 @@ class _AddCatDialogState extends State<AddCatDialog> {
   var _formKey = GlobalKey<FormState>();
 
   List<DropdownMenuItem<String>> _catMenuItems = [];
-  List<dynamic> _iconList = [];
+  List<IconCustom> _iconList = [];
   String _currentIcon;
 
   var _nameController = new TextEditingController();
@@ -124,7 +125,7 @@ class _AddCatDialogState extends State<AddCatDialog> {
                             }
                           },
                           child: Text(
-                            'Thêm nhóm',
+                            'Thêm',
                             style: TextStyle(fontSize: 16, color: Colors.green),
                           )),
                     ],
@@ -148,16 +149,23 @@ class _AddCatDialogState extends State<AddCatDialog> {
   }
 
   void _initPage() async {
-    _iconList = jsonDecode(await WalletService.instance.getListIcon());
+    _iconList = await IconService.instance.iconList;
 
     if (!mounted) {
       return;
     }
     if (_iconList.length != 0) {
-      for (dynamic icon in _iconList) {
+      for (IconCustom icon in _iconList) {
         _catMenuItems.add(new DropdownMenuItem(
-          child: _createCircleIcon(icon['Name'], icon['BackgroundColor'], icon['Color']),
-          value: icon['ID'],
+          child: Container(
+              width: 28,
+              height: 28,
+              child: createCircleIcon(
+                  icon.name,
+                  icon.backgroundColor,
+                  icon.color,
+                  size: 16)),
+          value: icon.id,
         ));
       }
 
@@ -166,9 +174,4 @@ class _AddCatDialogState extends State<AddCatDialog> {
     setState(() {});
   }
 
-  _createCircleIcon(String name, String background, String foreground) => CircleAvatar(
-        backgroundColor: Color(int.parse('0x' + background.substring(2))),
-        foregroundColor: Color(int.parse('0x' + foreground.substring(2))),
-        child: FlutterLogo(size: 25.0),
-      );
 }

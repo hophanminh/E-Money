@@ -14,7 +14,7 @@ module.exports = function (socket, io, decoded_userID) {
     socket.join(walletID);
     try {
       const transactionList = await transactionModel.getTransactionByWalletID(walletID);
-      const { total, spend, receive } = calculateStat(transactionList); console.log(transactionList);
+      const { total, spend, receive } = calculateStat(transactionList);
       callback({ transactionList, total, spend, receive });
     } catch (error) {
       console.log(error);

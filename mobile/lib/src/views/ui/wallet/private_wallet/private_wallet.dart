@@ -8,6 +8,7 @@ import 'package:mobile/src/models/UsersProvider.dart';
 import 'package:mobile/src/models/WalletsProvider.dart';
 import 'package:mobile/src/services/restapiservices/wallet_service.dart';
 import 'package:mobile/src/services/socketservices/socket.dart';
+import 'package:mobile/src/services/icon_service.dart';
 import 'package:mobile/src/views/ui/wallet/category/category_dashboard.dart';
 import 'package:mobile/src/views/ui/wallet/event/event_dashboard.dart';
 import 'package:mobile/src/views/ui/wallet/private_wallet/add_transaction.dart';
@@ -32,7 +33,7 @@ class IndividualWallet extends StatefulWidget {
 class _IndividualWalletState extends State<IndividualWallet> {
   IO.Socket _socket;
   var _scaffoldKey = GlobalKey<ScaffoldMessengerState>();
-  List<dynamic> _iconList = [];
+  List<IconCustom> _iconList = [];
 
   void _initPage() async {
     UsersProvider usersProvider = Provider.of<UsersProvider>(context, listen: false);
@@ -41,8 +42,7 @@ class _IndividualWalletState extends State<IndividualWallet> {
     EventsProvider eventsProvider = Provider.of<EventsProvider>(context, listen: false);
 
     final walletID = usersProvider.info.walletID;
-    _iconList = jsonDecode(await WalletService.instance.getListIcon());
-    // print('${iconList[0]['ID']}');
+    _iconList = await IconService.instance.iconList;
 
     _socket = await getSocket();
 
@@ -75,6 +75,8 @@ class _IndividualWalletState extends State<IndividualWallet> {
       print('update event');
       eventsProvider.fetchData(data);
     });
+
+    setState(() {});
   }
 
   @override
@@ -216,13 +218,7 @@ class _IndividualWalletState extends State<IndividualWallet> {
   }
 
   _createCompactTxn(Transactions tx) {
-    var selectedIcon = _iconList.firstWhere((element) => element['ID'] == tx.iconID, orElse: () => null);
-    if (selectedIcon == null) {
-      selectedIcon = {};
-      selectedIcon['Name'] = '';
-      selectedIcon['BackgroundColor'] = '';
-      selectedIcon['Color'] = '';
-    }
+    IconCustom selectedIcon = _iconList.firstWhere((element) => element.id == tx.iconID, orElse: () => new IconCustom(id: '', name: '', color: '', backgroundColor: ''));
     return Card(
       child: GestureDetector(
         onTap: () {
@@ -269,7 +265,7 @@ class _IndividualWalletState extends State<IndividualWallet> {
                 padding: EdgeInsets.fromLTRB(10, 15, 10, 5),
                 child: Row(children: [
                   Container(
-                      margin: EdgeInsets.all(6), width: 50, height: 50, child: createCircleIcon(selectedIcon['Name'], selectedIcon['BackgroundColor'], selectedIcon['Color'])),
+                      margin: EdgeInsets.only(left: 6, right: 15), width: 50, height: 50, child: createCircleIcon(selectedIcon.name, selectedIcon.backgroundColor, selectedIcon.color)),
                   Expanded(
                     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                       Text(

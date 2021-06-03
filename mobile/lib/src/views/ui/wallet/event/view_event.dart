@@ -1,7 +1,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:mobile/src/models/EventsProvider.dart';
+import 'package:mobile/src/services/icon_service.dart';
 import 'package:mobile/src/views/utils/helpers/helper.dart';
+import 'package:mobile/src/views/utils/widgets/widget.dart';
 import 'package:provider/provider.dart';
 
 class ViewEvent extends StatefulWidget {
@@ -14,6 +16,7 @@ class ViewEvent extends StatefulWidget {
 
 class _ViewEventState extends State<ViewEvent> {
   var _scaffoldKey = GlobalKey<ScaffoldMessengerState>();
+  List<IconCustom> _iconList = [];
 
   @override
   void initState() {
@@ -26,7 +29,10 @@ class _ViewEventState extends State<ViewEvent> {
     super.dispose();
   }
 
-  _initPage() async {}
+  _initPage() async {
+    _iconList = await IconService.instance.iconList;
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +44,13 @@ class _ViewEventState extends State<ViewEvent> {
         body: SingleChildScrollView(
           padding: EdgeInsets.only(bottom: 10),
           child: Consumer<EventsProvider>(builder: (context, eventsProvider, child) {
-              return eventsProvider.selected != null
+            String tempId = eventsProvider.selected != null ? eventsProvider.selected.iconID : '';
+            IconCustom selectedIcon = _iconList.firstWhere(
+                    (element) => element.id == tempId,
+                orElse: () => new IconCustom(
+                    id: '', name: '', color: '', backgroundColor: ''));
+
+            return eventsProvider.selected != null
               ?
           Column(
             children: [
@@ -92,9 +104,14 @@ class _ViewEventState extends State<ViewEvent> {
                                 ),
                               ],
                             ),
-                            child: FlutterLogo(
-                              size: 90,
-                            ),
+                            child: Container(
+                                width: 90,
+                                height: 90,
+                                child: createCircleIcon(
+                                    selectedIcon.name,
+                                    selectedIcon.color,
+                                    selectedIcon.backgroundColor == '#FFFFFF' ? "#000000" : selectedIcon.backgroundColor,
+                                    size: 90)),
                           )),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
