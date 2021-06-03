@@ -359,16 +359,16 @@ class _IndividualWalletState extends State<IndividualWallet> {
                             walletID: walletId)));
                 break;
               case 3:
-                // Navigator.push(
-                //     context,
-                //     MaterialPageRoute(
-                //         builder: (context) => Statistic(
-                //             // walletID: widget.user['WalletID'],
-                //             // fullCatList: _categoryList['fullList'],
-                //             // setCategoryList: _setCategoryList,
-                //             // eventList: _eventList,
-                //             // setEventList: _setEventList
-                //             )));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => Statistic(
+                            // walletID: widget.user['WalletID'],
+                            // fullCatList: _categoryList['fullList'],
+                            // setCategoryList: _setCategoryList,
+                            // eventList: _eventList,
+                            // setEventList: _setEventList
+                            )));
                 break;
             }
           },
