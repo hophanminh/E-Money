@@ -113,9 +113,139 @@ class _IndividualWalletState extends State<IndividualWallet> {
                 child:
                 Consumer<WalletsProvider>(
                     builder: (context, walletsProvider, child) {
+                      if (walletsProvider.getFilterList().length == 0) {
+                          return ListView(children: [
+                            Column(
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.all(20),
+                                  margin: EdgeInsets.only(bottom: 20, left: 5, right: 5),
+                                  width: MediaQuery.of(context).size.width,
+                                  decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                          begin: Alignment.bottomLeft,
+                                          end: Alignment.topRight,
+                                          colors: [primary, Colors.lightGreenAccent]),
+                                      borderRadius: BorderRadius.circular(12)),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Tổng số dư: ',
+                                        style:
+                                        TextStyle(fontSize: 20, color: Colors.white),
+                                      ),
+                                      Text(
+                                        '${formatMoneyWithSymbol(walletsProvider.total)}',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 20,
+                                            color: Colors.white),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(15),
+                                  child: Text('Báo cáo nhanh ${getThisMonth()}',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold, fontSize: 20)),
+                                ),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                            border: Border(
+                                                right: BorderSide(
+                                                    width: 1, color: Colors.black12))),
+                                        alignment: Alignment.center,
+                                        child: Column(
+                                          children: [
+                                            Text('Tổng thu ${getThisMonth()}'),
+                                            Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: Text(
+                                                '${formatMoneyWithSymbol(walletsProvider.receive)}',
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.green,
+                                                    fontSize: 21),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: Column(
+                                        children: [
+                                          Container(
+                                            alignment: Alignment.center,
+                                            child: Column(
+                                              children: [
+                                                Text('Tổng chi ${getThisMonth()}'),
+                                                Padding(
+                                                  padding: const EdgeInsets.all(8.0),
+                                                  child: Text(
+                                                    '${formatMoneyWithSymbol(walletsProvider.spent)}',
+                                                    style: TextStyle(
+                                                        fontWeight: FontWeight.bold,
+                                                        color: Colors.red,
+                                                        fontSize: 21),
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 40, bottom: 10),
+                                  child: Text('Danh sách tất cả giao dịch',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold, fontSize: 20)),
+                                ),
+                                DefaultTextStyle(
+                                  style: TextStyle(color: Colors.grey, fontSize: 16),
+                                  child: Container(
+                                    height: 70,
+                                    margin: EdgeInsets.fromLTRB(10, 10, 0, 10),
+                                    child: ListView(
+                                      scrollDirection: Axis.horizontal,
+                                      children: <Widget>[
+                                        _createFilterOption(
+                                            'Tất cả',
+                                            (Icons.format_list_bulleted_outlined),
+                                            FilterType.all),
+                                        _createFilterOption(
+                                            'Hạng mục',
+                                            (Icons.category_outlined),
+                                            FilterType.category),
+                                        _createFilterOption('Thời gian',
+                                            (Icons.calendar_today), FilterType.date),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                _selectedFilterType == FilterType.category
+                                    ? _makeSearchBar()
+                                    : (_selectedFilterType == FilterType.date
+                                    ? _makeDropdown()
+                                    : Container()),
+                                walletsProvider.txList.length == 0
+                                    ? Text('(Chưa có giao dịch được ghi)')
+                                    : Container(),
+                              ],
+                            ),
+                          ],);
+                      }
                       return ListView.builder(
                         scrollDirection: Axis.vertical,
-                        itemCount: walletsProvider.txList.length,
+                        itemCount: walletsProvider.getFilterList().length,
                         itemBuilder: (BuildContext context, int index) {
                           if (index == 0) {
                             return Column(
@@ -209,17 +339,17 @@ class _IndividualWalletState extends State<IndividualWallet> {
                                   ),
                                   _selectedFilterType == FilterType.category ? _makeSearchBar() : (_selectedFilterType == FilterType.date ? _makeDropdown() : Container()),
                                   walletsProvider.txList.length == 0 ? Text('(Chưa có giao dịch được ghi)') : Container(),
-                                  _createCompactTxn(walletsProvider.txList[index]),
+                                  _createCompactTxn(walletsProvider.getFilterList()[index]),
                                 ],
                               );
                           }
-                          if (index == walletsProvider.txList.length - 1) {
+                          if (index == walletsProvider.getFilterList().length - 1) {
                             return Padding(
                                 padding: const EdgeInsets.only(bottom: 60),
-                                child: _createCompactTxn(walletsProvider.txList[index])
+                                child: _createCompactTxn(walletsProvider.getFilterList()[index])
                             );
                           }
-                          return _createCompactTxn(walletsProvider.txList[index]);
+                          return _createCompactTxn(walletsProvider.getFilterList()[index]);
                         },
                       );
 
