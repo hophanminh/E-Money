@@ -137,7 +137,7 @@ class _StatisticState extends State<Statistic> {
       List<DateTime> dates = [];
       DateTime activeDate = parseInput(myProvider.info.activatedDate).toLocal();
       DateTime current = DateTime.now();
-      DateTime temp = new DateTime(activeDate.year, 2);
+      DateTime temp = new DateTime(activeDate.year, activeDate.month);
 
       while (temp.isBefore(current)) {
         dates.insert(0, temp);

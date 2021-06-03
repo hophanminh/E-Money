@@ -124,7 +124,7 @@ class _AddCatDialogState extends State<AddCatDialog> {
                             }
                           },
                           child: Text(
-                            'Thêm nhóm',
+                            'Thêm loại',
                             style: TextStyle(fontSize: 16, color: Colors.green),
                           )),
                     ],

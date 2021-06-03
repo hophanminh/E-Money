@@ -155,7 +155,7 @@ class _AddEventState extends State<AddEvent> {
                     child: Consumer<EventsProvider>(
                         builder: (context, eventsProvider, child) {
                           return DropdownButtonFormField(
-                            hint: Text('Loại sự kiện'),
+                            // hint: Text('Loại sự kiện'),
                             decoration: myInputDecoration('', label: 'Loại sự kiện', inputBorder: Colors.black26),
                             value: _currentEventType == null ? eventsProvider.eventTypeList[0].id : _currentEventType,
                             items: eventsProvider.eventTypeList
@@ -204,7 +204,7 @@ class _AddEventState extends State<AddEvent> {
                     // padding: EdgeInsets.symmetric(horizontal: 10),
                     // decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), border: Border.all(width: 1, color: Colors.black26)),
                     child: DropdownButtonFormField(
-                      hint: Text('Kết thúc'),
+                      // hint: Text('Kết thúc'),
                       decoration: myInputDecoration('', label: 'Kết thúc', inputBorder: Colors.black26),
                       value: _currentEndDateType,
                       items: _availableEndDateItems,
