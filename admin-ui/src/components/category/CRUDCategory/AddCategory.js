@@ -112,13 +112,11 @@ export default function AddCategory(props) {
               variant="outlined"
             >
               {list && list.map((icon) => (
-                <MenuItem key={icon.ID} value={icon.ID}>
-                  <Box className={classes.categoryIconBox}>
+                <MenuItem key={icon.ID} value={icon.ID} className={classes.categoryIconBox}>
                     <DefaultIcon
                       IconID={icon.ID}
                       backgroundSize={24}
                       iconSize={14} />
-                  </Box>
                 </MenuItem>
               ))}
             </TextField>
@@ -181,8 +179,9 @@ const useStyles = makeStyles({
   },
 
   categoryIconBox: {
-    display: 'flex',
-    justifyContent: 'center',
+    display: 'flex',   
+    flexDirection: "row",
+    flexWrap: "wrap",
     width: '100%',
     paddingRight: '20px'
   },

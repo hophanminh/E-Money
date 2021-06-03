@@ -7,6 +7,7 @@ Base64.extendString();
 const userModel = require('../models/userModel');
 const walletModel = require('../models/walletModel');
 const accountModel = require('../models/accountModel');
+const adminModel = require('../models/adminModel');
 const { v1: uuidv1 } = require('uuid');
 const v1options = { msecs: Date.now() };
 uuidv1(v1options);
@@ -180,6 +181,97 @@ router.put('/resetpassword', async (req, res) => {
       const [reqStatusUpdateResult, passwordUpdateResult] = await Promise.all([
         accountModel.updateRequest(ID, { IsSuccessful: 1 }),
         userModel.updateUser(result[0].UserID, { Password: hashedPassword }),
+      ])
+      res.status(200).send({ msg: "Mật khẩu đã khôi phục thành công. Hãy đăng nhập để sử dụng tài khoản" });
+    } else {
+      res.status(401).end(); // spam
+    }
+  } catch (err) {
+    console.log("Error when reset password: ", err);
+    res.status(500).send({ msg: "Hãy thử lại!" });
+  }
+})
+
+router.post('/admin/signin', async (req, res) => {
+  console.log('sign in with admin');
+  const { Username, Password } = req.body;
+  const admins = await adminModel.getAdminByUserName(Username);
+
+  if (admins.length === 1) {
+    const admin = admins[0];
+
+    if (bcrypt.compareSync(Password, admin.Password)) {
+      const token = jwt.sign({ id: admin.ID }, config.PASSPORTKEY);
+      delete admin.Password;
+      return res.status(200).send({ msg: "Thành công!", token, user: admin });
+    } else {
+      return res.status(401).send({ msg: "Tên tài khoản hoặc mật khẩu không chính xác. Hãy kiểm tra lại." });
+    }
+
+  } else {
+    return res.status(400).send({ msg: 'Tài khoản không tồn tại.' });
+  }
+});
+
+
+router.post('/admin/forgotpassword', async (req, res) => {
+  console.log("Forgot password with body", req.body)
+  const { Email, Username } = req.body;
+  const user = await adminModel.getAdminByUserName(Username);
+
+  // Không tìm thấy user
+  if (user.length === 0) {
+    return res.status(400).send({ msg: "Tài khoản không tồn tại" });
+  }
+
+  const request = await accountModel.findByUserId(user[0].ID);
+
+  // nếu có request trc đó mà chưa dc dùng để reset thì cập nhật isSuccessful = -1
+  if (request.length !== 0) {
+    await accountModel.updateRequest(request[0].ID, { IsSuccessful: -1 });
+  }
+
+  const newResetRequest = {
+    ID: uuidv1(),
+    UserID: user[0].ID,
+    Code: helper.digitGeneration(6),
+    Email,
+    IsSuccessful: 0
+  }
+  const addResult = await accountModel.addRequest(newResetRequest);
+
+  if (addResult.affectedRows === 1) {
+    const content =
+      `<div>Chào ${user[0].Username}!</div>
+      <br/>Hãy sao chép đoạn mã sau để xác thực trên ứng dụng:
+       <h4>${newResetRequest.Code}</h4>`
+    const result = await emailServer.send(newResetRequest.Email, content, "Đặt lại mật khẩu!");
+    console.log(result);
+
+    return res.status(200).send({ msg: "Hãy kiểm tra email vừa khai báo để nhận mã xác thực.", id: newResetRequest.ID });
+  }
+  else {
+    return res.status(500).send({ msg: "Hãy thử lại!" });
+  }
+});
+
+router.put('/admin/resetpassword', async (req, res) => {
+  console.log("Reset password with ", req.body);
+  const { Code, Password, ID } = req.body;
+  try {
+    const result = await accountModel.findById(ID);
+
+    if (result.length === 1) {
+
+      if (Code !== result[0].Code) {
+        return res.status(400).send({ msg: "Mã xác nhận không đúng." });
+      }
+
+      const HASHROUND = config.hashRound;
+      const hashedPassword = bcrypt.hashSync(Password, HASHROUND);
+      const [reqStatusUpdateResult, passwordUpdateResult] = await Promise.all([
+        accountModel.updateRequest(ID, { IsSuccessful: 1 }),
+        adminModel.updateAdmin(result[0].UserID, { Password: hashedPassword }),
       ])
       res.status(200).send({ msg: "Mật khẩu đã khôi phục thành công. Hãy đăng nhập để sử dụng tài khoản" });
     } else {
