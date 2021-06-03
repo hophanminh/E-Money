@@ -118,7 +118,7 @@ export default function SignIn() {
       Password: password
     };
     // call API here
-    const res = await fetch(`${API_URL}/signin`, {
+    const res = await fetch(`${API_URL}/admin/signin`, {
       method: 'POST',
       body: JSON.stringify(data),
       headers: {

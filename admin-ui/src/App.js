@@ -17,6 +17,8 @@ import CombinedProvider from './components/mycontext/combineProvider'
 import { getListIcon } from './utils/DefaultIcon';
 import SignIn from './components/signin/SignIn';
 import TeamList from './components/Teams/TeamList.js'
+import ResetDestination from './components/signin/resetpassword/ResetDestination';
+
 const routes = [
   {
     path: "/Category",
@@ -27,6 +29,11 @@ const routes = [
     path: "/Teams",
     private: false,
     main: () => <TeamList />
+  },
+  {
+    path: '/reset',
+    private: false,
+    main: () => <ResetDestination />
   },
   {
     path: "/signin",
