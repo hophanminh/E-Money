@@ -28,7 +28,8 @@ class _StatisticState extends State<Statistic> {
   bool _nothingToShow = true;
   List<DateTime> _dates = [];
   DateTime _selectedDate;
-
+  int _totalIcome = 0;
+  int _totalOutCome = 0;
   List<charts.Series<dynamic, String>> _barChartSeries = [];
   List<charts.Series<dynamic, String>> _spentPieChartSeries = [];
   List<charts.Series<dynamic, String>> _incomePieChartSeries = [];
@@ -86,6 +87,8 @@ class _StatisticState extends State<Statistic> {
     }
 
     setState(() {
+      _totalIcome = totalIcome;
+      _totalOutCome = totalOutCome;
       _nothingToShow = nothingToShow;
       _barChartSeries = [
         charts.Series(
@@ -247,7 +250,7 @@ class _StatisticState extends State<Statistic> {
                 padding: EdgeInsets.only(top: 20, bottom: 20, right: 6, left: 5),
                 width: MediaQuery.of(context).size.width,
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     FittedBox(
                       child: Container(
@@ -312,85 +315,89 @@ class _StatisticState extends State<Statistic> {
                           )
                         : Column(
                             children: [
-                              FittedBox(
-                                child: Container(
-                                    constraints: BoxConstraints(maxWidth: 450),
-                                    padding: EdgeInsets.all(10),
-                                    margin: EdgeInsets.symmetric(vertical: 20),
-                                    decoration: BoxDecoration(color: const Color(0xfff2f2f2), borderRadius: BorderRadius.circular(10), boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.grey.withOpacity(0.5),
-                                        spreadRadius: 4,
-                                        blurRadius: 5,
-                                        offset: Offset(0, 2), // changes position of shadow
-                                      ),
-                                    ]),
-                                    height: 350,
-                                    child: charts.PieChart(
-                                      _incomePieChartSeries,
-                                      animate: true,
-                                      defaultRenderer: new charts.ArcRendererConfig(arcWidth: 40, arcRendererDecorators: [new charts.ArcLabelDecorator()]),
-                                      behaviors: [
-                                        new charts.ChartTitle(
-                                          'Phân tích thu',
-                                          // subTitle: '(Đơn vị: ${formatter.currencySymbol})',
-                                          behaviorPosition: charts.BehaviorPosition.top,
-                                          titleOutsideJustification: charts.OutsideJustification.start,
-                                          innerPadding: 35,
-                                          titleStyleSpec: charts.TextStyleSpec(fontSize: 20),
-                                        ),
-                                        new charts.DatumLegend(
-                                          position: charts.BehaviorPosition.bottom,
-                                          horizontalFirst: false,
-                                          cellPadding: new EdgeInsets.only(right: 4.0, bottom: 4.0),
-                                          showMeasures: true,
-                                          legendDefaultMeasure: charts.LegendDefaultMeasure.firstValue,
-                                          measureFormatter: (num value) {
-                                            return value == null ? '-' : '-   ${formatMoneyWithSymbol(value)}';
-                                          },
-                                        ),
-                                      ],
-                                    )),
-                              ),
-                              FittedBox(
-                                child: Container(
-                                    constraints: BoxConstraints(maxWidth: 450),
-                                    padding: EdgeInsets.all(10),
-                                    decoration: BoxDecoration(color: const Color(0xfff2f2f2), borderRadius: BorderRadius.circular(10), boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.grey.withOpacity(0.5),
-                                        spreadRadius: 4,
-                                        blurRadius: 5,
-                                        offset: Offset(0, 2), // changes position of shadow
-                                      ),
-                                    ]),
-                                    height: 350,
-                                    child: charts.PieChart(
-                                      _spentPieChartSeries,
-                                      animate: true,
-                                      defaultRenderer: new charts.ArcRendererConfig(arcWidth: 40, arcRendererDecorators: [new charts.ArcLabelDecorator()]),
-                                      behaviors: [
-                                        new charts.ChartTitle(
-                                          'Phân tích chi',
-                                          // subTitle: '(Đơn vị: ${formatter.currencySymbol})',
-                                          behaviorPosition: charts.BehaviorPosition.top,
-                                          titleOutsideJustification: charts.OutsideJustification.start,
-                                          innerPadding: 35,
-                                          titleStyleSpec: charts.TextStyleSpec(fontSize: 20),
-                                        ),
-                                        new charts.DatumLegend(
-                                          position: charts.BehaviorPosition.bottom,
-                                          horizontalFirst: false,
-                                          cellPadding: new EdgeInsets.only(right: 4.0, bottom: 4.0),
-                                          showMeasures: true,
-                                          legendDefaultMeasure: charts.LegendDefaultMeasure.firstValue,
-                                          measureFormatter: (num value) {
-                                            return value == null ? '-' : '-   ${formatMoneyWithSymbol(value)}';
-                                          },
-                                        ),
-                                      ],
-                                    )),
-                              )
+                              _totalIcome != 0
+                                  ? FittedBox(
+                                      child: Container(
+                                          constraints: BoxConstraints(maxWidth: 450),
+                                          padding: EdgeInsets.all(10),
+                                          margin: EdgeInsets.symmetric(vertical: 20),
+                                          decoration: BoxDecoration(color: const Color(0xfff2f2f2), borderRadius: BorderRadius.circular(10), boxShadow: [
+                                            BoxShadow(
+                                              color: Colors.grey.withOpacity(0.5),
+                                              spreadRadius: 4,
+                                              blurRadius: 5,
+                                              offset: Offset(0, 2), // changes position of shadow
+                                            ),
+                                          ]),
+                                          height: 350,
+                                          child: charts.PieChart(
+                                            _incomePieChartSeries,
+                                            animate: true,
+                                            defaultRenderer: new charts.ArcRendererConfig(arcWidth: 40, arcRendererDecorators: [new charts.ArcLabelDecorator()]),
+                                            behaviors: [
+                                              new charts.ChartTitle(
+                                                'Phân tích thu',
+                                                // subTitle: '(Đơn vị: ${formatter.currencySymbol})',
+                                                behaviorPosition: charts.BehaviorPosition.top,
+                                                titleOutsideJustification: charts.OutsideJustification.start,
+                                                innerPadding: 35,
+                                                titleStyleSpec: charts.TextStyleSpec(fontSize: 20),
+                                              ),
+                                              new charts.DatumLegend(
+                                                position: charts.BehaviorPosition.bottom,
+                                                horizontalFirst: false,
+                                                cellPadding: new EdgeInsets.only(right: 4.0, bottom: 4.0),
+                                                showMeasures: true,
+                                                legendDefaultMeasure: charts.LegendDefaultMeasure.firstValue,
+                                                measureFormatter: (num value) {
+                                                  return value == null ? '-' : '-   ${formatMoneyWithSymbol(value)}';
+                                                },
+                                              ),
+                                            ],
+                                          )),
+                                    )
+                                  : Container(),
+                              _totalOutCome != 0
+                                  ? FittedBox(
+                                      child: Container(
+                                          constraints: BoxConstraints(maxWidth: 450),
+                                          padding: EdgeInsets.all(10),
+                                          decoration: BoxDecoration(color: const Color(0xfff2f2f2), borderRadius: BorderRadius.circular(10), boxShadow: [
+                                            BoxShadow(
+                                              color: Colors.grey.withOpacity(0.5),
+                                              spreadRadius: 4,
+                                              blurRadius: 5,
+                                              offset: Offset(0, 2), // changes position of shadow
+                                            ),
+                                          ]),
+                                          height: 350,
+                                          child: charts.PieChart(
+                                            _spentPieChartSeries,
+                                            animate: true,
+                                            defaultRenderer: new charts.ArcRendererConfig(arcWidth: 40, arcRendererDecorators: [new charts.ArcLabelDecorator()]),
+                                            behaviors: [
+                                              new charts.ChartTitle(
+                                                'Phân tích chi',
+                                                // subTitle: '(Đơn vị: ${formatter.currencySymbol})',
+                                                behaviorPosition: charts.BehaviorPosition.top,
+                                                titleOutsideJustification: charts.OutsideJustification.start,
+                                                innerPadding: 35,
+                                                titleStyleSpec: charts.TextStyleSpec(fontSize: 20),
+                                              ),
+                                              new charts.DatumLegend(
+                                                position: charts.BehaviorPosition.bottom,
+                                                horizontalFirst: false,
+                                                cellPadding: new EdgeInsets.only(right: 4.0, bottom: 4.0),
+                                                showMeasures: true,
+                                                legendDefaultMeasure: charts.LegendDefaultMeasure.firstValue,
+                                                measureFormatter: (num value) {
+                                                  return value == null ? '-' : '-   ${formatMoneyWithSymbol(value)}';
+                                                },
+                                              ),
+                                            ],
+                                          )),
+                                    )
+                                  : Container()
                             ],
                           )
                   ],
