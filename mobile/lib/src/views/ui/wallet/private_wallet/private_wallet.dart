@@ -102,118 +102,132 @@ class _IndividualWalletState extends State<IndividualWallet> {
           appBar: _privateWalletAppBar(),
           drawer: widget.sidebar,
           floatingActionButton: _privateWalletActionButton(),
-          body: SingleChildScrollView(
-            child: Container(
+          body: Container(
               // height: MediaQuery.of(context).size.height,
-              padding: EdgeInsets.only(top: 20, bottom: 100),
               child: Center(
                 child:
                 Consumer<WalletsProvider>(
                     builder: (context, walletsProvider, child) {
-                      return Column(
-                        children: [
-                          Container(
-                            padding: EdgeInsets.all(20),
-                            margin: EdgeInsets.only(bottom: 20, left: 5, right: 5),
-                            width: MediaQuery.of(context).size.width,
-                            decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                    begin: Alignment.bottomLeft,
-                                    end: Alignment.topRight,
-                                    colors: [primary, Colors.lightGreenAccent]),
-                                borderRadius: BorderRadius.circular(12)),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Tổng số dư: ',
-                                  style: TextStyle(fontSize: 20, color: Colors.white),
-                                ),
-                                Text(
-                                  '${formatMoneyWithSymbol(walletsProvider.total)}',
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 20,
-                                      color: Colors.white),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(15),
-                            child: Text('Báo cáo nhanh ${getThisMonth()}',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 20)),
-                          ),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                      border: Border(
-                                          right: BorderSide(
-                                              width: 1, color: Colors.grey))),
-                                  alignment: Alignment.center,
-                                  child: Column(
-                                    children: [
-                                      Text('Tổng thu ${getThisMonth()}'),
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Text(
-                                          '${formatMoneyWithSymbol(walletsProvider.receive)}',
+                      return ListView.builder(
+                        scrollDirection: Axis.vertical,
+                        itemCount: walletsProvider.txList.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          if (index == 0) {
+                            return Column(
+                                children: [
+                                  Container(
+                                    padding: EdgeInsets.all(20),
+                                    margin: EdgeInsets.only(bottom: 20, left: 5, right: 5, top: 20),
+                                    width: MediaQuery.of(context).size.width,
+                                    decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                            begin: Alignment.bottomLeft,
+                                            end: Alignment.topRight,
+                                            colors: [primary, Colors.lightGreenAccent]),
+                                        borderRadius: BorderRadius.circular(12)),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Tổng số dư: ',
+                                          style: TextStyle(fontSize: 20, color: Colors.white),
+                                        ),
+                                        Text(
+                                          '${formatMoneyWithSymbol(walletsProvider.total)}',
                                           style: TextStyle(
                                               fontWeight: FontWeight.bold,
-                                              color: Colors.green,
-                                              fontSize: 21),
+                                              fontSize: 20,
+                                              color: Colors.white),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(15),
+                                    child: Text('Báo cáo nhanh ${getThisMonth()}',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold, fontSize: 20)),
+                                  ),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                              border: Border(
+                                                  right: BorderSide(
+                                                      width: 1, color: Colors.grey))),
+                                          alignment: Alignment.center,
+                                          child: Column(
+                                            children: [
+                                              Text('Tổng thu ${getThisMonth()}'),
+                                              Padding(
+                                                padding: const EdgeInsets.all(8.0),
+                                                child: Text(
+                                                  '${formatMoneyWithSymbol(walletsProvider.receive)}',
+                                                  style: TextStyle(
+                                                      fontWeight: FontWeight.bold,
+                                                      color: Colors.green,
+                                                      fontSize: 21),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ),
+                                      Expanded(
+                                        child: Column(
+                                          children: [
+                                            Container(
+                                              alignment: Alignment.center,
+                                              child: Column(
+                                                children: [
+                                                  Text('Tổng chi ${getThisMonth()}'),
+                                                  Padding(
+                                                    padding: const EdgeInsets.all(8.0),
+                                                    child: Text(
+                                                      '${formatMoneyWithSymbol(walletsProvider.spent)}',
+                                                      style: TextStyle(
+                                                          fontWeight: FontWeight.bold,
+                                                          color: Colors.red,
+                                                          fontSize: 21),
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      )
                                     ],
                                   ),
-                                ),
-                              ),
-                              Expanded(
-                                child: Column(
-                                  children: [
-                                    Container(
-                                      alignment: Alignment.center,
-                                      child: Column(
-                                        children: [
-                                          Text('Tổng chi ${getThisMonth()}'),
-                                          Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Text(
-                                              '${formatMoneyWithSymbol(walletsProvider.spent)}',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.red,
-                                                  fontSize: 21),
-                                            ),
-                                          )
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              )
-                            ],
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 40, bottom: 30),
-                            child: Text('Danh sách tất cả giao dịch',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 20)),
-                          ),
-                          walletsProvider.txList.length == 0
-                              ? Text('(Chưa có giao dịch được ghi)')
-                              : Container(),
-                          for (var tx in walletsProvider.txList) _createCompactTxn(tx)
-                        ],
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 40, bottom: 30),
+                                    child: Text('Danh sách tất cả giao dịch',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold, fontSize: 20)),
+                                  ),
+                                  walletsProvider.txList.length == 0
+                                      ? Text('(Chưa có giao dịch được ghi)')
+                                      : Container(),
+                                  _createCompactTxn(walletsProvider.txList[index]),
+                                ],
+                              );
+                          }
+                          if (index == walletsProvider.txList.length - 1) {
+                            return Padding(
+                                padding: const EdgeInsets.only(bottom: 60),
+                                child: _createCompactTxn(walletsProvider.txList[index])
+                            );
+                          }
+                          return _createCompactTxn(walletsProvider.txList[index]);
+                        },
                       );
+
                     }
                 )
               ),
             ),
-          )),
+          ),
     );
   }
 
