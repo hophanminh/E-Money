@@ -241,17 +241,6 @@ class _EventDashboardState extends State<EventDashboard> {
     );
   }
 
-  CircleAvatar createCircleIcon(String name, String background, String foreground) => CircleAvatar(
-        // backgroundColor: Color(int.parse('0x' + background.substring(2))),
-        // foregroundColor: Color(int.parse('0x' + foreground.substring(2))),
-        child: FlutterLogo(size: 40.0
-            //     Icon(MdiIcons.fromString('sword'),
-            //       // color: Colors.pink,
-            //       // size: 40.0,
-            //       // semanticLabel: 'Text to announce in accessibility modes',
-            ),
-      );
-
   FloatingActionButton _catDashboardActionButton() => FloatingActionButton(
       onPressed: () async {
         await Navigator.push(

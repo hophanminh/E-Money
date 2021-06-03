@@ -1,4 +1,5 @@
 import config from '../constants/config.json';
+import { formatMoney } from './currency';
 import moment from 'moment';
 const API_URL = config.API_LOCAL;
 
@@ -16,3 +17,13 @@ export const convertToRegularDateFormat = (date) => moment(date).format("YYYY-MM
 export const convertToLocalDateFormat = (date) => moment(date).format("DD/MM/YYYY");
 
 export const containNonDigit = token => token.match(/^[0-9]+$/) === null;
+
+export const customizeTextForLegend = (name, value) => `${name}: ${formatMoney(value)}`;
+
+export const customizeTextForLabel = arg => `${arg.percentText}`;
+
+export const customizeTextForTooltip = arg => {
+  return {
+    text: `${formatMoney(arg.value)}`
+  }
+}

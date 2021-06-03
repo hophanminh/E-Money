@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:mobile/src/config/config.dart';
 import 'package:mobile/src/models/CatsProvider.dart';
+import 'package:mobile/src/services/icon_service.dart';
 import 'package:mobile/src/services/restapiservices/user_service.dart';
 import 'package:mobile/src/services/restapiservices/wallet_service.dart';
 import 'package:mobile/src/services/socketservices/socket.dart';
@@ -28,7 +29,7 @@ class _EditCatDialogState extends State<EditCatDialog> {
   var _formKey = GlobalKey<FormState>();
 
   List<DropdownMenuItem<String>> _catMenuItems = [];
-  List<dynamic> _iconList = [];
+  List<IconCustom> _iconList = [];
   String _currentIcon;
 
   var _nameController = new TextEditingController();
@@ -80,7 +81,9 @@ class _EditCatDialogState extends State<EditCatDialog> {
                               value: _currentIcon,
                               items: _catMenuItems,
                               onChanged: (value) {
-                                _currentIcon = value;
+                                setState(() {
+                                  _currentIcon = value;
+                                });
                               },
                             ),
                           ),
@@ -158,16 +161,23 @@ class _EditCatDialogState extends State<EditCatDialog> {
     _currentIcon = widget.cat.iconID;
     _nameController.text = widget.cat.name;
 
-    _iconList = jsonDecode(await WalletService.instance.getListIcon());
+    _iconList = await IconService.instance.iconList;
 
     if (!mounted) {
       return;
     }
     if (_iconList.length != 0) {
-      for (dynamic icon in _iconList) {
+      for (IconCustom icon in _iconList) {
         _catMenuItems.add(new DropdownMenuItem(
-          child: _createCircleIcon(icon['Name'], icon['BackgroundColor'], icon['Color']),
-          value: icon['ID'],
+          child: Container(
+              width: 28,
+              height: 28,
+              child: createCircleIcon(
+                  icon.name,
+                  icon.backgroundColor,
+                  icon.color,
+                  size: 16)),
+          value: icon.id,
         ));
       }
       // print(widget.cat['IconID']);
@@ -175,10 +185,4 @@ class _EditCatDialogState extends State<EditCatDialog> {
 
     setState(() {});
   }
-
-  _createCircleIcon(String name, String background, String foreground) => CircleAvatar(
-        backgroundColor: Color(int.parse('0x' + background.substring(2))),
-        foregroundColor: Color(int.parse('0x' + foreground.substring(2))),
-        child: FlutterLogo(size: 25.0),
-      );
 }

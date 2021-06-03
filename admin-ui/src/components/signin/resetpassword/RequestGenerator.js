@@ -62,7 +62,7 @@ export default function RequestGenerator({ setShowSnackBar, setContent }) {
       Username: username,
       Email: email
     }
-    const res = await fetch(`${API_URL}/forgotpassword`, {
+    const res = await fetch(`${API_URL}/admin/forgotpassword`, {
       method: 'POST',
       body: JSON.stringify(data),
       headers: {

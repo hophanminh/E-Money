@@ -201,22 +201,23 @@ Widget myCircleAvatar(String avatarURL, double radius, {Key key}) => Container(
 // color from database is hexadecimal : #123456; convert to int
 CircleAvatar createCircleIcon(String name, String background, String foreground, {double size = 28.0}) {
   try {
+    Color backgroundColor = Color(int.parse('0xff' + background.substring(1)));
+    Color foregroundColor = Color(int.parse('0xff' + foreground.substring(1)));
     return CircleAvatar(
-        backgroundColor: Color(int.parse('0xff' + background.substring(1))),
+        backgroundColor: backgroundColor,
         // foregroundColor: Color(int.parse('0xff' + foreground.substring(1))),
         child: Icon(
           IconData(int.parse('${OMIcons.codePoints[name]}'), fontFamily: 'outline_material_icons', fontPackage: 'outline_material_icons'),
-          color: Colors.white,
+          color: foregroundColor,
           size: size,
         ));
   } on RangeError catch (e) {
-    print(e);
     return CircleAvatar(
         backgroundColor: Color(int.parse('0xffffffff')),
         // foregroundColor: Color(int.parse('0xff' + foreground.substring(1))),
         child: Icon(
           Icons.loop_outlined,
-          color: Colors.redAccent,
+          color: Colors.white,
           size: size,
         ));
   } on Exception catch (e) {
