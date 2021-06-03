@@ -198,16 +198,35 @@ Widget myCircleAvatar(String avatarURL, double radius, {Key key}) => Container(
       ),
     );
 
-
-
 // color from database is hexadecimal : #123456; convert to int
 CircleAvatar createCircleIcon(String name, String background, String foreground, {double size = 28.0}) {
-  return CircleAvatar(
-      backgroundColor: Color(int.parse('0xff' + background.substring(1))),
-      // foregroundColor: Color(int.parse('0xff' + foreground.substring(1))),
-      child: Icon(
-        IconData(int.parse('${OMIcons.codePoints[name]}'), fontFamily: 'outline_material_icons', fontPackage: 'outline_material_icons'),
-        color: Colors.white,
-        size: size,
-      ));
+  try {
+    return CircleAvatar(
+        backgroundColor: Color(int.parse('0xff' + background.substring(1))),
+        // foregroundColor: Color(int.parse('0xff' + foreground.substring(1))),
+        child: Icon(
+          IconData(int.parse('${OMIcons.codePoints[name]}'), fontFamily: 'outline_material_icons', fontPackage: 'outline_material_icons'),
+          color: Colors.white,
+          size: size,
+        ));
+  } on RangeError catch (e) {
+    print(e);
+    return CircleAvatar(
+        backgroundColor: Color(int.parse('0xffffffff')),
+        // foregroundColor: Color(int.parse('0xff' + foreground.substring(1))),
+        child: Icon(
+          Icons.loop_outlined,
+          color: Colors.redAccent,
+          size: size,
+        ));
+  } on Exception catch (e) {
+    return CircleAvatar(
+        backgroundColor: Colors.red,
+        // foregroundColor: Color(int.parse('0xff' + foreground.substring(1))),
+        child: Icon(
+          Icons.broken_image_outlined,
+          color: Colors.white,
+          size: size,
+        ));
+  }
 }
