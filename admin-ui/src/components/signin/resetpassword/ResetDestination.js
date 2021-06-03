@@ -10,11 +10,33 @@ import SnackBar from '../../snackbar/SnackBar';
 import MyContext from '../../mycontext/MyContext';
 import Tooltip from '@material-ui/core/Tooltip';
 import { isBlankString, containsBlank, containNonDigit } from '../../../utils/helper';
-import { styles } from '../../signup/SignUp';
+// import { styles } from '../../signup/SignUp';
 import config from '../../../constants/config.json';
 import palette from '../../../constants/palette.json';
 const API_URL = config.API_LOCAL;
 
+const styles = {
+  background: {
+    width: '100%',
+    height: '100%',
+    filter: 'brightness(60%)'
+  },
+  paper: {
+    padding: '40px 20px 40px',
+    borderRadius: '8px',
+    backgroundColor: '#fff'
+  },
+  form: {
+    width: '100%', // Fix IE 11 issue.
+    marginTop: 1,
+  },
+  submit: {
+    margin: '3px 0 2px',
+  },
+  shadow: {
+    boxShadow: '3px 3px 5px 3px rgba(0, 0, 0, 0.2), 3px 4px 12px 3px rgba(0, 0, 0, 0.19)',
+  },
+}
 
 function ResetDestination() {
   const history = useHistory();
@@ -88,7 +110,7 @@ function ResetDestination() {
       Code: code,
       Password: password
     }
-    const res = await fetch(`${API_URL}/resetpassword`, {
+    const res = await fetch(`${API_URL}/admin/resetpassword`, {
       method: 'PUT',
       body: JSON.stringify(data),
       headers: {

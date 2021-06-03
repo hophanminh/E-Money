@@ -1,14 +1,17 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Typography, Paper } from '@material-ui/core';
-import {
-  Chart,
-  PieSeries,
-  Title,
+import PieChart, {
   Legend,
+  Series,
+  Label,
+  Font,
+  Connector,
   Tooltip
-} from '@devexpress/dx-react-chart-material-ui';
-import { Animation, EventTracker } from '@devexpress/dx-react-chart';
+} from 'devextreme-react/pie-chart';
 import { makeStyles } from '@material-ui/core/styles';
+import { PIE_CHART_PALETTE } from '../../constants/palette.json';
+import { MARKER_SIZE, FONT_SIZE } from '../../constants/config.json';
+import { customizeTextForLegend, customizeTextForLabel, customizeTextForTooltip } from '../../utils/helper';
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -30,25 +33,42 @@ const chartData = [
 export default function Statistic() {
   const classes = useStyles();
 
-  const [targetItem, setTargetItem] = useState(null);
-
-  const changeTargetItem = (target) => {
-    setTargetItem(target);
-  }
-
   return (
     <div className={classes.container}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div style={{ width: '50%' }}>
           <Paper className={classes.paper}>
-            <Chart data={chartData}>
-              <PieSeries valueField="value" argumentField="type" outerRadius={0.75} />
-              <Title text="Thống kê chi tiêu tháng" />
-              <Legend />
-              <Animation />
-              <EventTracker />
-              <Tooltip targetItem={targetItem} onTargetItemChange={(target) => changeTargetItem(target)} />
-            </Chart>
+            <PieChart
+              id="pie"
+              palette={PIE_CHART_PALETTE}
+              dataSource={chartData}
+              title="Thống kê chi tiêu tháng"
+            >
+              <Legend
+                orientation="horizontal"
+                itemTextPosition="right"
+                horizontalAlignment="center"
+                verticalAlignment="bottom"
+                customizeText={arg => customizeTextForLegend(arg.pointName, chartData[arg.pointIndex].value)}
+                columnCount={4}
+                markerSize={MARKER_SIZE}
+              >
+                <Font size={FONT_SIZE.LEGEND_FONT_SIZE} />
+              </Legend>
+              <Series argumentField="type" valueField="value">
+                <Label
+                  visible={true}
+                  position="columns"
+                  customizeText={customizeTextForLabel}
+                >
+                  <Font size={FONT_SIZE.LABEL_FONT_SIZE} />
+                  <Connector visible={true} width={0.5} />
+                </Label>
+              </Series>
+              <Tooltip enabled={true} customizeTooltip={customizeTextForTooltip}>
+                <Font size={FONT_SIZE.TOOLTIP_FONT_SIZE} />
+              </Tooltip>
+            </PieChart>
           </Paper>
         </div>
         <div style={{ width: '50%', textAlign: 'justify', marginLeft: '50px' }}>
@@ -60,6 +80,6 @@ export default function Statistic() {
           </Typography>
         </div>
       </div>
-    </div>
+    </div >
   );
 }
