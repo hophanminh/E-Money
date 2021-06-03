@@ -76,11 +76,12 @@ class WalletsProvider extends ChangeNotifier {
   }
 
   List<Transactions> getFilterList() {
-    if (this._searchString != '') {
+    String searchStr = this._searchString.toLowerCase();
+    if (searchStr != '') {
       return this
           ._txList
           .where((i) =>
-              i.description.toLowerCase().contains(this._searchString.toLowerCase()))
+              i.categoryName.toLowerCase().contains(searchStr))
           .toList();
     } else {
       return this._txList;
