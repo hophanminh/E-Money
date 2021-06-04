@@ -222,10 +222,11 @@ class _IndividualWalletState extends State<IndividualWallet> {
                             shrinkWrap: true,
                             itemCount: walletsProvider.getFilterList(_selectedFilterType).length,
                             itemBuilder: (BuildContext context, int index) {
-                              if (index == walletsProvider.getFilterList(_selectedFilterType).length - 1) {
-                                return Padding(padding: const EdgeInsets.only(bottom: 60), child: _createCompactTxn(walletsProvider.getFilterList(_selectedFilterType)[index]));
+                              List<Transactions> list = walletsProvider.getFilterList(_selectedFilterType);
+                              if (index == list.length - 1) {
+                                return Padding(padding: const EdgeInsets.only(bottom: 60), child: _createCompactTxn(list[index]));
                               }
-                              return _createCompactTxn(walletsProvider.getFilterList(_selectedFilterType)[index]);
+                              return _createCompactTxn(list[index]);
                             },
                           )),
                     ],
