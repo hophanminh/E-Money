@@ -9,5 +9,4 @@ module.exports = (app, passport) => {
   app.use('/icons', passport.authenticate("jwt", { session: false }), require('../routes/icons'));
   app.use('/transaction-images', passport.authenticate("jwt", { session: false }), require('../routes/transactionImages'));
   app.use('/admins', passport.authenticate("jwt", { session: false }), require('../routes/admin'));
-
 }
