@@ -212,7 +212,7 @@ class _EditTransactionState extends State<EditTransaction> {
                                               Container(
                                                   width: 28,
                                                   height: 28,
-                                                  child: createCircleIcon(
+                                                  child: myCircleIcon(
                                                       selectedIcon.name,
                                                       selectedIcon.backgroundColor,
                                                       selectedIcon.color,

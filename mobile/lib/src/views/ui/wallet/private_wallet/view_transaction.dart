@@ -14,6 +14,7 @@ import 'package:mobile/src/views/ui/wallet/private_wallet/delete_transaction_ima
 import 'package:mobile/src/views/ui/wallet/private_wallet/edit_transaction.dart';
 import 'package:mobile/src/views/utils/helpers/helper.dart';
 import 'package:mobile/src/views/utils/widgets/widget.dart';
+import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:provider/provider.dart';
@@ -120,10 +121,7 @@ class _ViewTransactionState extends State<ViewTransaction> {
           padding: EdgeInsets.only(bottom: 10),
           child: Consumer<WalletsProvider>(builder: (context, walletsProvider, child) {
             String tempId = walletsProvider.selected != null ? walletsProvider.selected.iconID : '';
-            IconCustom selectedIcon = _iconList.firstWhere(
-                    (element) => element.id == tempId,
-                orElse: () => new IconCustom(
-                    id: '', name: '', color: '', backgroundColor: ''));
+            IconCustom selectedIcon = _iconList.firstWhere((element) => element.id == tempId, orElse: () => new IconCustom(id: '', name: '', color: '', backgroundColor: ''));
 
             return walletsProvider.selected != null
                 ? Column(
@@ -166,28 +164,26 @@ class _ViewTransactionState extends State<ViewTransaction> {
                               Transform.translate(
                                   offset: Offset(0, -45),
                                   child: Container(
-                                    padding: EdgeInsets.all(10),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.all(Radius.circular(20)),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.grey.withOpacity(0.5),
-                                          spreadRadius: 4,
-                                          blurRadius: 5,
-                                          offset: Offset(0, 2), // changes position of shadow
-                                        ),
-                                      ],
-                                    ),
-                                    child: Container(
-                                        width: 90,
-                                        height: 90,
-                                        child: createCircleIcon(
-                                            selectedIcon.name,
-                                            selectedIcon.color,
-                                            selectedIcon.backgroundColor == '#FFFFFF' ? "#000000" : selectedIcon.backgroundColor,
-                                            size: 90)),
-                                  )),
+                                      padding: EdgeInsets.all(10),
+                                      decoration: BoxDecoration(
+                                        color: Color(int.parse('0xFF' + (selectedIcon.backgroundColor == '' ? '#FFFFFF' : selectedIcon.backgroundColor).substring(1))),
+                                        borderRadius: BorderRadius.all(Radius.circular(20)),
+                                        border: Border.all(color: Colors.white, width: 5),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.grey.withOpacity(0.5),
+                                            spreadRadius: 4,
+                                            blurRadius: 5,
+                                            offset: Offset(0, 2), // changes position of shadow
+                                          ),
+                                        ],
+                                      ),
+                                      child: selectedIcon.name == '' ? Container() : Icon(
+                                        IconData(int.parse('${OMIcons.codePoints[selectedIcon.name]}'),
+                                            fontFamily: 'outline_material_icons', fontPackage: 'outline_material_icons'),
+                                        size: 90,
+                                        color: Colors.white,
+                                      ))),
                               Text(
                                 walletsProvider.selected.categoryName,
                                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
