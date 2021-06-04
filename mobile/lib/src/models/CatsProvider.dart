@@ -8,7 +8,7 @@ class CatsProvider extends ChangeNotifier {
   List<Categories> _fullList = [];
   List<Categories> _defaultList = [];
   List<Categories> _customList = [];
-
+  String _searchString = "";
   Categories _selected;
 
   Future<bool> fetchData(Map<String, dynamic> body) async {
@@ -38,11 +38,9 @@ class CatsProvider extends ChangeNotifier {
       try {
         Categories temp = fullList.firstWhere((cat) => cat.id == this.selected.id);
         this._selected = temp;
-      }
-      catch (error) {
+      } catch (error) {
         this._selected = null;
       }
-
     }
     notifyListeners();
   }
@@ -51,6 +49,27 @@ class CatsProvider extends ChangeNotifier {
     this._selected = selected;
     notifyListeners();
     return true;
+  }
+
+  void changeSearchString(String searchString) {
+    this._searchString = searchString;
+    notifyListeners();
+  }
+
+  List<Categories> getDefaultFilteredList() {
+    if (this._searchString != '') {
+      return this.defaultList.where((i) => i.name.toLowerCase().contains(this._searchString.toLowerCase())).toList();
+    } else {
+      return this.defaultList;
+    }
+  }
+
+  List<Categories> getCustomFilteredList() {
+    if (this._searchString != '') {
+      return this.customList.where((i) => i.name.toLowerCase().contains(this._searchString.toLowerCase())).toList();
+    } else {
+      return this.customList;
+    }
   }
 
   Categories get selected => _selected;
@@ -69,13 +88,7 @@ class Categories {
   String walletID;
   String iconID;
 
-  Categories(
-      {this.id,
-        this.name,
-        this.isDefault,
-        this.walletID,
-        this.iconID});
-
+  Categories({this.id, this.name, this.isDefault, this.walletID, this.iconID});
 
   @override
   String toString() {
@@ -86,18 +99,17 @@ class Categories {
     return Categories(
       id: json['ID'] as String,
       name: json['Name'] as String,
-      isDefault: json['IsDefault'] == 1 ? true: false,
+      isDefault: json['IsDefault'] == 1 ? true : false,
       walletID: json['WalletID'] as String,
       iconID: json['IconID'] as String,
     );
   }
 
   Map<String, dynamic> toJson() => {
-    'ID': id,
-    'Name': name,
-    'IsDefault': isDefault,
-    'WalletID': walletID,
-    'IconID': iconID,
-  };
-
+        'ID': id,
+        'Name': name,
+        'IsDefault': isDefault,
+        'WalletID': walletID,
+        'IconID': iconID,
+      };
 }

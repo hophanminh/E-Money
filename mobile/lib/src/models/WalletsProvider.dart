@@ -5,6 +5,8 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
 import 'package:mobile/src/models/CatsProvider.dart';
 import 'package:mobile/src/services/restapiservices/wallet_service.dart';
+import 'package:mobile/src/views/ui/wallet/private_wallet/private_wallet.dart';
+import 'package:mobile/src/views/utils/helpers/helper.dart';
 
 class WalletsProvider extends ChangeNotifier {
   List<Transactions> _txList = [];
@@ -14,6 +16,8 @@ class WalletsProvider extends ChangeNotifier {
   int _total = 0;
 
   String _searchString = "";
+  String _searchMonth = "";
+  String _searchYear = "";
 
   Future<bool> fetchData(Map<String, dynamic> body) async {
     List<Transactions> walletList = [];
@@ -34,11 +38,9 @@ class WalletsProvider extends ChangeNotifier {
       try {
         Transactions temp = data.firstWhere((wallet) => wallet.id == this.selected.id);
         this._selected = temp;
-      }
-      catch (error) {
+      } catch (error) {
         this._selected = null;
       }
-
     }
     notifyListeners();
   }
@@ -51,8 +53,7 @@ class WalletsProvider extends ChangeNotifier {
       if (cat.isNotEmpty) {
         copyTxs[i].iconID = cat.first['IconID'];
         copyTxs[i].categoryName = cat.first['Name'];
-      }
-      else {
+      } else {
         List<dynamic> cat = fullList.where((cat) => cat['Name'] == "Khác").toList();
         copyTxs[i].iconID = cat.first['IconID'];
         copyTxs[i].categoryName = cat.first['Name'];
@@ -62,7 +63,6 @@ class WalletsProvider extends ChangeNotifier {
     this._txList = copyTxs;
     notifyListeners();
   }
-
 
   Future<bool> changeSelected(Transactions selected) async {
     this._selected = selected;
@@ -75,16 +75,51 @@ class WalletsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  List<Transactions> getFilterList() {
-    String searchStr = this._searchString.toLowerCase();
-    if (searchStr != '') {
-      return this
-          ._txList
-          .where((i) =>
-              i.categoryName.toLowerCase().contains(searchStr))
-          .toList();
-    } else {
-      return this._txList;
+  void changeSearchMonth(String month) {
+    this._searchMonth = month;
+    notifyListeners();
+  }
+
+  void changeSearchYear(String year) {
+    this._searchYear = year;
+    notifyListeners();
+  }
+
+  List<Transactions> getFilterList(FilterType type) {
+    switch (type) {
+      case FilterType.all:
+        {
+          return this._txList;
+        }
+      case FilterType.category:
+        {
+          String searchStr = this._searchString.toLowerCase();
+          if (searchStr != '') {
+            return this._txList.where((i) => i.categoryName.toLowerCase().contains(searchStr)).toList();
+          }
+          return this._txList;
+        }
+      case FilterType.date:
+        {
+          if(_searchYear.isEmpty && _searchMonth.isEmpty) {
+            return this.txList;
+          }
+
+          List<Transactions> result = [];
+
+          if(_searchYear.isNotEmpty) {
+            int _year = int.parse(this._searchYear);
+            result.addAll(this.txList.where((element) => parseInput(element.time).year == _year).toList());
+          }
+
+          if (_searchMonth.isNotEmpty) {
+            int _month = int.parse(this._searchMonth);
+            print(_month);
+            result = result.where((element) => parseInput(element.time).month == _month).toList();
+          }
+
+          return result;
+        }
     }
   }
 
@@ -117,18 +152,17 @@ class Transactions {
 
   Transactions(
       {this.id,
-        this.description,
-        this.price,
-        this.time,
-        this.timeModified,
-        this.catID,
-        this.iconID,
-        this.categoryName,
-        this.eventID,
-        this.eventName,
-        this.userName,
-        this.editNumber});
-
+      this.description,
+      this.price,
+      this.time,
+      this.timeModified,
+      this.catID,
+      this.iconID,
+      this.categoryName,
+      this.eventID,
+      this.eventName,
+      this.userName,
+      this.editNumber});
 
   @override
   String toString() {
@@ -149,23 +183,21 @@ class Transactions {
       eventName: json['eventName'] as String,
       userName: json['userName'] as String,
       editNumber: json['editNumber'] as int,
-
     );
   }
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'description': description,
-    'price': price,
-    'time': time,
-    'timeModified': timeModified,
-    'catID': catID,
-    'IconID': iconID,
-    'categoryName': categoryName,
-    'eventID': eventID,
-    'eventName': eventName,
-    'userName': userName,
-    'editNumber': editNumber,
-  };
-
+        'id': id,
+        'description': description,
+        'price': price,
+        'time': time,
+        'timeModified': timeModified,
+        'catID': catID,
+        'IconID': iconID,
+        'categoryName': categoryName,
+        'eventID': eventID,
+        'eventName': eventName,
+        'userName': userName,
+        'editNumber': editNumber,
+      };
 }

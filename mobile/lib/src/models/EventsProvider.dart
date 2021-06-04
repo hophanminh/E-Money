@@ -7,7 +7,7 @@ import 'package:http/http.dart';
 class EventsProvider extends ChangeNotifier {
   List<Events> _eventList = [];
   List<EventTypes> _eventTypeList = [];
-
+  String searchString = "";
   Events _selected;
 
   Future<bool> fetchData(Map<String, dynamic> body) async {
@@ -29,11 +29,9 @@ class EventsProvider extends ChangeNotifier {
       try {
         Events temp = _eventList.firstWhere((event) => event.id == this.selected.id);
         this._selected = temp;
-      }
-      catch (error) {
+      } catch (error) {
         this._selected = null;
       }
-
     }
     notifyListeners();
   }
@@ -47,6 +45,7 @@ class EventsProvider extends ChangeNotifier {
 
     return true;
   }
+
   void loadType(List<EventTypes> eventTypeList) async {
     this._eventTypeList = eventTypeList;
 
@@ -64,6 +63,19 @@ class EventsProvider extends ChangeNotifier {
   List<EventTypes> get eventTypeList => _eventTypeList;
 
   List<Events> get eventList => _eventList;
+
+  void changeSearchString(String searchString) {
+    this.searchString = searchString;
+    notifyListeners();
+  }
+
+  List<Events> getFilteredList() {
+    if (this.searchString != '') {
+      return this.eventList.where((i) => i.name.toLowerCase().contains(this.searchString.toLowerCase())).toList();
+    } else {
+      return this.eventList;
+    }
+  }
 }
 
 class Events {
@@ -86,28 +98,26 @@ class Events {
 
   Events(
       {this.id,
-        this.name,
-        this.startDate,
-        this.nextDate,
-        this.endDate,
-        this.status,
-        this.value,
-        this.expectingAmount,
-        this.description,
-        this.walletID,
-        this.categoryID,
-        this.eventTypeID,
-        this.typeName,
-        this.categoryName,
-        this.iconID,
-        this.totalAmount});
-
+      this.name,
+      this.startDate,
+      this.nextDate,
+      this.endDate,
+      this.status,
+      this.value,
+      this.expectingAmount,
+      this.description,
+      this.walletID,
+      this.categoryID,
+      this.eventTypeID,
+      this.typeName,
+      this.categoryName,
+      this.iconID,
+      this.totalAmount});
 
   @override
   String toString() {
     return 'Events{id: $id, name: $name, startDate: $startDate, nextDate: $nextDate, endDate: $endDate, status: $status, value: $value, expectingAmount: $expectingAmount, description: $description, walletID: $walletID, categoryID: $categoryID, eventTypeID: $eventTypeID, typeName: $typeName, categoryName: $categoryName, iconID: $iconID, totalAmount: $totalAmount}';
   }
-
 
   factory Events.fromJson(Map<String, dynamic> json) {
     return Events(
@@ -116,7 +126,7 @@ class Events {
       startDate: json['StartDate'] as String,
       nextDate: json['NextDate'] as String,
       endDate: json['EndDate'] as String,
-      status: json['Status'] == 1 ? true: false,
+      status: json['Status'] == 1 ? true : false,
       value: json['Value'] as int,
       expectingAmount: json['ExpectingAmount'].toDouble(),
       description: json['Description'] as String,
@@ -131,38 +141,35 @@ class Events {
   }
 
   Map<String, dynamic> toJson() => {
-    'ID': id,
-    'Name': name,
-    'StartDate': startDate,
-    'NextDate': nextDate,
-    'EndDate': endDate,
-    'Status': status,
-    'Value': value,
-    'ExpectingAmount': expectingAmount,
-    'Description': description,
-    'WalletID': walletID,
-    'CategoryID': categoryID,
-    'EventTypeID': eventTypeID,
-    'TypeName': typeName,
-    'CategoryName': categoryName,
-    'IconID': iconID,
-    'TotalAmount': totalAmount,};
+        'ID': id,
+        'Name': name,
+        'StartDate': startDate,
+        'NextDate': nextDate,
+        'EndDate': endDate,
+        'Status': status,
+        'Value': value,
+        'ExpectingAmount': expectingAmount,
+        'Description': description,
+        'WalletID': walletID,
+        'CategoryID': categoryID,
+        'EventTypeID': eventTypeID,
+        'TypeName': typeName,
+        'CategoryName': categoryName,
+        'IconID': iconID,
+        'TotalAmount': totalAmount,
+      };
 }
 
 class EventTypes {
   String id;
   String name;
 
-  EventTypes(
-      {this.id,
-        this.name});
-
+  EventTypes({this.id, this.name});
 
   @override
   String toString() {
     return 'Events{id: $id, name: $name}';
   }
-
 
   factory EventTypes.fromJson(Map<String, dynamic> json) {
     return EventTypes(
@@ -171,7 +178,5 @@ class EventTypes {
     );
   }
 
-  Map<String, dynamic> toJson() => {
-    'ID': id,
-    'Name': name};
+  Map<String, dynamic> toJson() => {'ID': id, 'Name': name};
 }

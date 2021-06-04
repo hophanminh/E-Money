@@ -199,7 +199,7 @@ Widget myCircleAvatar(String avatarURL, double radius, {Key key}) => Container(
     );
 
 // color from database is hexadecimal : #123456; convert to int
-CircleAvatar createCircleIcon(String name, String background, String foreground, {double size = 28.0}) {
+CircleAvatar myCircleIcon(String name, String background, String foreground, {double size = 28.0}) {
   try {
     Color backgroundColor = Color(int.parse('0xff' + background.substring(1)));
     Color foregroundColor = Color(int.parse('0xff' + foreground.substring(1)));
@@ -231,3 +231,32 @@ CircleAvatar createCircleIcon(String name, String background, String foreground,
         ));
   }
 }
+
+Widget mySearchBar(BuildContext context, TextEditingController controller, String hint, {double radius = 4}) => Container(
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        child: Material(
+          elevation: 5.0,
+          borderRadius: BorderRadius.all(Radius.circular(radius)),
+          child: TextField(
+            controller: controller,
+            cursorColor: Theme.of(context).primaryColor,
+            style: TextStyle(color: Colors.black, fontSize: 18),
+            decoration: InputDecoration(
+                hintText: hint,
+                hintStyle: TextStyle(color: Colors.black38, fontSize: 16),
+                prefixIcon: Material(
+                  elevation: 0.0,
+                  borderRadius: BorderRadius.all(Radius.circular(30)),
+                  child: Icon(Icons.search),
+                ),
+                suffixIcon: IconButton(
+                  onPressed: () => controller.clear(),
+                  icon: Icon(Icons.clear),
+                ),
+                border: InputBorder.none,
+                contentPadding: EdgeInsets.symmetric(horizontal: 25, vertical: 13)),
+          ),
+        ),
+      ),
+    );
