@@ -30,15 +30,16 @@ const [members, setMembers] = useState([]);
 const history = useHistory();
 const token = localStorage.getItem('jwtToken');
 const userID= localStorage.getItem('userID');
-const [isAdmin, setIsAdmin] = useState(true);
+const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     console.log(isLoggedIn);
     if (isLoggedIn !== null && isLoggedIn === false) {
         history.push('/');
     }
-    getTeamMembers()
-}, [isLoggedIn]);
+    getTeamMembers();
+    isAdminTeam();
+});
 
 const handleRemoveMember = async (userID) => {
     console.log("remove" + userID);
@@ -70,7 +71,6 @@ const getTeamMembers = async () => {
         const result = await res.json();
         console.log(result.members);
         setMembers(result.members);
-        isAdminTeam();
     } else {
         // alert("Some error when updating!")
     }
@@ -79,10 +79,15 @@ const getTeamMembers = async () => {
 const isAdminTeam = () => {
     console.log("userID"+userID)
     const fakeArray = members.slice();
-    console.log("member: " + fakeArray[2])
     fakeArray
     .filter(member => member.ID === userID)
-    .map(member => (member.Role === 1) ? setIsAdmin(true): setIsAdmin(false)) 
+    .map(member => {
+      console.log("Role: " + member.Role)
+      if(member.Role === 1)
+        setIsAdmin(true);
+      else setIsAdmin(false)
+    }) 
+    console.log(isAdmin)
 }
 
   return (
