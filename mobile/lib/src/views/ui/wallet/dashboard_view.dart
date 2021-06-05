@@ -30,14 +30,40 @@ class _DashboardState extends State<Dashboard> {
     });
   }
 
+  // confirm exit app or not
+  Future<bool> _onWillPop() async {
+    return (await showDialog(
+      context: context,
+      builder: (context) => new AlertDialog(
+        title: new Text('Xác nhận'),
+        content: new Text('Bạn có chắc chắn muốn thoát khỏi ứng dụng?'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: new Text('Hủy'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: new Text('Xác nhận'),
+          ),
+        ],
+      ),
+    )) ?? false;
+  }
+
+
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
         SystemUiOverlayStyle(statusBarColor: Colors.transparent));
     Drawer sideBar = mySideBar(
         context: context, name: widget.user['Name'], avatarURL: widget.user['AvatarURL'], setMainRoute: setMainRoute, mainRouteName: mainRouteName);
-    return ScaffoldMessenger(
-        child: createDashboardPage(sideBar)
+
+    return WillPopScope(
+      onWillPop: _onWillPop,
+      child: ScaffoldMessenger(
+          child: createDashboardPage(sideBar)
+      ),
     );
   }
 
