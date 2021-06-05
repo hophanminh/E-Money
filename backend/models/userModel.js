@@ -22,6 +22,14 @@ module.exports = {
 
   getUserAvatarByID: id => db.load(`SELECT Avatar FROM Users WHERE ID = '${id}' AND IsAdmin = 0`),
 
+  searchUserByNameOrUsernameOrEmail: value => db.loadSafe(`
+    SELECT
+      ID AS id, Name AS name, Username AS username, Email AS email,
+      DateOfBirth AS dateOfBirth, IsBanned AS isBanned
+    FROM Users
+    WHERE LOWER(Name) LIKE ? OR LOWER(username) LIKE ? OR LOWER(Email) LIKE ?
+  `, [value, value, value]),
+
   addUser: entity => db.add('Users', entity),
 
   updateUser: (id, updatedFields) => db.patch('Users', updatedFields, { ID: id }),

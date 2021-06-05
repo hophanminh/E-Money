@@ -119,4 +119,20 @@ router.patch('/:id/avatar', upload.single('avatar'), async (req, res) => {
   );
 });
 
+router.post('/banOrUnban', async (req, res) => {
+  const { userID, username, value } = req.body;
+  const updateResult = await userModel.updateUser(userID, { IsBanned: value });
+  if (updateResult.affectedRows === 1) {
+    res.status(200).send({ msg: `Bạn đã ${value ? '' : 'bỏ'} cấm ${username}` });
+  } else {
+    res.status(500).send({ msg: "Đã xảy ra sự cố khi cập nhật. Hãy thử lại!" });
+  }
+});
+
+router.post('/search', async (req, res) => {
+  const { value } = req.body;
+  const users = await userModel.searchUserByNameOrUsernameOrEmail('%' + value + '%');
+  return res.status(200).send({ users });
+});
+
 module.exports = router;

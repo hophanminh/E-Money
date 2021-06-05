@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import moment from 'moment';
-import { useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import { DataGrid } from '@material-ui/data-grid';
 import {
@@ -14,6 +13,7 @@ import {
 import BlockIcon from '@material-ui/icons/Block';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import CustomNoRowsOverlay from './CustomNoRowsOverlay';
+import SnackBar from '../snackbar/SnackBar';
 import config from '../../constants/config.json';
 const API_URL = config.API_LOCAL;
 
@@ -114,12 +114,13 @@ const useStyles = makeStyles((theme) => ({
 
 export default function UserList() {
   const classes = useStyles();
-  const history = useHistory();
 
   const token = localStorage.getItem('jwtToken');
   const [users, setUsers] = useState([]);
   const [pageSize, setPageSize] = useState(config.PAGE_SIZE);
   const [searchFieldValue, setSearchFieldValue] = useState('');
+  const [isOpenSnackbar, setIsOpenSnackbar] = useState(false);
+  const [snackbarContent, setSnackbarContent] = useState('');
 
   const columns = [
     {
@@ -164,7 +165,7 @@ export default function UserList() {
         return (
           <Tooltip title={params.row.isBanned ? "Unban" : "Ban"} aria-label="banOrUnban">
             <IconButton size="small" onClick={() => {
-              handleBanOrUnbanUser(params.row.id);
+              handleBanOrUnbanUser(params.row, !params.row.isBanned);
             }}>
               {params.row.isBanned
                 ? <BlockIcon className={classes.banIcon} />
@@ -177,44 +178,90 @@ export default function UserList() {
     }
   ];
 
+  const getUsers = async () => {
+    const res = await fetch(`${API_URL}/users`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      }
+    });
+    if (res.status === 200) {
+      const result = await res.json();
+      setUsers(result.users);
+    } else {
+      setUsers([]);
+    }
+  }
+
   useEffect(() => {
-    const getUsers = async () => {
-      const res = await fetch(`${API_URL}/users`, {
-        method: 'GET',
+    getUsers();
+  }, []);
+
+  const handleSearch = () => {
+    const searchUser = async () => {
+      const data = {
+        value: searchFieldValue
+      }
+      const res = await fetch(`${API_URL}/users/search`, {
+        method: 'POST',
+        body: JSON.stringify(data),
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         }
       });
+
       if (res.status === 200) {
         const result = await res.json();
         setUsers(result.users);
       } else {
-        setUsers([]);
+        console.log("Bad request!!!");
       }
     }
 
-    getUsers();
-  }, []);
-
-  const handleSearch = () => {
-
+    searchUser();
   }
 
   const handleReset = () => {
-
+    getUsers();
   }
 
-  const handleMoveToUserProfile = (userID) => {
-    history.push('/userProfile', { id: userID });
-  }
+  const handleBanOrUnbanUser = async (user, value) => {
+    const data = {
+      userID: user.id,
+      username: user.username,
+      value
+    }
 
-  const handleBanOrUnbanUser = (userID) => {
+    const res = await fetch(`${API_URL}/users/banOrUnban`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      }
+    });
 
+    if (res.status === 200) {
+      const result = await res.json();
+      users.forEach(user => {
+        if (user.id === data.userID) {
+          user.isBanned = data.value;
+          return;
+        }
+      });
+      setUsers(users);
+      setSnackbarContent(result.msg);
+      setIsOpenSnackbar(true);
+    } else {
+      console.log("Bad request!!!");
+    }
   }
 
   return (
     <React.Fragment>
+      <SnackBar open={isOpenSnackbar} setOpen={setIsOpenSnackbar} content={snackbarContent} />
       <div className={classes.container}>
         <p style={{ fontSize: '18pt', color: '#666666', fontWeight: 500, }}>
           Danh sách người dùng
@@ -262,9 +309,6 @@ export default function UserList() {
             headerHeight={32}
             onPageSizeChange={(params) => {
               setPageSize(params.pageSize);
-            }}
-            onRowDoubleClick={(params) => {
-              handleMoveToUserProfile(params.row.id);
             }}
             density='comfortable'
           />
