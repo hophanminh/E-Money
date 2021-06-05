@@ -1,6 +1,12 @@
 const db = require('../utils/database');
 
 module.exports = {
+  getAllUsers: () => db.load(`
+    SELECT
+      ID AS id, Name AS name, Username AS username, Email AS email,
+      DateOfBirth AS dateOfBirth, IsBanned AS isBanned
+    FROM Users
+  `),
 
   getPasswordByID: id => db.load(`SELECT Password FROM Users WHERE ID = '${id}' AND IsAdmin = 0`),
 

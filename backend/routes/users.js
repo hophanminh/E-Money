@@ -4,7 +4,6 @@ const fs = require('fs');
 const path = require('path');
 const userModel = require('../models/userModel');
 const bcrypt = require('bcryptjs');
-const moment = require('moment');
 const config = require("../config/default.json");
 const cloudinary = require('cloudinary').v2;
 cloudinary.config(config.CLOUDINARY);
@@ -25,6 +24,11 @@ router.use(express.static('public'));
 router.post('/authenticate', (req, res) => {
   console.log("authenticated");
   return res.status(200).end();
+});
+
+router.get('/', async (req, res) => {
+  const users = await userModel.getAllUsers();
+  return res.status(200).send({ users });
 });
 
 router.get('/:id', async (req, res) => {
