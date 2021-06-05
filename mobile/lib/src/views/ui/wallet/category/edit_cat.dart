@@ -172,7 +172,7 @@ class _EditCatDialogState extends State<EditCatDialog> {
           child: Container(
               width: 28,
               height: 28,
-              child: createCircleIcon(
+              child: myCircleIcon(
                   icon.name,
                   icon.backgroundColor,
                   icon.color,

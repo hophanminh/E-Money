@@ -15,8 +15,7 @@ import 'package:socket_io_client/socket_io_client.dart';
 class EventDashboard extends StatefulWidget {
   final String walletID;
 
-  const EventDashboard({Key key, @required this.walletID})
-      : super(key: key);
+  const EventDashboard({Key key, @required this.walletID}) : super(key: key);
 
   @override
   _EventDashboardState createState() => _EventDashboardState();
@@ -24,6 +23,7 @@ class EventDashboard extends StatefulWidget {
 
 class _EventDashboardState extends State<EventDashboard> {
   var _scaffoldKey = GlobalKey<ScaffoldMessengerState>();
+  var _searchController = new TextEditingController();
   Socket _socket;
 
   @override
@@ -36,14 +36,23 @@ class _EventDashboardState extends State<EventDashboard> {
   initPage() async {
     EventsProvider eventsProvider = Provider.of<EventsProvider>(context, listen: false);
 
+    _searchController.addListener(_onHandleChangeSearchBar);
+
     _socket = await getSocket();
+
     _socket.emitWithAck('get_event_type', {}, ack: (data) {
       eventsProvider.fetchType(data);
+      eventsProvider.changeSearchString('');
     });
+  }
+
+  void _onHandleChangeSearchBar() {
+    Provider.of<EventsProvider>(context, listen: false).changeSearchString(_searchController.text.trim());
   }
 
   @override
   void dispose() {
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -52,38 +61,33 @@ class _EventDashboardState extends State<EventDashboard> {
     return ScaffoldMessenger(
         key: _scaffoldKey,
         child: Scaffold(
-          appBar: mySimpleAppBar('Quản lý sự kiện'),
+          appBar: mySimpleAppBar('Quản lý sự kiện', shadow: Colors.transparent),
           body: SingleChildScrollView(
-            child: Container(
-              padding: EdgeInsets.fromLTRB(13, 30, 13, 50),
-              width: MediaQuery.of(context).size.width,
-              child: Consumer<EventsProvider>(
-                  builder: (context, eventsProvider, child) {
+            child: Column(
+              children: [
+                Container(
+                  padding: EdgeInsets.symmetric(vertical: 15),
+                  decoration: BoxDecoration(color: primary),
+                  child: mySearchBar(context, _searchController, 'Tìm kiếm tên sự kiện', radius: 30),
+                ),
+                Container(
+                  padding: EdgeInsets.fromLTRB(13, 30, 13, 50),
+                  width: MediaQuery.of(context).size.width,
+                  child: Consumer<EventsProvider>(builder: (context, eventsProvider, child) {
                     return Column(
                       children: [
-                        Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text('Sự kiện đang diễn ra',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 25))),
-                        for (Events item in eventsProvider.eventList
-                            .where((element) => element.status == true))
-                          _createRunningEventList(item),
+                        Align(alignment: Alignment.centerLeft, child: Text('Sự kiện đang diễn ra', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25))),
+                        for (Events item in eventsProvider.getFilteredList().where((element) => element.status == true)) _createRunningEventList(item),
                         Padding(
                           padding: const EdgeInsets.only(top: 20.0),
-                          child: Align(
-                              alignment: Alignment.centerLeft,
-                              child: Text('Sự kiện đã ngưng',
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold, fontSize: 25))),
+                          child: Align(alignment: Alignment.centerLeft, child: Text('Sự kiện đã ngưng', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25))),
                         ),
-                        for (Events item in eventsProvider.eventList
-                            .where((element) => element.status == false))
-                          _createStoppedEventList(item),
+                        for (Events item in eventsProvider.getFilteredList().where((element) => element.status == false)) _createStoppedEventList(item),
                       ],
                     );
-                  }
-              ),
+                  }),
+                ),
+              ],
             ),
           ),
           floatingActionButton: _catDashboardActionButton(),
@@ -91,7 +95,7 @@ class _EventDashboardState extends State<EventDashboard> {
   }
 
   _createRunningEventList(Events item) {
-    print(item.id);
+    // print(item.id);
     return Card(
       margin: EdgeInsets.symmetric(vertical: 10),
       child: GestureDetector(
@@ -115,7 +119,6 @@ class _EventDashboardState extends State<EventDashboard> {
                           walletID: widget.walletID,
                           eventID: item.id,
                         ));
-
               },
             ),
           ],
@@ -146,25 +149,25 @@ class _EventDashboardState extends State<EventDashboard> {
                     children: [
                       Expanded(
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Giao dịch kế tiếp'),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 8.0),
-                              child: Text('${convertToDDMMYYYYHHMM(item.nextDate)}', style: TextStyle(fontWeight: FontWeight.w300)),
-                            )
-                          ],
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Giao dịch kế tiếp'),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: Text('${convertToDDMMYYYYHHMM(item.nextDate)}', style: TextStyle(fontWeight: FontWeight.w300)),
+                          )
+                        ],
                       )),
                       Expanded(
                           child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text('Thời gian còn lại'),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 8.0),
-                              child: Text('${timeRemaining(item.nextDate)}', textAlign: TextAlign.end, style: TextStyle(fontWeight: FontWeight.w300)),
-                            )
-                          ],
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text('Thời gian còn lại'),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: Text('${timeRemaining(item.nextDate)}', textAlign: TextAlign.end, style: TextStyle(fontWeight: FontWeight.w300)),
+                          )
+                        ],
                       ))
                     ],
                   ),
@@ -243,11 +246,7 @@ class _EventDashboardState extends State<EventDashboard> {
 
   FloatingActionButton _catDashboardActionButton() => FloatingActionButton(
       onPressed: () async {
-        await Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => AddEvent(walletID: widget.walletID, wrappingScaffoldKey: _scaffoldKey)));
-
+        await Navigator.push(context, MaterialPageRoute(builder: (context) => AddEvent(walletID: widget.walletID, wrappingScaffoldKey: _scaffoldKey)));
       },
       tooltip: 'Thêm loại giao dịch mới',
       child: Icon(Icons.add),

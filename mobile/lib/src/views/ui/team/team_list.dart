@@ -69,10 +69,11 @@ class _TeamListState extends State<TeamList> {
                         }),
                     child: Consumer<TeamsProvider>(
                       builder: (context, teamsProvider, child) {
+                        List<Teams> list = _searchController.text == '' ? teamsProvider.teamList : teamsProvider.getFilterList();
                         return Stack(
                           fit: StackFit.expand,
                           children: [
-                            makeList(teamsProvider.getFilterList()),
+                            makeList(list),
                             child,
                           ],
                         );

@@ -204,7 +204,7 @@ class _AddTransactionState extends State<AddTransaction> {
                                               Container(
                                                 width: 28,
                                                 height: 28,
-                                                child: createCircleIcon(
+                                                child: myCircleIcon(
                                                     selectedIcon.name,
                                                     selectedIcon.backgroundColor,
                                                     selectedIcon.color,
