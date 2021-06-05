@@ -24,13 +24,12 @@ import MyContext from '../mycontext/MyContext';
 import config from '../../constants/config.json';
 const API_URL = config.API_LOCAL;
 
-
 function descendingComparator(a, b, orderBy) {
-    console.log("Deeeeeeee")
-    console.log(orderBy)
-    console.log(a[orderBy])
-    console.log(b[orderBy])
-    console.log(b[orderBy] < a[orderBy])
+  console.log("Deeeeeeee")
+  console.log(orderBy)
+  console.log(a[orderBy])
+  console.log(b[orderBy])
+  console.log(b[orderBy] < a[orderBy])
   if (b[orderBy] < a[orderBy]) {
     return -1;
   }
@@ -66,7 +65,6 @@ const headCells = [
   { id: 'MaxUsers', numeric: false, disablePadding: false, label: 'Maximun Users' },
   { id: 'CreatedDate', numeric: false, disablePadding: false, label: 'Created Date' },
 ];
-
 
 function EnhancedTableHead(props) {
   const { classes, onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
@@ -129,13 +127,13 @@ const useToolbarStyles = makeStyles((theme) => ({
   highlight:
     theme.palette.type === 'light'
       ? {
-          color: theme.palette.secondary.main,
-          backgroundColor: lighten(theme.palette.secondary.light, 0.85),
-        }
+        color: theme.palette.secondary.main,
+        backgroundColor: lighten(theme.palette.secondary.light, 0.85),
+      }
       : {
-          color: theme.palette.text.primary,
-          backgroundColor: theme.palette.secondary.dark,
-        },
+        color: theme.palette.text.primary,
+        backgroundColor: theme.palette.secondary.dark,
+      },
   title: {
     flex: '1 1 100%',
   },
@@ -218,33 +216,33 @@ export default function EnhancedTable() {
   const [rows, setRows] = useState([])
   const token = localStorage.getItem('jwtToken');
 
-useEffect(() => {
-  console.log(isLoggedIn);
-  if (isLoggedIn !== null && isLoggedIn === false) {
+  useEffect(() => {
+    console.log(isLoggedIn);
+    if (isLoggedIn !== null && isLoggedIn === false) {
       history.push('/');
-  }
-  getTeams()
+    }
+    getTeams()
 
   }, [isLoggedIn]);
 
-const getTeams = async () => {
+  const getTeams = async () => {
 
-  const res = await fetch(`${API_URL}/teams`, {
+    const res = await fetch(`${API_URL}/teams`, {
       method: 'GET',
       headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
       }
-  });
-  console.log(res.body);
-  if (res.status === 200) {
+    });
+    console.log(res.body);
+    if (res.status === 200) {
       const result = await res.json();
       console.log(result.teams);
       setRows(result.teams)
-  } else {
+    } else {
       // alert("Some error when updating!")
+    }
   }
-}
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
