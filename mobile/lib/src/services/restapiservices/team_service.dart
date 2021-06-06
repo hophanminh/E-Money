@@ -89,4 +89,12 @@ class TeamService {
         body: jsonEncode(<String, String>{'UserID': userID}));
   }
 
+  Future<http.Response> removeMember(String teamId, String userId) async {
+    String token = await SecureStorage.readSecureData('jwtToken');
+
+    return await http.post(Uri.http(_baseURL, '/teams/remove/$userId'),
+        headers: {HttpHeaders.contentTypeHeader: 'application/json; charset=UTF-8', HttpHeaders.authorizationHeader: 'Bearer $token'},
+        body: jsonEncode(<String, String>{'teamID': teamId}));
+  }
+
 }

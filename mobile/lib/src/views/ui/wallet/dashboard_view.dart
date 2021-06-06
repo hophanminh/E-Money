@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mobile/src/views/ui/profile/change_password.dart';
+import 'package:mobile/src/views/ui/profile/profile_view.dart';
 import 'package:mobile/src/views/ui/team/team_list.dart';
 import 'package:mobile/src/views/ui/wallet/private_wallet/private_wallet.dart';
 import 'package:mobile/src/views/ui/wallet/team_wallet/team_wallet.dart';
@@ -71,12 +73,15 @@ class _DashboardState extends State<Dashboard> {
     if (mainRouteName == 'privateWallet') {
       return IndividualWallet(sidebar: sidebar);
     }
-    else if (mainRouteName == 'teamWallet') {
-      return TeamWallet(sidebar: sidebar);
-
-    }
     else if (mainRouteName == 'teamList') {
       return TeamList(sidebar: sidebar);
     }
+    else if (mainRouteName == 'profile') {
+      return ProfilePage(sidebar: sidebar);
+    }
+    else if (mainRouteName == 'changepassword') {
+      return ChangePasswordPage(sidebar: sidebar);
+    }
+
   }
 }

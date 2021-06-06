@@ -36,7 +36,7 @@ class UsersProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateInfo(newInfo) {
+  void updateInfo(Users newInfo) {
     this._info = newInfo;
     notifyListeners();
   }
