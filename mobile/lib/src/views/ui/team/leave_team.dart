@@ -95,6 +95,7 @@ class _LeaveTeamDialogState extends State<LeaveTeamDialog> {
       Navigator.pop(context, true);
     } else {
       Map<String, dynamic> body = jsonDecode(res.body);
+      Navigator.pop(context, false);
       showSnack(widget.wrappingScaffoldKey, body['msg']);
     }
   }

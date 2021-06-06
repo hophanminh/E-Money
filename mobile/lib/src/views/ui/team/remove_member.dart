@@ -8,19 +8,19 @@ import 'package:mobile/src/views/utils/helpers/helper.dart';
 import 'package:provider/provider.dart';
 import 'package:mobile/src/models/UsersProvider.dart';
 
-class DeleteTeamDialog extends StatefulWidget {
+class RemoveMemberDialog extends StatefulWidget {
   final GlobalKey<ScaffoldMessengerState> wrappingScaffoldKey;
-  final Teams team;
+  final String userId;
 
-  const DeleteTeamDialog(
-      {Key key, @required this.team, @required this.wrappingScaffoldKey})
+  const RemoveMemberDialog(
+      {Key key, @required this.userId, @required this.wrappingScaffoldKey})
       : super(key: key);
 
   @override
-  _DeleteTeamDialogState createState() => _DeleteTeamDialogState();
+  _RemoveMemberDialogState createState() => _RemoveMemberDialogState();
 }
 
-class _DeleteTeamDialogState extends State<DeleteTeamDialog> {
+class _RemoveMemberDialogState extends State<RemoveMemberDialog> {
   var _scaffoldKey = GlobalKey<ScaffoldMessengerState>();
 
   @override
@@ -62,7 +62,7 @@ class _DeleteTeamDialogState extends State<DeleteTeamDialog> {
                   child: Padding(
                     padding: const EdgeInsets.only(bottom: 20.0),
                     child: Text(
-                      'Bạn có chắc chắn muốn xóa nhóm này?',
+                      'Bạn có chắc chắn muốn xóa thành viên này khỏi nhóm ?',
                     ),
                   ),
                 ),
@@ -79,10 +79,10 @@ class _DeleteTeamDialogState extends State<DeleteTeamDialog> {
                         )),
                     TextButton(
                         onPressed: () {
-                          handleDeleteTeam();
+                          handleRemoveMember();
                         },
                         child: Text(
-                          'Xóa nhóm',
+                          'Xóa',
                           style: TextStyle(fontSize: 16, color: Colors.red),
                         )),
                   ],
@@ -95,13 +95,14 @@ class _DeleteTeamDialogState extends State<DeleteTeamDialog> {
     );
   }
 
-  void handleDeleteTeam() async {
-    Response res = await TeamService.instance.deleteTeam(widget.team.walletID);
+  void handleRemoveMember() async {
+    TeamsProvider teamsProvider = Provider.of<TeamsProvider>(context, listen: false);
+    Response res = await TeamService.instance.removeMember(teamsProvider.selected.id, widget.userId);
 
     if (res.statusCode == 200) {
       FocusScope.of(context).unfocus();
-      Provider.of<TeamsProvider>(context, listen: false).fetchData();
       Navigator.pop(context, true);
+      showSnack(widget.wrappingScaffoldKey, "Xóa thành công");
     } else {
       Map<String, dynamic> body = jsonDecode(res.body);
       Navigator.pop(context, false);

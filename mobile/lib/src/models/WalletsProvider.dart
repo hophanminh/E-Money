@@ -8,6 +8,8 @@ import 'package:mobile/src/services/restapiservices/wallet_service.dart';
 import 'package:mobile/src/views/ui/wallet/private_wallet/private_wallet.dart';
 import 'package:mobile/src/views/utils/helpers/helper.dart';
 
+enum FilterType { all, category, date }
+
 class WalletsProvider extends ChangeNotifier {
   List<Transactions> _txList = [];
   Transactions _selected;

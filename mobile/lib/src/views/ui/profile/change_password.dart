@@ -10,6 +10,10 @@ import 'package:mobile/src/services/restapiservices/user_service.dart';
 import 'package:mobile/src/views/utils/widgets/widget.dart';
 
 class ChangePasswordPage extends StatefulWidget {
+  final Drawer sidebar;
+
+  const ChangePasswordPage({this.sidebar});
+
   @override
   _ChangePasswordPageState createState() => _ChangePasswordPageState();
 }
@@ -54,9 +58,14 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
 
   @override
   Widget build(BuildContext context) {
-    return ScaffoldMessenger(
+    return GestureDetector(
+        onTap: () {
+          FocusManager.instance.primaryFocus.unfocus();
+        },
+        child: ScaffoldMessenger(
       key: _scaffoldKey,
       child: Scaffold(
+        drawer: widget.sidebar,
         backgroundColor: Colors.white,
         appBar: mySimpleAppBar('Đổi mật khẩu'),
         body: SingleChildScrollView(
@@ -206,6 +215,6 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
           ),
         ),
       ),
-    );
+    ));
   }
 }

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:mobile/src/models/TeamsProvider.dart';
 import 'package:mobile/src/models/UsersProvider.dart';
 import 'package:mobile/src/services/restapiservices/wallet_service.dart';
 import 'package:mobile/src/views/utils/helpers/helper.dart';
@@ -41,8 +42,10 @@ class _StatisticState extends State<Statistic> {
   handleSelectMonth(DateTime date) async {
     bool nothingToShow = false;
     String toString = convertToYYYYMMDD(date.toString());
+    String teamId = Provider.of<TeamsProvider>(context, listen: false).selected.id;
+
     List<Response> responses = await Future.wait(
-        [WalletService.instance.getBarChartData(toString), WalletService.instance.getPieChartData(toString, true), WalletService.instance.getPieChartData(toString, false)]);
+        [WalletService.instance.getBarChartData(toString, teamId: teamId), WalletService.instance.getPieChartData(toString, true, teamId: teamId), WalletService.instance.getPieChartData(toString, false, teamId: teamId)]);
 
     if (responses[1].statusCode != 200 || responses[2].statusCode != 200) {
       nothingToShow = true;
@@ -132,10 +135,10 @@ class _StatisticState extends State<Statistic> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-      final UsersProvider myProvider = Provider.of<UsersProvider>(context, listen: false);
+      final TeamsProvider teamsProvider = Provider.of<TeamsProvider>(context, listen: false);
 
       List<DateTime> dates = [];
-      DateTime activeDate = parseInput(myProvider.info.activatedDate).toLocal();
+      DateTime activeDate = parseInput(teamsProvider.selected.createdDate).toLocal();
       DateTime current = DateTime.now();
       DateTime temp = new DateTime(activeDate.year, activeDate.month);
 
@@ -415,7 +418,7 @@ class _StatisticState extends State<Statistic> {
     return ScaffoldMessenger(
       key: _scaffoldKey,
       child: Scaffold(
-        appBar: mySimpleAppBar('Thống kê ví cá nhân'),
+        appBar: mySimpleAppBar('Thống kê ví nhóm'),
         body: body,
       ),
     );
