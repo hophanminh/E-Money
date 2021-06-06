@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/src/models/NotificationProvider.dart';
 import 'package:mobile/src/models/TeamsProvider.dart';
 import 'package:mobile/src/views/ui/auth_view.dart';
 import 'package:mobile/src/views/ui/forgotpassword/generate_request_view.dart';
@@ -49,6 +50,7 @@ class _MyAppState extends State<MyApp> {
           ChangeNotifierProvider(
             create: (_) => EventsProvider(),
           ),
+          ChangeNotifierProvider(create: (_) => NotificationProvider()),
         ],
         child: MaterialApp(
           debugShowCheckedModeBanner: false,

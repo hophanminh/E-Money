@@ -1,25 +1,25 @@
-import 'dart:convert';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:mobile/src/config/config.dart';
 import 'package:mobile/src/models/CatsProvider.dart';
 import 'package:mobile/src/models/EventsProvider.dart';
+import 'package:mobile/src/models/NotificationProvider.dart';
 import 'package:mobile/src/models/UsersProvider.dart';
 import 'package:mobile/src/models/WalletsProvider.dart';
-import 'package:mobile/src/services/restapiservices/wallet_service.dart';
-import 'package:mobile/src/services/socketservices/socket.dart';
 import 'package:mobile/src/services/icon_service.dart';
+import 'package:mobile/src/services/socketservices/socket.dart';
 import 'package:mobile/src/views/ui/wallet/category/category_dashboard.dart';
 import 'package:mobile/src/views/ui/wallet/event/event_dashboard.dart';
+import 'package:mobile/src/views/ui/wallet/notification/notification_view.dart';
 import 'package:mobile/src/views/ui/wallet/private_wallet/add_transaction.dart';
 import 'package:mobile/src/views/ui/wallet/private_wallet/delete_transaction.dart';
 import 'package:mobile/src/views/ui/wallet/private_wallet/edit_transaction.dart';
 import 'package:mobile/src/views/ui/wallet/private_wallet/statistic/statistic_view.dart';
 import 'package:mobile/src/views/ui/wallet/private_wallet/view_transaction.dart';
 import 'package:mobile/src/views/utils/helpers/helper.dart';
-import 'package:provider/provider.dart';
 import 'package:mobile/src/views/utils/widgets/widget.dart';
+import 'package:provider/provider.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class IndividualWallet extends StatefulWidget {
@@ -34,21 +34,23 @@ class IndividualWallet extends StatefulWidget {
 enum FilterType { all, category, date }
 
 class _IndividualWalletState extends State<IndividualWallet> {
-  IO.Socket _socket;
   var _scaffoldKey = GlobalKey<ScaffoldMessengerState>();
+  IO.Socket _socket;
   List<IconCustom> _iconList = [];
   FilterType _selectedFilterType = FilterType.all;
 
   void _initPage() async {
     _searchController.addListener(_onHandleChangeSearchBar);
+
     UsersProvider usersProvider = Provider.of<UsersProvider>(context, listen: false);
     WalletsProvider walletsProvider = Provider.of<WalletsProvider>(context, listen: false);
     CatsProvider catsProvider = Provider.of<CatsProvider>(context, listen: false);
     EventsProvider eventsProvider = Provider.of<EventsProvider>(context, listen: false);
-
+    NotificationProvider notificationProvider = Provider.of<NotificationProvider>(context, listen: false);
     final walletID = usersProvider.info.walletID;
-    _iconList = await IconService.instance.iconList;
+    final userID = usersProvider.info.id;
 
+    _iconList = await IconService.instance.iconList;
     _socket = await getSocket();
 
     _socket.emitWithAck('get_transaction', {'walletID': walletID}, ack: (data) {
@@ -79,6 +81,17 @@ class _IndividualWalletState extends State<IndividualWallet> {
     _socket.on('wait_for_update_event', (data) {
       print('update event');
       eventsProvider.fetchData(data);
+    });
+
+    _socket.emitWithAck('get_notification', {'userID': userID, 'limit': Properties.AMOUNT_TO_LOAD_PER_TIME}, ack: (data) {
+      // setNotifications(notificationList);{ notificationList, count }
+      //     setUnreadNotificationCount(count);
+      print('89 - ${data['count']}');
+      notificationProvider.fetchData(data);
+    });
+
+    _socket.on('new_notification_added_$userID', (data) {
+      notificationProvider.fetchData(data);
     });
 
     setState(() {});
@@ -207,7 +220,9 @@ class _IndividualWalletState extends State<IndividualWallet> {
                               ),
                             ),
                           ),
-                          _selectedFilterType == FilterType.category ? mySearchBar(context,_searchController,'Tìm kiếm tên hạng mục...') : (_selectedFilterType == FilterType.date ? _makeDropdown() : Container()),
+                          _selectedFilterType == FilterType.category
+                              ? mySearchBar(context, _searchController, 'Tìm kiếm tên hạng mục...')
+                              : (_selectedFilterType == FilterType.date ? _makeDropdown() : Container()),
                           walletsProvider.txList.length == 0 ? Text('(Chưa có giao dịch được ghi)') : Container(),
                         ],
                       ),
@@ -336,10 +351,7 @@ class _IndividualWalletState extends State<IndividualWallet> {
                 padding: EdgeInsets.fromLTRB(10, 15, 10, 5),
                 child: Row(children: [
                   Container(
-                      margin: EdgeInsets.only(left: 6, right: 15),
-                      width: 50,
-                      height: 50,
-                      child: myCircleIcon(selectedIcon.name, selectedIcon.backgroundColor, selectedIcon.color)),
+                      margin: EdgeInsets.only(left: 6, right: 15), width: 50, height: 50, child: myCircleIcon(selectedIcon.name, selectedIcon.backgroundColor, selectedIcon.color)),
                   Expanded(
                     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                       Text(
@@ -375,7 +387,7 @@ class _IndividualWalletState extends State<IndividualWallet> {
     );
   }
 
-  _createAppbarActionDetail(String value, Icon icon) {
+  _createAppbaPopupMenuItemDetail(String value, Icon icon) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -399,15 +411,34 @@ class _IndividualWalletState extends State<IndividualWallet> {
       iconTheme: IconThemeData(color: Colors.white),
       title: Text('Ví cá nhân', style: TextStyle(color: Colors.white)),
       actions: [
-        // IconButton(
-        //   icon: Icon(Icons.arrow_drop_down_sharp, size: 30),
-        //   onPressed: () {},
-        // )
+        IconButton(
+          icon: Stack(
+            fit: StackFit.expand,
+            children: [
+              Icon(Icons.notifications_none_outlined, size: 26),
+              Positioned(
+                  // draw a red marble
+                  top: 0.0,
+                  right: -2.0,
+                  child: Consumer<NotificationProvider>(builder: (context, notificationProvider, child) {
+                    return Container(
+                      padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.red),
+                      alignment: Alignment.center,
+                      child: Text('${notificationProvider.count}', style: TextStyle(fontSize: 12, color: Colors.white),),
+                    );
+                  }))
+            ],
+          ),
+          onPressed: () {
+            Navigator.push(context, MaterialPageRoute(builder: (context) => NotificationsPage()));
+          },
+        ),
         PopupMenuButton(
           itemBuilder: (BuildContext bc) => [
-            PopupMenuItem(child: _createAppbarActionDetail("Hạng mục thu - chi", Icon(Icons.category_outlined, color: Colors.black)), value: "1"),
-            PopupMenuItem(child: _createAppbarActionDetail("Sự kiện", Icon(Icons.event, color: Colors.black)), value: "2"),
-            PopupMenuItem(child: _createAppbarActionDetail("Thống kê ví", Icon(Icons.bar_chart_outlined, color: Colors.black)), value: "3"),
+            PopupMenuItem(child: _createAppbaPopupMenuItemDetail("Hạng mục thu - chi", Icon(Icons.category_outlined, color: Colors.black)), value: "1"),
+            PopupMenuItem(child: _createAppbaPopupMenuItemDetail("Sự kiện", Icon(Icons.event, color: Colors.black)), value: "2"),
+            PopupMenuItem(child: _createAppbaPopupMenuItemDetail("Thống kê ví", Icon(Icons.bar_chart_outlined, color: Colors.black)), value: "3"),
           ],
           onSelected: (route) {
             print(route);
@@ -422,16 +453,7 @@ class _IndividualWalletState extends State<IndividualWallet> {
                 Navigator.push(context, MaterialPageRoute(builder: (context) => EventDashboard(walletID: walletId)));
                 break;
               case 3:
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => Statistic(
-                            // walletID: widget.user['WalletID'],
-                            // fullCatList: _categoryList['fullList'],
-                            // setCategoryList: _setCategoryList,
-                            // eventList: _eventList,
-                            // setEventList: _setEventList
-                            )));
+                Navigator.push(context, MaterialPageRoute(builder: (context) => Statistic()));
                 break;
             }
           },
@@ -440,14 +462,25 @@ class _IndividualWalletState extends State<IndividualWallet> {
       backgroundColor: primary,
       centerTitle: true);
 
-  FloatingActionButton _privateWalletActionButton() => FloatingActionButton(
-      onPressed: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => AddTransaction(wrappingScaffoldKey: _scaffoldKey)));
-      },
-      tooltip: 'Thêm giao dịch',
-      child: Icon(Icons.add),
-      backgroundColor: secondary,
-      foregroundColor: Colors.white);
+  _privateWalletActionButton() => SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: FloatingActionButton(
+                  heroTag: 'mainBtn',
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => AddTransaction(wrappingScaffoldKey: _scaffoldKey)));
+                  },
+                  tooltip: 'Thêm giao dịch',
+                  child: Icon(Icons.add),
+                  backgroundColor: secondary,
+                  foregroundColor: Colors.white),
+            )
+          ],
+        ),
+      );
 
   var _searchController = new TextEditingController();
   String currentYear;
