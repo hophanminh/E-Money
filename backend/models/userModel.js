@@ -1,6 +1,12 @@
 const db = require('../utils/database');
 
 module.exports = {
+  getAllUsers: () => db.load(`
+    SELECT
+      ID AS id, Name AS name, Username AS username, Email AS email,
+      DateOfBirth AS dateOfBirth, IsBanned AS isBanned
+    FROM Users
+  `),
 
   getPasswordByID: id => db.load(`SELECT Password FROM Users WHERE ID = '${id}' AND IsAdmin = 0`),
 
@@ -15,6 +21,14 @@ module.exports = {
   getUserByUserName: userName => db.load(`SELECT * FROM Users WHERE Username = '${userName}'`),
 
   getUserAvatarByID: id => db.load(`SELECT Avatar FROM Users WHERE ID = '${id}' AND IsAdmin = 0`),
+
+  searchUserByNameOrUsernameOrEmail: value => db.loadSafe(`
+    SELECT
+      ID AS id, Name AS name, Username AS username, Email AS email,
+      DateOfBirth AS dateOfBirth, IsBanned AS isBanned
+    FROM Users
+    WHERE LOWER(Name) LIKE ? OR LOWER(username) LIKE ? OR LOWER(Email) LIKE ?
+  `, [value, value, value]),
 
   addUser: entity => db.add('Users', entity),
 

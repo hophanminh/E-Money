@@ -10,7 +10,7 @@ CREATE TABLE Admins(
     Username VARCHAR(30),
     Password VARCHAR(1000),
     Email VARCHAR(100),
-    ActivatedDate DATE NOT NULL,
+    DateOfBirth DATE,
     PRIMARY KEY(ID)
 );
 
@@ -24,6 +24,7 @@ CREATE TABLE Users(
     DateOfBirth DATE,
     AvatarURL VARCHAR(1000),
     ActivatedDate DATE,
+    IsBanned BOOLEAN,
     WalletID VARCHAR(100),
     PRIMARY KEY(ID)
 );
@@ -213,10 +214,10 @@ INSERT INTO teams VALUES
 
 -- Password: 123456
 INSERT INTO users VALUES 
-	('1', 'Hồ Phan Minh', 'hpminh', '$2a$10$eOJ7p0X0Lva0KcqbB3im1usbd.zPFxSFIeuaeqVWlFgFZUuJ8h5Da', 'hophanminh@gmail.com', '1999-05-19', NULL, '2021-01-01', '1'),
-	('2', 'Lạc Tuấn Minh', 'ltminh', '$2a$10$eOJ7p0X0Lva0KcqbB3im1usbd.zPFxSFIeuaeqVWlFgFZUuJ8h5Da', 'lactuanminh@gmail.com', '1999-01-01', NULL, '2021-01-01', '2'),
-	('3', 'Nguyễn Quang Minh', 'nqminh', '$2a$10$eOJ7p0X0Lva0KcqbB3im1usbd.zPFxSFIeuaeqVWlFgFZUuJ8h5Da', 'nguyenquangminh@gmail.com', '1999-01-01', NULL, '2021-01-01', '3'),
-	('4', 'Hồ Khánh Nguyên', 'hknguyen', '$2a$10$eOJ7p0X0Lva0KcqbB3im1usbd.zPFxSFIeuaeqVWlFgFZUuJ8h5Da', 'hokhanhnguyen@gmail.com', '1999-04-30', NULL, '2021-01-01', '4');
+	('1', 'Hồ Phan Minh', 'hpminh', '$2a$10$eOJ7p0X0Lva0KcqbB3im1usbd.zPFxSFIeuaeqVWlFgFZUuJ8h5Da', 'hophanminh@gmail.com', '1999-05-19', NULL, '2021-01-01', FALSE, '1'),
+	('2', 'Lạc Tuấn Minh', 'ltminh', '$2a$10$eOJ7p0X0Lva0KcqbB3im1usbd.zPFxSFIeuaeqVWlFgFZUuJ8h5Da', 'lactuanminh@gmail.com', '1999-01-01', NULL, '2021-01-01', FALSE, '2'),
+	('3', 'Nguyễn Quang Minh', 'nqminh', '$2a$10$eOJ7p0X0Lva0KcqbB3im1usbd.zPFxSFIeuaeqVWlFgFZUuJ8h5Da', 'nguyenquangminh@gmail.com', '1999-01-01', NULL, '2021-01-01', FALSE, '3'),
+	('4', 'Hồ Khánh Nguyên', 'hknguyen', '$2a$10$eOJ7p0X0Lva0KcqbB3im1usbd.zPFxSFIeuaeqVWlFgFZUuJ8h5Da', 'hokhanhnguyen@gmail.com', '1999-04-30', NULL, '2021-01-01', FALSE, '4');
 
 INSERT INTO teams_has_users VALUES
     ('1', '30847550-aa43-11eb-9012-370ed11ba268', 0, 1),
@@ -243,3 +244,9 @@ INSERT INTO notifications VALUES
     ('15', 'Notification 15', '2021-05-18 10:10:45', TRUE, '4'),
     ('16', 'Notification 16', '2021-05-18 10:10:44', TRUE, '4')
 ;
+
+INSERT INTO admins VALUES 
+	('1', 'Hồ Phan Minh', 'hpminh', '$2a$10$eOJ7p0X0Lva0KcqbB3im1usbd.zPFxSFIeuaeqVWlFgFZUuJ8h5Da', 'hophanminh@gmail.com', '1999-05-19'),
+	('2', 'Lạc Tuấn Minh', 'ltminh', '$2a$10$eOJ7p0X0Lva0KcqbB3im1usbd.zPFxSFIeuaeqVWlFgFZUuJ8h5Da', 'lactuanminh@gmail.com', '1999-01-01'),
+	('3', 'Nguyễn Quang Minh', 'nqminh', '$2a$10$eOJ7p0X0Lva0KcqbB3im1usbd.zPFxSFIeuaeqVWlFgFZUuJ8h5Da', 'nguyenquangminh@gmail.com', '1999-01-01'),
+	('4', 'Hồ Khánh Nguyên', 'hknguyen', '$2a$10$eOJ7p0X0Lva0KcqbB3im1usbd.zPFxSFIeuaeqVWlFgFZUuJ8h5Da', 'hokhanhnguyen@gmail.com', '1999-04-30');
