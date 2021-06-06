@@ -84,9 +84,7 @@ class _IndividualWalletState extends State<IndividualWallet> {
     });
 
     _socket.emitWithAck('get_notification', {'userID': userID, 'limit': Properties.AMOUNT_TO_LOAD_PER_TIME}, ack: (data) {
-      // setNotifications(notificationList);{ notificationList, count }
-      //     setUnreadNotificationCount(count);
-      print('89 - ${data['count']}');
+      print('87 - ${data['count']}');
       notificationProvider.fetchData(data);
     });
 
@@ -421,12 +419,17 @@ class _IndividualWalletState extends State<IndividualWallet> {
                   top: 0.0,
                   right: -2.0,
                   child: Consumer<NotificationProvider>(builder: (context, notificationProvider, child) {
-                    return Container(
-                      padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                      decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.red),
-                      alignment: Alignment.center,
-                      child: Text('${notificationProvider.count}', style: TextStyle(fontSize: 12, color: Colors.white),),
-                    );
+                    return notificationProvider.count != 0
+                        ? Container(
+                            padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.red),
+                            alignment: Alignment.center,
+                            child: Text(
+                              '${notificationProvider.count}',
+                              style: TextStyle(fontSize: 12, color: Colors.white),
+                            ),
+                          )
+                        : Container();
                   }))
             ],
           ),

@@ -2,14 +2,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:mobile/src/config/config.dart';
 
 class NotificationProvider extends ChangeNotifier {
-  List<Notifications> _unreadNotifications = [];
-  List<Notifications> _readNotifications = [];
+  List<Notifications> _notifications = [];
+  // List<Notifications> _readNotifications = [];
   int _unreadCount = 0;
   int currentLoad = Properties.AMOUNT_TO_LOAD_PER_TIME;
 
   setList(List<Notifications> notifications) {
-    this._unreadNotifications = notifications.where((element) => element.isRead == 0).toList();
-    this._readNotifications = notifications.where((element) => element.isRead == 1).toList();
+    this._notifications = notifications;//.where((element) => element.isRead == 0).toList();
+    // this._readNotifications = notifications.where((element) => element.isRead == 1).toList();
 
     notifyListeners();
   }
@@ -62,9 +62,9 @@ class NotificationProvider extends ChangeNotifier {
 
   int get count => this._unreadCount;
 
-  List<Notifications> get unreadNotifications => this._unreadNotifications;
+  List<Notifications> get unreadNotifications => this._notifications;
 
-  List<Notifications> get readNotifications => this._readNotifications;
+  // List<Notifications> get readNotifications => this._readNotifications;
 }
 
 class Notifications {
