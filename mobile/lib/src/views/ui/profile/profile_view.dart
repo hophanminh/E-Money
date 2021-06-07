@@ -14,6 +14,10 @@ import 'package:provider/provider.dart';
 import 'package:mobile/src/models/UsersProvider.dart';
 
 class ProfilePage extends StatefulWidget {
+  final Drawer sidebar;
+
+  const ProfilePage({this.sidebar});
+
   @override
   _ProfilePageState createState() => _ProfilePageState();
 }
@@ -56,13 +60,8 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   void initState() {
+    _fetchData();
     super.initState();
-
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-      final UsersProvider myProvider =
-          Provider.of<UsersProvider>(context, listen: false);
-      setInfo(myProvider.info);
-    });
   }
 
   @override
@@ -120,11 +119,16 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    return ScaffoldMessenger(
+    return GestureDetector(
+        onTap: () {
+          FocusManager.instance.primaryFocus.unfocus();
+        },
+        child: ScaffoldMessenger(
       key: _scaffoldKey,
       child: Scaffold(
         backgroundColor: Colors.white,
-        appBar: mySimpleAppBar('Hồ sơ cá nhân'),
+        appBar: _privateWalletAppBar(),
+        drawer: widget.sidebar,
         body: RefreshIndicator(
           onRefresh: () => Future.delayed(Duration(milliseconds: 500), () {
             FocusScope.of(context).unfocus();
@@ -322,8 +326,14 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
         ),
       ),
-    );
+    ));
   }
+
+  AppBar _privateWalletAppBar() => AppBar(
+      iconTheme: IconThemeData(color: Colors.white),
+      title: Text('Thông tin cá nhân', style: TextStyle(color: Colors.white)),
+      backgroundColor: primary,
+      centerTitle: true);
 
   _selectDOB() async {
     final DateTime picked = await showDatePicker(

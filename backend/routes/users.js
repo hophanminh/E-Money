@@ -4,7 +4,6 @@ const fs = require('fs');
 const path = require('path');
 const userModel = require('../models/userModel');
 const bcrypt = require('bcryptjs');
-const moment = require('moment');
 const config = require("../config/default.json");
 const cloudinary = require('cloudinary').v2;
 cloudinary.config(config.CLOUDINARY);
@@ -22,9 +21,18 @@ const { convertToRegularDate } = require('../utils/helper');
 
 router.use(express.static('public'));
 
+
+/**
+ * @deprecated
+ */
 router.post('/authenticate', (req, res) => {
   console.log("authenticated");
   return res.status(200).end();
+});
+
+router.get('/', async (req, res) => {
+  const users = await userModel.getAllUsers();
+  return res.status(200).send({ users });
 });
 
 router.get('/:id', async (req, res) => {
@@ -34,7 +42,15 @@ router.get('/:id', async (req, res) => {
   if (users.length === 0) {
     return res.status(400).end();
   }
+
   const user = users[0];
+  console.log(user);
+
+  if (user.IsBanned === 1) {
+    console.log('banned');
+    return res.status(403).end();
+  }
+
   delete user.Password;
   return res.status(200).send({ user });
 });
@@ -113,6 +129,22 @@ router.patch('/:id/avatar', upload.single('avatar'), async (req, res) => {
       return res.status(200).json({ url: image.url });
     }
   );
+});
+
+router.post('/banOrUnban', async (req, res) => {
+  const { userID, username, value } = req.body;
+  const updateResult = await userModel.updateUser(userID, { IsBanned: value });
+  if (updateResult.affectedRows === 1) {
+    res.status(200).send({ msg: `Bạn đã ${value ? '' : 'bỏ'} cấm ${username}` });
+  } else {
+    res.status(500).send({ msg: "Đã xảy ra sự cố khi cập nhật. Hãy thử lại!" });
+  }
+});
+
+router.post('/search', async (req, res) => {
+  const { value } = req.body;
+  const users = await userModel.searchUserByNameOrUsernameOrEmail('%' + value + '%');
+  return res.status(200).send({ users });
 });
 
 module.exports = router;

@@ -73,16 +73,18 @@ Drawer mySideBar({BuildContext context, @required String mainRouteName, String a
                 _createDrawerItem(
                     title: 'Thông tin cá nhân',
                     icon: Icons.info_outline,
+                    mainRouteName: 'profile' == mainRouteName,
                     onTap: () {
                       Navigator.pop(context);
-                      Navigator.pushNamed(context, '/profile');
+                      setMainRoute('profile');
                     }),
                 _createDrawerItem(
                     title: 'Đổi mật khẩu',
                     icon: Icons.lock,
+                    mainRouteName: 'changepassword' == mainRouteName,
                     onTap: () {
                       Navigator.pop(context);
-                      Navigator.pushNamed(context, '/changepassword');
+                      setMainRoute('changepassword');
                     }),
                 Divider(
                   thickness: 0.75,
@@ -94,14 +96,6 @@ Drawer mySideBar({BuildContext context, @required String mainRouteName, String a
                     onTap: () {
                       Navigator.pop(context);
                       setMainRoute('privateWallet');
-                    }),
-                _createDrawerItem(
-                    title: 'Ví nhóm',
-                    icon: Icons.group_outlined,
-                    mainRouteName: 'teamWallet' == mainRouteName,
-                    onTap: () {
-                      Navigator.pop(context);
-                      setMainRoute('teamWallet');
                     }),
                 _createDrawerItem(
                     title: 'Danh sách nhóm',

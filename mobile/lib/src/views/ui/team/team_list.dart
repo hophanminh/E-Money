@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile/src/views/ui/wallet/team_wallet/team_wallet.dart';
 import 'package:provider/provider.dart';
 import 'package:mobile/src/models/TeamsProvider.dart';
 import 'package:mobile/src/services/restapiservices/team_service.dart';
@@ -150,7 +151,13 @@ class _TeamListState extends State<TeamList> {
               context,
               MaterialPageRoute(
                   builder: (context) =>
-                      TeamDetail(wrappingScaffoldKey: _scaffoldKey)));
+                      TeamWallet(wrappingScaffoldKey: _scaffoldKey, walletId: team.walletID)));
+
+          // Navigator.push(
+          //     context,
+          //     MaterialPageRoute(
+          //         builder: (context) =>
+          //             TeamDetail(wrappingScaffoldKey: _scaffoldKey)));
         },
       );
 

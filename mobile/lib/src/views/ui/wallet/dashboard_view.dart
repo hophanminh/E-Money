@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:mobile/src/config/config.dart';
 import 'package:mobile/src/models/NotificationProvider.dart';
 import 'package:mobile/src/services/socketservices/socket.dart';
+import 'package:mobile/src/views/ui/profile/change_password.dart';
+import 'package:mobile/src/views/ui/profile/profile_view.dart';
 import 'package:mobile/src/views/ui/team/team_list.dart';
 import 'package:mobile/src/views/ui/wallet/notification/notification_view.dart';
 import 'package:mobile/src/views/ui/wallet/private_wallet/private_wallet.dart';
@@ -90,12 +92,17 @@ class _DashboardState extends State<Dashboard> {
   Widget createDashboardPage(sidebar) {
     if (mainRouteName == 'privateWallet') {
       return IndividualWallet(sidebar: sidebar);
-    } else if (mainRouteName == 'teamWallet') {
-      return TeamWallet(sidebar: sidebar);
     } else if (mainRouteName == 'teamList') {
       return TeamList(sidebar: sidebar);
     } else if (mainRouteName == 'notifications') {
       return NotificationsPage(sidebar: sidebar);
     }
+    else if (mainRouteName == 'profile') {
+      return ProfilePage(sidebar: sidebar);
+    }
+    else if (mainRouteName == 'changepassword') {
+      return ChangePasswordPage(sidebar: sidebar);
+    }
+
   }
 }

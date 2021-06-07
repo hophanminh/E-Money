@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import './App.css';
 import {
   BrowserRouter as Router,
@@ -29,6 +29,7 @@ import UpdateProfile from './components/Team/UpdateProfile';
 import ResetDestination from './components/signin/resetpassword/ResetDestination';
 import Admin from './components/admin/admin';
 import { getListIcon } from './utils/DefaultIcon';
+import { getSocket } from './utils/socket';
 
 const routes = [
   {
@@ -128,11 +129,13 @@ const useStyles = makeStyles((theme) => ({
 
 function App() {
   const classes = useStyles();
+  const socket = getSocket();
+  const { isLoggedIn, info, setInfo } = useContext(MyContext);
 
-  const { isLoggedIn } = useContext(MyContext);
-  if (isLoggedIn) {
-    getListIcon();
-  }
+  // if (isLoggedIn) {
+  //   console.log('lấy icon khi đã đăng nhập');
+  //   getListIcon();
+  // }
 
   return (
     <Router>

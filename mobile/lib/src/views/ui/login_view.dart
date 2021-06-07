@@ -93,7 +93,7 @@ class _LoginPageState extends State<LoginPage> {
                   padding: const EdgeInsets.fromLTRB(25, 45, 25, 25),
                   decoration: BoxDecoration(
                       border: Border.all(width: 0, color: primary),
-                      gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [primary, const Color(0xFFb4dc63)]),
+                      gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [primary, Colors.lightGreenAccent]),
                       borderRadius: BorderRadius.only(bottomLeft: Radius.circular(70.0), bottomRight: Radius.circular(70.0))),
                   child: Center(
                     child: Form(
@@ -157,12 +157,12 @@ class _LoginPageState extends State<LoginPage> {
                                   Navigator.pushNamed(context, '/forgotpassword');
                                 },
                               ),
-                              TextButton(
-                                child: Text('Đăng ký', style: TextStyle(color: Colors.white)),
-                                onPressed: () {
-                                  Navigator.pushNamed(context, '/register');
-                                },
-                              )
+                              // TextButton(
+                              //   child: Text('Đăng ký', style: TextStyle(color: Colors.white)),
+                              //   onPressed: () {
+                              //     Navigator.pushNamed(context, '/register');
+                              //   },
+                              // )
                             ],
                           ),
                           Padding(

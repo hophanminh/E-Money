@@ -13,7 +13,7 @@ class RequestGenerator extends StatefulWidget {
 }
 
 class _RequestGeneratorState extends State<RequestGenerator> {
-  var _usernameController = TextEditingController(text: 'minhlac');
+  var _usernameController = TextEditingController(text: 'minh');
   var _emailController = TextEditingController(text: 'lactuanminh2121@gmail.com');
   var _formKey = GlobalKey<FormState>();
   var _scaffoldKey = GlobalKey<ScaffoldMessengerState>();
@@ -24,11 +24,10 @@ class _RequestGeneratorState extends State<RequestGenerator> {
     Map<String, dynamic> body = jsonDecode(res.body);
     if (res.statusCode == 200) {
       showSnackV2(context, 'Hãy kiểm tra email để nhận mã xác nhận', /*action: closeSnackActionV2(context),*/ duration: 5); // action not work when navigate to second page
-      print('28');
       print(body['id']);
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ResetDestination(resetID: body['id'])));
     } else {
-      showSnack(_scaffoldKey, body['msg']);
+      showSnackV2(context, body['msg']);
     }
   }
 

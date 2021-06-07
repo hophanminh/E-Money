@@ -2,11 +2,11 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
-import 'package:mobile/src/services/socketservices/socket.dart';
-import 'package:mobile/src/views/utils/helpers/helper.dart';
-import 'package:mobile/src/services/restapiservices/auth_service.dart';
-import 'package:provider/provider.dart';
 import 'package:mobile/src/models/UsersProvider.dart';
+import 'package:mobile/src/services/restapiservices/auth_service.dart';
+import 'package:mobile/src/services/secure_storage_service.dart';
+import 'package:mobile/src/views/utils/helpers/helper.dart';
+import 'package:provider/provider.dart';
 
 class AuthenPage extends StatefulWidget {
   final void Function(Map<String, dynamic>) setUser;
@@ -21,6 +21,7 @@ class _AuthenPageState extends State<AuthenPage> with TickerProviderStateMixin {
   AnimationController _controller;
   Animation<Offset> _animation1;
   Animation<Offset> _animation2;
+  String authenMessage = 'Hãy chờ trong giây lát...';
 
   // Map<String, dynamic> _user;
 
@@ -56,6 +57,7 @@ class _AuthenPageState extends State<AuthenPage> with TickerProviderStateMixin {
     Response res = await AuthService.instance.fetchInfo();
 
     if (res == null || res.statusCode != 200) {
+      await SecureStorage.deleteAllSecureData();
       Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
       return;
     }
@@ -132,8 +134,8 @@ class _AuthenPageState extends State<AuthenPage> with TickerProviderStateMixin {
                   Padding(
                     padding: const EdgeInsets.only(top: 20.0),
                     child: Text(
-                      'Hãy chờ trong giây lát...',
-                      style: TextStyle(color: Colors.white),
+                      authenMessage,
+                      style: TextStyle(color: Colors.white, fontSize: 16),
                     ),
                   )
                 ],

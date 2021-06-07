@@ -19,8 +19,14 @@ import SignIn from './components/signin/SignIn';
 import TeamList from './components/Teams/TeamList.js'
 import ResetDestination from './components/signin/resetpassword/ResetDestination';
 import Profile from './components/profile/Profile';
+import UserList from './components/user/UserList';
 
 const routes = [
+  {
+    path: "/users",
+    private: false,
+    main: () => <UserList />
+  },
   {
     path: "/Category",
     private: false,

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, createContext } from 'react';
 import config from '../../constants/config.json';
+import { getListIcon } from '../../utils/DefaultIcon';
 import { getSocket } from "../../utils/socket";
 
 const API_URL = config.API_LOCAL;
@@ -8,7 +9,7 @@ const MyContext = createContext({});
 export default MyContext;
 
 export const MyProvider = (props) => {
-
+  const socket = getSocket();
   const [isLoggedIn, setIsLoggedIn] = useState(null);
   const [info, setInfo] = useState({});
   const token = window.localStorage.getItem('jwtToken');
@@ -31,14 +32,28 @@ export const MyProvider = (props) => {
         setInfo(result.user);
         setIsLoggedIn(true);
         setIsLoading(false);
-        getSocket();
-      } else {
+
+      } else { // 400, 403
+
+        // remove if any
+        window.localStorage.removeItem('jwtToken');
+        window.localStorage.removeItem('userID');
         setIsLoggedIn(false);
         setIsLoading(false);
       }
     }
     fetchInfo();
   }, []);
+
+  useEffect(async () => {
+
+    if (isLoggedIn !== null && isLoggedIn) {
+      console.log('lấy icon', await getListIcon());
+      socket.on(`update_profile_${info.ID}`, ({ user }) => {
+        setInfo(user);
+      });
+    }
+  }, [isLoggedIn])
 
   return (
     <MyContext.Provider
