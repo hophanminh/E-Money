@@ -132,19 +132,10 @@ function App() {
   const socket = getSocket();
   const { isLoggedIn, info, setInfo } = useContext(MyContext);
 
-  if (isLoggedIn) {
-    getListIcon();
-  }
-
-  useEffect(() => {
-    if (isLoggedIn !== null && isLoggedIn) {
-      // alert('cmm');
-      const userID = localStorage.getItem('userID');
-      socket.on(`update_profile_${userID}`, ({ user }) => {
-        setInfo(user);
-      });
-    }
-  }, [isLoggedIn]);
+  // if (isLoggedIn) {
+  //   console.log('lấy icon khi đã đăng nhập');
+  //   getListIcon();
+  // }
 
   return (
     <Router>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, createContext } from 'react';
 import config from '../../constants/config.json';
+import { getListIcon } from '../../utils/DefaultIcon';
 import { getSocket } from "../../utils/socket";
 
 const API_URL = config.API_LOCAL;
@@ -44,11 +45,11 @@ export const MyProvider = (props) => {
     fetchInfo();
   }, []);
 
-  useEffect(() => {
+  useEffect(async () => {
 
     if (isLoggedIn !== null && isLoggedIn) {
+      console.log('lấy icon', await getListIcon());
       socket.on(`update_profile_${info.ID}`, ({ user }) => {
-        // alert('có update info')
         setInfo(user);
       });
     }
