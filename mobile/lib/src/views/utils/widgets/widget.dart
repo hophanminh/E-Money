@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/src/models/NotificationProvider.dart';
 import 'package:mobile/src/services/secure_storage_service.dart';
 import 'package:mobile/src/views/utils/helpers/helper.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
+import 'package:provider/provider.dart';
 
 const TextStyle myErrorTextStyle = TextStyle(fontWeight: FontWeight.bold, color: error, fontSize: 13);
 
@@ -109,6 +111,10 @@ Drawer mySideBar({BuildContext context, @required String mainRouteName, String a
                       Navigator.pop(context);
                       setMainRoute('teamList');
                     }),
+                _createNotificationItem('notifications' == mainRouteName, () {
+                  Navigator.pop(context);
+                  setMainRoute('notifications');
+                })
               ],
             ),
           ),
@@ -134,6 +140,41 @@ Widget _createDrawerItem({IconData icon, String title, Function onTap, bool main
             padding: EdgeInsets.only(left: 8.0),
             child: Text(title),
           ),
+        ],
+      ),
+      selected: mainRouteName == true,
+      selectedTileColor: Colors.black12,
+      trailing: mainRouteName == true ? Icon(Icons.chevron_right_outlined) : null,
+      onTap: () => onTap(),
+    );
+
+Widget _createNotificationItem(bool mainRouteName, Function onTap) => ListTile(
+      title: Row(
+        children: <Widget>[
+          Icon(
+            Icons.notifications_none_outlined,
+          ),
+          Expanded(
+            child: Padding(
+              padding: EdgeInsets.only(left: 8.0),
+              child: Text('Thông báo'),
+            ),
+          ),
+          Consumer<NotificationProvider>(builder: (context, notificationProvider, child) {
+            if (notificationProvider.count != 0) {
+              return Container(
+                padding: EdgeInsets.all(6),
+                decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.red),
+                alignment: Alignment.center,
+                child: Text(
+                  '${notificationProvider.count > 99 ? '+99' : notificationProvider.count}',
+                  style: TextStyle(fontSize: 11, color: Colors.white),
+                ),
+              );
+            } else {
+              return Container();
+            }
+          })
         ],
       ),
       selected: mainRouteName == true,

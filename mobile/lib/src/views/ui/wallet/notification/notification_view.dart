@@ -12,6 +12,10 @@ import 'package:provider/provider.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 
 class NotificationsPage extends StatefulWidget {
+  final Drawer sidebar;
+
+  const NotificationsPage({this.sidebar});
+
   @override
   _NotificationsPageState createState() => _NotificationsPageState();
 }
@@ -87,6 +91,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
     return ScaffoldMessenger(
       child: Scaffold(
           appBar: mySimpleAppBar('Thông báo'),
+          drawer: widget.sidebar,
           body: Consumer<NotificationProvider>(
             builder: (context, notificationProvider, child) {
               return NotificationListener<ScrollNotification>(

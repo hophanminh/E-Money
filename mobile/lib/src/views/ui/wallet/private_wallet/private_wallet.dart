@@ -46,9 +46,7 @@ class _IndividualWalletState extends State<IndividualWallet> {
     WalletsProvider walletsProvider = Provider.of<WalletsProvider>(context, listen: false);
     CatsProvider catsProvider = Provider.of<CatsProvider>(context, listen: false);
     EventsProvider eventsProvider = Provider.of<EventsProvider>(context, listen: false);
-    NotificationProvider notificationProvider = Provider.of<NotificationProvider>(context, listen: false);
     final walletID = usersProvider.info.walletID;
-    final userID = usersProvider.info.id;
 
     _iconList = await IconService.instance.iconList;
     _socket = await getSocket();
@@ -81,15 +79,6 @@ class _IndividualWalletState extends State<IndividualWallet> {
     _socket.on('wait_for_update_event', (data) {
       print('update event');
       eventsProvider.fetchData(data);
-    });
-
-    _socket.emitWithAck('get_notification', {'userID': userID, 'limit': Properties.AMOUNT_TO_LOAD_PER_TIME}, ack: (data) {
-      print('87 - ${data['count']}');
-      notificationProvider.fetchData(data);
-    });
-
-    _socket.on('new_notification_added_$userID', (data) {
-      notificationProvider.fetchData(data);
     });
 
     setState(() {});
@@ -409,34 +398,34 @@ class _IndividualWalletState extends State<IndividualWallet> {
       iconTheme: IconThemeData(color: Colors.white),
       title: Text('Ví cá nhân', style: TextStyle(color: Colors.white)),
       actions: [
-        IconButton(
-          icon: Stack(
-            fit: StackFit.expand,
-            children: [
-              Icon(Icons.notifications_none_outlined, size: 26),
-              Positioned(
-                  // draw a red marble
-                  top: 0.0,
-                  right: -2.0,
-                  child: Consumer<NotificationProvider>(builder: (context, notificationProvider, child) {
-                    return notificationProvider.count != 0
-                        ? Container(
-                            padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                            decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.red),
-                            alignment: Alignment.center,
-                            child: Text(
-                              '${notificationProvider.count}',
-                              style: TextStyle(fontSize: 12, color: Colors.white),
-                            ),
-                          )
-                        : Container();
-                  }))
-            ],
-          ),
-          onPressed: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => NotificationsPage()));
-          },
-        ),
+        // IconButton(
+        //   icon: Stack(
+        //     fit: StackFit.expand,
+        //     children: [
+        //       Icon(Icons.notifications_none_outlined, size: 26),
+        //       Positioned(
+        //           // draw a red marble
+        //           top: 0.0,
+        //           right: -2.0,
+        //           child: Consumer<NotificationProvider>(builder: (context, notificationProvider, child) {
+        //             return notificationProvider.count != 0
+        //                 ? Container(
+        //                     padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+        //                     decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.red),
+        //                     alignment: Alignment.center,
+        //                     child: Text(
+        //                       '${notificationProvider.count}',
+        //                       style: TextStyle(fontSize: 12, color: Colors.white),
+        //                     ),
+        //                   )
+        //                 : Container();
+        //           }))
+        //     ],
+        //   ),
+        //   onPressed: () {
+        //     Navigator.push(context, MaterialPageRoute(builder: (context) => NotificationsPage()));
+        //   },
+        // ),
         PopupMenuButton(
           itemBuilder: (BuildContext bc) => [
             PopupMenuItem(child: _createAppbaPopupMenuItemDetail("Hạng mục thu - chi", Icon(Icons.category_outlined, color: Colors.black)), value: "1"),
