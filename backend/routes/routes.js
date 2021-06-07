@@ -33,6 +33,11 @@ router.post('/signin', async (req, res) => {
       return res.status(401).send({ msg: "Tài khoản của bạn chưa kích hoạt. Hãy kiểm tra Email để kích hoạt tài khoản." });
     }
 
+    if (user.IsBanned === 1) {
+      console.log('banned');
+      return res.status(403).send({ msg: "Tài khoản này tạm thời bị khóa bởi Admin. Hãy quay lại sau." });
+    }
+
     if (bcrypt.compareSync(Password, user.Password)) {
       const token = jwt.sign({ id: user.ID }, config.PASSPORTKEY);
       delete user.Password;
@@ -116,14 +121,19 @@ router.post('/active', async (req, res) => {
 router.post('/forgotpassword', async (req, res) => {
   console.log("Forgot password with body", req.body)
   const { Email, Username } = req.body;
-  const user = await userModel.getUserByUserName(Username);
+  const users = await userModel.getUserByUserName(Username);
 
   // Không tìm thấy user
-  if (user.length === 0) {
+  if (users.length === 0) {
     return res.status(400).send({ msg: "Tài khoản không tồn tại" });
   }
 
-  const request = await accountModel.findByUserId(user[0].ID);
+  if (users[0].IsBanned === 1) {
+    console.log('reset, banned');
+    return res.status(403).send({ msg: "Tài khoản này tạm thời bị khóa bởi Admin. Hãy quay lại sau." });
+  }
+
+  const request = await accountModel.findByUserId(users[0].ID);
 
   // nếu có request trc đó mà chưa dc dùng để reset thì cập nhật isSuccessful = -1
   if (request.length !== 0) {
@@ -131,7 +141,7 @@ router.post('/forgotpassword', async (req, res) => {
   }
   const newResetRequest = {
     ID: uuidv1(),
-    UserID: user[0].ID,
+    UserID: users[0].ID,
     Code: helper.digitGeneration(6),
     Email,
     IsSuccessful: 0
@@ -140,7 +150,7 @@ router.post('/forgotpassword', async (req, res) => {
 
   if (addResult.affectedRows === 1) {
     const content =
-      `<div>Chào ${user[0].Username}!</div>
+      `<div>Chào ${users[0].Username}!</div>
       <br/>Hãy sao chép đoạn mã sau để xác thực trên ứng dụng:
        <h4>${newResetRequest.Code}</h4>`
     const result = await emailServer.send(newResetRequest.Email, content, "Đặt lại mật khẩu!");

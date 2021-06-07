@@ -21,6 +21,10 @@ const { convertToRegularDate } = require('../utils/helper');
 
 router.use(express.static('public'));
 
+
+/**
+ * @deprecated
+ */
 router.post('/authenticate', (req, res) => {
   console.log("authenticated");
   return res.status(200).end();
@@ -38,7 +42,15 @@ router.get('/:id', async (req, res) => {
   if (users.length === 0) {
     return res.status(400).end();
   }
+
   const user = users[0];
+  console.log(user);
+
+  if (user.IsBanned === 1) {
+    console.log('banned');
+    return res.status(403).end();
+  }
+
   delete user.Password;
   return res.status(200).send({ user });
 });

@@ -32,7 +32,11 @@ export const MyProvider = (props) => {
         setIsLoggedIn(true);
         setIsLoading(false);
         getSocket();
-      } else {
+      } else { // 400, 403
+
+        // remove if any
+        window.localStorage.removeItem('jwtToken');
+        window.localStorage.removeItem('userID');
         setIsLoggedIn(false);
         setIsLoading(false);
       }
