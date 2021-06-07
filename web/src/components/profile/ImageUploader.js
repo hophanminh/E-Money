@@ -7,6 +7,7 @@ import config from '../../constants/config.json';
 import palette from '../../constants/palette.json';
 import { Dialog, DialogContent, Typography } from '@material-ui/core';
 import MyContext from '../mycontext/MyContext';
+import { getSocket } from '../../utils/socket';
 const API_URL = config.API_LOCAL;
 
 
@@ -16,7 +17,7 @@ export default function ImageUploader({ setContent, setShowSnackBar }) {
   const [open, setOpen] = useState(false);
   const [waiting, setWaiting] = useState(false);
   const { info, setInfo } = useContext(MyContext);
-
+  const socket = getSocket();
   const handleClose = () => {
     setOpen(false);
   }
@@ -39,7 +40,9 @@ export default function ImageUploader({ setContent, setShowSnackBar }) {
 
     if (res.status === 200) {
       setContent("Cập nhật thành công");
-      setInfo({ ...info, AvatarURL: result.url });
+      const newUser = { ...info, AvatarURL: result.url };
+      setInfo(newUser);
+      socket.emit('update_profile', { user: newUser });
     } else { // 400, etc...
       setContent(result.msg)
     }

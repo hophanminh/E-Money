@@ -19,6 +19,7 @@ import palette from '../../constants/palette.json';
 import MyContext from '../mycontext/MyContext';
 import SnackBar from '../snackbar/SnackBar';
 import { Refresh } from '@material-ui/icons';
+import { getSocket } from '../../utils/socket';
 
 const API_URL = config.API_LOCAL;
 const styles = {
@@ -32,7 +33,7 @@ const styles = {
 }
 
 export default function Profile() {
-
+  const socket = getSocket();
   const userID = localStorage.getItem('userID');
   const token = localStorage.getItem('jwtToken');
   const history = useHistory();
@@ -116,12 +117,16 @@ export default function Profile() {
     if (res.status === 200) {
       setContent("Cập nhật thành công");
       setShowSnackBar(true);
-      setInfo({
+
+      const newInfo = {
         ...info,
         Name: data.Name,
         Email: data.Email,
         DateOfBirth: data.DateOfBirth
-      })
+      };
+      setInfo(newInfo);
+      socket.emit(`update_profile`, { user: newInfo });
+
     } else {
       // alert("Some error when updating!")
     }
@@ -138,6 +143,7 @@ export default function Profile() {
     if (res.status === 200) {
       const result = await res.json();
       setInfo(result.user);
+
     }
   }
 
@@ -159,7 +165,9 @@ export default function Profile() {
                   style={{
                     position: 'relative',
                     marginTop: '-200px',
-                    backgroundImage: `url('${avatar}')`
+                    backgroundImage: `url('${avatar}')`,
+                    maxWidth: '300px',
+                    maxHeight: '300px',
                   }}
                 >
                   <div style={{ position: 'absolute', left: '76%', bottom: '0%' }}>
@@ -169,7 +177,7 @@ export default function Profile() {
 
                 <div className="margin-top-20">
                   <Typography variant='h4' style={{ fontWeight: 'bold', marginBottom: '20px' }}>
-                    {displayedName}
+                    {username}
                   </Typography>
                   <Typography variant='h6'>
                     Ngày tham gia: {helper.convertToLocalDateFormat(activeDate)}
@@ -196,14 +204,14 @@ export default function Profile() {
                     onChange={e => handleDisplayedNameChange(e.target.value)}
                     value={displayedName}
                   />
-                  <div className="container margin-top-10">
+                  {/* <div className="container margin-top-10">
                     <Typography style={{ fontWeight: 'bold' }} variant="h6">Tên tài khoản</Typography>
                     <div className="input-invalid">{errors.userName}</div>
                   </div>
                   <TextField placeholder="Tên tài khoản" variant="outlined"
                     margin="normal" required fullWidth disabled
                     value={username}
-                  />
+                  /> */}
                   <div className="container margin-top-10">
                     <Typography style={{ fontWeight: 'bold' }} variant="h6">Email</Typography>
                     <div className="input-invalid">{errors.email}</div>

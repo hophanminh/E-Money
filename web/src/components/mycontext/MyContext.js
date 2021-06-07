@@ -8,7 +8,7 @@ const MyContext = createContext({});
 export default MyContext;
 
 export const MyProvider = (props) => {
-
+  const socket = getSocket();
   const [isLoggedIn, setIsLoggedIn] = useState(null);
   const [info, setInfo] = useState({});
   const token = window.localStorage.getItem('jwtToken');
@@ -31,7 +31,7 @@ export const MyProvider = (props) => {
         setInfo(result.user);
         setIsLoggedIn(true);
         setIsLoading(false);
-        getSocket();
+
       } else { // 400, 403
 
         // remove if any
@@ -43,6 +43,16 @@ export const MyProvider = (props) => {
     }
     fetchInfo();
   }, []);
+
+  useEffect(() => {
+
+    if (isLoggedIn !== null && isLoggedIn) {
+      socket.on(`update_profile_${info.ID}`, ({ user }) => {
+        // alert('có update info')
+        setInfo(user);
+      });
+    }
+  }, [isLoggedIn])
 
   return (
     <MyContext.Provider
