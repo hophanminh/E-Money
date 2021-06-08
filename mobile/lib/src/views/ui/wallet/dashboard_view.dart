@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mobile/src/config/config.dart';
+import 'package:mobile/src/models/NotificationProvider.dart';
+import 'package:mobile/src/services/socketservices/socket.dart';
 import 'package:mobile/src/views/ui/profile/change_password.dart';
 import 'package:mobile/src/views/ui/profile/profile_view.dart';
 import 'package:mobile/src/views/ui/team/team_list.dart';
+import 'package:mobile/src/views/ui/wallet/notification/notification_view.dart';
 import 'package:mobile/src/views/ui/wallet/private_wallet/private_wallet.dart';
 import 'package:mobile/src/views/ui/wallet/team_wallet/team_wallet.dart';
 import 'package:mobile/src/views/utils/widgets/widget.dart';
 import 'package:provider/provider.dart';
 import 'package:mobile/src/models/UsersProvider.dart';
+import 'package:socket_io_client/socket_io_client.dart';
 
 class Dashboard extends StatefulWidget {
   final Map<String, dynamic> user;
@@ -20,10 +25,29 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> {
   String mainRouteName = 'privateWallet';
+  Socket _socket;
 
   @override
   void initState() {
     super.initState();
+    _initPage();
+  }
+
+  _initPage() async {
+    UsersProvider usersProvider = Provider.of<UsersProvider>(context, listen: false);
+    NotificationProvider notificationProvider = Provider.of<NotificationProvider>(context, listen: false);
+    final userID = usersProvider.info.id;
+
+    _socket = await getSocket();
+
+    _socket.emitWithAck('get_notification', {'userID': userID, 'limit': Properties.AMOUNT_TO_LOAD_PER_TIME}, ack: (data) {
+      print('87 - ${data['count']}');
+      notificationProvider.fetchData(data);
+    });
+
+    _socket.on('new_notification_added_$userID', (data) {
+      notificationProvider.fetchData(data);
+    });
   }
 
   void setMainRoute(String name) {
@@ -35,46 +59,43 @@ class _DashboardState extends State<Dashboard> {
   // confirm exit app or not
   Future<bool> _onWillPop() async {
     return (await showDialog(
-      context: context,
-      builder: (context) => new AlertDialog(
-        title: new Text('Xác nhận'),
-        content: new Text('Bạn có chắc chắn muốn thoát khỏi ứng dụng?'),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: new Text('Hủy'),
+          context: context,
+          builder: (context) => new AlertDialog(
+            title: new Text('Xác nhận'),
+            content: new Text('Bạn có chắc chắn muốn thoát khỏi ứng dụng?'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: new Text('Hủy'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: new Text('Xác nhận'),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: new Text('Xác nhận'),
-          ),
-        ],
-      ),
-    )) ?? false;
+        )) ??
+        false;
   }
-
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(
-        SystemUiOverlayStyle(statusBarColor: Colors.transparent));
-    Drawer sideBar = mySideBar(
-        context: context, name: widget.user['Name'], avatarURL: widget.user['AvatarURL'], setMainRoute: setMainRoute, mainRouteName: mainRouteName);
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(statusBarColor: Colors.transparent));
+    Drawer sideBar = mySideBar(context: context, name: widget.user['Name'], avatarURL: widget.user['AvatarURL'], setMainRoute: setMainRoute, mainRouteName: mainRouteName);
 
     return WillPopScope(
       onWillPop: _onWillPop,
-      child: ScaffoldMessenger(
-          child: createDashboardPage(sideBar)
-      ),
+      child: ScaffoldMessenger(child: createDashboardPage(sideBar)),
     );
   }
 
   Widget createDashboardPage(sidebar) {
     if (mainRouteName == 'privateWallet') {
       return IndividualWallet(sidebar: sidebar);
-    }
-    else if (mainRouteName == 'teamList') {
+    } else if (mainRouteName == 'teamList') {
       return TeamList(sidebar: sidebar);
+    } else if (mainRouteName == 'notifications') {
+      return NotificationsPage(sidebar: sidebar);
     }
     else if (mainRouteName == 'profile') {
       return ProfilePage(sidebar: sidebar);

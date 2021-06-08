@@ -5,4 +5,5 @@ class Properties {
   static const ROLE_ADMIN = 1;
   static const ROLE_USER = 0;
   static const ROLE_ACTIVE = 1;
+  static const AMOUNT_TO_LOAD_PER_TIME = 10;
 }

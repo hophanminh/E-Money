@@ -26,9 +26,10 @@ class Statistic extends StatefulWidget {
 class _StatisticState extends State<Statistic> {
   var _scaffoldKey = GlobalKey<ScaffoldMessengerState>();
   bool _nothingToShow = true;
+  bool _isLoading = true;
   List<DateTime> _dates = [];
   DateTime _selectedDate;
-  int _totalIcome = 0;
+  int _totalIncome = 0;
   int _totalOutCome = 0;
   List<charts.Series<dynamic, String>> _barChartSeries = [];
   List<charts.Series<dynamic, String>> _spentPieChartSeries = [];
@@ -52,19 +53,21 @@ class _StatisticState extends State<Statistic> {
     List<dynamic> _barChartData = barChartDataBody['chartData']; //  1 list các hashmap
 
     if (nothingToShow) {
-      setState(() {
-        _nothingToShow = nothingToShow;
-        _barChartSeries = [
-          charts.Series(
-              domainFn: (dynamic data, _) => data['Title'],
-              // dynamic ở dây là 1 hashmap
-              measureFn: (dynamic data, _) => data['Money'].abs(),
-              colorFn: (dynamic data, _) => data['Title'] == 'Chi' ? charts.MaterialPalette.deepOrange.makeShades(1)[0] : charts.MaterialPalette.lime.makeShades(1)[0],
-              id: 'Money',
-              data: _barChartData,
-              labelAccessorFn: (dynamic data, _) => '${formatMoneyWithoutSymbol(data['Money'].abs())}')
-        ];
-      });
+      if (mounted) {
+        setState(() {
+          _nothingToShow = nothingToShow;
+          _barChartSeries = [
+            charts.Series(
+                domainFn: (dynamic data, _) => data['Title'],
+                // dynamic ở dây là 1 hashmap
+                measureFn: (dynamic data, _) => data['Money'].abs(),
+                colorFn: (dynamic data, _) => data['Title'] == 'Chi' ? charts.MaterialPalette.deepOrange.makeShades(1)[0] : charts.MaterialPalette.lime.makeShades(1)[0],
+                id: 'Money',
+                data: _barChartData,
+                labelAccessorFn: (dynamic data, _) => '${formatMoneyWithoutSymbol(data['Money'].abs())}')
+          ];
+        });
+      }
       return;
     }
 
@@ -82,12 +85,17 @@ class _StatisticState extends State<Statistic> {
     }
 
     int totalOutCome = 0;
+
     for (dynamic data in _spentPieChart) {
       totalOutCome += data['Money'];
     }
 
+    if (!mounted) {
+      return;
+    }
+
     setState(() {
-      _totalIcome = totalIcome;
+      _totalIncome = totalIcome;
       _totalOutCome = totalOutCome;
       _nothingToShow = nothingToShow;
       _barChartSeries = [
@@ -144,12 +152,20 @@ class _StatisticState extends State<Statistic> {
         temp = new DateTime(temp.year, temp.month + 1);
       }
 
-      setState(() {
-        _dates = dates;
-        _selectedDate = dates[0];
-      });
+      if (mounted) {
+        setState(() {
+          _dates = dates;
+          _selectedDate = dates[0];
+        });
+      }
 
       handleSelectMonth(_selectedDate);
+
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     });
   }
 
@@ -252,47 +268,48 @@ class _StatisticState extends State<Statistic> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    FittedBox(
-                      child: Container(
-                          constraints: BoxConstraints(maxWidth: 450),
-                          padding: EdgeInsets.all(10),
-                          margin: EdgeInsets.only(bottom: 20),
-                          decoration: BoxDecoration(color: const Color(0xfff2f2f2), borderRadius: BorderRadius.circular(10), boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.5),
-                              spreadRadius: 4,
-                              blurRadius: 5,
-                              offset: Offset(0, 2), // changes position of shadow
-                            )
-                          ]),
-                          height: 350,
-                          child: charts.BarChart(
-                            _barChartSeries,
-                            animate: true,
-                            barRendererDecorator: new charts.BarLabelDecorator<String>(
-                                //          insideLabelStyleSpec: new charts.TextStyleSpec(...),
-                                //          outsideLabelStyleSpec: new charts.TextStyleSpec(...)),
-                                ),
-                            primaryMeasureAxis: new charts.NumericAxisSpec(
-                              renderSpec: new charts.GridlineRendererSpec(
-                                axisLineStyle: charts.LineStyleSpec(thickness: 10),
-                                labelStyle: new charts.TextStyleSpec(
-                                    fontSize: 13, // size in Pts.
-                                    color: charts.MaterialPalette.black),
-                              ),
-                            ),
-                            behaviors: [
-                              new charts.ChartTitle(
-                                'Tình hình thu chi tháng ${convertToMMYYYYY(_selectedDate.toString())}',
-                                subTitle: '(Đơn vị: ${formatter.currencySymbol})',
-                                behaviorPosition: charts.BehaviorPosition.top,
-                                titleOutsideJustification: charts.OutsideJustification.middle,
-                                innerPadding: 50,
-                                titleStyleSpec: charts.TextStyleSpec(fontSize: 20),
-                              ),
-                            ],
-                          )),
-                    ),
+                    _isLoading
+                        ? Container()
+                        : FittedBox(
+                            child: Container(
+                                constraints: BoxConstraints(maxWidth: 450),
+                                padding: EdgeInsets.all(10),
+                                decoration: BoxDecoration(color: const Color(0xfff2f2f2), borderRadius: BorderRadius.circular(10), boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.5),
+                                    spreadRadius: 4,
+                                    blurRadius: 5,
+                                    offset: Offset(0, 2), // changes position of shadow
+                                  )
+                                ]),
+                                height: 350,
+                                child: charts.BarChart(
+                                  _barChartSeries,
+                                  animate: true,
+                                  // barRendererDecorator: new charts.BarLabelDecorator<String>(
+                                  //     //          insideLabelStyleSpec: new charts.TextStyleSpec(...),
+                                  //     //          outsideLabelStyleSpec: new charts.TextStyleSpec(...)),
+                                  //     ),
+                                  primaryMeasureAxis: new charts.NumericAxisSpec(
+                                    renderSpec: new charts.GridlineRendererSpec(
+                                      axisLineStyle: charts.LineStyleSpec(thickness: 10),
+                                      labelStyle: new charts.TextStyleSpec(
+                                          fontSize: 13, // size in Pts.
+                                          color: charts.MaterialPalette.black),
+                                    ),
+                                  ),
+                                  behaviors: [
+                                    charts.ChartTitle(
+                                      'Tổng quan tình hình thu chi tháng ${convertToMMYYYYY(_selectedDate.toString())}',
+                                      subTitle: '(Đơn vị: ${formatter.currencySymbol})',
+                                      behaviorPosition: charts.BehaviorPosition.top,
+                                      titleOutsideJustification: charts.OutsideJustification.middle,
+                                      innerPadding: 50,
+                                      titleStyleSpec: charts.TextStyleSpec(fontSize: 20),
+                                    ),
+                                  ],
+                                )),
+                          ),
                     _nothingToShow
                         ? Container(
                             padding: EdgeInsets.all(20),
@@ -316,12 +333,12 @@ class _StatisticState extends State<Statistic> {
                           )
                         : Column(
                             children: [
-                              _totalIcome != 0
+                              _totalIncome != 0
                                   ? FittedBox(
                                       child: Container(
                                           constraints: BoxConstraints(maxWidth: 450),
                                           padding: EdgeInsets.all(10),
-                                          margin: EdgeInsets.only(bottom: 20),
+                                          margin: EdgeInsets.only(top: 20,bottom: 20),
                                           decoration: BoxDecoration(color: const Color(0xfff2f2f2), borderRadius: BorderRadius.circular(10), boxShadow: [
                                             BoxShadow(
                                               color: Colors.grey.withOpacity(0.5),
@@ -338,7 +355,6 @@ class _StatisticState extends State<Statistic> {
                                             behaviors: [
                                               new charts.ChartTitle(
                                                 'Phân tích thu',
-                                                // subTitle: '(Đơn vị: ${formatter.currencySymbol})',
                                                 behaviorPosition: charts.BehaviorPosition.top,
                                                 titleOutsideJustification: charts.OutsideJustification.start,
                                                 innerPadding: 35,
@@ -357,7 +373,9 @@ class _StatisticState extends State<Statistic> {
                                             ],
                                           )),
                                     )
-                                  : Container(),
+                                  : Container(
+                                      padding: EdgeInsets.all(20),
+                                    ),
                               _totalOutCome != 0
                                   ? FittedBox(
                                       child: Container(
@@ -369,7 +387,7 @@ class _StatisticState extends State<Statistic> {
                                               color: Colors.grey.withOpacity(0.5),
                                               spreadRadius: 4,
                                               blurRadius: 5,
-                                              offset: Offset(0, 2), // changes position of shadow
+                                              offset: Offset(0, 2),
                                             ),
                                           ]),
                                           height: 350,
