@@ -19,17 +19,14 @@ const storage = multer.diskStorage({
   },
 });
 const upload = multer({ storage });
-const { performance } = require('perf_hooks');
 const { convertToRegularDateTime } = require('../utils/helper');
 router.use(express.static('public'));
 
 router.post('/', upload.array('images', 5), async (req, res) => {
   const transactionID = req.query.transactionID;
-  const user = req.user;
   const files = req.files;
   const urls = [];
 
-  let t0 = performance.now();
   try {
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
@@ -45,7 +42,6 @@ router.post('/', upload.array('images', 5), async (req, res) => {
           tags: 'transactionImages',
         },
         (err, image) => {
-
           if (err) { return res.status(500).send({ msg: "Đã xảy ra sự cố khi tải lên ảnh của bạn. Hãy thử lại!" }); }
           console.log('uploaded to cloudinary');
           const newImage = {
@@ -62,24 +58,10 @@ router.post('/', upload.array('images', 5), async (req, res) => {
       )
     };
 
-    // if (urls.length >= 2) {
-    //   const arrayOfArrayEntity = [];
-    //   console.log("chưa tạo");
-    // urls.forEach(url => {
-    //   arrayOfArrayEntity.push([url.ID, url.URL, url.TransactionID, url.DateAdded, url.PublicID]);
-    // });
-    // console.log("Tạo rùi");
-    // console.log(arrayOfArrayEntity);
     for (let i = 0; i < urls.length; i++) {
       await transactionImagesModel.addImage(urls[i]);
     };
-    //   console.log("add rùi");
-    // } else {
-    //   console.log(urls);
-    //   await transactionImagesModel.addImage(urls[0]);
-    // }
-    // let t1 = performance.now();
-    // console.log("cmm: ", t1 - t0);
+
   } catch (err) {
     console.log("Upload transaction img error: ", err);
   }
