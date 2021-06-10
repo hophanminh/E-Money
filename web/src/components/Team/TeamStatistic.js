@@ -104,12 +104,15 @@ export default function TeamStatistic() {
 
     if (res.status === 200) {
       const result = await res.json();
-      const chartData = result.chartData.map(data => {
+      let chartData = result.chartData.map(data => {
         return {
           type: data.Name,
           value: data.Money < 0 ? data.Money * -1 : data.Money
         }
       });
+
+      chartData = chartData.filter(item => item.value !== 0);
+
       if (isSpent) {
         setPieChartSpentData(chartData);
       } else {
