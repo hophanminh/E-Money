@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Link, useHistory,useParams } from 'react-router-dom'
+import { Link, useHistory, useParams } from 'react-router-dom'
 import {
   Typography,
   Box,
@@ -22,73 +22,90 @@ const API_URL = config.API_LOCAL;
 
 
 const MembersOfTeam = (props) => {
-const classes = useStyles();
+  const classes = useStyles();
 
-const teamID = props.teamID;
-const { isLoggedIn } = useContext(MyContext);
-const [members, setMembers] = useState([]);
-const history = useHistory();
-const token = localStorage.getItem('jwtToken');
-const userID= localStorage.getItem('userID');
-const [isAdmin, setIsAdmin] = useState(false);
+  const teamID = props.teamID;
+  const { isLoggedIn } = useContext(MyContext);
+  const [members, setMembers] = useState([]);
+  const history = useHistory();
+  const token = localStorage.getItem('jwtToken');
+  const userID = localStorage.getItem('userID');
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     console.log(isLoggedIn);
     if (isLoggedIn !== null && isLoggedIn === false) {
-        history.push('/');
+      history.push('/');
     }
     getTeamMembers();
-    isAdminTeam();
-});
+  }, [isLoggedIn]);
 
-const handleRemoveMember = async (userID) => {
+  useEffect(() => {
+    isAdminTeam();
+  }, [members]);
+
+  const handleRemoveMember = async (userID) => {
     console.log("remove" + userID);
     const data = {
-        teamID: teamID
+      teamID: teamID
     }
     const res = await fetch(`${API_URL}/teams/remove/${userID}`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(data)
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(data)
     });
 
-}
+  }
 
-const getTeamMembers = async () => {
+  const getTeamMembers = async () => {
 
     const res = await fetch(`${API_URL}/teams/${teamID}/members`, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-        }
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      }
     });
     console.log(res.body);
     if (res.status === 200) {
-        const result = await res.json();
-        console.log(result.members);
-        setMembers(result.members);
+      const result = await res.json();
+      console.log(result.members);
+      setMembers(result.members);
     } else {
-        // alert("Some error when updating!")
+      // alert("Some error when updating!")
     }
-}
+  }
 
-const isAdminTeam = () => {
-    console.log("userID"+userID)
-    const fakeArray = members.slice();
-    fakeArray
-    .filter(member => member.ID === userID)
-    .map(member => {
-      console.log("Role: " + member.Role)
-      if(member.Role === 1)
-        setIsAdmin(true);
-      else setIsAdmin(false)
-    }) 
-    console.log(isAdmin)
-}
+  const isAdminTeam = () => {
+    console.log("userID" + userID);
+    console.log('mem', members);
+    // const fakeArray = members.slice();
+    // fakeArray
+    //   .filter(member => member.ID === userID)
+    //   .map(member => {
+    //     console.log("Role: " + member.Role)
+    //     if (member.Role === 1)
+    //       setIsAdmin(true);
+    //     else setIsAdmin(false)
+    //   })
+
+    let _isAdmin = false;
+
+    members.forEach((mem) => {
+
+      if (mem.ID === userID) {
+        if (mem.Role === 1) {
+          _isAdmin = true;
+          return;
+        }
+      }
+    });
+    console.log(_isAdmin);
+    setIsAdmin(_isAdmin);
+  }
 
   return (
     <div className={classes.root}>
@@ -102,7 +119,7 @@ const isAdminTeam = () => {
           return (
             <React.Fragment key={cat?.ID}>
               <AccordionDetails className={classes.accordionDetail}>
-              <Box>
+                <Box>
                   <Avatar className={classes.avatar}>
                   </Avatar>
                 </Box>
@@ -110,15 +127,15 @@ const isAdminTeam = () => {
                   <Typography
                     noWrap={false}
                     className={classes.categoryText}>
-                    {cat?.Username} ({(cat?.Role === 1)?`Admin`:`Member` })
+                    {cat?.Name} ({(cat?.Role === 1) ? `Admin` : `Member`})
                   </Typography>
                 </Box>
-                 <Box>
-                 {(isAdmin ) ? 
-                 <Button onClick={(e) => handleRemoveMember(cat.ID)}>
-                        <HighlightOffIcon></HighlightOffIcon>
-                    </Button>: ""}
-                </Box> 
+                <Box>
+                  {(isAdmin && cat?.ID !== userID) ?
+                    <Button onClick={(e) => handleRemoveMember(cat.ID)}>
+                      <HighlightOffIcon></HighlightOffIcon>
+                    </Button> : ""}
+                </Box>
               </AccordionDetails>
               <Divider className={classes.divider} />
             </React.Fragment>

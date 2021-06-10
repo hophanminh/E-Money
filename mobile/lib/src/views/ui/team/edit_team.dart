@@ -167,7 +167,7 @@ class _EditTeamState extends State<EditTeam> {
 
   AppBar _appBar() => AppBar(
       iconTheme: IconThemeData(color: Colors.white),
-      title: Text('Danh sách nhóm', style: TextStyle(color: Colors.white)),
+      title: Text('Sửa thông tin nhóm', style: TextStyle(color: Colors.white)),
       backgroundColor: primary,
       centerTitle: true);
 
