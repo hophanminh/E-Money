@@ -16,6 +16,7 @@ import MyContext from '../mycontext/MyContext';
 import SnackBar from '../snackbar/SnackBar';
 import config from '../../constants/config.json';
 import MembersOfTeam from '../Team/Members';
+import copy from "copy-to-clipboard";  
 
 const API_URL = config.API_LOCAL;
 const useStyles = makeStyles((theme) => ({
@@ -52,9 +53,11 @@ export default function TeamProfile() {
     const [numberUser, setNumberUser] = useState(10);
     const [avatar, setAvatar] = useState(null);
     const { isLoggedIn } = useContext(MyContext);
-
     const [content, setContent] = useState("");
     const [showSnackbar, setShowSnackBar] = useState(false);
+    const [members, setMembers] = useState([]);
+    const [isAdmin, setIsAdmin] = useState(false);
+    const [isDisabledInput, setIsDisableInput] = useState(true);
 
     useEffect(() => {
         console.log(isLoggedIn);
@@ -62,7 +65,59 @@ export default function TeamProfile() {
             history.push('/');
         }
         getTeamDetail();
+        getTeamMembers();
     }, [isLoggedIn]);
+
+    useEffect(() => {
+        isAdminTeam();
+      }, [members]);
+
+    const getTeamMembers = async () => {
+    const res = await fetch(`${API_URL}/teams/${teamID}/members`, {
+        method: 'GET',
+        headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+        }
+    });
+    console.log(res.body);
+    if (res.status === 200) {
+        const result = await res.json();
+        console.log(result.members);
+        setMembers(result.members);
+    } else {
+        // alert("Some error when updating!")
+    }
+    }
+
+    const isAdminTeam = () => {
+        console.log("userID" + userID);
+        console.log('mem', members);
+        // const fakeArray = members.slice();
+        // fakeArray
+        //   .filter(member => member.ID === userID)
+        //   .map(member => {
+        //     console.log("Role: " + member.Role)
+        //     if (member.Role === 1)
+        //       setIsAdmin(true);
+        //     else setIsAdmin(false)
+        //   })
+    
+        let _isAdmin = false;
+    
+        members.forEach((mem) => {
+    
+          if (mem.ID === userID) {
+            if (mem.Role === 1) {
+              _isAdmin = true;
+              setIsDisableInput(false);
+              return;
+            }
+          }
+        });
+        console.log(_isAdmin);
+        setIsAdmin(_isAdmin);
+      }
 
     const getTeamDetail = async () => {
         const res = await fetch(`${API_URL}/teams/details/${teamID}`, {
@@ -140,6 +195,11 @@ export default function TeamProfile() {
         }
     }
 
+    const copyToClipboard = () => {
+        copy(teamID);
+        alert(`Đã lưu mã mời tham dự nhóm`);
+     }
+
     return (
         <>
             <SnackBar open={showSnackbar} setOpen={(isOpen) => setShowSnackBar(isOpen)} content={content} />
@@ -162,6 +222,7 @@ export default function TeamProfile() {
                                                 margin="normal" required fullWidth autoFocus
                                                 onChange={e => handleTeamNameChange(e.target.value)}
                                                 value={teamName}
+                                                disabled={isDisabledInput}
                                     />
 
                                     <div className="container margin-top-10">
@@ -172,6 +233,7 @@ export default function TeamProfile() {
                                                 margin="normal" required fullWidth
                                                 value={numberUser}
                                                 onChange={e => handleNumberUsers(e.target.value)}
+                                                disabled={isDisabledInput}
                                     />
 
                                     <div className="container margin-top-10">
@@ -184,20 +246,34 @@ export default function TeamProfile() {
                                                 onChange={e => handleDescription(e.target.value)}
                                                 value={description}
                                                 multiline
+                                                disabled={isDisabledInput}
                                     />
-                                </div>
-
+                                    <div>
+                                    <div className="container margin-top-10">
+                                        <Typography style={{ fontWeight: 'bold' }} variant="h6">Mã tham dự nhóm</Typography>
+                                    </div>
+                                    <TextField placeholder="Mã nhóm"
+                                                variant="outlined" 
+                                                margin="normal" 
+                                                required fullWidth
+                                                onClick={copyToClipboard}
+                                                disabled
+                                                value =  {teamID}
+                                    />
+                                    </div>
                                 <Button type="submit" fullWidth variant="contained" style={{ backgroundColor: palette.primary, color: 'white', fontWeight: 'bold', marginTop: '20px' }}
                                         onClick={handleSaveChange}
                                         startIcon={<SaveIcon />}
+                                        disabled={isDisabledInput}
                                 >
                                     Cập nhật thông tin
                                 </Button>
+                                </div>
                             </div>
                         </Grid>
                         <Grid item lg={3} sm={12}>
                             <div className={classes.buttonColumn}>
-                            <MembersOfTeam teamID = {teamID}></MembersOfTeam>
+                                <MembersOfTeam members = {members} isAdmin = {isAdmin} teamID = {teamID} getTeamMembers = {getTeamMembers}></MembersOfTeam>
                             </div>
                         </Grid>
                     </Grid>
