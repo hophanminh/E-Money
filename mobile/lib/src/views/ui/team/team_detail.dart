@@ -304,6 +304,7 @@ class _TeamDetailState extends State<TeamDetail> {
                       MaterialPageRoute(
                           builder: (context) =>
                               TeamUser(
+                                isAdmin: roles,
                                 team: temp,
                                 wrappingScaffoldKey: _scaffoldKey,
                               )));
