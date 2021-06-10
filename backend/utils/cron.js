@@ -34,12 +34,13 @@ module.exports = io => {
 
         const user = await userModel.getUserByWalletID(event.WalletID);
         const userID = user[0].ID;
+        const tempDate = nextDate;
         nextDate = getNextEventDate(event.NextDate, event.EventTypeID, event.Value);
 
         let transactionToAdd = {
           ID: uuidv4(),
           Money: event.ExpectingAmount,
-          Description: 'Được thêm tự động từ sự kiện đã lên lịch cho ngày ' + nextDate.format(FORMAT_DATETIME_PATTER.DATE_FOR_FRONT_END),
+          Description: 'Được thêm tự động từ sự kiện đã lên lịch cho ngày ' + tempDate.format(FORMAT_DATETIME_PATTER.DATE_FOR_FRONT_END),
           DateAdded: now.format(FORMAT_DATETIME_PATTER.DATE_TIME),
           DateModified: now.format(FORMAT_DATETIME_PATTER.DATE_TIME),
           EventID: event.ID,
@@ -75,7 +76,7 @@ module.exports = io => {
             console.log('Do nothing');
         }
 
-        notificationToAdd.Content += ', với số tiền: ' + event.ExpectingAmount + ', cho ngày: ' + nextDate.format(FORMAT_DATETIME_PATTER.DATE_FOR_FRONT_END);
+        notificationToAdd.Content += ', với số tiền: ' + event.ExpectingAmount + ', cho ngày: ' + tempDate.format(FORMAT_DATETIME_PATTER.DATE_FOR_FRONT_END);
 
         try {
           await transactionModel.addTransaction(transactionToAdd);
