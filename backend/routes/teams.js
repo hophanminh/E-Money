@@ -52,7 +52,7 @@ router.get('/details/:teamID', async (req, res) => {
 router.get('/:teamID/members', async (req, res) => {
   const teamID = req.params.teamID;
   console.log('Get member belong to team ', teamID);
-  const thu = await TeamHasUserModel.GetMembersByTeamId(teamID);
+  const thu = await TeamModel.getMembersByTeamId(teamID);
   if (thu.length !== 0) {
     return res.status(200).send({ members: thu });
   } else {

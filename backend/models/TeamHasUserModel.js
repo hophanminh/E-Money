@@ -40,13 +40,5 @@ module.exports = {
   deleteTHU: (TeamID) => {
     const sql = `DELETE from teams_has_users WHERE TeamID = '${TeamID}'`
     return db.load(sql);
-  },
-  GetMembersByTeamId: (teamID) => {
-    const sql = `SELECT u.ID, u.Name, u.Username, t.Role 
-        from teams_has_users t 
-        join users u on t.UserID = u.ID
-        WHERE t.TeamID = '${teamID}'
-        ORDER BY t.Role DESC`
-    return db.load(sql);
   }
 }
