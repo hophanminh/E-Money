@@ -165,6 +165,9 @@ const useStyles = makeStyles((theme) => ({
     left: 0,
     right: '-17px',
     overflowY: 'scroll',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between'
   },
   notifyCard: {
     height: '100%',
