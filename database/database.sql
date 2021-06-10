@@ -74,7 +74,7 @@ CREATE TABLE Categories(
 DROP TABLE IF EXISTS `Transactions`;
 CREATE TABLE Transactions(
     ID VARCHAR(100) NOT NULL, -- will store as UUID()
-    Money FLOAT NOT NULL,
+    Money bigint NOT NULL,
     Description VARCHAR(1000),
     DateAdded DATETIME,
     DateModified DATETIME,
@@ -88,7 +88,7 @@ CREATE TABLE Transactions(
 DROP TABLE IF EXISTS `TransactionHistories`;
 CREATE TABLE TransactionHistories(
     ID VARCHAR(100) NOT NULL, -- UUID()
-    Money FLOAT NOT NULL,
+    Money bigint NOT NULL,
     Description VARCHAR(1000),
     DateAdded DATETIME,
     DateModified DATETIME,
