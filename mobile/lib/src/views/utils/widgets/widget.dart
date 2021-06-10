@@ -40,7 +40,7 @@ AppBar mySimpleAppBar(String title, {Color shadow}) => AppBar(
       shadowColor: shadow,
     );
 
-Drawer mySideBar({BuildContext context, @required String mainRouteName, String avatarURL, @required String name, Function setMainRoute}) => Drawer(
+Widget mySideBar({BuildContext context, @required String mainRouteName, String avatarURL, @required String name, Function setMainRoute}) => Drawer(
       child: Column(
         children: <Widget>[
           DrawerHeader(

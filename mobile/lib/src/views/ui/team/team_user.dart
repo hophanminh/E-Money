@@ -14,9 +14,10 @@ import 'package:provider/provider.dart';
 class TeamUser extends StatefulWidget {
   final GlobalKey<ScaffoldMessengerState> wrappingScaffoldKey;
   final Teams team;
+  final bool isAdmin;
 
   const TeamUser(
-      {Key key, @required this.team, @required this.wrappingScaffoldKey})
+      {Key key, @required this.isAdmin, @required this.team, @required this.wrappingScaffoldKey})
       : super(key: key);
 
   @override
@@ -107,7 +108,7 @@ class _TeamUserState extends State<TeamUser> {
                 ),
             ],
           ),
-          trailing: (role == Properties.ROLE_ADMIN && userId != currentUserId)
+          trailing: (widget.isAdmin == true && role != Properties.ROLE_ADMIN && userId != currentUserId)
               ? IconButton(
                   icon: const Icon(
                     Icons.clear,
