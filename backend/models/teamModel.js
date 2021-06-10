@@ -36,6 +36,14 @@ module.exports = {
         WHERE thu.status = ${config.STATUS.ACTIVE} and thu.UserID = '${userId}' and thu.Role = ${config.PERMISSION.ADMIN} and t.ID = '${teamId}'`;
     return db.load(sql);
   },
+  getMembersByTeamId: (teamID) => {
+    const sql = `SELECT u.ID, u.Name, u.Username, t.Role 
+        from teams_has_users t 
+        join users u on t.UserID = u.ID
+        WHERE t.TeamID = '${teamID}'
+        ORDER BY t.Role DESC`
+    return db.load(sql);
+  },
   createTeam(newTeam) {
     return db.add('teams', newTeam);
   },
