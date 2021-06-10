@@ -36,7 +36,7 @@ router.post('/', upload.array('images', 5), async (req, res) => {
       await cloudinary.uploader.upload(
         filePath,
         {
-          quality: 10,
+          quality: 80,
           timeout: 60000,
           public_id: publicID,
           tags: 'transactionImages',
