@@ -68,11 +68,9 @@ export default function Rollback(props) {
                         <div style={{ display: step === 1 ? '' : 'none' }}>
                             <RollbackList versionList={versionList} setVersion={setVersion} setStep={setStep} handleRestore={handleRestore} />
                         </div>
-                            :
                         <div style={{ display: step === 2 ? '' : 'none' }}>
                             <RollbackTransaction version={version} />
                         </div>
-
                     </DialogContent>
                     <DialogActions>
                         {step === 1
@@ -85,9 +83,11 @@ export default function Rollback(props) {
                                 <Button className={`${classes.button} ${classes.closeButton}`} onClick={handleGoBback} variant="contained" >
                                     Trở về
                                     </Button>
-                                <Button className={`${classes.button} ${classes.infoButton}`} onClick={() => handleRestore(version)} variant="contained" >
-                                    Phục hồi
-                                </Button>
+                                {versionList.findIndex(i => i.ID === version.ID) !== 0 &&
+                                    <Button className={`${classes.button} ${classes.infoButton}`} onClick={() => handleRestore(version)} variant="contained" >
+                                        Phục hồi
+                                    </Button>
+                                }
                             </>
                         }
                     </DialogActions>
