@@ -54,6 +54,12 @@ export const WalletProvider = (props) => {
           newList[i].IconID = newCat.IconID;
           newList[i].categoryName = newCat.Name;
         }
+        else {
+          const temp = catList.find(cat => cat.Name === "Khác");
+          newList[i].iconID = temp.IconID;
+          newList[i].categoryName = temp.Name;
+          newList[i].catID = temp.ID;  
+        }
       }
       return [...newList]
     });

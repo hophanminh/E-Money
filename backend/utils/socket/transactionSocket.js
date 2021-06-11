@@ -27,7 +27,7 @@ module.exports = function (socket, io, decoded_userID) {
     try {
       const historyList = await historyModel.getHistoryByWalletIDAndTransactionID(walletID, transactionID);
 
-      callback({ historyList: historyList.slice(1) });
+      callback({ historyList });
     } catch (error) {
       console.log(error);
     }
