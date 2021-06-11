@@ -197,7 +197,8 @@ export default function TeamProfile() {
 
     const copyToClipboard = () => {
         copy(teamID);
-        alert(`Đã lưu mã mời tham dự nhóm`);
+        setContent("Đã lưu mã tham dự nhóm");
+        setShowSnackBar(true);
      }
 
     return (
