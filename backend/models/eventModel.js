@@ -13,8 +13,13 @@ module.exports = {
               SET CategoryID = ?
               WHERE WalletID = ? AND CategoryID = ?`, [final, walletID, categoryID]),
 
+    EndAllEventByWalletID: (walletID) =>
+        db.loadSafe(`UPDATE events
+                    SET Status = 0
+                    WHERE WalletID = ?`, [walletID]),
+
     updateEventCategoryDefault: (categoryID, final) =>
-            db.loadSafe(`UPDATE events
+        db.loadSafe(`UPDATE events
                 SET CategoryID = ?
                 WHERE CategoryID = ?`, [final, categoryID]),
 

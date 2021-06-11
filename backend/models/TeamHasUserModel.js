@@ -10,9 +10,9 @@ module.exports = {
   getTHUByTeamId: (id) => {
     const sql = `SELECT t.*, Users.Name
                     FROM teams_has_users t JOIN Users on t.UserID = Users.ID
-                    WHERE t.TeamID = '${id}'
+                    WHERE t.TeamID = ?
                     ORDER BY t.Role DESC`;
-    return db.load(sql);
+    return db.loadSafe(sql, [id]);
   },
 
   getTHUByUserIdAndTeamID: (userId, teamID) => {

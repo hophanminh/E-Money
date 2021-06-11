@@ -91,6 +91,13 @@ module.exports = io => {
 
           const eventList = await eventModel.getEventByWalletID(event.WalletID);
           io.in(event.WalletID).emit('wait_for_update_event', { eventList });
+
+          // emit tx
+          const transactionList = await transactionModel.getTransactionByWalletID(event.WalletID);
+          const { total, spend, receive } = calculateStat(transactionList);
+          console.log(transactionList, total, spend, receive)
+          io.in(event.WalletID).emit('wait_for_update_transaction', { transactionList, total, spend, receive });
+
         } else {
           // User's wallet
           const userID = user[0].ID;
@@ -126,11 +133,20 @@ module.exports = io => {
             console.log('Error while adding a new notification', e);
           }
 
+          // emit noti
           const notificationList = await notificationModel.getNotificationByUserID(userID, NOTIFICATION_AMOUNT_TO_LOAD);
           const count = await notificationModel.countUnreadNotification(userID);
           io.emit(`new_notification_added_${userID}`, { notificationList, count: count[0].count });
+
+          // emit event
           const eventList = await eventModel.getEventByWalletID(event.WalletID);
           io.in(event.WalletID).emit('wait_for_update_event', { eventList });
+
+          // emit tx
+          const transactionList = await transactionModel.getTransactionByWalletID(event.WalletID);
+          const { total, spend, receive } = calculateStat(transactionList);
+          console.log(transactionList, total, spend, receive)
+          io.in(event.WalletID).emit('wait_for_update_transaction', { transactionList, total, spend, receive });
         }
 
         console.log('    + Auto-doing an event, NextDate: ' + nextDate.format(FORMAT_DATETIME_PATTER.DATE_TIME));
@@ -139,4 +155,28 @@ module.exports = io => {
       console.log(error);
     }
   });
+
+  const calculateStat = (transactionList) => {
+    if (!transactionList) {
+      return null
+    }
+    let total = 0;
+    let spend = 0;
+    let receive = 0;
+    for (let i = 0; i < transactionList.length; i++) {
+      total += transactionList[i].price;
+      const month = moment(transactionList[i].time, 'YYYY-MM-DD HH:mm:ss').format('M');
+      const currentMonth = moment().format('M');
+      if (month === currentMonth) {
+        if (transactionList[i].price < 0) {
+          spend += transactionList[i].price
+        }
+        else {
+          receive += transactionList[i].price
+        }
+      }
+    }
+
+    return { total, spend, receive }
+  }
 }

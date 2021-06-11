@@ -19,7 +19,7 @@ module.exports = {
               WHERE CategoryID = ?`, [final, categoryID]),
 
   getTransactionByWalletID: (walletID) =>
-    db.loadSafe(`SELECT t.ID as id, t.Description as description, t.Money as price, t.DateAdded as time, t.DateAdded as timeModified, 
+    db.loadSafe(`SELECT t.ID as id, t.Description as description, t.Money as price, t.DateAdded as time, t.DateAdded as timeModified, t.UserID as userID,
                         cat.ID as catID, cat.IconID as IconID, cat.Name as categoryName, 
                         events.ID as eventID, events.Name as eventName,
                         Users.Name as userName, COUNT(h.ID) as editNumber

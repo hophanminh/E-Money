@@ -61,7 +61,7 @@ export default function Rollback(props) {
                 <Dialog maxWidth={step === 1 ? "md" : 'sm'} open={isOpen} onClose={handleCloseRollbackDialog} aria-labelledby="form-dialog-title">
                     <DialogTitle id="form-dialog-title" >
                         <Typography className={classes.title}>
-                            Lịch sử giao dịch
+                            Lịch sử thay đổi
                         </Typography>
                     </DialogTitle>
                     <DialogContent>
