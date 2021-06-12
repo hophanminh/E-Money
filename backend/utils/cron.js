@@ -1,6 +1,8 @@
 const cron = require('node-cron');
 const { v4: uuidv4 } = require('uuid');
 const moment = require('moment');
+const walletModel = require('../models/walletModel');
+const historyModel = require('../models/historyModel');
 const eventModel = require('../models/eventModel');
 const notificationModel = require('../models/notificationModel');
 const userModel = require('../models/userModel');
@@ -8,6 +10,7 @@ const transactionModel = require('../models/transactionModel');
 const teamModel = require('../models/teamModel');
 const { FORMAT_DATETIME_PATTER, NOTIFICATION_AMOUNT_TO_LOAD } = require('../config/default.json');
 const { getNextEventDate } = require('../utils/helper');
+const { cloneDeep } = require('lodash');
 
 module.exports = io => {
   cron.schedule('* * * * *', async () => {
@@ -55,6 +58,12 @@ module.exports = io => {
 
           try {
             await transactionModel.addTransaction(transactionToAdd);
+            await walletModel.updateTotalWallet(transactionToAdd.Money, event.WalletID);
+            const history = cloneDeep(transactionToAdd);
+            history.TransactionID = transactionToAdd.ID
+            history.ID = uuidv4()
+            await historyModel.addHistoryTransaction(history)
+
           } catch (e) {
             console.log('Error while adding a new transaction for team\'s wallet', e);
           }
@@ -117,6 +126,12 @@ module.exports = io => {
 
           try {
             await transactionModel.addTransaction(transactionToAdd);
+            await walletModel.updateTotalWallet(transactionToAdd.Money, event.WalletID);
+            const history = cloneDeep(transactionToAdd);
+            history.TransactionID = transactionToAdd.ID
+            history.ID = uuidv4()
+            await historyModel.addHistoryTransaction(history)
+
           } catch (e) {
             console.log('Error while adding a new transaction', e);
           }
