@@ -23,12 +23,18 @@ module.exports = io => {
         let nextDate = moment(event.NextDate);
         let endDate = event.EndDate === null ? null : moment(event.EndDate);
 
-        if (endDate === null && nextDate > now) {
-          console.log('    + Gladly, there\'s nothing to do, NextDate: ' + nextDate.format(FORMAT_DATETIME_PATTER.DATE_TIME));
-          continue;
-        } else if (endDate !== null && endDate < nextDate) {
-          await eventModel.updateEvent(event.ID, { Status: 0 });
-          console.log('    + This event is overdue, auto changing its status, EndDate: ' + endDate.format(FORMAT_DATETIME_PATTER.DATE));
+        if (endDate === null) {
+          if (nextDate > now) {
+            console.log('    + Gladly, there\'s nothing to do, NextDate: ' + nextDate.format(FORMAT_DATETIME_PATTER.DATE_TIME));
+            continue;
+          }
+        } else {
+          if (endDate < nextDate) {
+            await eventModel.updateEvent(event.ID, { Status: 0 });
+            console.log('    + This event is overdue, auto changing its status, EndDate: ' + endDate.format(FORMAT_DATETIME_PATTER.DATE));
+          } else if (nextDate > now) {
+            console.log('    + This event is not due yet');
+          }
           continue;
         }
 
