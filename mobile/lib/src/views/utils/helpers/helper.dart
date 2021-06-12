@@ -111,6 +111,15 @@ String convertToDDMMYYYYHHMM(String input) {
   }
 }
 
+String convertToHHMMDDMMYYYY(String input) {
+  try {
+    DateTime tempDate = DateTime.parse(input);
+    return DateFormat('HH:mm - dd/MM/yyyy').format(tempDate.toLocal());
+  } catch (error) {
+    return "";
+  }
+}
+
 String convertToMMYYYYY(String input, {bool isShortYear = false}) {
   try {
     DateTime tempDate = DateTime.parse(input);
