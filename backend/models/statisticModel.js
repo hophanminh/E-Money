@@ -34,13 +34,13 @@ module.exports = {
 
   getDataForTeamPieChart: (teamID, month, year, isSpent) => db.load(`
     SELECT
-      U.Name,
+      COALESCE(U.Name, 'Cả nhóm') AS Name,
       SUM(CASE
         WHEN ${isSpent} = TRUE AND T.Money < 0 THEN T.Money
         WHEN ${isSpent} = FALSE AND T.Money > 0 THEN T.Money 
         ELSE 0 END
       ) AS Money
-    FROM Transactions T JOIN Teams ON Teams.WalletID = T.WalletID JOIN Users U ON U.ID = T.UserID
+    FROM Transactions T JOIN Teams ON Teams.WalletID = T.WalletID LEFT JOIN Users U ON U.ID = T.UserID
     WHERE Teams.ID = '${teamID}' AND MONTH(T.DateAdded) = ${month} AND YEAR(T.DateAdded) = ${year}
     GROUP BY U.Name
     ORDER BY U.ID

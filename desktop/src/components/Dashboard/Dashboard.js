@@ -36,7 +36,7 @@ import CategoryAccordion from './Accordion/CategoryAccordion'
 import moment from 'moment'
 import AddTransaction from './CRUDTransaction/AddTransaction';
 import { getSocket } from "../../utils/socket";
-import { formatMoney } from '../../utils/currency'
+import { formatMoney } from '../../utils/currency';
 import EventAccordion from './Accordion/EventAccordion';
 
 export default function Dashboard() {

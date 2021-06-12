@@ -4,6 +4,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import PersonIcon from '@material-ui/icons/Person';
 import CategoryIcon from '@material-ui/icons/Category';
+import AppsIcon from '@material-ui/icons/Apps';
 import GroupIcon from '@material-ui/icons/Group';
 import { NavLink } from "react-router-dom";
 
@@ -22,12 +23,18 @@ export default function SideBarList(props) {
         </ListItemIcon>
         <ListItemText primary="Loại" />
       </ListItem>
-      <ListItem button component={NavLink} to="/Teams">
+      <ListItem button component={NavLink} to="/icon">
+        <ListItemIcon>
+          <AppsIcon />
+        </ListItemIcon>
+        <ListItemText primary="Icon" />
+      </ListItem>
+      {/* <ListItem button component={NavLink} to="/Teams">
         <ListItemIcon>
           <GroupIcon />
         </ListItemIcon>
         <ListItemText primary="Nhóm" />
-      </ListItem>
+      </ListItem> */}
     </div>
   )
 };

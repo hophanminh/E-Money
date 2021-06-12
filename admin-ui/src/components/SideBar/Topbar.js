@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext } from 'react';
 import clsx from 'clsx';
 import { NavLink } from "react-router-dom";
 import {
@@ -13,9 +13,8 @@ import {
 import MenuIcon from '@material-ui/icons/Menu';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import MyContext from '../mycontext/MyContext';
-import Notification from '../Notification/Notification';
 import defaultAvatar from '../../resources/images/defaultAvatar.png';
-import {clearSocket} from '../../utils/socket';
+import { clearSocket } from '../../utils/socket';
 
 const drawerWidth = 240;
 
@@ -54,10 +53,6 @@ function Topbar(props) {
                 <img src={info.AvatarURL ? info.AvatarURL : defaultAvatar} className={`${classes.avatarImg}`}></img>
               </ListItem>
             </>
-          )}
-
-          {(
-            <Notification />
           )}
 
           {(

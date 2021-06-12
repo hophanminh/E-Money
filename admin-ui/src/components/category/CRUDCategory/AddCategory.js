@@ -8,7 +8,6 @@ import {
   DialogTitle,
   Typography,
   TextField,
-  Avatar,
   Button,
   Box,
   makeStyles,
@@ -18,9 +17,7 @@ import {
 } from '../../mycontext'
 import POPUP from '../../../constants/popup.json'
 import { getSocket } from "../../../utils/socket";
-
-import DefaultIcon, { getListIcon } from '../../../utils/DefaultIcon'
-
+import DefaultIcon, { getListIcon } from '../../../utils/DefaultIcon';
 
 const fakeEvent = []
 const NAME = POPUP.CATEGORY.ADD_CATEGORY
@@ -80,7 +77,6 @@ export default function AddCategory(props) {
     }
   }
 
-
   // category  
   const handleChange = (event) => {
     setNewCategory({
@@ -113,10 +109,10 @@ export default function AddCategory(props) {
             >
               {list && list.map((icon) => (
                 <MenuItem key={icon.ID} value={icon.ID} className={classes.categoryIconBox}>
-                    <DefaultIcon
-                      IconID={icon.ID}
-                      backgroundSize={24}
-                      iconSize={14} />
+                  <DefaultIcon
+                    IconID={icon.ID}
+                    backgroundSize={24}
+                    iconSize={14} />
                 </MenuItem>
               ))}
             </TextField>
@@ -142,13 +138,12 @@ export default function AddCategory(props) {
         </Box>
       </DialogContent>
       <DialogActions>
-      <Button className={`${classes.button} ${classes.closeButton}`} onClick={handleCloseAddDialog} variant="contained" >
-              Hủy
-                        </Button>
-            <Button className={`${classes.button} ${classes.addButton}`} disabled={!isOpen} onClick={handleAdd} variant="contained">
-              Thêm
-                        </Button>
-
+        <Button className={`${classes.button} ${classes.closeButton}`} onClick={handleCloseAddDialog} variant="contained" >
+          Hủy
+        </Button>
+        <Button className={`${classes.button} ${classes.addButton}`} disabled={!isOpen} onClick={handleAdd} variant="contained">
+          Thêm
+        </Button>
       </DialogActions>
     </Dialog>
   );
@@ -179,7 +174,7 @@ const useStyles = makeStyles({
   },
 
   categoryIconBox: {
-    display: 'flex',   
+    display: 'flex',
     flexDirection: "row",
     flexWrap: "wrap",
     width: '100%',

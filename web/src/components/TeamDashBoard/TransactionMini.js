@@ -65,7 +65,7 @@ export default function TransactionMini({ transactionData }) {
             </div>
             {!isSimple &&
                 <Box className={classes.transactionInfo2}>
-                    <Typography className={classes.transactionAuthor}>{data?.userName}</Typography>
+                    <Typography className={classes.transactionAuthor}>{data?.userName ? data?.userName : "Hệ thống"}</Typography>
                     <Typography className={classes.transactionSubText}>{moment(data?.time).format("HH:mm - DD/MM/YYYY")}</Typography>
                 </Box>
             }

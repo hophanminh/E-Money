@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useParams, Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import {
   Container,
-  Breadcrumbs,
   Typography,
   IconButton,
   Box,
@@ -14,12 +13,10 @@ import {
   makeStyles,
 } from '@material-ui/core/';
 import {
-  WalletContext,
   PopupContext,
   CategoryContext
-} from '../mycontext'
-import POPUP from '../../constants/popup.json'
-import NavigateNextIcon from '@material-ui/icons/NavigateNext';
+} from '../mycontext';
+import POPUP from '../../constants/popup.json';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 
@@ -38,57 +35,24 @@ export default function CategoryAdmin(props) {
   const { id } = useParams();
   const socket = getSocket();
   const { setOpen } = useContext(PopupContext);
-  const { defaultList, customList, setAllList, setSelected } = useContext(CategoryContext);
-  const { list, setList } = useContext(WalletContext);
+  const { defaultList, setAllList, setSelected } = useContext(CategoryContext);
 
-  const [countList, setCountList] = useState();
-  const [team, setTeam] = useState();
   // get initial data
   useEffect(() => {
-    socket.emit("get_team", { walletID: id }, ({ team }) => {
-      setTeam(team);
-    });
-
-    if (list?.length === 0) {
-      socket.emit("get_transaction", { walletID: id }, ({ transactionList }) => {
-        setList(transactionList);
-      });
-    }
-
-    socket.on('wait_for_update_transaction', ({ transactionList }) => {
-      setList(transactionList);
-    });
-
     socket.emit("get_category", { walletID: id }, ({ defaultList, customList, fullList }) => {
-      console.log(defaultList)
-      setAllList(defaultList, customList, fullList)
+      console.log(defaultList);
+      setAllList(defaultList, customList, fullList);
     });
 
     socket.on('wait_for_update_category', ({ defaultList, customList, fullList }) => {
-      setAllList(defaultList, customList, fullList)
+      setAllList(defaultList, customList, fullList);
     });
 
     return () => {
-      socket.off("wait_for_update_transaction");
       socket.off("wait_for_update_category");
       setOpen(null);
     }
   }, []);
-
-  useEffect(() => {
-    if (list) {
-      const temp = { ...countList };
-
-      if (defaultList) {
-        for (let i = 0; i < defaultList?.length; i++) {
-          const cat = defaultList[i];
-          const number = list.filter(j => j?.catID === cat?.ID)?.length;
-          temp[cat?.ID] = { count: number };
-        }
-      }
-      setCountList(temp);
-    }
-  }, [list, defaultList])
 
   // popover button
   const [openedPopover, setOpenedPopover] = useState(false)
@@ -185,8 +149,8 @@ export default function CategoryAdmin(props) {
           <Box className={classes.subHeader}>
             <Typography className={classes.subHeaderFont} color="textPrimary">
               Loại mặc định
-              </Typography>
-              <Box className={classes.actionBox}>
+            </Typography>
+            <Box className={classes.actionBox}>
               <TextField
                 className={classes.searchField}
                 value=''
@@ -211,10 +175,10 @@ export default function CategoryAdmin(props) {
             </Box>
           </Box>
           <Box className={classes.categoryBox}>
-          <Button className={classes.categoryCard} variant="outlined" onClick={handleOpenAddDialog}>
-                <AddIcon className={classes.green} />
-                Thêm loại
-              </Button>
+            <Button className={classes.categoryCard} variant="outlined" onClick={handleOpenAddDialog}>
+              <AddIcon className={classes.green} />
+              Thêm loại
+            </Button>
             {filterList && filterList.map((i, n) => {
               return (
                 <Card
@@ -234,13 +198,6 @@ export default function CategoryAdmin(props) {
                       noWrap={true}
                       className={classes.categoryText}>
                       {i.Name}
-                    </Typography>
-                  </Box>
-                  <Box>
-                    <Typography
-                      noWrap={true}
-                      className={classes.categoryNumber}>
-                      ({countList ? countList[i?.ID]?.count : 0})
                     </Typography>
                   </Box>
                 </Card>

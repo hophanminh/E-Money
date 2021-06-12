@@ -77,7 +77,7 @@ const RollbackList = (props) => {
                                         tabIndex={-1}
                                         key={row.ID}
                                         style={index % 2 ? { background: "rgba(0, 0, 0, 0.04)" } : { background: "white" }}>
-                                        <TableCell align="center">{versionList?.length - versionList.findIndex(i => i.ID === row.ID)}</TableCell>
+                                        <TableCell align="center">{list?.length - list.findIndex(i => i.ID === row.ID)}</TableCell>
                                         <TableCell align="left">{moment(row?.DateModified).format("HH:mm - DD/MM/YYYY")}</TableCell>
                                         <TableCell align="right">
                                             <Button
@@ -88,15 +88,21 @@ const RollbackList = (props) => {
                                             >
                                                 Thông tin
                                             </Button>
-                                            <Button
-                                                className={classes.endButton}
-                                                onClick={(e) => handleOpenRestore(e, row)}
-                                                id={row.ID}
-                                                variant="outlined"
-                                                color="secondary"
-                                            >
-                                                Phục hồi
-                              </Button>
+
+                                            {list.findIndex(i => i.ID === row.ID) !== 0
+                                                &&
+                                                <>
+                                                    <Button
+                                                        className={classes.endButton}
+                                                        onClick={(e) => handleOpenRestore(e, row)}
+                                                        id={row.ID}
+                                                        variant="outlined"
+                                                        color="secondary"
+                                                    >
+                                                        Phục hồi
+                                                    </Button>
+                                                </>
+                                            }
                                         </TableCell>
                                     </TableRow>
                                 )

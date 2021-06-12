@@ -8,7 +8,6 @@ import {
     DialogTitle,
     Typography,
     TextField,
-    Avatar,
     Button,
     Box,
     makeStyles,
@@ -84,13 +83,13 @@ export default function EditCategory(props) {
 
     return (
         <React.Fragment>
-            { newCategory &&
+            {newCategory &&
                 <Dialog open={isOpen} onClose={handleCloseEditDialog} aria-labelledby="form-dialog-title">
 
                     <DialogTitle id="form-dialog-title" >
                         <Typography className={classes.title}>
                             Thay đổi loại giao dịch
-                </Typography>
+                        </Typography>
                     </DialogTitle>
                     <DialogContent>
                         <Box>

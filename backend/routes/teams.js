@@ -4,6 +4,7 @@ const router = express.Router();
 const WalletModel = require('../models/walletModel');
 const TeamModel = require('../models/teamModel');
 const TeamHasUserModel = require('../models/TeamHasUserModel');
+const EventModel = require('../models/EventModel');
 
 const config = require("../config/default.json");
 const { convertToRegularDateTime } = require("../utils/helper");
@@ -52,7 +53,7 @@ router.get('/details/:teamID', async (req, res) => {
 router.get('/:teamID/members', async (req, res) => {
   const teamID = req.params.teamID;
   console.log('Get member belong to team ', teamID);
-  const thu = await TeamHasUserModel.GetMembersByTeamId(teamID);
+  const thu = await TeamModel.getMembersByTeamId(teamID);
   if (thu.length !== 0) {
     return res.status(200).send({ members: thu });
   } else {
@@ -233,6 +234,7 @@ router.post('/:id/delete', async (req, res) => {
   // Remove user from team
   const c = await TeamHasUserModel.deleteTHU(team.ID)
   const d = await TeamModel.deleteTeam(team.ID);
+  const e = await EventModel.EndAllEventByWalletID(team.WalletID);
   return res.status(200).send({ msg: "Thành công." })
 
 });

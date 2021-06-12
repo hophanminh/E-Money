@@ -1,24 +1,27 @@
 const cron = require('node-cron');
 const { v4: uuidv4 } = require('uuid');
 const moment = require('moment');
+const walletModel = require('../models/walletModel');
+const historyModel = require('../models/historyModel');
 const eventModel = require('../models/eventModel');
 const notificationModel = require('../models/notificationModel');
 const userModel = require('../models/userModel');
 const transactionModel = require('../models/transactionModel');
-const { EVENT_TYPE, FORMAT_DATETIME_PATTER, NOTIFICATION_AMOUNT_TO_LOAD } = require('../config/default.json');
-const { DAILY, WEEKLY, MONTHLY, YEARLY } = EVENT_TYPE;
+const teamModel = require('../models/teamModel');
+const { FORMAT_DATETIME_PATTER, NOTIFICATION_AMOUNT_TO_LOAD } = require('../config/default.json');
 const { getNextEventDate } = require('../utils/helper');
+const { cloneDeep } = require('lodash');
 
 module.exports = io => {
   cron.schedule('* * * * *', async () => {
     console.log('running a task every minute');
     const events = await eventModel.getAllRunningEvents();
-    console.log('Checking ' + events.length + ' running event(s)');
+    console.log(events.length === 0 ? 'No event' : 'Checking ' + events.length + ' running event(s)');
 
     try {
       for (let i = 0; i < events.length; i++) {
-        console.log('Event #' + (i + 1));
         const event = events[i];
+        console.log('Event#' + (i + 1) + ': ' + event.Name);
         let now = moment(Date.now());
         let nextDate = moment(event.NextDate);
         let endDate = event.EndDate === null ? null : moment(event.EndDate);
@@ -32,75 +35,134 @@ module.exports = io => {
           continue;
         }
 
-        const user = await userModel.getUserByWalletID(event.WalletID);
-        const userID = user[0].ID;
-        const tempDate = nextDate;
-        nextDate = getNextEventDate(event.NextDate, event.EventTypeID, event.Value);
-
         let transactionToAdd = {
           ID: uuidv4(),
           Money: event.ExpectingAmount,
-          Description: 'Được thêm tự động từ sự kiện đã lên lịch cho ngày ' + tempDate.format(FORMAT_DATETIME_PATTER.DATE_FOR_FRONT_END),
-          DateAdded: now.format(FORMAT_DATETIME_PATTER.DATE_TIME),
-          DateModified: now.format(FORMAT_DATETIME_PATTER.DATE_TIME),
+          Description: 'Được thêm tự động từ sự kiện "' + event.Name + '"',
+          DateAdded: nextDate.format(FORMAT_DATETIME_PATTER.DATE_TIME),
+          DateModified: nextDate.format(FORMAT_DATETIME_PATTER.DATE_TIME),
           EventID: event.ID,
           CategoryID: event.CategoryID,
           WalletID: event.WalletID,
-          UserID: userID
+          UserID: null
         }
 
-        let notificationToAdd = {
-          ID: uuidv4(),
-          Content: '',
-          DateNotified: now.format(FORMAT_DATETIME_PATTER.DATE_TIME),
-          IsRead: false,
-          UserID: userID
+        const user = await userModel.getUserByWalletID(event.WalletID);
+        const tempDate = nextDate;
+        nextDate = getNextEventDate(event.NextDate, event.EventTypeID, event.Value);
+
+        if (user.length === 0) {
+          // Team's wallet
+          const team = await teamModel.getTeamByWalletId(event.WalletID);
+          const users = await teamModel.getMembersByTeamId(team[0].ID);
+
+          try {
+            await transactionModel.addTransaction(transactionToAdd);
+            await walletModel.updateTotalWallet(transactionToAdd.Money, event.WalletID);
+            const history = cloneDeep(transactionToAdd);
+            history.TransactionID = transactionToAdd.ID
+            history.ID = uuidv4()
+            await historyModel.addHistoryTransaction(history)
+
+          } catch (e) {
+            console.log('Error while adding a new transaction for team\'s wallet', e);
+          }
+
+          try {
+            await eventModel.updateEvent(event.ID, { NextDate: nextDate.format(FORMAT_DATETIME_PATTER.DATE_TIME) });
+          } catch (e) {
+            console.log('Error while updating event for team', e);
+          }
+
+          for (let i = 0; i < users.length; i++) {
+            let notificationToAdd = {
+              ID: uuidv4(),
+              Content: '',
+              DateNotified: tempDate.format(FORMAT_DATETIME_PATTER.DATE_TIME),
+              IsRead: false,
+              UserID: users[i].ID
+            }
+
+            notificationToAdd.Content = 'Ví nhóm ' + team[0].Name +
+              ' đã tự động thêm 1 giao dịch từ sự kiện "' + event.Name +
+              '" với số tiền ' + event.ExpectingAmount;
+
+            try {
+              await notificationModel.addNotification(notificationToAdd);
+            } catch (e) {
+              console.log('Error while adding a new notification for a user in team', e);
+            }
+
+            const notificationList = await notificationModel.getNotificationByUserID(users[i].ID, NOTIFICATION_AMOUNT_TO_LOAD);
+            const count = await notificationModel.countUnreadNotification(users[i].ID);
+            io.emit(`new_notification_added_${users[i].ID}`, { notificationList, count: count[0].count });
+          }
+
+          const eventList = await eventModel.getEventByWalletID(event.WalletID);
+          io.in(event.WalletID).emit('wait_for_update_event', { eventList });
+
+          // emit tx
+          const transactionList = await transactionModel.getTransactionByWalletID(event.WalletID);
+          const { total, spend, receive } = calculateStat(transactionList);
+          console.log(transactionList, total, spend, receive)
+          io.in(event.WalletID).emit('wait_for_update_transaction', { transactionList, total, spend, receive });
+
+        } else {
+          // User's wallet
+          const userID = user[0].ID;
+          transactionToAdd.UserID = userID;
+          nextDate = getNextEventDate(event.NextDate, event.EventTypeID, event.Value);
+
+          let notificationToAdd = {
+            ID: uuidv4(),
+            Content: '',
+            DateNotified: tempDate.format(FORMAT_DATETIME_PATTER.DATE_TIME),
+            IsRead: false,
+            UserID: userID
+          }
+
+          notificationToAdd.Content = 'Ví của bạn đã tự động thêm 1 giao dịch từ sự kiện "' +
+            event.Name + '" với số tiền ' + event.ExpectingAmount;
+
+          try {
+            await transactionModel.addTransaction(transactionToAdd);
+            await walletModel.updateTotalWallet(transactionToAdd.Money, event.WalletID);
+            const history = cloneDeep(transactionToAdd);
+            history.TransactionID = transactionToAdd.ID
+            history.ID = uuidv4()
+            await historyModel.addHistoryTransaction(history)
+
+          } catch (e) {
+            console.log('Error while adding a new transaction', e);
+          }
+
+          try {
+            await eventModel.updateEvent(event.ID, { NextDate: nextDate.format(FORMAT_DATETIME_PATTER.DATE_TIME) });
+          } catch (e) {
+            console.log('Error while updating event', e);
+          }
+
+          try {
+            await notificationModel.addNotification(notificationToAdd);
+          } catch (e) {
+            console.log('Error while adding a new notification', e);
+          }
+
+          // emit noti
+          const notificationList = await notificationModel.getNotificationByUserID(userID, NOTIFICATION_AMOUNT_TO_LOAD);
+          const count = await notificationModel.countUnreadNotification(userID);
+          io.emit(`new_notification_added_${userID}`, { notificationList, count: count[0].count });
+
+          // emit event
+          const eventList = await eventModel.getEventByWalletID(event.WalletID);
+          io.in(event.WalletID).emit('wait_for_update_event', { eventList });
+
+          // emit tx
+          const transactionList = await transactionModel.getTransactionByWalletID(event.WalletID);
+          const { total, spend, receive } = calculateStat(transactionList);
+          console.log(transactionList, total, spend, receive)
+          io.in(event.WalletID).emit('wait_for_update_transaction', { transactionList, total, spend, receive });
         }
-
-        notificationToAdd.Content = 'Ví của bạn đã tự động thêm 1 giao dịch loại ';
-
-        switch (+event.EventTypeID) {
-          case DAILY:
-            notificationToAdd.Content += 'hằng ngày';
-            break;
-          case WEEKLY:
-            notificationToAdd.Content += 'hằng tuần';
-            break;
-          case MONTHLY:
-            notificationToAdd.Content += 'hằng tháng';
-            break;
-          case YEARLY:
-            notificationToAdd.Content += 'hằng năm';
-            break;
-          default:
-            console.log('Do nothing');
-        }
-
-        notificationToAdd.Content += ', với số tiền: ' + event.ExpectingAmount + ', cho ngày: ' + tempDate.format(FORMAT_DATETIME_PATTER.DATE_FOR_FRONT_END);
-
-        try {
-          await transactionModel.addTransaction(transactionToAdd);
-        } catch (e) {
-          console.log('Error while adding a new transaction', e);
-        }
-
-        try {
-          await notificationModel.addNotification(notificationToAdd);
-        } catch (e) {
-          console.log('Error while adding a new notification', e);
-        }
-
-        try {
-          await eventModel.updateEvent(event.ID, { NextDate: nextDate.format(FORMAT_DATETIME_PATTER.DATE_TIME) });
-        } catch (e) {
-          console.log('Error while updating event', e);
-        }
-
-        const notificationList = await notificationModel.getNotificationByUserID(userID, NOTIFICATION_AMOUNT_TO_LOAD);
-        const count = await notificationModel.countUnreadNotification(userID);
-        io.emit(`new_notification_added_${userID}`, { notificationList, count: count[0].count });
-        const eventList = await eventModel.getEventByWalletID(event.WalletID);
-        io.in(event.WalletID).emit('wait_for_update_event', { eventList });
 
         console.log('    + Auto-doing an event, NextDate: ' + nextDate.format(FORMAT_DATETIME_PATTER.DATE_TIME));
       }
@@ -108,4 +170,28 @@ module.exports = io => {
       console.log(error);
     }
   });
+
+  const calculateStat = (transactionList) => {
+    if (!transactionList) {
+      return null
+    }
+    let total = 0;
+    let spend = 0;
+    let receive = 0;
+    for (let i = 0; i < transactionList.length; i++) {
+      total += transactionList[i].price;
+      const month = moment(transactionList[i].time, 'YYYY-MM-DD HH:mm:ss').format('M');
+      const currentMonth = moment().format('M');
+      if (month === currentMonth) {
+        if (transactionList[i].price < 0) {
+          spend += transactionList[i].price
+        }
+        else {
+          receive += transactionList[i].price
+        }
+      }
+    }
+
+    return { total, spend, receive }
+  }
 }

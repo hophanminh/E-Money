@@ -66,18 +66,18 @@ const TeamDashBoard = () => {
     total: 0
   })
   const [team, setTeam] = useState();
-  const [thu, setTHU] = useState({});
+  const [thu, setTHU] = useState([]);
   // get initial data
   useEffect(() => {
     socket.emit("get_team", { walletID: id }, ({ team, thu }) => {
       setTeam(team);
-
       console.log(thu)
       var member = thu.filter(function(member) {
         return member.UserID === userID;
       });
       console.log(member[0].Role);
       setTHU(member[0]);
+
     });
 
     setWalletID(id);
@@ -93,6 +93,7 @@ const TeamDashBoard = () => {
     });
 
     socket.on('wait_for_update_transaction', ({ transactionList, total, spend, receive }) => {
+      console.log("here")
       setList(transactionList);
       setStat({
         spend: spend,
@@ -156,34 +157,34 @@ const TeamDashBoard = () => {
 
   const leaveTeam = async () => {
     const data = {
-        UserID: userID
+      UserID: userID
     }
     console.log('data: ' + data);
     console.log('idTeam: ' + id);
     const res = await fetch(`${API_URL}/teams/${id}/leave`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(data),
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
     });
     history.push("/teams")
   }
 
   const deleteTeam = async () => {
     const data = {
-        UserID: userID
+      UserID: userID
     }
     console.log('data: ' + data);
     console.log('idTeam: ' + id);
     const res = await fetch(`${API_URL}/teams/${id}/delete`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(data),
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
     });
     history.push("/teams")
   }
@@ -227,7 +228,7 @@ const TeamDashBoard = () => {
               onClick={handleClickOpen}
             >
                 <ExitToAppIcon className={classes.red} />
-                {(thu.Role === 1) ? ` Xóa nhóm` : ` Rời nhóm`}
+                {(thu.find(i => i.UserID === userID)) ? ` Xóa nhóm` : ` Rời nhóm`}
               </Button>
             </Link>
               <Dialog
@@ -343,7 +344,7 @@ const TeamDashBoard = () => {
                 bgcolor="background.paper"
                 className={classes.transactionBox}>
                 {filterList &&
-                  <TransactionDetail />}
+                  <TransactionDetail thu={thu} />}
               </Box>
             </Grid>
 

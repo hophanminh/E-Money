@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
     Icon,
-    Box,
     Avatar,
-    makeStyles,
 } from '@material-ui/core/';
 import config from '../constants/config.json';
 
