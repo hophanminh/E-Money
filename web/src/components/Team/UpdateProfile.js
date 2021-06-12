@@ -17,6 +17,7 @@ import SnackBar from '../snackbar/SnackBar';
 import config from '../../constants/config.json';
 import MembersOfTeam from '../Team/Members';
 import copy from "copy-to-clipboard";  
+// import ForwardToInboxIcon from '@material-ui/icons/ForwardToInbox';
 
 const API_URL = config.API_LOCAL;
 const useStyles = makeStyles((theme) => ({
@@ -249,26 +250,22 @@ export default function TeamProfile() {
                                                 multiline
                                                 disabled={isDisabledInput}
                                     />
-                                    <div>
-                                    <div className="container margin-top-10">
-                                        <Typography style={{ fontWeight: 'bold' }} variant="h6">Mã tham dự nhóm</Typography>
+                                    <div className="container margin-top-10 ">
+                                        <Button type="submit" size="large" variant="contained" style={{ backgroundColor: palette.primary, color: 'white', fontWeight: 'bold', marginTop: '20px' }}
+                                            onClick={copyToClipboard}
+                                            // startIcon={<ForwardToInboxIcon />}
+                                        >
+                                            Mã tham gia nhóm
+                                        </Button>  
+                                        <Button type="submit" size="large" color="secondary" variant="contained" style={{ color: 'white', fontWeight: 'bold', marginTop: '20px' }}
+                                            onClick={handleSaveChange}
+                                            startIcon={<SaveIcon />}
+                                            disabled={isDisabledInput}
+                                        >
+                                            Cập nhật thông tin
+                                        </Button>
                                     </div>
-                                    <TextField placeholder="Mã nhóm"
-                                                variant="outlined" 
-                                                margin="normal" 
-                                                required fullWidth
-                                                onClick={copyToClipboard}
-                                                disabled
-                                                value =  {teamID}
-                                    />
-                                    </div>
-                                <Button type="submit" fullWidth variant="contained" style={{ backgroundColor: palette.primary, color: 'white', fontWeight: 'bold', marginTop: '20px' }}
-                                        onClick={handleSaveChange}
-                                        startIcon={<SaveIcon />}
-                                        disabled={isDisabledInput}
-                                >
-                                    Cập nhật thông tin
-                                </Button>
+     
                                 </div>
                             </div>
                         </Grid>

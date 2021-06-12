@@ -42,6 +42,10 @@ import EventAccordion from './Accordion/EventAccordion';
 import config from '../../constants/config.json';
 import cf from '../../Config/default.json';
 
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogTitle from '@material-ui/core/DialogTitle';
+
 const API_URL = config.API_LOCAL;
 
 const TeamDashBoard = () => {
@@ -67,7 +71,13 @@ const TeamDashBoard = () => {
   useEffect(() => {
     socket.emit("get_team", { walletID: id }, ({ team, thu }) => {
       setTeam(team);
-      setTHU(thu.filter(i => i.Role === 1));
+      console.log(thu)
+      var member = thu.filter(function(member) {
+        return member.UserID === userID;
+      });
+      console.log(member[0].Role);
+      setTHU(member[0]);
+
     });
 
     setWalletID(id);
@@ -128,6 +138,21 @@ const TeamDashBoard = () => {
   // add transaction
   const handleOpenAddDialog = () => {
     setOpen(POPUP.TRANSACTION.ADD_TRANSACTION);
+  }
+
+  const [open, setOpenDeleteDialog] = React.useState(false);
+
+  const handleClickOpen = () => {
+    setOpenDeleteDialog(true);
+  };
+
+  const handleClose = () => {
+    setOpenDeleteDialog(false);
+  };
+
+  const handleDelete = () => {
+    {(thu.Role === 1) ? deleteTeam() : leaveTeam()}
+    handleClose();
   }
 
   const leaveTeam = async () => {
@@ -199,13 +224,33 @@ const TeamDashBoard = () => {
               </Button>
             </Link>
             <Link style={{ textDecoration: 'none', marginLeft: 10 }} >
-              <Button className={classes.teamLeaveButton} variant="outlined"
-                onClick={() => (thu.find(i => i.UserID === userID)) ? deleteTeam() : leaveTeam()}
-              >
+              <Button className={classes.teamLeaveButton} variant="outlined" 
+              onClick={handleClickOpen}
+            >
                 <ExitToAppIcon className={classes.red} />
                 {(thu.find(i => i.UserID === userID)) ? ` Xóa nhóm` : ` Rời nhóm`}
               </Button>
             </Link>
+              <Dialog
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+              >
+                <DialogTitle >
+                    <Typography className={classes.title}>
+                        Bạn có thực sự muốn {(thu.Role === 1) ? ` xóa nhóm` :` rời nhóm`}
+                    </Typography>
+                </DialogTitle>
+                <DialogActions>
+                  <Button style={{ color: "white",backgroundColor: "green", marginLeft: 10 }} variant="contained" color="primary" className={classes.margin} onClick={handleClose}>
+                    Hủy
+                  </Button>
+                  <Button style={{ color: "white",backgroundColor: "red", marginLeft: 10 }} variant="contained" color="primary" className={classes.margin} onClick={handleDelete}>
+                  {(thu.Role === 1) ? ` Xóa nhóm` :` Rời nhóm`}
+                  </Button>
+                </DialogActions>
+            </Dialog>
           </Box>
         </Box>
         <div className={classes.body}>
