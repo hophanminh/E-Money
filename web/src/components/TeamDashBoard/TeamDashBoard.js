@@ -228,7 +228,7 @@ const TeamDashBoard = () => {
               onClick={handleClickOpen}
             >
                 <ExitToAppIcon className={classes.red} />
-                {(thu.find(i => i.UserID === userID)) ? ` Xóa nhóm` : ` Rời nhóm`}
+                {(thu.Role === 1) ? ` Xóa nhóm` : ` Rời nhóm`}
               </Button>
             </Link>
               <Dialog
