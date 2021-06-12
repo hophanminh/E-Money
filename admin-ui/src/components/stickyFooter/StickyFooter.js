@@ -91,16 +91,16 @@ function FastConnect() {
       </h4>
       <div className={`${classes.flexColumn} ${classes.flexStart}`}>
         <Link className={`${classes.hyperLink} ${classes.textFormat}`} to="/">
-          Trang chủ
+          Quản lý người dùng
+        </Link>
+        <Link className={`${classes.hyperLink} ${classes.textFormat}`} to="/icon">
+          Quản lý icon
+        </Link>
+        <Link className={`${classes.hyperLink} ${classes.textFormat}`} to="/Category">
+          Quản lý loại giao dịch
         </Link>
         <Link className={`${classes.hyperLink} ${classes.textFormat}`} to="/signin">
-          Đăng Nhập
-        </Link>
-        <Link className={`${classes.hyperLink} ${classes.textFormat}`} to="/signup">
-          Đăng ký
-        </Link>
-        <Link className={`${classes.hyperLink} ${classes.textFormat}`} to="/wallet">
-          Ví cá nhân
+          Đăng nhập
         </Link>
       </div>
     </Typography>

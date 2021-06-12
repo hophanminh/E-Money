@@ -131,14 +131,6 @@ function TopbarNotLogin() {
           {`E-Money`}
         </ListItem>
         <div className={`${classes.topBarButton} `}>
-          <Button
-            variant="outlined"
-            size="large"
-            className={`${classes.margin} ${classes.buttonContent}`}
-            onClick={handleSignUp}
-          >
-            Đăng ký
-          </Button>
           <Button variant="outlined"
             size="large"
             className={`${classes.margin} ${classes.buttonContent}`}

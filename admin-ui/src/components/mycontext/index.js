@@ -1,14 +1,10 @@
-import MyContext from './MyContext'
-import WalletContext from './WalletContext'
-import PopupContext from './PopupContext'
-import CategoryContext from './CategoryContext'
-import EventContext from './EventContext'
+import MyContext from './MyContext';
+import PopupContext from './PopupContext';
+import CategoryContext from './CategoryContext';
 
 export {
     MyContext,
-    WalletContext,
-    PopupContext,
     CategoryContext,
-    EventContext
+    PopupContext
 }
 
