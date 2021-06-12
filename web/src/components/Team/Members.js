@@ -17,6 +17,11 @@ import MyContext from '../mycontext/MyContext';
 import config from '../../constants/config.json';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import { NavigateBeforeSharp } from '@material-ui/icons';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogTitle from '@material-ui/core/DialogTitle';
+
+
 const API_URL = config.API_LOCAL;
 
 
@@ -41,7 +46,21 @@ const MembersOfTeam = (props) => {
       },
       body: JSON.stringify(data)
     }).then(getTeamMembers);
+    handleClose();
   }
+
+  const [target, setTarget] = React.useState({});
+  const [open, setOpenDeleteDialog] = React.useState(false);
+
+  const handleClickOpen = (target) => {
+    console.log(target);
+    setTarget(target);
+    setOpenDeleteDialog(true);
+  };
+
+  const handleClose = () => {
+    setOpenDeleteDialog(false);
+  };
 
   return (
     <div className={classes.root}>
@@ -68,15 +87,40 @@ const MembersOfTeam = (props) => {
                 </Box>
                 <Box>
                   {(isAdmin && cat?.ID !== userID) ?
-                    <Button onClick={(e) => handleRemoveMember(cat.ID)}>
+                  <div>
+                    <Button onClick={(e) => handleClickOpen(cat)}>
                       <HighlightOffIcon></HighlightOffIcon>
-                    </Button> : ""}
+                    </Button> 
+                     <Dialog
+                     open={open}
+                     onClose={handleClose}
+                     aria-labelledby="alert-dialog-title"
+                     aria-describedby="alert-dialog-description"
+                   >
+                     <DialogTitle >
+                         <Typography className={classes.title}>
+                             Bạn có thực sự muốn xóa thành viên {target.Name} ra khỏi nhóm
+                         </Typography>
+                     </DialogTitle>
+                     <DialogActions>
+                       <Button style={{ color: "white",backgroundColor: "green", marginLeft: 10 }} variant="contained" color="primary" className={classes.margin} onClick={handleClose}>
+                         Hủy
+                       </Button>
+                       <Button style={{ color: "white",backgroundColor: "red", marginLeft: 10 }} variant="contained" color="primary" className={classes.margin} onClick={(e) => handleRemoveMember(target.ID)}>
+                         Xóa
+                       </Button>
+                     </DialogActions>
+                 </Dialog>
+                 </div>
+                  : ""}
+                
                 </Box>
               </AccordionDetails>
               <Divider className={classes.divider} />
             </React.Fragment>
           )
         })}
+        
       </Accordion>
     </div>
   );
