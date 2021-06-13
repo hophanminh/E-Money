@@ -9,12 +9,12 @@ export default function DefaultIcon({ icon, backgroundSize, iconSize }) {
   const styleBackground = {
     width: backgroundSize + 'px',
     height: backgroundSize + 'px',
-    backgroundColor: icon.backgroundColor,
+    backgroundColor: icon.backgroundColor ? icon.backgroundColor : icon.BackgroundColor,
     fontSize: iconSize + 'px',
   }
 
   const styleIcon = {
-    color: icon.color,
+    color: icon.color ? icon.color : icon.Color,
     fontSize: 'inherit',
   }
 
@@ -22,7 +22,7 @@ export default function DefaultIcon({ icon, backgroundSize, iconSize }) {
     <React.Fragment>
       <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
       <Avatar style={styleBackground}>
-        <Icon style={styleIcon}>{icon.name}</Icon>
+        <Icon style={styleIcon}>{icon.name ? icon.name : icon.Name}</Icon>
       </Avatar>
     </React.Fragment>
   );

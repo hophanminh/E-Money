@@ -14,11 +14,11 @@ import {
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 
-import DefaultIcon from '../../utils/DefaultIcon';
 import AddIcon from '@material-ui/icons/Add';
 import SearchIcon from '@material-ui/icons/Search';
 import ClearIcon from '@material-ui/icons/Clear';
 
+import TemplateIcon from './TemplateIcon';
 import AddIconAdmin from './CRUDIcon/AddIcon';
 import EditIconAdmin from './CRUDIcon/EditIcon';
 import { getSocket } from '../../utils/socket';
@@ -46,6 +46,7 @@ export default function IconList() {
     });
 
     socket.on('wait_for_update_icon', ({ iconList }) => {
+      console.log(iconList);
       setIcons(iconList);
     });
 
@@ -191,8 +192,8 @@ export default function IconList() {
                   onMouseEnter={e => handlePopoverOpenParent(e, i)}
                   onMouseLeave={handlePopoverClose}>
                   <Box className={classes.iconInfo}>
-                    <DefaultIcon
-                      IconID={i.ID}
+                    <TemplateIcon
+                      icon={i}
                       backgroundSize={40}
                       iconSize={20} />
                     <Typography
