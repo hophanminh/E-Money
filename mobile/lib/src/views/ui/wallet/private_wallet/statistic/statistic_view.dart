@@ -300,7 +300,7 @@ class _StatisticState extends State<Statistic> {
                                   ),
                                   behaviors: [
                                     charts.ChartTitle(
-                                      'Tổng quan tình hình thu chi tháng ${convertToMMYYYYY(_selectedDate.toString())}',
+                                      'Tình hình thu chi tháng ${convertToMMYYYYY(_selectedDate.toString())}',
                                       subTitle: '(Đơn vị: ${formatter.currencySymbol})',
                                       behaviorPosition: charts.BehaviorPosition.top,
                                       titleOutsideJustification: charts.OutsideJustification.middle,
@@ -338,7 +338,7 @@ class _StatisticState extends State<Statistic> {
                                       child: Container(
                                           constraints: BoxConstraints(maxWidth: 450),
                                           padding: EdgeInsets.all(10),
-                                          margin: EdgeInsets.only(top: 20,bottom: 20),
+                                          margin: EdgeInsets.only(top: 20, bottom: 20),
                                           decoration: BoxDecoration(color: const Color(0xfff2f2f2), borderRadius: BorderRadius.circular(10), boxShadow: [
                                             BoxShadow(
                                               color: Colors.grey.withOpacity(0.5),
@@ -375,6 +375,7 @@ class _StatisticState extends State<Statistic> {
                                     )
                                   : Container(
                                       padding: EdgeInsets.all(20),
+                                      child: Text('Chưa có khoản thu nào.'),
                                     ),
                               _totalOutCome != 0
                                   ? FittedBox(
@@ -417,7 +418,9 @@ class _StatisticState extends State<Statistic> {
                                             ],
                                           )),
                                     )
-                                  : Container()
+                                  : Container(
+                                      child: Text('Chưa có khoản chi nào.'),
+                                    )
                             ],
                           )
                   ],

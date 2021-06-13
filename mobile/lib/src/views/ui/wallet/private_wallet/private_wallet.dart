@@ -54,9 +54,11 @@ class _IndividualWalletState extends State<IndividualWallet> {
       //{ transactionList, total, spend, receive }
       // print(data);
       walletsProvider.fetchData(data);
-      setState(() {
-        isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
     });
 
     _socket.on('wait_for_update_transaction', (data) {
@@ -83,7 +85,9 @@ class _IndividualWalletState extends State<IndividualWallet> {
       eventsProvider.fetchData(data);
     });
 
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   @override
@@ -382,12 +386,15 @@ class _IndividualWalletState extends State<IndividualWallet> {
                     ]),
                     tx.editNumber > 1
                         ? Padding(
-                          padding: const EdgeInsets.only(top: 10.0),
-                          child: Align(
+                            padding: const EdgeInsets.only(top: 10.0),
+                            child: Align(
                               alignment: Alignment.centerRight,
-                              child: Text('(Có chỉnh sửa)', style: TextStyle(fontStyle: FontStyle.italic, fontWeight: FontWeight.w300),),
+                              child: Text(
+                                '(Có chỉnh sửa)',
+                                style: TextStyle(fontStyle: FontStyle.italic, fontWeight: FontWeight.w300),
+                              ),
                             ),
-                        )
+                          )
                         : Container()
                   ],
                 ),

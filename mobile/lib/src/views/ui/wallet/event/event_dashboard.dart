@@ -77,12 +77,38 @@ class _EventDashboardState extends State<EventDashboard> {
                     return Column(
                       children: [
                         Align(alignment: Alignment.centerLeft, child: Text('Sự kiện đang diễn ra', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25))),
-                        for (Events item in eventsProvider.getFilteredList().where((element) => element.status == true)) _createRunningEventList(item),
+                        eventsProvider.eventList.where((element) => element.status == true).length == 0
+                            ? Container(
+                                padding: EdgeInsets.all(20),
+                                child: Text('Chưa có sự kiện đang chạy'),
+                              )
+                            : eventsProvider.getFilteredList().where((element) => element.status == true).length == 0
+                                ? Container(
+                                    padding: EdgeInsets.all(20),
+                                    child: Text('Không có kết quả phù hợp'),
+                                  )
+                                : Column(
+                                    children: [for (Events item in eventsProvider.getFilteredList().where((element) => element.status == true)) _createRunningEventList(item)],
+                                  ),
                         Padding(
                           padding: const EdgeInsets.only(top: 20.0),
                           child: Align(alignment: Alignment.centerLeft, child: Text('Sự kiện đã ngưng', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25))),
                         ),
-                        for (Events item in eventsProvider.getFilteredList().where((element) => element.status == false)) _createStoppedEventList(item),
+                        eventsProvider.eventList.where((element) => element.status == false).length == 0
+                            ? Container(
+                                padding: EdgeInsets.all(20),
+                                child: Text('Chưa có sự kiện đã ngưng'),
+                              )
+                            : eventsProvider.getFilteredList().where((element) => element.status == false).length == 0
+                                ? Container(
+                                    padding: EdgeInsets.all(20),
+                                    child: Text('Không có kết quả phù hợp'),
+                                  )
+                                : Column(
+                                    children: [
+                                      for (Events item in eventsProvider.getFilteredList().where((element) => element.status == false)) _createStoppedEventList(item),
+                                    ],
+                                  ),
                       ],
                     );
                   }),

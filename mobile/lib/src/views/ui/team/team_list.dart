@@ -1,16 +1,10 @@
-import 'dart:convert';
-import 'package:http/http.dart';
 import 'package:flutter/material.dart';
-import 'package:mobile/src/views/ui/wallet/team_wallet/team_wallet.dart';
-import 'package:provider/provider.dart';
 import 'package:mobile/src/models/TeamsProvider.dart';
-import 'package:mobile/src/services/restapiservices/team_service.dart';
 import 'package:mobile/src/views/ui/team/add_team.dart';
 import 'package:mobile/src/views/ui/team/join_team.dart';
-import 'package:mobile/src/views/ui/team/team_detail.dart';
+import 'package:mobile/src/views/ui/wallet/team_wallet/team_wallet.dart';
 import 'package:mobile/src/views/utils/helpers/helper.dart';
-
-import 'edit_team.dart';
+import 'package:provider/provider.dart';
 
 class TeamList extends StatefulWidget {
   final Drawer sidebar;
@@ -23,17 +17,20 @@ class TeamList extends StatefulWidget {
 
 class _TeamListState extends State<TeamList> {
   var _scaffoldKey = GlobalKey<ScaffoldMessengerState>();
-
-  final _searchController =
-      TextEditingController(text: "");
+  bool _isLoading = true;
+  final _searchController = TextEditingController(text: "");
 
   void _onHandleChangeSearchBar() {
-    Provider.of<TeamsProvider>(context, listen: false)
-        .changeSearchString(_searchController.text.trim());
+    Provider.of<TeamsProvider>(context, listen: false).changeSearchString(_searchController.text.trim());
   }
 
   void _fetchData() async {
-    Provider.of<TeamsProvider>(context, listen: false).fetchData();
+    await Provider.of<TeamsProvider>(context, listen: false).fetchData();
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override
@@ -51,6 +48,7 @@ class _TeamListState extends State<TeamList> {
 
   @override
   Widget build(BuildContext context) {
+    print(_isLoading);
     return GestureDetector(
         onTap: () {
           FocusManager.instance.primaryFocus.unfocus();
@@ -61,26 +59,27 @@ class _TeamListState extends State<TeamList> {
                 appBar: _privateWalletAppBar(),
                 drawer: widget.sidebar,
                 floatingActionButton: _privateWalletActionButton(),
-                body: RefreshIndicator(
-                    onRefresh: () =>
-                        Future.delayed(Duration(milliseconds: 500), () {
-                          FocusScope.of(context).unfocus();
-                          _searchController.clear();
-                          _fetchData();
-                        }),
-                    child: Consumer<TeamsProvider>(
-                      builder: (context, teamsProvider, child) {
-                        List<Teams> list = _searchController.text == '' ? teamsProvider.teamList : teamsProvider.getFilterList();
-                        return Stack(
-                          fit: StackFit.expand,
-                          children: [
-                            makeList(list),
-                            child,
-                          ],
-                        );
-                      },
-                      child: makeSearchBar(),
-                    )))));
+                body: _isLoading
+                    ? Center(child: CircularProgressIndicator())
+                    : RefreshIndicator(
+                        onRefresh: () => Future.delayed(Duration(milliseconds: 500), () {
+                              FocusScope.of(context).unfocus();
+                              _searchController.clear();
+                              _fetchData();
+                            }),
+                        child: Consumer<TeamsProvider>(
+                          builder: (context, teamsProvider, child) {
+                            List<Teams> list = _searchController.text == '' ? teamsProvider.teamList : teamsProvider.getFilterList();
+                            return Stack(
+                              fit: StackFit.expand,
+                              children: [
+                                makeList(list),
+                                child,
+                              ],
+                            );
+                          },
+                          child: makeSearchBar(),
+                        )))));
   }
 
   ListView makeList(List<Teams> _list) => ListView.builder(
@@ -106,11 +105,7 @@ class _TeamListState extends State<TeamList> {
         elevation: 0,
         color: Colors.transparent,
         margin: new EdgeInsets.symmetric(horizontal: 20.0, vertical: 6.0),
-        child: Material(
-            borderRadius: BorderRadius.circular(15.0),
-            color: Color.fromRGBO(64, 75, 96, .9),
-            clipBehavior: Clip.hardEdge,
-            child: makeListTile(team)),
+        child: Material(borderRadius: BorderRadius.circular(15.0), color: Color.fromRGBO(64, 75, 96, .9), clipBehavior: Clip.hardEdge, child: makeListTile(team)),
       );
 
   ListTile makeListTile(Teams team) => ListTile(
@@ -120,15 +115,10 @@ class _TeamListState extends State<TeamList> {
           children: <Widget>[
             Container(
                 padding: EdgeInsets.only(right: 12.0),
-                decoration: new BoxDecoration(
-                    border: new Border(
-                        right:
-                            new BorderSide(width: 1.0, color: Colors.white24))),
+                decoration: new BoxDecoration(border: new Border(right: new BorderSide(width: 1.0, color: Colors.white24))),
                 child: Column(children: <Widget>[
-                  Text(team.currentUsers.toString(),
-                      style: TextStyle(color: Colors.white)),
-                  Text('Người',
-                      style: TextStyle(color: Colors.white, fontSize: 10)),
+                  Text(team.currentUsers.toString(), style: TextStyle(color: Colors.white)),
+                  Text('Người', style: TextStyle(color: Colors.white, fontSize: 10)),
                 ])),
           ],
         ),
@@ -145,13 +135,8 @@ class _TeamListState extends State<TeamList> {
         ),
         onTap: () async {
           FocusScope.of(context).unfocus();
-          Provider.of<TeamsProvider>(context, listen: false)
-              .changeSelected(team);
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) =>
-                      TeamWallet(wrappingScaffoldKey: _scaffoldKey, walletId: team.walletID)));
+          Provider.of<TeamsProvider>(context, listen: false).changeSelected(team);
+          Navigator.push(context, MaterialPageRoute(builder: (context) => TeamWallet(wrappingScaffoldKey: _scaffoldKey, walletId: team.walletID)));
 
           // Navigator.push(
           //     context,
@@ -189,8 +174,7 @@ class _TeamListState extends State<TeamList> {
                         icon: Icon(Icons.clear),
                       ),
                       border: InputBorder.none,
-                      contentPadding:
-                          EdgeInsets.symmetric(horizontal: 25, vertical: 13)),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 25, vertical: 13)),
                 ),
               ),
             ),
@@ -219,11 +203,7 @@ class _TeamListState extends State<TeamList> {
   FloatingActionButton _privateWalletActionButton() => FloatingActionButton(
       onPressed: () {
         FocusScope.of(context).unfocus();
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) =>
-                    AddTeam(wrappingScaffoldKey: _scaffoldKey)));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => AddTeam(wrappingScaffoldKey: _scaffoldKey)));
       },
       tooltip: 'Thêm nhóm',
       child: Icon(Icons.add),
