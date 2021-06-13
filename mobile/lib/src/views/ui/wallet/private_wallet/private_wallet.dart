@@ -52,7 +52,7 @@ class _IndividualWalletState extends State<IndividualWallet> {
 
     _socket.emitWithAck('get_transaction', {'walletID': walletID}, ack: (data) {
       //{ transactionList, total, spend, receive }
-      // print(data['transactionList'][0]['id']);
+      // print(data);
       walletsProvider.fetchData(data);
       setState(() {
         isLoading = false;

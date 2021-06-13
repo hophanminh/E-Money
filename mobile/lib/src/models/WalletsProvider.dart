@@ -103,13 +103,13 @@ class WalletsProvider extends ChangeNotifier {
         }
       case FilterType.date:
         {
-          if(_searchYear.isEmpty && _searchMonth.isEmpty) {
+          if (_searchYear.isEmpty && _searchMonth.isEmpty) {
             return this.txList;
           }
 
           List<Transactions> result = [];
 
-          if(_searchYear.isNotEmpty) {
+          if (_searchYear.isNotEmpty) {
             int _year = int.parse(this._searchYear);
             result.addAll(this.txList.where((element) => parseInput(element.time).year == _year).toList());
           }
@@ -150,6 +150,7 @@ class Transactions {
   String eventID;
   String eventName;
   String userName;
+  String userID;
   int editNumber;
 
   Transactions(
@@ -164,6 +165,7 @@ class Transactions {
       this.eventID,
       this.eventName,
       this.userName,
+      this.userID,
       this.editNumber});
 
   @override
@@ -184,6 +186,7 @@ class Transactions {
       eventID: json['eventID'] as String,
       eventName: json['eventName'] as String,
       userName: json['userName'] as String,
+      userID: json['userID'] as String,
       editNumber: json['editNumber'] as int,
     );
   }

@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/src/models/NotificationProvider.dart';
+import 'package:mobile/src/models/UsersProvider.dart';
 import 'package:mobile/src/services/secure_storage_service.dart';
+import 'package:mobile/src/services/socketservices/socket.dart';
 import 'package:mobile/src/views/utils/helpers/helper.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:provider/provider.dart';
+import 'package:socket_io_client/socket_io_client.dart';
 
 const TextStyle myErrorTextStyle = TextStyle(fontWeight: FontWeight.bold, color: error, fontSize: 13);
 
@@ -40,91 +43,94 @@ AppBar mySimpleAppBar(String title, {Color shadow}) => AppBar(
       shadowColor: shadow,
     );
 
-Widget mySideBar({BuildContext context, @required String mainRouteName, String avatarURL, @required String name, Function setMainRoute}) => Drawer(
-      child: Column(
-        children: <Widget>[
-          DrawerHeader(
-            // margin: EdgeInsets.zero,
-            // padding: const EdgeInsets.all(0.0),
-            decoration: BoxDecoration(
-              color: primary,
-              image: DecorationImage(image: AssetImage('assets/images/sidebar.png'), fit: BoxFit.fill, colorFilter: ColorFilter.mode(Colors.white10, BlendMode.darken)),
-            ),
-            child: Row(
-              children: [
-                myCircleAvatar(avatarURL, 35),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Text(
-                      name,
-                      style: TextStyle(fontSize: 25, color: Colors.white),
-                      overflow: TextOverflow.ellipsis,
-                    ),
+Widget mySideBar({BuildContext context, @required String mainRouteName, String avatarURL, @required String name, Function setMainRoute}) {
+  return Drawer(
+    child: Column(
+      children: <Widget>[
+        DrawerHeader(
+          // margin: EdgeInsets.zero,
+          // padding: const EdgeInsets.all(0.0),
+          decoration: BoxDecoration(
+            color: primary,
+            image: DecorationImage(image: AssetImage('assets/images/sidebar.png'), fit: BoxFit.fill, colorFilter: ColorFilter.mode(Colors.white10, BlendMode.darken)),
+          ),
+          child: Row(
+            children: [
+              myCircleAvatar(avatarURL, 35),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Text(
+                    name,
+                    style: TextStyle(fontSize: 25, color: Colors.white),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-          Expanded(
-            child: ListView(
-              padding: EdgeInsets.zero,
-              children: [
-                _createDrawerItem(
-                    title: 'Thông tin cá nhân',
-                    icon: Icons.info_outline,
-                    mainRouteName: 'profile' == mainRouteName,
-                    onTap: () {
-                      Navigator.pop(context);
-                      setMainRoute('profile');
-                    }),
-                _createDrawerItem(
-                    title: 'Đổi mật khẩu',
-                    icon: Icons.lock,
-                    mainRouteName: 'changepassword' == mainRouteName,
-                    onTap: () {
-                      Navigator.pop(context);
-                      setMainRoute('changepassword');
-                    }),
-                Divider(
-                  thickness: 0.75,
-                ),
-                _createDrawerItem(
-                    title: 'Ví cá nhân',
-                    icon: Icons.account_balance_wallet_outlined,
-                    mainRouteName: 'privateWallet' == mainRouteName,
-                    onTap: () {
-                      Navigator.pop(context);
-                      setMainRoute('privateWallet');
-                    }),
-                _createDrawerItem(
-                    title: 'Danh sách nhóm',
-                    icon: Icons.group_outlined,
-                    mainRouteName: 'teamList' == mainRouteName,
-                    onTap: () {
-                      Navigator.pop(context);
-                      setMainRoute('teamList');
-                    }),
-                _createNotificationItem('notifications' == mainRouteName, () {
-                  Navigator.pop(context);
-                  setMainRoute('notifications');
-                })
-              ],
-            ),
+        ),
+        Expanded(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              _createDrawerItem(
+                  title: 'Thông tin cá nhân',
+                  icon: Icons.info_outline,
+                  mainRouteName: 'profile' == mainRouteName,
+                  onTap: () {
+                    Navigator.pop(context);
+                    setMainRoute('profile');
+                  }),
+              _createDrawerItem(
+                  title: 'Đổi mật khẩu',
+                  icon: Icons.lock,
+                  mainRouteName: 'changepassword' == mainRouteName,
+                  onTap: () {
+                    Navigator.pop(context);
+                    setMainRoute('changepassword');
+                  }),
+              Divider(
+                thickness: 0.75,
+              ),
+              _createDrawerItem(
+                  title: 'Ví cá nhân',
+                  icon: Icons.account_balance_wallet_outlined,
+                  mainRouteName: 'privateWallet' == mainRouteName,
+                  onTap: () {
+                    Navigator.pop(context);
+                    setMainRoute('privateWallet');
+                  }),
+              _createDrawerItem(
+                  title: 'Danh sách nhóm',
+                  icon: Icons.group_outlined,
+                  mainRouteName: 'teamList' == mainRouteName,
+                  onTap: () {
+                    Navigator.pop(context);
+                    setMainRoute('teamList');
+                  }),
+              _createNotificationItem('notifications' == mainRouteName, () {
+                Navigator.pop(context);
+                setMainRoute('notifications');
+              })
+            ],
           ),
-          Divider(
-            thickness: 0.75,
-          ),
-          _createDrawerItem(
-              title: 'Đăng xuất',
-              icon: Icons.logout,
-              onTap: () {
-                SecureStorage.deleteAllSecureData();
-                Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
-              }),
-        ],
-      ),
-    );
+        ),
+        Divider(
+          thickness: 0.75,
+        ),
+        _createDrawerItem(
+            title: 'Đăng xuất',
+            icon: Icons.logout,
+            onTap: () {
+              clearSocket();
+              SecureStorage.deleteAllSecureData();
+              Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+            }),
+      ],
+    ),
+  );
+}
 
 Widget _createDrawerItem({IconData icon, String title, Function onTap, bool mainRouteName}) => ListTile(
       title: Row(

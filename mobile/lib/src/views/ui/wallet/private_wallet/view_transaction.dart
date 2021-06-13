@@ -384,22 +384,20 @@ class _ViewTransactionState extends State<ViewTransaction> {
             Navigator.push(context, MaterialPageRoute(builder: (context) => EditTransaction(wrappingScaffoldKey: _scaffoldKey)));
           },
         ),
-        // Provider.of<WalletsProvider>(context, listen: false).selected.editNumber > 1 ?
         IconButton(
-                icon: Icon(
-                  Icons.history,
-                  size: 26,
-                ),
-                onPressed: () {
-                  showDialog(
-                      context: context,
-                      builder: (_) => TxChangedDiaryDialog(
-                            wrappingScaffoldKey: _scaffoldKey,
-                            walletID: Provider.of<UsersProvider>(context, listen: false).info.walletID,
-                          ));
-                },
-              )
-            // : Container()
+          icon: Icon(
+            Icons.history,
+            size: 26,
+          ),
+          onPressed: () {
+            showDialog(
+                context: context,
+                builder: (_) => TxChangedDiaryDialog(
+                      wrappingScaffoldKey: _scaffoldKey,
+                      walletID: Provider.of<UsersProvider>(context, listen: false).info.walletID,
+                    ));
+          },
+        )
       ],
       backgroundColor: primary,
       centerTitle: true);

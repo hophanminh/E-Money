@@ -78,15 +78,19 @@ class _DashboardState extends State<Dashboard> {
         false;
   }
 
+  sidebar(UsersProvider usersProvider) =>
+      mySideBar(context: context, name: usersProvider.info.name, avatarURL: usersProvider.info.avatarURL, setMainRoute: setMainRoute, mainRouteName: mainRouteName);
+
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(statusBarColor: Colors.transparent));
-    Drawer sideBar = mySideBar(context: context, name: widget.user['Name'], avatarURL: widget.user['AvatarURL'], setMainRoute: setMainRoute, mainRouteName: mainRouteName);
+    // Drawer sideBar = ;
 
     return WillPopScope(
-      onWillPop: _onWillPop,
-      child: ScaffoldMessenger(child: createDashboardPage(sideBar)),
-    );
+        onWillPop: _onWillPop,
+        child: Consumer<UsersProvider>(builder: (context, usersProvider, child) {
+          return ScaffoldMessenger(child: createDashboardPage(sidebar(usersProvider)));
+        }));
   }
 
   Widget createDashboardPage(sidebar) {
@@ -96,13 +100,10 @@ class _DashboardState extends State<Dashboard> {
       return TeamList(sidebar: sidebar);
     } else if (mainRouteName == 'notifications') {
       return NotificationsPage(sidebar: sidebar);
-    }
-    else if (mainRouteName == 'profile') {
+    } else if (mainRouteName == 'profile') {
       return ProfilePage(sidebar: sidebar);
-    }
-    else if (mainRouteName == 'changepassword') {
+    } else if (mainRouteName == 'changepassword') {
       return ChangePasswordPage(sidebar: sidebar);
     }
-
   }
 }

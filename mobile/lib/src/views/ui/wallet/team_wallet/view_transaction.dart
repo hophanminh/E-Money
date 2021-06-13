@@ -5,15 +5,16 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mobile/src/models/TeamsProvider.dart';
 import 'package:mobile/src/models/WalletsProvider.dart';
 import 'package:mobile/src/services/icon_service.dart';
 import 'package:mobile/src/services/restapiservices/wallet_service.dart';
 import 'package:mobile/src/services/socketservices/socket.dart';
 import 'package:mobile/src/views/ui/profile/avatar_picker_menu.dart';
+import 'package:mobile/src/views/ui/wallet/rollback/rollback_view.dart';
 import 'package:mobile/src/views/ui/wallet/team_wallet/delete_transaction_image.dart';
 import 'package:mobile/src/views/ui/wallet/team_wallet/edit_transaction.dart';
 import 'package:mobile/src/views/utils/helpers/helper.dart';
-import 'package:mobile/src/views/utils/widgets/widget.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
@@ -22,8 +23,9 @@ import 'package:socket_io_client/socket_io_client.dart';
 
 class ViewTransaction extends StatefulWidget {
   final String txId;
+  final bool isEditable;
 
-  const ViewTransaction({Key key, @required this.txId}) : super(key: key);
+  const ViewTransaction({Key key, @required this.txId, @required this.isEditable}) : super(key: key);
 
   @override
   _ViewTransactionState createState() => _ViewTransactionState();
@@ -178,12 +180,14 @@ class _ViewTransactionState extends State<ViewTransaction> {
                                           ),
                                         ],
                                       ),
-                                      child: selectedIcon.name == '' ? Container() : Icon(
-                                        IconData(int.parse('${OMIcons.codePoints[selectedIcon.name]}'),
-                                            fontFamily: 'outline_material_icons', fontPackage: 'outline_material_icons'),
-                                        size: 90,
-                                        color: Colors.white,
-                                      ))),
+                                      child: selectedIcon.name == ''
+                                          ? Container()
+                                          : Icon(
+                                              IconData(int.parse('${OMIcons.codePoints[selectedIcon.name]}'),
+                                                  fontFamily: 'outline_material_icons', fontPackage: 'outline_material_icons'),
+                                              size: 90,
+                                              color: Colors.white,
+                                            ))),
                               Text(
                                 walletsProvider.selected.categoryName,
                                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
@@ -199,10 +203,9 @@ class _ViewTransactionState extends State<ViewTransaction> {
                           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 45, color: walletsProvider.selected.price > 0 ? Colors.green : Colors.red),
                         ),
                       ),
-                      _createDetail('Người tạo', walletsProvider.selected.userName, Icon(Icons.people)),
+                      _createDetail('Người tạo', walletsProvider.selected.userName ?? 'Hệ thống', Icon(Icons.people)),
                       _createDetail('Ngày giao dịch', convertToDDMMYYYYHHMM(walletsProvider.selected.time), Icon(Icons.looks_one)),
-                      _createDetail(
-                          'Sự kiện', walletsProvider.selected.eventName == null ? 'Không có sự kiện được chọn' : walletsProvider.selected.eventName, Icon(Icons.event_available)),
+                      _createDetail('Sự kiện', walletsProvider.selected.eventName ?? 'Không có sự kiện được chọn', Icon(Icons.event_available)),
                       _createDetail('Ghi chú', walletsProvider.selected.description.length == 0 ? 'Không có chú thích được tạo' : walletsProvider.selected.description,
                           Icon(Icons.textsms_outlined)),
                       _createTxImageListView()
@@ -375,14 +378,30 @@ class _ViewTransactionState extends State<ViewTransaction> {
       shadowColor: Colors.transparent,
       iconTheme: IconThemeData(color: Colors.white),
       title: Text('Chi tiết giao dịch', style: TextStyle(color: Colors.white)),
-      actions: [
-        IconButton(
-          icon: Icon(Icons.edit, size: 26),
-          onPressed: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => EditTransaction(wrappingScaffoldKey: _scaffoldKey)));
-          },
-        )
-      ],
+      actions: widget.isEditable
+          ? [
+              IconButton(
+                icon: Icon(Icons.edit, size: 26),
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => EditTransaction(wrappingScaffoldKey: _scaffoldKey)));
+                },
+              ),
+              IconButton(
+                icon: Icon(
+                  Icons.history,
+                  size: 26,
+                ),
+                onPressed: () {
+                  showDialog(
+                      context: context,
+                      builder: (_) => TxChangedDiaryDialog(
+                            wrappingScaffoldKey: _scaffoldKey,
+                            walletID: Provider.of<TeamsProvider>(context, listen: false).selected.walletID,
+                          ));
+                },
+              )
+            ]
+          : [Container()],
       backgroundColor: primary,
       centerTitle: true);
 
