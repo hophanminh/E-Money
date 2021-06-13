@@ -5,6 +5,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mobile/src/models/UsersProvider.dart';
 import 'package:mobile/src/models/WalletsProvider.dart';
 import 'package:mobile/src/services/icon_service.dart';
 import 'package:mobile/src/services/restapiservices/wallet_service.dart';
@@ -12,8 +13,8 @@ import 'package:mobile/src/services/socketservices/socket.dart';
 import 'package:mobile/src/views/ui/profile/avatar_picker_menu.dart';
 import 'package:mobile/src/views/ui/wallet/private_wallet/delete_transaction_image.dart';
 import 'package:mobile/src/views/ui/wallet/private_wallet/edit_transaction.dart';
+import 'package:mobile/src/views/ui/wallet/rollback/rollback_view.dart';
 import 'package:mobile/src/views/utils/helpers/helper.dart';
-import 'package:mobile/src/views/utils/widgets/widget.dart';
 import 'package:outline_material_icons/outline_material_icons.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
@@ -178,12 +179,14 @@ class _ViewTransactionState extends State<ViewTransaction> {
                                           ),
                                         ],
                                       ),
-                                      child: selectedIcon.name == '' ? Container() : Icon(
-                                        IconData(int.parse('${OMIcons.codePoints[selectedIcon.name]}'),
-                                            fontFamily: 'outline_material_icons', fontPackage: 'outline_material_icons'),
-                                        size: 90,
-                                        color: Colors.white,
-                                      ))),
+                                      child: selectedIcon.name == ''
+                                          ? Container()
+                                          : Icon(
+                                              IconData(int.parse('${OMIcons.codePoints[selectedIcon.name]}'),
+                                                  fontFamily: 'outline_material_icons', fontPackage: 'outline_material_icons'),
+                                              size: 90,
+                                              color: Colors.white,
+                                            ))),
                               Text(
                                 walletsProvider.selected.categoryName,
                                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
@@ -199,7 +202,7 @@ class _ViewTransactionState extends State<ViewTransaction> {
                           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 45, color: walletsProvider.selected.price > 0 ? Colors.green : Colors.red),
                         ),
                       ),
-                      _createDetail('Ngày giao dịch', convertToDDMMYYYYHHMM(walletsProvider.selected.time), Icon(Icons.looks_one)),
+                      _createDetail('Ngày giao dịch', convertToDDMMYYYYHHMM(walletsProvider.selected.time), Icon(Icons.looks_one_outlined)),
                       _createDetail(
                           'Sự kiện', walletsProvider.selected.eventName == null ? 'Không có sự kiện được chọn' : walletsProvider.selected.eventName, Icon(Icons.event_available)),
                       _createDetail('Ghi chú', walletsProvider.selected.description.length == 0 ? 'Không có chú thích được tạo' : walletsProvider.selected.description,
@@ -379,6 +382,20 @@ class _ViewTransactionState extends State<ViewTransaction> {
           icon: Icon(Icons.edit, size: 26),
           onPressed: () {
             Navigator.push(context, MaterialPageRoute(builder: (context) => EditTransaction(wrappingScaffoldKey: _scaffoldKey)));
+          },
+        ),
+        IconButton(
+          icon: Icon(
+            Icons.history,
+            size: 26,
+          ),
+          onPressed: () {
+            showDialog(
+                context: context,
+                builder: (_) => TxChangedDiaryDialog(
+                      wrappingScaffoldKey: _scaffoldKey,
+                      walletID: Provider.of<UsersProvider>(context, listen: false).info.walletID,
+                    ));
           },
         )
       ],

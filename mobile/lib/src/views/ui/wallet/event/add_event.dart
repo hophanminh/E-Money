@@ -68,8 +68,9 @@ class _AddEventState extends State<AddEvent> {
   void initState() {
     _initPage();
     super.initState();
+    EventsProvider eventsProvider = Provider.of<EventsProvider>(context, listen: false);
 
-    _currentEventType = null;
+    _currentEventType = eventsProvider.eventTypeList[0].id;
 
     _handleChangeEventType(_currentEventType);
 
@@ -175,7 +176,8 @@ class _AddEventState extends State<AddEvent> {
                               );
                             }).toList(),
                             onChanged: (value) {
-                              _handleChangeEventType(value);
+                              print(value);
+                            _handleChangeEventType(value);
                             },
                             onTap: () {
                               FocusManager.instance.primaryFocus

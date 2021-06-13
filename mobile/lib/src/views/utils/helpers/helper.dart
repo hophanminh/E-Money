@@ -111,6 +111,15 @@ String convertToDDMMYYYYHHMM(String input) {
   }
 }
 
+String convertToHHMMDDMMYYYY(String input) {
+  try {
+    DateTime tempDate = DateTime.parse(input);
+    return DateFormat('HH:mm - dd/MM/yyyy').format(tempDate.toLocal());
+  } catch (error) {
+    return "";
+  }
+}
+
 String convertToMMYYYYY(String input, {bool isShortYear = false}) {
   try {
     DateTime tempDate = DateTime.parse(input);
@@ -150,7 +159,21 @@ String timeRemaining(String input) {
   Duration remaining = temp.difference(DateTime.now());
   int days = remaining.inDays;
   int hours = remaining.inHours;
-  return days > 0 ? '${days} ngày' : '${hours} giờ';
+  int mins = remaining.inMinutes;
+  int secs = remaining.inSeconds;
+
+  if (days > 0) {
+    return '${days} ngày';
+  }
+
+  if (hours > 0) {
+    return '${hours} giờ';
+  }
+
+  if (mins > 0) {
+    return '${mins} phút';
+  }
+  return '${secs} giây';
 }
 
 final everyWeek = [

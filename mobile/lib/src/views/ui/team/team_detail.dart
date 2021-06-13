@@ -18,8 +18,9 @@ import 'leave_team.dart';
 
 class TeamDetail extends StatefulWidget {
   final GlobalKey<ScaffoldMessengerState> wrappingScaffoldKey;
+  final bool isAdmin;
 
-  const TeamDetail({Key key, @required this.wrappingScaffoldKey}) : super(key: key);
+  const TeamDetail({Key key, @required this.wrappingScaffoldKey, @required this.isAdmin}) : super(key: key);
 
   @override
   _TeamDetailState createState() => _TeamDetailState();
@@ -27,35 +28,36 @@ class TeamDetail extends StatefulWidget {
 
 class _TeamDetailState extends State<TeamDetail> {
   var _scaffoldKey = GlobalKey<ScaffoldMessengerState>();
-  bool roles = true;
+
+  // bool roles = true;
 
   @override
   void initState() {
-    _initPage();
+    // _initPage();
     super.initState();
   }
 
-  _initPage() async {
-    String id = Provider.of<TeamsProvider>(context, listen: false).selected.id;
-    Response res = await TeamService.instance.getRoles(id);
-    if (res == null || res.statusCode != 200) {
-      throw Exception("Không lấy được dữ liệu từ server");
-    }
-    Map<String, dynamic> body = jsonDecode(res.body);
-
-    if (!mounted) {
-      return;
-    }
-    if (body['info']['Role'] == Properties.ROLE_ADMIN && body['info']['Status'] == Properties.ROLE_ACTIVE) {
-      setState(() {
-        roles = true;
-      });
-    } else {
-      setState(() {
-        roles = false;
-      });
-    }
-  }
+  // _initPage() async {
+  //   String id = Provider.of<TeamsProvider>(context, listen: false).selected.id;
+  //   Response res = await TeamService.instance.getRoles(id);
+  //   if (res == null || res.statusCode != 200) {
+  //     throw Exception("Không lấy được dữ liệu từ server");
+  //   }
+  //   Map<String, dynamic> body = jsonDecode(res.body);
+  //
+  //   if (!mounted) {
+  //     return;
+  //   }
+  //   if (body['info']['Role'] == Properties.ROLE_ADMIN && body['info']['Status'] == Properties.ROLE_ACTIVE) {
+  //     setState(() {
+  //       roles = true;
+  //     });
+  //   } else {
+  //     setState(() {
+  //       roles = false;
+  //     });
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -153,7 +155,7 @@ class _TeamDetailState extends State<TeamDetail> {
                         child: GestureDetector(
                           onTap: () async {
                             Teams temp = Provider.of<TeamsProvider>(context, listen: false).selected;
-                            if (roles) {
+                            if (widget.isAdmin) {
                               var result = await showDialog(
                                   context: context,
                                   builder: (_) => DeleteTeamDialog(
@@ -191,13 +193,13 @@ class _TeamDetailState extends State<TeamDetail> {
                                     Padding(
                                       padding: const EdgeInsets.only(right: 20),
                                       child: Icon(
-                                        roles ? Icons.clear : Icons.clear,
+                                        widget.isAdmin ? Icons.clear : Icons.logout,
                                         color: Colors.white,
                                         size: 28,
                                       ),
                                     ),
                                     Text(
-                                      roles ? "Xóa nhóm" : 'Rời nhóm',
+                                      widget.isAdmin ? "Xóa nhóm" : 'Rời nhóm',
                                       style: TextStyle(
                                         fontWeight: FontWeight.w600,
                                         fontSize: 18,
@@ -305,6 +307,7 @@ class _TeamDetailState extends State<TeamDetail> {
             context,
             MaterialPageRoute(
                 builder: (context) => TeamUser(
+                      isAdmin: widget.isAdmin,
                       team: Provider.of<TeamsProvider>(context, listen: false).selected,
                       wrappingScaffoldKey: _scaffoldKey,
                     )));

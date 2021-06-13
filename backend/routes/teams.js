@@ -76,9 +76,10 @@ router.post('/:teamID/roles', async (req, res) => {
   const { userID } = req.body;
   const info = await TeamHasUserModel.getTHUByUserIdAndTeamID(userID, teamID);
   if (info.length === 0) {
-    return res.status(200).send({ info: info[0] });
-  } else {
     return res.status(400).send({ msg: "Không tìm thấy nhóm." })
+
+  } else {
+    return res.status(200).send({ info: info[0] });
   }
 })
 

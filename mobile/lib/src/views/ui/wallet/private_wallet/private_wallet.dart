@@ -52,7 +52,7 @@ class _IndividualWalletState extends State<IndividualWallet> {
 
     _socket.emitWithAck('get_transaction', {'walletID': walletID}, ack: (data) {
       //{ transactionList, total, spend, receive }
-      // print(data['transactionList'][0]['id']);
+      // print(data);
       walletsProvider.fetchData(data);
       setState(() {
         isLoading = false;
@@ -117,8 +117,7 @@ class _IndividualWalletState extends State<IndividualWallet> {
                 ? Center(child: CircularProgressIndicator())
                 : Container(
                     // height: MediaQuery.of(context).size.height,
-                    child: Center(child: Consumer<WalletsProvider>(
-                        builder: (context, walletsProvider, child) {
+                    child: Center(child: Consumer<WalletsProvider>(builder: (context, walletsProvider, child) {
                       return SingleChildScrollView(
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
@@ -127,66 +126,43 @@ class _IndividualWalletState extends State<IndividualWallet> {
                               children: [
                                 Container(
                                   padding: EdgeInsets.all(20),
-                                  margin: EdgeInsets.only(
-                                      bottom: 20, left: 5, right: 5, top: 20),
+                                  margin: EdgeInsets.only(bottom: 20, left: 5, right: 5, top: 20),
                                   width: MediaQuery.of(context).size.width,
                                   decoration: BoxDecoration(
-                                      gradient: LinearGradient(
-                                          begin: Alignment.bottomLeft,
-                                          end: Alignment.topRight,
-                                          colors: [
-                                            primary,
-                                            Colors.lightGreenAccent
-                                          ]),
+                                      gradient: LinearGradient(begin: Alignment.bottomLeft, end: Alignment.topRight, colors: [primary, Colors.lightGreenAccent]),
                                       borderRadius: BorderRadius.circular(12)),
                                   child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         'Tổng số dư: ',
-                                        style: TextStyle(
-                                            fontSize: 20, color: Colors.white),
+                                        style: TextStyle(fontSize: 20, color: Colors.white),
                                       ),
                                       Text(
                                         '${formatMoneyWithSymbol(walletsProvider.total)}',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 20,
-                                            color: Colors.white),
+                                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.white),
                                       ),
                                     ],
                                   ),
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.all(15),
-                                  child: Text('Báo cáo nhanh ${getThisMonth()}',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 20)),
+                                  child: Text('Báo cáo nhanh ${getThisMonth()}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
                                 ),
                                 Row(
                                   children: [
                                     Expanded(
                                       child: Container(
-                                        decoration: BoxDecoration(
-                                            border: Border(
-                                                right: BorderSide(
-                                                    width: 1,
-                                                    color: Colors.black12))),
+                                        decoration: BoxDecoration(border: Border(right: BorderSide(width: 1, color: Colors.black12))),
                                         alignment: Alignment.center,
                                         child: Column(
                                           children: [
                                             Text('Tổng thu ${getThisMonth()}'),
                                             Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
+                                              padding: const EdgeInsets.all(8.0),
                                               child: Text(
                                                 '${formatMoneyWithSymbol(walletsProvider.receive)}',
-                                                style: TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    color: Colors.green,
-                                                    fontSize: 21),
+                                                style: TextStyle(fontWeight: FontWeight.bold, color: Colors.green, fontSize: 21),
                                               ),
                                             ),
                                           ],
@@ -200,18 +176,12 @@ class _IndividualWalletState extends State<IndividualWallet> {
                                             alignment: Alignment.center,
                                             child: Column(
                                               children: [
-                                                Text(
-                                                    'Tổng chi ${getThisMonth()}'),
+                                                Text('Tổng chi ${getThisMonth()}'),
                                                 Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(8.0),
+                                                  padding: const EdgeInsets.all(8.0),
                                                   child: Text(
                                                     '${formatMoneyWithSymbol(walletsProvider.spent)}',
-                                                    style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        color: Colors.red,
-                                                        fontSize: 21),
+                                                    style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red, fontSize: 21),
                                                   ),
                                                 )
                                               ],
@@ -223,48 +193,28 @@ class _IndividualWalletState extends State<IndividualWallet> {
                                   ],
                                 ),
                                 Padding(
-                                  padding: const EdgeInsets.only(
-                                      top: 40, bottom: 10),
-                                  child: Text('Danh sách tất cả giao dịch',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 20)),
+                                  padding: const EdgeInsets.only(top: 40, bottom: 10),
+                                  child: Text('Danh sách tất cả giao dịch', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
                                 ),
                                 DefaultTextStyle(
-                                  style: TextStyle(
-                                      color: Colors.grey, fontSize: 16),
+                                  style: TextStyle(color: Colors.grey, fontSize: 16),
                                   child: Container(
                                     height: 70,
                                     margin: EdgeInsets.fromLTRB(10, 10, 0, 10),
                                     child: ListView(
                                       scrollDirection: Axis.horizontal,
                                       children: <Widget>[
-                                        _createFilterOption(
-                                            'Tất cả',
-                                            (Icons
-                                                .format_list_bulleted_outlined),
-                                            FilterType.all),
-                                        _createFilterOption(
-                                            'Hạng mục',
-                                            (Icons.category_outlined),
-                                            FilterType.category),
-                                        _createFilterOption(
-                                            'Thời gian',
-                                            (Icons.calendar_today),
-                                            FilterType.date),
+                                        _createFilterOption('Tất cả', (Icons.format_list_bulleted_outlined), FilterType.all),
+                                        _createFilterOption('Hạng mục', (Icons.category_outlined), FilterType.category),
+                                        _createFilterOption('Thời gian', (Icons.calendar_today), FilterType.date),
                                       ],
                                     ),
                                   ),
                                 ),
                                 _selectedFilterType == FilterType.category
-                                    ? mySearchBar(context, _searchController,
-                                        'Tìm kiếm tên hạng mục...')
-                                    : (_selectedFilterType == FilterType.date
-                                        ? _makeDropdown()
-                                        : Container()),
-                                walletsProvider.txList.length == 0
-                                    ? Text('(Chưa có giao dịch được ghi)')
-                                    : Container(),
+                                    ? mySearchBar(context, _searchController, 'Tìm kiếm tên hạng mục...')
+                                    : (_selectedFilterType == FilterType.date ? _makeDropdown() : Container()),
+                                walletsProvider.txList.length == 0 ? Text('(Chưa có giao dịch được ghi)') : Container(),
                               ],
                             ),
                             ConstrainedBox(
@@ -276,19 +226,11 @@ class _IndividualWalletState extends State<IndividualWallet> {
                                   scrollDirection: Axis.vertical,
                                   physics: NeverScrollableScrollPhysics(),
                                   shrinkWrap: true,
-                                  itemCount: walletsProvider
-                                      .getFilterList(_selectedFilterType)
-                                      .length,
-                                  itemBuilder:
-                                      (BuildContext context, int index) {
-                                    List<Transactions> list = walletsProvider
-                                        .getFilterList(_selectedFilterType);
+                                  itemCount: walletsProvider.getFilterList(_selectedFilterType).length,
+                                  itemBuilder: (BuildContext context, int index) {
+                                    List<Transactions> list = walletsProvider.getFilterList(_selectedFilterType);
                                     if (index == list.length - 1) {
-                                      return Padding(
-                                          padding:
-                                              const EdgeInsets.only(bottom: 60),
-                                          child:
-                                              _createCompactTxn(list[index]));
+                                      return Padding(padding: const EdgeInsets.only(bottom: 60), child: _createCompactTxn(list[index]));
                                     }
                                     return _createCompactTxn(list[index]);
                                   },
@@ -303,8 +245,7 @@ class _IndividualWalletState extends State<IndividualWallet> {
   }
 
   void _handleChangeFilterType(FilterType type) {
-    Provider.of<WalletsProvider>(context, listen: false)
-        .changeSearchString(_searchController.text = '');
+    Provider.of<WalletsProvider>(context, listen: false).changeSearchString(_searchController.text = '');
     Provider.of<WalletsProvider>(context, listen: false).changeSearchMonth('');
     Provider.of<WalletsProvider>(context, listen: false).changeSearchYear('');
 
@@ -314,8 +255,7 @@ class _IndividualWalletState extends State<IndividualWallet> {
   }
 
   void _onHandleChangeSearchBar() {
-    Provider.of<WalletsProvider>(context, listen: false)
-        .changeSearchString(_searchController.text.trim());
+    Provider.of<WalletsProvider>(context, listen: false).changeSearchString(_searchController.text.trim());
   }
 
   _createFilterOption(String label, IconData icon, FilterType type) {
@@ -363,19 +303,12 @@ class _IndividualWalletState extends State<IndividualWallet> {
   }
 
   _createCompactTxn(Transactions tx) {
-    IconCustom selectedIcon = _iconList.firstWhere(
-        (element) => element.id == tx.iconID,
-        orElse: () =>
-            new IconCustom(id: '', name: '', color: '', backgroundColor: ''));
+    IconCustom selectedIcon = _iconList.firstWhere((element) => element.id == tx.iconID, orElse: () => new IconCustom(id: '', name: '', color: '', backgroundColor: ''));
     return Card(
       child: GestureDetector(
         onTap: () {
-          Provider.of<WalletsProvider>(context, listen: false)
-              .changeSelected(tx);
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => ViewTransaction(txId: tx.id)));
+          Provider.of<WalletsProvider>(context, listen: false).changeSelected(tx);
+          Navigator.push(context, MaterialPageRoute(builder: (context) => ViewTransaction(txId: tx.id)));
         },
         child: Slidable(
           actionPane: SlidableDrawerActionPane(),
@@ -386,13 +319,8 @@ class _IndividualWalletState extends State<IndividualWallet> {
                 color: Colors.blue,
                 icon: Icons.edit,
                 onTap: () async {
-                  Provider.of<WalletsProvider>(context, listen: false)
-                      .changeSelected(tx);
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => EditTransaction(
-                              wrappingScaffoldKey: _scaffoldKey)));
+                  Provider.of<WalletsProvider>(context, listen: false).changeSelected(tx);
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => EditTransaction(wrappingScaffoldKey: _scaffoldKey)));
                 }),
             IconSlideAction(
               caption: 'Xóa',
@@ -412,13 +340,16 @@ class _IndividualWalletState extends State<IndividualWallet> {
               margin: const EdgeInsets.symmetric(vertical: 10.0),
               child: Container(
                 padding: EdgeInsets.fromLTRB(10, 15, 10, 5),
-                child: Row(children: [
-                  Container(
-                      margin: EdgeInsets.only(left: 6, right: 15), width: 50, height: 50, child: myCircleIcon(selectedIcon.name, selectedIcon.backgroundColor, selectedIcon.color)),
-                  Expanded(
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
+                child: Column(
+                  children: [
+                    Row(children: [
+                      Container(
+                          margin: EdgeInsets.only(left: 6, right: 15),
+                          width: 50,
+                          height: 50,
+                          child: myCircleIcon(selectedIcon.name, selectedIcon.backgroundColor, selectedIcon.color)),
+                      Expanded(
+                        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                           Text(
                             '${tx.categoryName}',
                             style: TextStyle(fontWeight: FontWeight.bold),
@@ -427,36 +358,39 @@ class _IndividualWalletState extends State<IndividualWallet> {
                             padding: const EdgeInsets.only(top: 8.0),
                             child: Text(
                               '${convertToDDMMYYYYHHMM(tx.time)}',
-                              style: TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.w300,
-                                  fontSize: 14),
+                              style: TextStyle(color: Colors.black, fontWeight: FontWeight.w400, fontSize: 16),
                             ),
                           ),
                           Padding(
                               padding: const EdgeInsets.only(top: 10),
-                              child: tx.description != null &&
-                                      tx.description.length > 0
-                                  ? Text(tx.description.length < 50
-                                      ? tx.description
-                                      : tx.description
-                                              .toString()
-                                              .substring(0, 50) +
-                                          ' ...')
+                              child: tx.description != null && tx.description.length > 0
+                                  ? Text(
+                                      tx.description.length < 50 ? tx.description : tx.description.toString().substring(0, 50) + ' ...',
+                                      style: TextStyle(fontWeight: FontWeight.w300),
+                                    )
                                   : Container())
                         ]),
-                  ),
-                  Padding(
-                      padding: const EdgeInsets.only(left: 10),
-                      child: Align(
-                          alignment: Alignment.centerRight,
-                          child: Text(
-                            '${formatMoneyWithSymbol(tx.price)}',
-                            style: TextStyle(
-                                color: tx.price < 0 ? Colors.red : Colors.green,
-                                fontWeight: FontWeight.bold),
-                          )))
-                ]),
+                      ),
+                      Padding(
+                          padding: const EdgeInsets.only(left: 10),
+                          child: Align(
+                              alignment: Alignment.centerRight,
+                              child: Text(
+                                '${formatMoneyWithSymbol(tx.price)}',
+                                style: TextStyle(color: tx.price < 0 ? Colors.red : Colors.green, fontWeight: FontWeight.bold),
+                              )))
+                    ]),
+                    tx.editNumber > 1
+                        ? Padding(
+                          padding: const EdgeInsets.only(top: 10.0),
+                          child: Align(
+                              alignment: Alignment.centerRight,
+                              child: Text('(Có chỉnh sửa)', style: TextStyle(fontStyle: FontStyle.italic, fontWeight: FontWeight.w300),),
+                            ),
+                        )
+                        : Container()
+                  ],
+                ),
               )),
         ),
       ),
@@ -524,24 +458,14 @@ class _IndividualWalletState extends State<IndividualWallet> {
           onSelected: (route) {
             print(route);
             // Note You must create respective pages for navigation
-            String walletId = Provider.of<UsersProvider>(context, listen: false)
-                .info
-                .walletID;
+            String walletId = Provider.of<UsersProvider>(context, listen: false).info.walletID;
 
             switch (int.parse(route)) {
               case 1:
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            CategoryDashboard(walletID: walletId)));
+                Navigator.push(context, MaterialPageRoute(builder: (context) => CategoryDashboard(walletID: walletId)));
                 break;
               case 2:
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            EventDashboard(walletID: walletId)));
+                Navigator.push(context, MaterialPageRoute(builder: (context) => EventDashboard(walletID: walletId)));
                 break;
               case 3:
                 Navigator.push(context, MaterialPageRoute(builder: (context) => Statistic()));
@@ -555,11 +479,7 @@ class _IndividualWalletState extends State<IndividualWallet> {
 
   FloatingActionButton _privateWalletActionButton() => FloatingActionButton(
       onPressed: () {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) =>
-                    AddTransaction(wrappingScaffoldKey: _scaffoldKey)));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => AddTransaction(wrappingScaffoldKey: _scaffoldKey)));
       },
       tooltip: 'Thêm giao dịch',
       child: Icon(Icons.add),
@@ -602,14 +522,12 @@ class _IndividualWalletState extends State<IndividualWallet> {
               padding: const EdgeInsets.only(right: 10.0),
               child: DropdownButtonFormField(
                   onChanged: (value) {
-                    Provider.of<WalletsProvider>(context, listen: false)
-                        .changeSearchYear(value);
+                    Provider.of<WalletsProvider>(context, listen: false).changeSearchYear(value);
                     setState(() {
                       currentYear = value;
                     });
                   },
-                  decoration: myInputDecoration('',
-                      label: 'Năm', inputBorder: Colors.black26),
+                  decoration: myInputDecoration('', label: 'Năm', inputBorder: Colors.black26),
                   items: years,
                   value: currentYear),
             ),
@@ -619,14 +537,12 @@ class _IndividualWalletState extends State<IndividualWallet> {
               padding: const EdgeInsets.only(left: 10.0),
               child: DropdownButtonFormField(
                   onChanged: (value) {
-                    Provider.of<WalletsProvider>(context, listen: false)
-                        .changeSearchMonth(value);
+                    Provider.of<WalletsProvider>(context, listen: false).changeSearchMonth(value);
                     setState(() {
                       currentMonth = value;
                     });
                   },
-                  decoration: myInputDecoration('',
-                      label: 'Tháng', inputBorder: Colors.black26),
+                  decoration: myInputDecoration('', label: 'Tháng', inputBorder: Colors.black26),
                   items: months,
                   value: currentMonth),
             ),

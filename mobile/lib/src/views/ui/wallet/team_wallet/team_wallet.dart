@@ -3,14 +3,17 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:http/http.dart';
+import 'package:mobile/src/config/config.dart';
 import 'package:mobile/src/models/CatsProvider.dart';
 import 'package:mobile/src/models/EventsProvider.dart';
 import 'package:mobile/src/models/TeamsProvider.dart';
 import 'package:mobile/src/models/UsersProvider.dart';
 import 'package:mobile/src/models/WalletsProvider.dart';
-import 'package:mobile/src/services/restapiservices/wallet_service.dart';
-import 'package:mobile/src/services/socketservices/socket.dart';
 import 'package:mobile/src/services/icon_service.dart';
+import 'package:mobile/src/services/restapiservices/team_service.dart';
+import 'package:mobile/src/services/secure_storage_service.dart';
+import 'package:mobile/src/services/socketservices/socket.dart';
 import 'package:mobile/src/views/ui/team/team_detail.dart';
 import 'package:mobile/src/views/ui/wallet/category/category_dashboard.dart';
 import 'package:mobile/src/views/ui/wallet/event/event_dashboard.dart';
@@ -20,16 +23,15 @@ import 'package:mobile/src/views/ui/wallet/team_wallet/edit_transaction.dart';
 import 'package:mobile/src/views/ui/wallet/team_wallet/statistic/statistic_view.dart';
 import 'package:mobile/src/views/ui/wallet/team_wallet/view_transaction.dart';
 import 'package:mobile/src/views/utils/helpers/helper.dart';
-import 'package:provider/provider.dart';
 import 'package:mobile/src/views/utils/widgets/widget.dart';
+import 'package:provider/provider.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class TeamWallet extends StatefulWidget {
   final String walletId;
   final GlobalKey<ScaffoldMessengerState> wrappingScaffoldKey;
 
-  const TeamWallet(
-      {Key key, @required this.wrappingScaffoldKey, @required this.walletId});
+  const TeamWallet({Key key, @required this.wrappingScaffoldKey, @required this.walletId});
 
   @override
   _TeamWalletState createState() => _TeamWalletState();
@@ -40,20 +42,18 @@ class _TeamWalletState extends State<TeamWallet> {
   var _scaffoldKey = GlobalKey<ScaffoldMessengerState>();
   List<IconCustom> _iconList = [];
   FilterType _selectedFilterType = FilterType.all;
-  bool isLoading = true;
+  String _userID = '';
+  bool _isLoading = true;
+  bool _roles = false;
 
   void _initPage() async {
+    _userID = await SecureStorage.readSecureData('userID');
     _searchController.addListener(_onHandleChangeSearchBar);
-    UsersProvider usersProvider =
-        Provider.of<UsersProvider>(context, listen: false);
-    WalletsProvider walletsProvider =
-        Provider.of<WalletsProvider>(context, listen: false);
-    CatsProvider catsProvider =
-        Provider.of<CatsProvider>(context, listen: false);
-    EventsProvider eventsProvider =
-        Provider.of<EventsProvider>(context, listen: false);
-    TeamsProvider teamsProvider =
-        Provider.of<TeamsProvider>(context, listen: false);
+    UsersProvider usersProvider = Provider.of<UsersProvider>(context, listen: false);
+    WalletsProvider walletsProvider = Provider.of<WalletsProvider>(context, listen: false);
+    CatsProvider catsProvider = Provider.of<CatsProvider>(context, listen: false);
+    EventsProvider eventsProvider = Provider.of<EventsProvider>(context, listen: false);
+    TeamsProvider teamsProvider = Provider.of<TeamsProvider>(context, listen: false);
 
     final walletID = teamsProvider.selected.walletID;
     _iconList = await IconService.instance.iconList;
@@ -65,7 +65,7 @@ class _TeamWalletState extends State<TeamWallet> {
       // print(data['transactionList'][0]['id']);
       walletsProvider.fetchData(data);
       setState(() {
-        isLoading = false;
+        _isLoading = false;
       });
     });
 
@@ -96,10 +96,35 @@ class _TeamWalletState extends State<TeamWallet> {
     setState(() {});
   }
 
+  void _checkIsAdmin() async {
+    String id = Provider.of<TeamsProvider>(context, listen: false).selected.id;
+    Response res = await TeamService.instance.getRoles(id);
+    if (res == null || res.statusCode != 200) {
+      throw Exception("Không lấy được dữ liệu từ server");
+    }
+    Map<String, dynamic> body = jsonDecode(res.body);
+
+    if (!mounted) {
+      return;
+    }
+    if (body['info']['Role'] == Properties.ROLE_ADMIN && body['info']['Status'] == Properties.ROLE_ACTIVE) {
+      print('hello admin');
+      setState(() {
+        _roles = true;
+      });
+    } else {
+      setState(() {
+        _roles = false;
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     _initPage();
+    _checkIsAdmin();
+    setState(() {});
   }
 
   @override
@@ -113,9 +138,9 @@ class _TeamWalletState extends State<TeamWallet> {
 
   @override
   Widget build(BuildContext context) {
-    if (isLoading) {
-      return Container();
-    }
+    // if (_isLoading) {
+    //   return Container();
+    // }
     return GestureDetector(
         onTap: () {
           FocusManager.instance.primaryFocus.unfocus();
@@ -125,12 +150,11 @@ class _TeamWalletState extends State<TeamWallet> {
           child: Scaffold(
             appBar: _privateWalletAppBar(),
             floatingActionButton: _privateWalletActionButton(),
-            body: isLoading
+            body: _isLoading
                 ? Center(child: CircularProgressIndicator())
                 : Container(
                     // height: MediaQuery.of(context).size.height,
-                    child: Center(child: Consumer<WalletsProvider>(
-                        builder: (context, walletsProvider, child) {
+                    child: Center(child: Consumer<WalletsProvider>(builder: (context, walletsProvider, child) {
                       return SingleChildScrollView(
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
@@ -139,66 +163,43 @@ class _TeamWalletState extends State<TeamWallet> {
                               children: [
                                 Container(
                                   padding: EdgeInsets.all(20),
-                                  margin: EdgeInsets.only(
-                                      bottom: 20, left: 5, right: 5, top: 20),
+                                  margin: EdgeInsets.only(bottom: 20, left: 5, right: 5, top: 20),
                                   width: MediaQuery.of(context).size.width,
                                   decoration: BoxDecoration(
-                                      gradient: LinearGradient(
-                                          begin: Alignment.bottomLeft,
-                                          end: Alignment.topRight,
-                                          colors: [
-                                            primary,
-                                            Colors.lightGreenAccent
-                                          ]),
+                                      gradient: LinearGradient(begin: Alignment.bottomLeft, end: Alignment.topRight, colors: [primary, Colors.lightGreenAccent]),
                                       borderRadius: BorderRadius.circular(12)),
                                   child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         'Tổng số dư: ',
-                                        style: TextStyle(
-                                            fontSize: 20, color: Colors.white),
+                                        style: TextStyle(fontSize: 20, color: Colors.white),
                                       ),
                                       Text(
                                         '${formatMoneyWithSymbol(walletsProvider.total)}',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 20,
-                                            color: Colors.white),
+                                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.white),
                                       ),
                                     ],
                                   ),
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.all(15),
-                                  child: Text('Báo cáo nhanh ${getThisMonth()}',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 20)),
+                                  child: Text('Báo cáo nhanh ${getThisMonth()}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
                                 ),
                                 Row(
                                   children: [
                                     Expanded(
                                       child: Container(
-                                        decoration: BoxDecoration(
-                                            border: Border(
-                                                right: BorderSide(
-                                                    width: 1,
-                                                    color: Colors.black12))),
+                                        decoration: BoxDecoration(border: Border(right: BorderSide(width: 1, color: Colors.black12))),
                                         alignment: Alignment.center,
                                         child: Column(
                                           children: [
                                             Text('Tổng thu ${getThisMonth()}'),
                                             Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
+                                              padding: const EdgeInsets.all(8.0),
                                               child: Text(
                                                 '${formatMoneyWithSymbol(walletsProvider.receive)}',
-                                                style: TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    color: Colors.green,
-                                                    fontSize: 21),
+                                                style: TextStyle(fontWeight: FontWeight.bold, color: Colors.green, fontSize: 21),
                                               ),
                                             ),
                                           ],
@@ -212,18 +213,12 @@ class _TeamWalletState extends State<TeamWallet> {
                                             alignment: Alignment.center,
                                             child: Column(
                                               children: [
-                                                Text(
-                                                    'Tổng chi ${getThisMonth()}'),
+                                                Text('Tổng chi ${getThisMonth()}'),
                                                 Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(8.0),
+                                                  padding: const EdgeInsets.all(8.0),
                                                   child: Text(
                                                     '${formatMoneyWithSymbol(walletsProvider.spent)}',
-                                                    style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        color: Colors.red,
-                                                        fontSize: 21),
+                                                    style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red, fontSize: 21),
                                                   ),
                                                 )
                                               ],
@@ -235,48 +230,28 @@ class _TeamWalletState extends State<TeamWallet> {
                                   ],
                                 ),
                                 Padding(
-                                  padding: const EdgeInsets.only(
-                                      top: 40, bottom: 10),
-                                  child: Text('Danh sách tất cả giao dịch',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 20)),
+                                  padding: const EdgeInsets.only(top: 40, bottom: 10),
+                                  child: Text('Danh sách tất cả giao dịch', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
                                 ),
                                 DefaultTextStyle(
-                                  style: TextStyle(
-                                      color: Colors.grey, fontSize: 16),
+                                  style: TextStyle(color: Colors.grey, fontSize: 16),
                                   child: Container(
                                     height: 70,
                                     margin: EdgeInsets.fromLTRB(10, 10, 0, 10),
                                     child: ListView(
                                       scrollDirection: Axis.horizontal,
                                       children: <Widget>[
-                                        _createFilterOption(
-                                            'Tất cả',
-                                            (Icons
-                                                .format_list_bulleted_outlined),
-                                            FilterType.all),
-                                        _createFilterOption(
-                                            'Hạng mục',
-                                            (Icons.category_outlined),
-                                            FilterType.category),
-                                        _createFilterOption(
-                                            'Thời gian',
-                                            (Icons.calendar_today),
-                                            FilterType.date),
+                                        _createFilterOption('Tất cả', (Icons.format_list_bulleted_outlined), FilterType.all),
+                                        _createFilterOption('Hạng mục', (Icons.category_outlined), FilterType.category),
+                                        _createFilterOption('Thời gian', (Icons.calendar_today), FilterType.date),
                                       ],
                                     ),
                                   ),
                                 ),
                                 _selectedFilterType == FilterType.category
-                                    ? mySearchBar(context, _searchController,
-                                        'Tìm kiếm tên hạng mục...')
-                                    : (_selectedFilterType == FilterType.date
-                                        ? _makeDropdown()
-                                        : Container()),
-                                walletsProvider.txList.length == 0
-                                    ? Text('(Chưa có giao dịch được ghi)')
-                                    : Container(),
+                                    ? mySearchBar(context, _searchController, 'Tìm kiếm tên hạng mục...')
+                                    : (_selectedFilterType == FilterType.date ? _makeDropdown() : Container()),
+                                walletsProvider.txList.length == 0 ? Text('(Chưa có giao dịch được ghi)') : Container(),
                               ],
                             ),
                             ConstrainedBox(
@@ -288,19 +263,11 @@ class _TeamWalletState extends State<TeamWallet> {
                                   scrollDirection: Axis.vertical,
                                   physics: NeverScrollableScrollPhysics(),
                                   shrinkWrap: true,
-                                  itemCount: walletsProvider
-                                      .getFilterList(_selectedFilterType)
-                                      .length,
-                                  itemBuilder:
-                                      (BuildContext context, int index) {
-                                    List<Transactions> list = walletsProvider
-                                        .getFilterList(_selectedFilterType);
+                                  itemCount: walletsProvider.getFilterList(_selectedFilterType).length,
+                                  itemBuilder: (BuildContext context, int index) {
+                                    List<Transactions> list = walletsProvider.getFilterList(_selectedFilterType);
                                     if (index == list.length - 1) {
-                                      return Padding(
-                                          padding:
-                                              const EdgeInsets.only(bottom: 60),
-                                          child:
-                                              _createCompactTxn(list[index]));
+                                      return Padding(padding: const EdgeInsets.only(bottom: 60), child: _createCompactTxn(list[index]));
                                     }
                                     return _createCompactTxn(list[index]);
                                   },
@@ -315,8 +282,7 @@ class _TeamWalletState extends State<TeamWallet> {
   }
 
   void _handleChangeFilterType(FilterType type) {
-    Provider.of<WalletsProvider>(context, listen: false)
-        .changeSearchString(_searchController.text = '');
+    Provider.of<WalletsProvider>(context, listen: false).changeSearchString(_searchController.text = '');
     Provider.of<WalletsProvider>(context, listen: false).changeSearchMonth('');
     Provider.of<WalletsProvider>(context, listen: false).changeSearchYear('');
 
@@ -326,8 +292,7 @@ class _TeamWalletState extends State<TeamWallet> {
   }
 
   void _onHandleChangeSearchBar() {
-    Provider.of<WalletsProvider>(context, listen: false)
-        .changeSearchString(_searchController.text.trim());
+    Provider.of<WalletsProvider>(context, listen: false).changeSearchString(_searchController.text.trim());
   }
 
   _createFilterOption(String label, IconData icon, FilterType type) {
@@ -375,36 +340,25 @@ class _TeamWalletState extends State<TeamWallet> {
   }
 
   _createCompactTxn(Transactions tx) {
-    IconCustom selectedIcon = _iconList.firstWhere(
-        (element) => element.id == tx.iconID,
-        orElse: () =>
-            new IconCustom(id: '', name: '', color: '', backgroundColor: ''));
+    IconCustom selectedIcon = _iconList.firstWhere((element) => element.id == tx.iconID, orElse: () => new IconCustom(id: '', name: '', color: '', backgroundColor: ''));
     return Card(
       child: GestureDetector(
         onTap: () {
-          Provider.of<WalletsProvider>(context, listen: false)
-              .changeSelected(tx);
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => ViewTransaction(txId: tx.id)));
+          Provider.of<WalletsProvider>(context, listen: false).changeSelected(tx);
+          Navigator.push(context, MaterialPageRoute(builder: (context) => ViewTransaction(txId: tx.id, isEditable: tx.userID == _userID || _roles)));
         },
         child: Slidable(
           actionPane: SlidableDrawerActionPane(),
           actionExtentRatio: 0.25,
+          enabled: tx.userID == _userID || _roles,
           secondaryActions: <Widget>[
             IconSlideAction(
                 caption: 'Sửa',
                 color: Colors.blue,
                 icon: Icons.edit,
                 onTap: () async {
-                  Provider.of<WalletsProvider>(context, listen: false)
-                      .changeSelected(tx);
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => EditTransaction(
-                              wrappingScaffoldKey: _scaffoldKey)));
+                  Provider.of<WalletsProvider>(context, listen: false).changeSelected(tx);
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => EditTransaction(wrappingScaffoldKey: _scaffoldKey)));
                 }),
             IconSlideAction(
               caption: 'Xóa',
@@ -424,17 +378,17 @@ class _TeamWalletState extends State<TeamWallet> {
               margin: const EdgeInsets.symmetric(vertical: 10.0),
               child: Container(
                 padding: EdgeInsets.fromLTRB(10, 15, 10, 5),
-                child: Row(children: [
-                  Container(
-                      margin: EdgeInsets.only(left: 6, right: 15),
-                      width: 50,
-                      height: 50,
-                      child: myCircleIcon(selectedIcon.name,
-                          selectedIcon.backgroundColor, selectedIcon.color)),
-                  Expanded(
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Row(children: [
+                      Container(
+                          margin: EdgeInsets.only(left: 6, right: 15),
+                          width: 50,
+                          height: 50,
+                          child: myCircleIcon(selectedIcon.name, selectedIcon.backgroundColor, selectedIcon.color)),
+                      Expanded(
+                        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                           Text(
                             '${tx.categoryName}',
                             style: TextStyle(fontWeight: FontWeight.bold),
@@ -443,36 +397,44 @@ class _TeamWalletState extends State<TeamWallet> {
                             padding: const EdgeInsets.only(top: 8.0),
                             child: Text(
                               '${convertToDDMMYYYYHHMM(tx.time)}',
-                              style: TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.w300,
-                                  fontSize: 14),
+                              style: TextStyle(color: Colors.black, fontWeight: FontWeight.w400, fontSize: 16),
                             ),
                           ),
                           Padding(
                               padding: const EdgeInsets.only(top: 10),
-                              child: tx.description != null &&
-                                      tx.description.length > 0
-                                  ? Text(tx.description.length < 50
-                                      ? tx.description
-                                      : tx.description
-                                              .toString()
-                                              .substring(0, 50) +
-                                          ' ...')
+                              child: tx.description != null && tx.description.length > 0
+                                  ? Text(tx.description.length < 50 ? tx.description : tx.description.toString().substring(0, 50) + ' ...',
+                                      style: TextStyle(fontWeight: FontWeight.w300))
                                   : Container())
                         ]),
-                  ),
-                  Padding(
-                      padding: const EdgeInsets.only(left: 10),
+                      ),
+                      Padding(
+                          padding: const EdgeInsets.only(left: 10),
+                          child: Align(
+                              alignment: Alignment.centerRight,
+                              child: Text(
+                                '${formatMoneyWithSymbol(tx.price)}',
+                                style: TextStyle(color: tx.price < 0 ? Colors.red : Colors.green, fontWeight: FontWeight.bold),
+                              )))
+                    ]),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10.0),
                       child: Align(
-                          alignment: Alignment.centerRight,
-                          child: Text(
-                            '${formatMoneyWithSymbol(tx.price)}',
-                            style: TextStyle(
-                                color: tx.price < 0 ? Colors.red : Colors.green,
-                                fontWeight: FontWeight.bold),
-                          )))
-                ]),
+                        alignment: Alignment.centerRight,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Text('${tx.userName ?? 'Hệ thống'}'),
+                            Text(
+                              tx.editNumber > 1 ? ' (Có chỉnh sửa)' : '',
+                              style: TextStyle(fontStyle: FontStyle.italic, fontWeight: FontWeight.w300),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                  ],
+                ),
               )),
         ),
       ),
@@ -502,15 +464,8 @@ class _TeamWalletState extends State<TeamWallet> {
   AppBar _privateWalletAppBar() => AppBar(
       iconTheme: IconThemeData(color: Colors.white),
       title: Consumer<TeamsProvider>(builder: (context, teamsProvider, child) {
-        return Text(
-            'Ví ' +
-                (teamsProvider.selected != null
-                    ? teamsProvider.selected.name
-                    : ''),
-            maxLines: 1,
-            overflow: TextOverflow.fade,
-            softWrap: false,
-            style: TextStyle(color: Colors.white));
+        return Text('Ví ' + (teamsProvider.selected != null ? teamsProvider.selected.name : ''),
+            maxLines: 1, overflow: TextOverflow.fade, softWrap: false, style: TextStyle(color: Colors.white));
       }),
       actions: [
         // IconButton(
@@ -519,55 +474,28 @@ class _TeamWalletState extends State<TeamWallet> {
         // )
         PopupMenuButton(
           itemBuilder: (BuildContext bc) => [
-            PopupMenuItem(
-                child: _createAppbarActionDetail("Hạng mục thu - chi",
-                    Icon(Icons.category_outlined, color: Colors.black)),
-                value: "1"),
-            PopupMenuItem(
-                child: _createAppbarActionDetail(
-                    "Sự kiện", Icon(Icons.event, color: Colors.black)),
-                value: "2"),
-            PopupMenuItem(
-                child: _createAppbarActionDetail("Thống kê ví",
-                    Icon(Icons.bar_chart_outlined, color: Colors.black)),
-                value: "3"),
-            PopupMenuItem(
-                child: _createAppbarActionDetail(
-                    "Quản lý nhóm", Icon(Icons.people, color: Colors.black)),
-                value: "4"),
+            PopupMenuItem(child: _createAppbarActionDetail("Hạng mục thu - chi", Icon(Icons.category_outlined, color: Colors.black)), value: "1"),
+            PopupMenuItem(child: _createAppbarActionDetail("Sự kiện", Icon(Icons.event, color: Colors.black)), value: "2"),
+            PopupMenuItem(child: _createAppbarActionDetail("Thống kê ví", Icon(Icons.bar_chart_outlined, color: Colors.black)), value: "3"),
+            PopupMenuItem(child: _createAppbarActionDetail("Quản lý nhóm", Icon(Icons.people, color: Colors.black)), value: "4"),
           ],
           onSelected: (route) async {
             print(route);
             // Note You must create respective pages for navigation
-            String walletId = Provider.of<TeamsProvider>(context, listen: false)
-                .selected
-                .walletID;
+            String walletId = Provider.of<TeamsProvider>(context, listen: false).selected.walletID;
 
             switch (int.parse(route)) {
               case 1:
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            CategoryDashboard(walletID: walletId)));
+                Navigator.push(context, MaterialPageRoute(builder: (context) => CategoryDashboard(walletID: walletId)));
                 break;
               case 2:
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            EventDashboard(walletID: walletId)));
+                Navigator.push(context, MaterialPageRoute(builder: (context) => EventDashboard(walletID: walletId)));
                 break;
               case 3:
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => Statistic()));
+                Navigator.push(context, MaterialPageRoute(builder: (context) => Statistic()));
                 break;
               case 4:
-                var result = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => TeamDetail(
-                            wrappingScaffoldKey: widget.wrappingScaffoldKey)));
+                var result = await Navigator.push(context, MaterialPageRoute(builder: (context) => TeamDetail(isAdmin: _roles, wrappingScaffoldKey: widget.wrappingScaffoldKey)));
                 if (result == 'delete') {
                   Navigator.pop(context);
                   showSnack(widget.wrappingScaffoldKey, "Xóa nhóm thành công");
@@ -587,11 +515,7 @@ class _TeamWalletState extends State<TeamWallet> {
 
   FloatingActionButton _privateWalletActionButton() => FloatingActionButton(
       onPressed: () {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) =>
-                    AddTransaction(wrappingScaffoldKey: _scaffoldKey)));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => AddTransaction(wrappingScaffoldKey: _scaffoldKey)));
       },
       tooltip: 'Thêm giao dịch',
       child: Icon(Icons.add),
@@ -634,14 +558,12 @@ class _TeamWalletState extends State<TeamWallet> {
               padding: const EdgeInsets.only(right: 10.0),
               child: DropdownButtonFormField(
                   onChanged: (value) {
-                    Provider.of<WalletsProvider>(context, listen: false)
-                        .changeSearchYear(value);
+                    Provider.of<WalletsProvider>(context, listen: false).changeSearchYear(value);
                     setState(() {
                       currentYear = value;
                     });
                   },
-                  decoration: myInputDecoration('',
-                      label: 'Năm', inputBorder: Colors.black26),
+                  decoration: myInputDecoration('', label: 'Năm', inputBorder: Colors.black26),
                   items: years,
                   value: currentYear),
             ),
@@ -651,14 +573,12 @@ class _TeamWalletState extends State<TeamWallet> {
               padding: const EdgeInsets.only(left: 10.0),
               child: DropdownButtonFormField(
                   onChanged: (value) {
-                    Provider.of<WalletsProvider>(context, listen: false)
-                        .changeSearchMonth(value);
+                    Provider.of<WalletsProvider>(context, listen: false).changeSearchMonth(value);
                     setState(() {
                       currentMonth = value;
                     });
                   },
-                  decoration: myInputDecoration('',
-                      label: 'Tháng', inputBorder: Colors.black26),
+                  decoration: myInputDecoration('', label: 'Tháng', inputBorder: Colors.black26),
                   items: months,
                   value: currentMonth),
             ),
