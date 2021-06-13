@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const iconModel = require('../models/IconModel');
-const { ICON_NAMES } = require('../config/default.json');
 router.use(express.static('public'));
 
 router.get('/', async (req, res) => {

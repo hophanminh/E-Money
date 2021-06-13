@@ -13,46 +13,41 @@ import { Autocomplete } from '@material-ui/lab';
 import { ColorPicker } from 'material-ui-color';
 import TemplateIcon from '../TemplateIcon';
 import { ICON_NAMES } from '../../../constants/default.json';
-import { getSocket } from '../../../utils/socket';
 
-export default function AddIconAdmin({ isOpen, setOpen }) {
+export default function EditIconAdmin({ isOpen, setOpen, selectedIcon }) {
   const classes = useStyles();
-  const socket = getSocket();
 
-  const [newIcon, setNewIcon] = useState({
-    name: 'school',
-    color: '#FFFFFF',
-    backgroundColor: '#AAAAAA'
+  const [icon, setIcon] = useState({
+    name: selectedIcon.name,
+    color: selectedIcon.color,
+    backgroundColor: selectedIcon.backgroundColor
   });
 
-  const clearNewIcon = () => {
-    setNewIcon({
-      name: 'school',
-      color: '#FFFFFF',
-      backgroundColor: '#AAAAAA'
+  useEffect(() => {
+    setIcon({
+      name: selectedIcon.name,
+      color: selectedIcon.color,
+      backgroundColor: selectedIcon.backgroundColor
     });
+  }, [selectedIcon]);
+
+  const handleCloseEditDialog = () => {
+    setOpen(false);
   }
 
-  const handleCloseAddDialog = () => {
-    setOpen(false);
-    clearNewIcon();
-  }
+  const handleEdit = () => {
 
-  const handleAdd = () => {
-    socket.emit('add_icon', { newIcon });
-    setOpen(false);
-    clearNewIcon();
   }
 
   return (
     <Dialog
-      open={isOpen} onClose={handleCloseAddDialog}
+      open={isOpen} onClose={handleCloseEditDialog}
       aria-labelledby="form-dialog-title"
       fullWidth={true} maxWidth={'md'}
     >
       <DialogTitle id="form-dialog-title" >
         <Typography className={classes.title}>
-          Thêm icon mới
+          Chỉnh sửa icon
         </Typography>
       </DialogTitle>
       <DialogContent className={classes.dialogContent}>
@@ -62,13 +57,13 @@ export default function AddIconAdmin({ isOpen, setOpen }) {
             <Autocomplete
               style={{ width: 225 }}
               filterSelectedOptions
-              value={newIcon.name}
+              value={icon.name}
               id="icons"
               name='icons'
               size='small'
               onChange={(event, newValue) => {
-                setNewIcon({
-                  ...newIcon,
+                setIcon({
+                  ...icon,
                   name: newValue
                 });
               }}
@@ -100,9 +95,9 @@ export default function AddIconAdmin({ isOpen, setOpen }) {
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <Typography>Chọn màu cho icon</Typography>
             <ColorPicker
-              value={newIcon.color}
-              onChange={color => setNewIcon({
-                ...newIcon,
+              value={icon.color}
+              onChange={color => setIcon({
+                ...icon,
                 color: color.css.backgroundColor
               })}
             />
@@ -111,9 +106,9 @@ export default function AddIconAdmin({ isOpen, setOpen }) {
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <Typography>Chọn màu nền cho icon</Typography>
             <ColorPicker
-              value={newIcon.backgroundColor}
-              onChange={color => setNewIcon({
-                ...newIcon,
+              value={icon.backgroundColor}
+              onChange={color => setIcon({
+                ...icon,
                 backgroundColor: color.css.backgroundColor
               })}
             />
@@ -122,18 +117,18 @@ export default function AddIconAdmin({ isOpen, setOpen }) {
 
         <div style={{ display: 'flex' }}>
           <TemplateIcon
-            icon={newIcon}
+            icon={icon}
             backgroundSize={200}
             iconSize={100}
           />
         </div>
       </DialogContent>
       <DialogActions>
-        <Button className={`${classes.button} ${classes.closeButton}`} onClick={handleCloseAddDialog} variant="contained" >
+        <Button className={`${classes.button} ${classes.closeButton}`} onClick={handleCloseEditDialog} variant="contained" >
           Hủy
         </Button>
-        <Button className={`${classes.button} ${classes.addButton}`} disabled={!isOpen} onClick={handleAdd} variant="contained">
-          Thêm
+        <Button className={`${classes.button} ${classes.editButton}`} disabled={!isOpen} onClick={handleEdit} variant="contained">
+          Lưu
         </Button>
       </DialogActions>
     </Dialog>
@@ -163,7 +158,7 @@ const useStyles = makeStyles({
   closeButton: {
     backgroundColor: '#F50707',
   },
-  addButton: {
+  editButton: {
     backgroundColor: '#1DAF1A',
   },
 });

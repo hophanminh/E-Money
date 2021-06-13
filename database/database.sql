@@ -46,7 +46,7 @@ CREATE TABLE Events(
             -- [2, 7]: Thứ [2, 7]
 		-- Loại event hằng tháng: [1, 28/29/30/31], mỗi số tương ứng là ngày trong tháng
         -- Loại event hằng năm: [1, 12], mỗi số tương ứng là tháng trong năm
-    ExpectingAmount FLOAT,
+    ExpectingAmount BIGINT,
 	Description varchar(1000) DEFAULT NULL,
     WalletID VARCHAR(100),
     CategoryID VARCHAR(100),
@@ -67,7 +67,7 @@ CREATE TABLE Categories(
     Name VARCHAR(1000) NOT NULL,
     IsDefault BOOLEAN NOT NULL,
     WalletID VARCHAR(100),
-    IconID VARCHAR(100),
+    IconID INT,
     PRIMARY KEY(ID)
 );
 
@@ -143,7 +143,7 @@ CREATE TABLE ResetRequests(
 
 DROP TABLE IF EXISTS `Icons`;
 CREATE TABLE Icons(
-    ID VARCHAR(100) NOT NULL, -- will store as UUID()
+    ID INT AUTO_INCREMENT NOT NULL, -- will store as UUID()
     Name VARCHAR(100) NOT NULL,
     Color VARCHAR(7),
     BackgroundColor VARCHAR(7),
@@ -191,15 +191,15 @@ ALTER TABLE TransactionImages ADD CONSTRAINT FK_TransactionImages_Users FOREIGN 
 ALTER TABLE Notifications ADD CONSTRAINT FK_Notifications_Users FOREIGN KEY(UserID) REFERENCES Users(ID);
 
 INSERT INTO icons VALUES 
-('1','school','#FFFFFF','#1DAF1A'),
-('2','fastfood','#FFFFFF','#FF2626'),
-('3','attach_money','#FFFFFF','#808080'),
-('4','business','#FFFFFF','#003366'),
-('5','local_hospital','#FFFFFF','#f40505'),
-('6','store_mall_direction','#FFFFFF','#5AC18E'),
-('7','local_gas_station','#FFFFFF','#1D2021');
+(1,'school','#FFFFFF','#1DAF1A'),
+(2,'fastfood','#FFFFFF','#FF2626'),
+(3,'attach_money','#FFFFFF','#808080'),
+(4,'business','#FFFFFF','#003366'),
+(5,'local_hospital','#FFFFFF','#f40505'),
+(6,'store_mall_direction','#FFFFFF','#5AC18E'),
+(7,'local_gas_station','#FFFFFF','#1D2021');
 INSERT INTO eventtypes VALUES ('1','Hằng ngày'),('2','Hằng tuần'),('3','Hằng tháng'),('4','Hằng năm');
-INSERT INTO categories VALUES ('1','Học tập',1,NULL,'1'),('2','Ăn uống',1,NULL,'2'),('3','Khác',1,NULL,'3');
+INSERT INTO categories VALUES ('1','Học tập',1,NULL,1),('2','Ăn uống',1,NULL,2),('3','Khác',1,NULL,3);
 INSERT INTO wallets VALUES 
 	('1', 0, 0, 0, '2021-01-01'),
 	('2', 0, 0, 0, '2021-01-01'),

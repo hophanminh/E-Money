@@ -40,7 +40,6 @@ export default function CategoryAdmin(props) {
   // get initial data
   useEffect(() => {
     socket.emit("get_category", { walletID: id }, ({ defaultList, customList, fullList }) => {
-      console.log(defaultList);
       setAllList(defaultList, customList, fullList);
     });
 

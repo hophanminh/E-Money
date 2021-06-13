@@ -1,12 +1,9 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { useParams } from "react-router-dom";
+import React, { useContext } from 'react';
 import {
     Typography,
     Dialog,
     DialogTitle,
-    Box,
     DialogContent,
-    DialogContentText,
     Button,
     makeStyles,
     DialogActions
@@ -14,8 +11,8 @@ import {
 import {
     PopupContext,
     CategoryContext
-} from '../../mycontext'
-import POPUP from '../../../constants/popup.json'
+} from '../../mycontext';
+import POPUP from '../../../constants/popup.json';
 import { getSocket } from "../../../utils/socket";
 
 const NAME = POPUP.CATEGORY.DELETE_CATEGORY
@@ -23,7 +20,6 @@ const NAME = POPUP.CATEGORY.DELETE_CATEGORY
 const DeleteCategory = (props) => {
     const classes = useStyles();
     const socket = getSocket();
-    const { id } = useParams();
     const { open, setOpen } = useContext(PopupContext);
     const { selected } = useContext(CategoryContext);
 
@@ -54,18 +50,18 @@ const DeleteCategory = (props) => {
                 <DialogContent>
                     <Typography className={classes.description}>
                         Bạn có muốn xóa loại đã chọn ?
-                        </Typography>
+                    </Typography>
                     <Typography className={classes.description}>
                         Những giao dịch của loại này sẽ tự động đổi sang loại mặc định "Khác"
-                        </Typography>
+                    </Typography>
                 </DialogContent>
                 <DialogActions>
                     <Button className={`${classes.button} ${classes.closeButton}`} onClick={handleClose} variant="contained" >
                         Hủy
-                        </Button>
+                    </Button>
                     <Button className={`${classes.button} ${classes.addButton}`} onClick={handleDelete} variant="contained">
                         Xóa
-                        </Button>
+                    </Button>
 
                 </DialogActions>
             </Dialog>

@@ -53,7 +53,8 @@ export default function AddCategory(props) {
     setNewCategory({
       IconID: list[0].ID,
       Name: "",
-    })
+      IsDefault: true
+    });
   }
 
   const handleCloseAddDialog = () => {

@@ -20,45 +20,47 @@ import SearchIcon from '@material-ui/icons/Search';
 import ClearIcon from '@material-ui/icons/Clear';
 
 import AddIconAdmin from './CRUDIcon/AddIcon';
-
-import config from '../../constants/config.json';
-const API_URL = config.API_LOCAL;
+import EditIconAdmin from './CRUDIcon/EditIcon';
+import { getSocket } from '../../utils/socket';
 
 export default function IconList() {
   const classes = useStyles();
-  const token = localStorage.getItem('jwtToken');
-  const [icons, setIcons] = useState([]);
-  const [selectedIcon, setSelectedIcon] = useState({});
-  // popover button
-  const [openedPopover, setOpenedPopover] = useState(false)
-  const [anchorEl, setAnchorEl] = useState();
-  const [isOpenAddIconDialog, setOpenIconDialog] = useState(false);
+  const socket = getSocket();
 
-  const getIcons = async () => {
-    const res = await fetch(`${API_URL}/icons`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      }
-    });
-    if (res.status === 200) {
-      const result = await res.json();
-      console.log(result);
-      setIcons(result.icons);
-    } else {
-      setIcons([]);
-    }
-  }
+  const [icons, setIcons] = useState([]);
+  const [selectedIcon, setSelectedIcon] = useState({
+    name: '',
+    color: '',
+    backgroundColor: ''
+  });
+  // popover button
+  const [openedPopover, setOpenedPopover] = useState(false);
+  const [anchorEl, setAnchorEl] = useState();
+  const [isOpenAddIconDialog, setOpenAddIconDialog] = useState(false);
+  const [isOpenEditIconDialog, setOpenEditIconDialog] = useState(false);
 
   // get initial data
   useEffect(() => {
-    getIcons();
+    socket.emit('get_icons', {}, ({ iconList }) => {
+      setIcons(iconList);
+    });
+
+    socket.on('wait_for_update_icon', ({ iconList }) => {
+      setIcons(iconList);
+    });
+
+    return () => {
+      socket.off('wait_for_update_icon');
+    }
   }, []);
 
   const handlePopoverOpenParent = (event, icon) => {
     setAnchorEl(event.currentTarget);
-    setSelectedIcon(icon);
+    setSelectedIcon({
+      name: icon.Name,
+      color: icon.Color,
+      backgroundColor: icon.BackgroundColor
+    });
     setOpenedPopover(true);
   };
 
@@ -72,12 +74,12 @@ export default function IconList() {
 
   // add dialog
   const handleOpenAddDialog = () => {
-    setOpenIconDialog(true);
+    setOpenAddIconDialog(true);
   }
 
   // edit dialog
   const handleOpenEditDialog = () => {
-    console.log(selectedIcon);
+    setOpenEditIconDialog(true);
   }
 
   // delete dialog
@@ -92,6 +94,7 @@ export default function IconList() {
   const changeSearchInput = (e) => {
     setSearchInput(e.target.value);
   }
+
   const clearSearchInput = () => {
     setSearchInput('');
   }
@@ -101,12 +104,20 @@ export default function IconList() {
     if (searchInput !== '') {
       filtered = filtered.filter(i => i.Name.toLowerCase().includes(searchInput));
     }
-    setFilterList(filtered)
+    setFilterList(filtered);
   }, [icons, searchInput]);
 
   return (
     <React.Fragment>
-      <AddIconAdmin isOpen={isOpenAddIconDialog} setOpen={setOpenIconDialog} />
+      <AddIconAdmin
+        isOpen={isOpenAddIconDialog}
+        setOpen={setOpenAddIconDialog}
+      />
+      <EditIconAdmin
+        isOpen={isOpenEditIconDialog}
+        setOpen={setOpenEditIconDialog}
+        selectedIcon={selectedIcon}
+      />
       <Popover
         elevation={0}
         className={classes.popover}
@@ -164,8 +175,8 @@ export default function IconList() {
               />
             </Box>
           </Box>
-          <Box className={classes.categoryBox}>
-            <Button className={classes.categoryCard} variant="outlined" onClick={handleOpenAddDialog}>
+          <Box className={classes.iconBox}>
+            <Button className={classes.iconCard} variant="outlined" onClick={handleOpenAddDialog}>
               <AddIcon className={classes.green} />
               Thêm icon
             </Button>
@@ -174,19 +185,19 @@ export default function IconList() {
                 <Card
                   id={i.ID}
                   key={i.ID}
-                  className={classes.categoryCard}
+                  className={classes.iconCard}
                   aria-owns="mouse-over-popover"
                   aria-haspopup="true"
                   onMouseEnter={e => handlePopoverOpenParent(e, i)}
                   onMouseLeave={handlePopoverClose}>
-                  <Box className={classes.categoryInfo}>
+                  <Box className={classes.iconInfo}>
                     <DefaultIcon
                       IconID={i.ID}
                       backgroundSize={40}
                       iconSize={20} />
                     <Typography
                       noWrap={true}
-                      className={classes.categoryText}
+                      className={classes.iconText}
                     >
                       {i.Name}
                     </Typography>
@@ -222,24 +233,10 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
     paddingBottom: '10px'
   },
-  breadcrumb: {
-
-  },
   titleFont: {
     fontSize: '24px',
     fontWeight: 'bold',
   },
-  LinkFont: {
-    fontSize: '24px',
-    '&:hover': {
-      textDecoration: 'underline'
-    }
-
-  },
-  subTitleFont: {
-    fontSize: '14px',
-  },
-
   // lower section
   body: {
     display: 'flex',
@@ -264,7 +261,7 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'center',
     marginRight: '20px'
   },
-  categoryBox: {
+  iconBox: {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'flex-start',
@@ -284,7 +281,7 @@ const useStyles = makeStyles((theme) => ({
   },
 
   // category card
-  categoryCard: {
+  iconCard: {
     display: 'flex',
     minWidth: '250px',
     maxWidth: '250px',
@@ -294,22 +291,17 @@ const useStyles = makeStyles((theme) => ({
     padding: '10px',
     margin: '10px 20px'
   },
-  categoryInfo: {
+  iconInfo: {
     overflow: 'hidden',
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',
   },
-  categoryText: {
+  iconText: {
     fontSize: '16px',
     marginLeft: '10px'
   },
-  categoryNumber: {
-    fontSize: '16px',
-    marginLeft: '5px'
-  },
-
 
   // popover button
   popover: {

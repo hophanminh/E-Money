@@ -15,23 +15,20 @@ import {
 import {
     PopupContext,
     CategoryContext
-} from '../../mycontext'
-import POPUP from '../../../constants/popup.json'
+} from '../../mycontext';
+import POPUP from '../../../constants/popup.json';
 import { getSocket } from "../../../utils/socket";
-import DefaultIcon, { getListIcon } from '../../../utils/DefaultIcon'
+import DefaultIcon, { getListIcon } from '../../../utils/DefaultIcon';
 
 const NAME = POPUP.CATEGORY.EDIT_CATEGORY
-
-const fakeEvent = [];
 
 export default function EditCategory(props) {
     const classes = useStyles();
     const socket = getSocket();
-    const { id } = useParams();
     const { open, setOpen } = useContext(PopupContext);
     const { selected } = useContext(CategoryContext);
 
-    const isOpen = open === NAME
+    const isOpen = open === NAME;
     const data = selected;
 
     const [list, setList] = useState();
@@ -46,12 +43,12 @@ export default function EditCategory(props) {
     // set data
     useEffect(() => {
         if (data) {
-            setNewCategory(data)
+            setNewCategory(data);
         }
-    }, [data])
+    }, [data]);
 
     const clearNewCategory = () => {
-        setNewCategory(data)
+        setNewCategory(data);
     }
 
     const handleCloseEditDialog = () => {
@@ -68,7 +65,7 @@ export default function EditCategory(props) {
         }
         else {
             newCategory.Name = newCategory.Name.trim();
-            socket.emit("update_category_default", { walletID: null, categoryID: newCategory.ID, newCategory, IsDefault: true });
+            socket.emit("update_category_default", { categoryID: newCategory.ID, newCategory, IsDefault: true });
             setOpen(null);
         }
     }
