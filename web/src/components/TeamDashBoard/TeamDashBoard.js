@@ -72,7 +72,7 @@ const TeamDashBoard = () => {
   useEffect(() => {
     socket.emit("get_team", { walletID: id }, ({ team, thu }) => {
       setTeam(team);
-      setTHU(thu);
+      setTHU(thu.filter(i => i.Role === 1));;
       console.log(thu)
       var member = thu.filter(function(member) {
         return member.UserID === userID;
