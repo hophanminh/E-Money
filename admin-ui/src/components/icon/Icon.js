@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { useParams } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
 import {
   Container,
   Typography,
@@ -12,60 +11,54 @@ import {
   Button,
   makeStyles,
 } from '@material-ui/core/';
-import {
-  PopupContext,
-  CategoryContext
-} from '../mycontext';
-import POPUP from '../../constants/popup.json';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 
-import DefaultIcon from '../../utils/DefaultIcon'
+import DefaultIcon from '../../utils/DefaultIcon';
 import AddIcon from '@material-ui/icons/Add';
 import SearchIcon from '@material-ui/icons/Search';
 import ClearIcon from '@material-ui/icons/Clear';
 
-import { getSocket } from "../../utils/socket";
-import AddCategory from './CRUDCategory/AddCategory';
-import EditCategory from './CRUDCategory/EditCategory';
-import DeleteCategory from './CRUDCategory/DeleteCategory';
+import AddIconAdmin from './CRUDIcon/AddIcon';
 
-export default function CategoryAdmin(props) {
+import config from '../../constants/config.json';
+const API_URL = config.API_LOCAL;
+
+export default function IconList() {
   const classes = useStyles();
-  const { id } = useParams();
-  const socket = getSocket();
-  const { setOpen } = useContext(PopupContext);
-  const { defaultList, setAllList, setSelected } = useContext(CategoryContext);
-
-  // get initial data
-  useEffect(() => {
-    socket.emit("get_category", { walletID: id }, ({ defaultList, customList, fullList }) => {
-      console.log(defaultList);
-      setAllList(defaultList, customList, fullList);
-    });
-
-    socket.on('wait_for_update_category', ({ defaultList, customList, fullList }) => {
-      setAllList(defaultList, customList, fullList);
-    });
-
-    return () => {
-      socket.off("wait_for_update_category");
-      setOpen(null);
-    }
-  }, []);
-
+  const token = localStorage.getItem('jwtToken');
+  const [icons, setIcons] = useState([]);
+  const [selectedIcon, setSelectedIcon] = useState({});
   // popover button
   const [openedPopover, setOpenedPopover] = useState(false)
   const [anchorEl, setAnchorEl] = useState();
-  useEffect(() => {
-    if (anchorEl) {
-      const temp = defaultList.find(i => i.ID === anchorEl.id)
-      setSelected(temp);
-    }
-  }, [anchorEl]);
+  const [isOpenAddIconDialog, setOpenIconDialog] = useState(false);
 
-  const handlePopoverOpenParent = (event) => {
+  const getIcons = async () => {
+    const res = await fetch(`${API_URL}/icons`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      }
+    });
+    if (res.status === 200) {
+      const result = await res.json();
+      console.log(result);
+      setIcons(result.icons);
+    } else {
+      setIcons([]);
+    }
+  }
+
+  // get initial data
+  useEffect(() => {
+    getIcons();
+  }, []);
+
+  const handlePopoverOpenParent = (event, icon) => {
     setAnchorEl(event.currentTarget);
+    setSelectedIcon(icon);
     setOpenedPopover(true);
   };
 
@@ -79,21 +72,21 @@ export default function CategoryAdmin(props) {
 
   // add dialog
   const handleOpenAddDialog = () => {
-    setOpen(POPUP.CATEGORY.ADD_CATEGORY);
+    setOpenIconDialog(true);
   }
 
   // edit dialog
   const handleOpenEditDialog = () => {
-    setOpen(POPUP.CATEGORY.EDIT_CATEGORY);
+    console.log(selectedIcon);
   }
 
   // delete dialog
   const handleOpenDeleteDialog = () => {
-    setOpen(POPUP.CATEGORY.DELETE_CATEGORY);
+
   }
 
-  // search category
-  const [filterList, setFilterList] = useState(defaultList);
+  // search icon
+  const [filterList, setFilterList] = useState([]);
   const [searchInput, setSearchInput] = useState('');
 
   const changeSearchInput = (e) => {
@@ -104,15 +97,16 @@ export default function CategoryAdmin(props) {
   }
 
   useEffect(() => {
-    let filtered = defaultList;
+    let filtered = icons;
     if (searchInput !== '') {
       filtered = filtered.filter(i => i.Name.toLowerCase().includes(searchInput));
     }
     setFilterList(filtered)
-  }, [defaultList, searchInput]);
+  }, [icons, searchInput]);
 
   return (
     <React.Fragment>
+      <AddIconAdmin isOpen={isOpenAddIconDialog} setOpen={setOpenIconDialog} />
       <Popover
         elevation={0}
         className={classes.popover}
@@ -140,14 +134,11 @@ export default function CategoryAdmin(props) {
           </IconButton>
         </div>
       </Popover>
-      <AddCategory />
-      <EditCategory />
-      <DeleteCategory />
       <Container className={classes.root} maxWidth={null}>
         <div className={classes.body}>
           <Box className={classes.subHeader}>
             <Typography className={classes.subHeaderFont} color="textPrimary">
-              Loại mặc định
+              Icon
             </Typography>
             <Box className={classes.actionBox}>
               <TextField
@@ -176,7 +167,7 @@ export default function CategoryAdmin(props) {
           <Box className={classes.categoryBox}>
             <Button className={classes.categoryCard} variant="outlined" onClick={handleOpenAddDialog}>
               <AddIcon className={classes.green} />
-              Thêm loại
+              Thêm icon
             </Button>
             {filterList && filterList.map((i, n) => {
               return (
@@ -186,16 +177,17 @@ export default function CategoryAdmin(props) {
                   className={classes.categoryCard}
                   aria-owns="mouse-over-popover"
                   aria-haspopup="true"
-                  onMouseEnter={handlePopoverOpenParent}
+                  onMouseEnter={e => handlePopoverOpenParent(e, i)}
                   onMouseLeave={handlePopoverClose}>
                   <Box className={classes.categoryInfo}>
                     <DefaultIcon
-                      IconID={i.IconID}
+                      IconID={i.ID}
                       backgroundSize={40}
                       iconSize={20} />
                     <Typography
                       noWrap={true}
-                      className={classes.categoryText}>
+                      className={classes.categoryText}
+                    >
                       {i.Name}
                     </Typography>
                   </Box>
@@ -205,7 +197,7 @@ export default function CategoryAdmin(props) {
           </Box>
         </div>
       </Container>
-    </React.Fragment>
+    </React.Fragment >
   );
 }
 

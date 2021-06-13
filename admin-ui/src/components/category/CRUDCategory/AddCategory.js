@@ -85,7 +85,6 @@ export default function AddCategory(props) {
     });
   }
 
-  console.log(list)
   return (
     <Dialog open={isOpen} onClose={handleCloseAddDialog} aria-labelledby="form-dialog-title">
       <DialogTitle id="form-dialog-title" >

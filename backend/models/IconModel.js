@@ -8,7 +8,7 @@ module.exports = {
 
     deleteIcon: (id) => db.delete(`Icons`, { ID: id }),
 
-    getAllIcon: () =>
+    getAllIcons: () =>
         db.loadSafe(`SELECT i.*
                     FROM icons as i`),
 

@@ -7,7 +7,6 @@ import {
 } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import Home from './components/home/home';
 import PrivateRoute from './components/PrivateRoute';
 import StickyFooter from './components/stickyFooter/StickyFooter';
 import CategoryAdmin from './components/category/CategoryAdmin';
@@ -20,6 +19,7 @@ import TeamList from './components/Teams/TeamList.js'
 import ResetDestination from './components/signin/resetpassword/ResetDestination';
 import Profile from './components/profile/Profile';
 import UserList from './components/user/UserList';
+import IconList from './components/icon/Icon';
 
 const routes = [
   {
@@ -28,15 +28,20 @@ const routes = [
     main: () => <UserList />
   },
   {
+    path: "/icon",
+    private: false,
+    main: () => <IconList />
+  },
+  {
     path: "/Category",
     private: false,
     main: () => <CategoryAdmin />
   },
-  {
-    path: "/Teams",
-    private: false,
-    main: () => <TeamList />
-  },
+  // {
+  //   path: "/Teams",
+  //   private: false,
+  //   main: () => <TeamList />
+  // },
   {
     path: '/reset',
     private: false,
@@ -56,7 +61,7 @@ const routes = [
     path: "/",
     exact: true,
     private: false,
-    main: () => <Home />
+    main: () => <UserList />
   },
 ];
 
@@ -108,7 +113,7 @@ function App() {
                   )
                 })}
                 <Route path="/">
-                  <Home />
+                  <UserList />
                 </Route>
               </Switch>
             </div>
