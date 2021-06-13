@@ -8,7 +8,7 @@ module.exports = {
 
     deleteCategory: (id) => db.delete(`Categories`, { ID: id }),
 
-    getDefaultCategory: (walletID) => {
+    getDefaultCategory: () => {
         const isDefault = config.CATEGORY.DEFAULT;
         return db.loadSafe(`SELECT cat.*
                     FROM Categories as cat

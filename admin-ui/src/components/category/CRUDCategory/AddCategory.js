@@ -53,7 +53,8 @@ export default function AddCategory(props) {
     setNewCategory({
       IconID: list[0].ID,
       Name: "",
-    })
+      IsDefault: true
+    });
   }
 
   const handleCloseAddDialog = () => {
@@ -85,7 +86,6 @@ export default function AddCategory(props) {
     });
   }
 
-  console.log(list)
   return (
     <Dialog open={isOpen} onClose={handleCloseAddDialog} aria-labelledby="form-dialog-title">
       <DialogTitle id="form-dialog-title" >
