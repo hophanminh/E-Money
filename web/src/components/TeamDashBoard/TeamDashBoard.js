@@ -67,16 +67,18 @@ const TeamDashBoard = () => {
   })
   const [team, setTeam] = useState();
   const [thu, setTHU] = useState([]);
+  const [person, setPerson] = useState({});
   // get initial data
   useEffect(() => {
     socket.emit("get_team", { walletID: id }, ({ team, thu }) => {
       setTeam(team);
+      setTHU(thu);
       console.log(thu)
       var member = thu.filter(function(member) {
         return member.UserID === userID;
       });
       console.log(member[0].Role);
-      setTHU(member[0]);
+      setPerson(member[0]);
 
     });
 
@@ -151,7 +153,7 @@ const TeamDashBoard = () => {
   };
 
   const handleDelete = () => {
-    {(thu.Role === 1) ? deleteTeam() : leaveTeam()}
+    {(person.Role === 1) ? deleteTeam() : leaveTeam()}
     handleClose();
   }
 
@@ -228,7 +230,7 @@ const TeamDashBoard = () => {
               onClick={handleClickOpen}
             >
                 <ExitToAppIcon className={classes.red} />
-                {(thu.Role === 1) ? ` Xóa nhóm` : ` Rời nhóm`}
+                {(person.Role === 1) ? ` Xóa nhóm` : ` Rời nhóm`}
               </Button>
             </Link>
               <Dialog
@@ -239,7 +241,7 @@ const TeamDashBoard = () => {
               >
                 <DialogTitle >
                     <Typography className={classes.title}>
-                        Bạn có thực sự muốn {(thu.Role === 1) ? ` xóa nhóm` :` rời nhóm`}
+                        Bạn có thực sự muốn {(person.Role === 1) ? ` xóa nhóm` :` rời nhóm`}
                     </Typography>
                 </DialogTitle>
                 <DialogActions>
@@ -247,7 +249,7 @@ const TeamDashBoard = () => {
                     Hủy
                   </Button>
                   <Button style={{ color: "white",backgroundColor: "red", marginLeft: 10 }} variant="contained" color="primary" className={classes.margin} onClick={handleDelete}>
-                  {(thu.Role === 1) ? ` Xóa nhóm` :` Rời nhóm`}
+                  {(person.Role === 1) ? ` Xóa nhóm` :` Rời nhóm`}
                   </Button>
                 </DialogActions>
             </Dialog>
