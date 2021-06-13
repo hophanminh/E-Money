@@ -21,6 +21,7 @@ import ClearIcon from '@material-ui/icons/Clear';
 import TemplateIcon from './TemplateIcon';
 import AddIconAdmin from './CRUDIcon/AddIcon';
 import EditIconAdmin from './CRUDIcon/EditIcon';
+import DeleteIconAdmin from './CRUDIcon/DeleteIcon';
 import { getSocket } from '../../utils/socket';
 
 export default function IconList() {
@@ -38,6 +39,7 @@ export default function IconList() {
   const [anchorEl, setAnchorEl] = useState();
   const [isOpenAddIconDialog, setOpenAddIconDialog] = useState(false);
   const [isOpenEditIconDialog, setOpenEditIconDialog] = useState(false);
+  const [isOpenDeleteDialog, setOpenDeleteDialog] = useState(false);
 
   // get initial data
   useEffect(() => {
@@ -58,6 +60,7 @@ export default function IconList() {
   const handlePopoverOpenParent = (event, icon) => {
     setAnchorEl(event.currentTarget);
     setSelectedIcon({
+      id: icon.ID,
       name: icon.Name,
       color: icon.Color,
       backgroundColor: icon.BackgroundColor
@@ -85,7 +88,7 @@ export default function IconList() {
 
   // delete dialog
   const handleOpenDeleteDialog = () => {
-
+    setOpenDeleteDialog(true);
   }
 
   // search icon
@@ -118,6 +121,11 @@ export default function IconList() {
         isOpen={isOpenEditIconDialog}
         setOpen={setOpenEditIconDialog}
         selectedIcon={selectedIcon}
+      />
+      <DeleteIconAdmin
+        isOpen={isOpenDeleteDialog}
+        setOpen={setOpenDeleteDialog}
+        idToDelete={selectedIcon.id}
       />
       <Popover
         elevation={0}

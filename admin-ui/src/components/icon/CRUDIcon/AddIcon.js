@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Dialog,
   DialogActions,
@@ -24,6 +24,8 @@ export default function AddIconAdmin({ isOpen, setOpen }) {
     color: '#FFFFFF',
     backgroundColor: '#AAAAAA'
   });
+  const [isError, setIsError] = useState(false);
+  const [helperText, setHelperText] = useState('');
 
   const clearNewIcon = () => {
     setNewIcon({
@@ -35,10 +37,18 @@ export default function AddIconAdmin({ isOpen, setOpen }) {
 
   const handleCloseAddDialog = () => {
     setOpen(false);
+    setIsError(false);
+    setHelperText('');
     clearNewIcon();
   }
 
   const handleAdd = () => {
+    if (!newIcon.name || !newIcon.color || !newIcon.backgroundColor) {
+      setIsError(true);
+      setHelperText('Bạn chưa chọn ' + (!newIcon.name ? 'icon' : (!newIcon.color ? 'màu cho icon' : 'màu nền cho icon')));
+      return;
+    }
+
     socket.emit('add_icon', { newIcon });
     setOpen(false);
     clearNewIcon();
@@ -101,10 +111,14 @@ export default function AddIconAdmin({ isOpen, setOpen }) {
             <Typography>Chọn màu cho icon</Typography>
             <ColorPicker
               value={newIcon.color}
-              onChange={color => setNewIcon({
-                ...newIcon,
-                color: color.css.backgroundColor
-              })}
+              onChange={color => {
+                if (color.hex) {
+                  setNewIcon({
+                    ...newIcon,
+                    color: '#' + color.hex
+                  });
+                }
+              }}
             />
           </div>
 
@@ -112,11 +126,19 @@ export default function AddIconAdmin({ isOpen, setOpen }) {
             <Typography>Chọn màu nền cho icon</Typography>
             <ColorPicker
               value={newIcon.backgroundColor}
-              onChange={color => setNewIcon({
-                ...newIcon,
-                backgroundColor: color.css.backgroundColor
-              })}
+              onChange={color => {
+                if (color.hex) {
+                  setNewIcon({
+                    ...newIcon,
+                    backgroundColor: '#' + color.hex
+                  });
+                }
+              }}
             />
+          </div>
+
+          <div style={{ visibility: !isError ? 'hidden' : 'visible' }}>
+            <Typography className={classes.errorText}>{helperText}</Typography>
           </div>
         </div>
 
@@ -166,4 +188,7 @@ const useStyles = makeStyles({
   addButton: {
     backgroundColor: '#1DAF1A',
   },
+  errorText: {
+    color: 'red'
+  }
 });

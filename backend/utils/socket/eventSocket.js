@@ -1,7 +1,7 @@
 const eventModel = require('../../models/eventModel');
 const eventTypeModel = require('../../models/eventTypeModel');
 const { v4: uuidv4 } = require('uuid');
-const { convertToRegularDate, convertToRegularDateTime, getNextEventDate } = require('../helper');
+const { convertToRegularDateTime, getNextEventDate } = require('../helper');
 const { FORMAT_DATETIME_PATTER } = require('../../config/default.json');
 module.exports = function (socket, io, decoded_userID) {
 

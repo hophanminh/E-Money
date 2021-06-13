@@ -13,18 +13,24 @@ import { Autocomplete } from '@material-ui/lab';
 import { ColorPicker } from 'material-ui-color';
 import TemplateIcon from '../TemplateIcon';
 import { ICON_NAMES } from '../../../constants/default.json';
+import { getSocket } from '../../../utils/socket';
 
 export default function EditIconAdmin({ isOpen, setOpen, selectedIcon }) {
   const classes = useStyles();
+  const socket = getSocket();
 
   const [icon, setIcon] = useState({
+    id: selectedIcon.id,
     name: selectedIcon.name,
     color: selectedIcon.color,
     backgroundColor: selectedIcon.backgroundColor
   });
+  const [isError, setIsError] = useState(false);
+  const [helperText, setHelperText] = useState('');
 
   useEffect(() => {
     setIcon({
+      id: selectedIcon.id,
       name: selectedIcon.name,
       color: selectedIcon.color,
       backgroundColor: selectedIcon.backgroundColor
@@ -33,10 +39,19 @@ export default function EditIconAdmin({ isOpen, setOpen, selectedIcon }) {
 
   const handleCloseEditDialog = () => {
     setOpen(false);
+    setIsError(false);
+    setHelperText('');
   }
 
   const handleEdit = () => {
+    if (!icon.name || !icon.color || !icon.backgroundColor) {
+      setIsError(true);
+      setHelperText('Bạn chưa chọn ' + (!icon.name ? 'icon' : (!icon.color ? 'màu cho icon' : 'màu nền cho icon')));
+      return;
+    }
 
+    socket.emit('update_icon', { icon });
+    setOpen(false);
   }
 
   return (
@@ -96,10 +111,14 @@ export default function EditIconAdmin({ isOpen, setOpen, selectedIcon }) {
             <Typography>Chọn màu cho icon</Typography>
             <ColorPicker
               value={icon.color}
-              onChange={color => setIcon({
-                ...icon,
-                color: color.css.backgroundColor
-              })}
+              onChange={color => {
+                if (color.hex) {
+                  setIcon({
+                    ...icon,
+                    color: '#' + color.hex
+                  });
+                }
+              }}
             />
           </div>
 
@@ -107,11 +126,19 @@ export default function EditIconAdmin({ isOpen, setOpen, selectedIcon }) {
             <Typography>Chọn màu nền cho icon</Typography>
             <ColorPicker
               value={icon.backgroundColor}
-              onChange={color => setIcon({
-                ...icon,
-                backgroundColor: color.css.backgroundColor
-              })}
+              onChange={color => {
+                if (color.hex) {
+                  setIcon({
+                    ...icon,
+                    backgroundColor: '#' + color.hex
+                  });
+                }
+              }}
             />
+          </div>
+
+          <div style={{ visibility: !isError ? 'hidden' : 'visible' }}>
+            <Typography className={classes.errorText}>{helperText}</Typography>
           </div>
         </div>
 
@@ -161,4 +188,7 @@ const useStyles = makeStyles({
   editButton: {
     backgroundColor: '#1DAF1A',
   },
+  errorText: {
+    color: 'red'
+  }
 });
