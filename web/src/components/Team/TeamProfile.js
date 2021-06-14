@@ -90,14 +90,18 @@ export default function TeamProfile() {
             body: JSON.stringify(data),
         });
 
-        if (res.status === 200) {
-            setContent("Cập nhật thành công");
+        if (res.status === 201) {
+            const result = await res.json();
+            setContent("Tạo nhóm thành công");
             setShowSnackBar(true);
+            history.push(`/Wallet/${result.result}`);
+
         } else {
             // alert("Some error when updating!")
+            setContent("Tạo nhóm thất bại");
+            setShowSnackBar(true);
+            history.push(`/teams/create`);
         }
-
-        history.push("/teams");
     }
 
     return (

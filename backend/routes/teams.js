@@ -128,7 +128,7 @@ router.post('/:userID', async (req, res) => {
   if (result.affectedRows === 1) {
     console.log("Created successfully");
     return res.status(201)
-      .send({ msg: "Tạo nhóm thành công." });
+      .send({ msg: "Tạo nhóm thành công." , result: newWallet.ID});
   } else {
     return res.status(500)
       .send({ msg: "Hãy thử lại." });
@@ -266,7 +266,7 @@ router.post('/join/:userId', async (req, res) => {
     if (result.affectedRows === 1) {
       console.log("Joined successfully");
       return res.status(201)
-        .send({ msg: "Bạn vừa gia nhập vào nhóm." });
+        .send({ msg: "Bạn vừa gia nhập vào nhóm." , result: team[0].WalletID});
     } else {
       return res.status(500)
         .send({ msg: "Xin hãy thử lại." });
