@@ -23,15 +23,18 @@ import {
 import DateFnsUtils from '@date-io/date-fns';
 import {
   KeyboardDateTimePicker,
+  KeyboardTimePicker,
   MuiPickersUtilsProvider,
 } from '@material-ui/pickers';
 import NumberFormat from 'react-number-format';
+import moment from 'moment';
 
 import DefaultIcon from '../../../utils/DefaultIcon'
 import getValueOfEventType from '../../../utils/defaultEventType'
 import { getMaxMoney, getCurrencySymbol } from '../../../utils/currency'
 import POPUP from '../../../constants/popup.json'
 import { getSocket } from "../../../utils/socket";
+import { isValidMonthDay } from '../../../utils/helper'
 
 
 const fakeEvent = []
@@ -52,6 +55,8 @@ export default function AddEvent(props) {
   const [error, setError] = useState({
     Name: false,
     Description: false,
+    StartTime: false,
+    Value: false,
   })
   const [type, setType] = useState("Chi");
   const [isEndless, setIsEndless] = useState(true);
@@ -59,6 +64,8 @@ export default function AddEvent(props) {
   const today = new Date();
   const todayNextYear = new Date();
   todayNextYear.setFullYear(todayNextYear.getFullYear() + 1);
+  const initialTime = new Date();
+  initialTime.setHours(0, 0, 0, 0);
 
   const [newEvent, setNewEvent] = useState({
     Name: '',
@@ -71,7 +78,9 @@ export default function AddEvent(props) {
     TypeName: '',
     CategoryName: '',
     IconID: '1',
-    Description: ''
+    Description: '',
+    StartTime: initialTime,
+    Value2: 0
   })
 
   useEffect(() => {
@@ -112,7 +121,9 @@ export default function AddEvent(props) {
       TypeName: '',
       CategoryName: '',
       IconID: '1',
-      Description: ''
+      Description: '',
+      StartTime: initialTime,
+      Value2: 0
     })
   }
 
@@ -126,6 +137,25 @@ export default function AddEvent(props) {
         ...error,
         Name: true
       });
+      return;
+    }
+
+    if (!moment(newEvent.StartTime, "DD/MM/YYYY - hh:mm:ss A", true).isValid()) {
+      setError({
+        ...error,
+        StartTime: true,
+      });
+
+      return;
+    }
+
+    if (newEvent.TypeName === "Hằng năm") {
+      if (!isValidMonthDay(newEvent.Value, newEvent.Value2))
+        setError({
+          ...error,
+          Value: true,
+        });
+
       return;
     }
 
@@ -146,7 +176,10 @@ export default function AddEvent(props) {
     if (isEndless) {
       newEvent.EndDate = null;
     }
-    console.log(newEvent);
+    if (newEvent.TypeName === "Hằng năm") {
+      newEvent.Value = newEvent.Value * 1000 + newEvent.Value2
+    }
+
     socket.emit("add_event", { walletID: id, newEvent });
     setOpen(null);
   }
@@ -171,7 +204,12 @@ export default function AddEvent(props) {
         ...newEvent,
         EventTypeID: event.target.value,
         TypeName: selected[0]?.Name,
-        Value: 0
+        Value: 0,
+        Value2: 0
+      });
+      setError({
+        ...error,
+        Value: false,
       });
     }
   }
@@ -213,6 +251,69 @@ export default function AddEvent(props) {
     setNewEvent({
       ...newEvent,
       [event.target.name]: event.target.value
+    });
+  }
+
+  const handleChangeValue = (event) => {
+    if (newEvent.TypeName === "Hằng năm") {
+      if (!isValidMonthDay(event.target.value, newEvent.Value2))
+        setError({
+          ...error,
+          Value: true,
+        });
+      else {
+        setError({
+          ...error,
+          Value: false,
+        });
+      }
+    }
+
+    setNewEvent({
+      ...newEvent,
+      Value: event.target.value
+    });
+  }
+
+  const handleChangeValue2 = (event) => {
+    if (newEvent.TypeName === "Hằng năm") {
+      if (!isValidMonthDay(newEvent.Value, event.target.value))
+        setError({
+          ...error,
+          Value: true,
+        });
+      else {
+        setError({
+          ...error,
+          Value: false,
+        });
+      }
+    }
+
+    setNewEvent({
+      ...newEvent,
+      Value2: event.target.value
+    });
+  }
+
+  const handleChangeStartTime = (time) => {
+    if (moment(time, "DD/MM/YYYY - hh:mm:ss A", true).isValid()) {
+      setError({
+        ...error,
+        StartTime: false,
+      });
+    }
+    else {
+      setError({
+        ...error,
+        StartTime: true,
+      });
+
+    }
+
+    setNewEvent({
+      ...newEvent,
+      StartTime: time
     });
   }
 
@@ -266,6 +367,67 @@ export default function AddEvent(props) {
                 error={error?.Name}
                 helperText={error?.Name ? "Tên sự kiện không được để trống" : ''}
               />
+              <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                <KeyboardTimePicker
+                  name="StartTime"
+                  label="Thời gian tạo"
+                  size="small"
+                  fullWidth
+                  className={classes.textField}
+                  style={{ marginRight: '0px' }}
+                  value={newEvent.StartTime}
+                  onChange={time => handleChangeStartTime(time)}
+                  mask="__:__ _M"
+                  inputVariant="outlined"
+                  error={error?.StartTime}
+                  helperText={error?.StartTime ? "Thời gian không hợp lệ" : ''}
+                  InputLabelProps={{
+                    shrink: true,
+                  }} />
+
+              </MuiPickersUtilsProvider>
+              <Box className={classes.amountRow}>
+                <TextField
+                  style={{ minWidth: '150px' }}
+                  className={classes.textField}
+                  size="small"
+                  id="isNegative"
+                  name="isNegative"
+                  select
+                  label="Kết thúc"
+                  value={isEndless}
+                  onChange={handleChangeIsEndless}
+                  variant="outlined"
+                >
+                  <MenuItem value={true}>
+                    <Box className={classes.typeBox}>
+                      Vô tận
+                </Box>
+                  </MenuItem>
+                  <MenuItem value={false}>
+                    <Box className={classes.typeBox}>
+                      Vào lúc
+                </Box>
+                  </MenuItem>
+                </TextField>
+
+                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                  <KeyboardDateTimePicker
+                    name="EndDate"
+                    size="small"
+                    fullWidth
+                    className={classes.textField}
+                    style={{ marginRight: '0px' }}
+                    value={newEvent.EndDate}
+                    onChange={time => handleChangeEndDate(time)}
+                    onError={console.log}
+                    minDate={new Date()}
+                    format="dd/MM/yyyy - hh:mm a"
+                    inputVariant="outlined"
+                    disabled={isEndless}
+                  />
+                </MuiPickersUtilsProvider>
+              </Box>
 
               <TextField
                 className={classes.textField}
@@ -318,78 +480,53 @@ export default function AddEvent(props) {
                   variant="outlined"
                 >
                   {(valueList || []).map((type, i) => (
-                    <MenuItem key={i} value={i + 1}>
-                      {type}
-                    </MenuItem>
-                  ))}
-                </TextField>
-              }
-              {newEvent.TypeName === "Hằng năm" &&
-                <TextField
-                  className={classes.textField}
-                  size="small"
-                  id="Value"
-                  name="Value"
-                  select
-                  fullWidth
-                  value={newEvent.Value}
-                  onChange={handleChange}
-                  variant="outlined"
-                >
-                  {(valueList || []).map((type, i) => (
                     <MenuItem key={i} value={i}>
                       {type}
                     </MenuItem>
                   ))}
                 </TextField>
               }
-
-
-
-
-
-              <Box className={classes.amountRow}>
-                <TextField
-                  style={{ minWidth: '150px' }}
-                  className={classes.textField}
-                  size="small"
-                  id="isNegative"
-                  name="isNegative"
-                  select
-                  label="Kết thúc"
-                  value={isEndless}
-                  onChange={handleChangeIsEndless}
-                  variant="outlined"
-                >
-                  <MenuItem value={true}>
-                    <Box className={classes.typeBox}>
-                      Vô tận
-                </Box>
-                  </MenuItem>
-                  <MenuItem value={false}>
-                    <Box className={classes.typeBox}>
-                      Vào lúc
-                </Box>
-                  </MenuItem>
-                </TextField>
-
-                <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                  <KeyboardDateTimePicker
-                    name="EndDate"
-                    size="small"
-                    fullWidth
+              {newEvent.TypeName === "Hằng năm" &&
+                <Box className={classes.amountRow}>
+                  <TextField
                     className={classes.textField}
-                    style={{ marginRight: '0px' }}
-                    value={newEvent.EndDate}
-                    onChange={time => handleChangeEndDate(time)}
-                    onError={console.log}
-                    minDate={new Date()}
-                    format="dd/MM/yyyy - hh:mm a"
-                    inputVariant="outlined"
-                    disabled={isEndless}
-                  />
-                </MuiPickersUtilsProvider>
-              </Box>
+                    size="small"
+                    id="Value"
+                    name="Value"
+                    select
+                    fullWidth
+                    value={newEvent.Value}
+                    onChange={handleChangeValue}
+                    variant="outlined"
+                    error={error?.Value}
+                    helperText={error?.Value ? "Ngày, tháng lựa chọn không hợp lệ" : ''}
+                  >
+                    {(valueList.dayList || []).map((type, i) => (
+                      <MenuItem key={i} value={i}>
+                        {type}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                  <TextField
+                    className={classes.textField}
+                    size="small"
+                    id="Value2"
+                    name="Value2"
+                    select
+                    fullWidth
+                    value={newEvent.Value2}
+                    onChange={handleChangeValue2}
+                    variant="outlined"
+                  >
+                    {(valueList.monthList || []).map((type, i) => (
+                      <MenuItem key={i} value={i}>
+                        {type}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </Box>
+              }
+
             </Box>
           </DialogContent>
           <DialogActions>

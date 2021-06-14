@@ -55,7 +55,7 @@ module.exports = io => {
 
         const user = await userModel.getUserByWalletID(event.WalletID);
         const tempDate = nextDate;
-        nextDate = getNextEventDate(event.NextDate, event.EventTypeID, event.Value);
+        nextDate = getNextEventDate(event.NextDate, event.EventTypeID, event.Value, event.NextDate);
 
         if (user.length === 0) {
           // Team's wallet
@@ -110,14 +110,13 @@ module.exports = io => {
           // emit tx
           const transactionList = await transactionModel.getTransactionByWalletID(event.WalletID);
           const { total, spend, receive } = calculateStat(transactionList);
-          console.log(transactionList, total, spend, receive)
           io.in(event.WalletID).emit('wait_for_update_transaction', { transactionList, total, spend, receive });
 
         } else {
           // User's wallet
           const userID = user[0].ID;
           transactionToAdd.UserID = userID;
-          nextDate = getNextEventDate(event.NextDate, event.EventTypeID, event.Value);
+          nextDate = getNextEventDate(event.NextDate, event.EventTypeID, event.Value, event.NextDate);
 
           let notificationToAdd = {
             ID: uuidv4(),
@@ -166,7 +165,6 @@ module.exports = io => {
           // emit tx
           const transactionList = await transactionModel.getTransactionByWalletID(event.WalletID);
           const { total, spend, receive } = calculateStat(transactionList);
-          console.log(transactionList, total, spend, receive)
           io.in(event.WalletID).emit('wait_for_update_transaction', { transactionList, total, spend, receive });
         }
 

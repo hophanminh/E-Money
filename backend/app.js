@@ -52,3 +52,13 @@ server.listen(process.env.PORT || config.PORT, () => {
 });
 
 module.exports = io;
+
+// const moment = require("moment");
+// const { convertToRegularDate, convertToRegularDateTime, getNextEventDate } = require('./utils/helper');
+// const date = moment();
+// const time = moment();
+// time.hour(8);
+// time.minute(10);
+// const next = getNextEventDate(date, config.EVENT_TYPE.YEARLY, 13 * 1000 + 5, time);
+// console.log(date.format('DD/MM/YYYY - hh:mm A'))
+// console.log(next.format('DD/MM/YYYY - hh:mm A'))

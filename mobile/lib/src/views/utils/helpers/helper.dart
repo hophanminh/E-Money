@@ -129,6 +129,15 @@ String convertToMMYYYYY(String input, {bool isShortYear = false}) {
   }
 }
 
+String convertToHHMM(String input) {
+  try {
+    DateTime tempDate = DateTime.parse(input);
+    return DateFormat.jm().format(tempDate.toLocal());
+  } catch (error) {
+    return "";
+  }
+}
+
 String getThisMonth() => DateFormat('MM/yyyy').format(new DateTime.now());
 
 String convertRegularDateToNormalDate(String input) {
@@ -205,4 +214,19 @@ getValueOfEventType(String eventType) {
     }
   }
   return tempList;
+}
+
+int daysInMonth(m) { // m is 0 indexed: 0-11
+  switch (m) {
+    case 1:
+      return 29;
+    case 8: case 3: case 5: case 10:
+      return 30;
+    default:
+      return 31;
+  }
+}
+
+bool isValidMonthDay(int d, int m) {
+  return m >= 0 && m < 12 && d >= 0 && d < daysInMonth(m);
 }

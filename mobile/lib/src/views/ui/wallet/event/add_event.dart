@@ -34,7 +34,9 @@ class _AddEventState extends State<AddEvent> {
 
   // giá trị của loại sự kiện tương ứng
   List<DropdownMenuItem<String>> _values = [];
+  List<DropdownMenuItem<String>> _values2 = [];
   String _currentValue;
+  String _currentValue2;
 
   // thời gian kết thúc sự kiện
   List _endDateList = ['Vô thời hạn', 'Vào lúc'];
@@ -50,7 +52,11 @@ class _AddEventState extends State<AddEvent> {
 
   var _selectedEndDatetime = DateTime.now().toLocal(); // ex: 2021-05-19 23:17:11.279652
 
+  var _selectedStartDatetime = DateTime.now().toLocal(); // ex: 2021-05-19 23:17:11.279652
+
   var _endDatetimeController = TextEditingController();
+
+  var _startDatetimeController = TextEditingController();
 
   // thể loại giao dịch
   List<DropdownMenuItem<String>> _availableCatItems = [];
@@ -96,6 +102,13 @@ class _AddEventState extends State<AddEvent> {
     _currentCategory = null;
 
     _endDatetimeController.text = convertToDDMMYYYYHHMM(_selectedEndDatetime.toLocal().toString());
+
+    var now = DateTime.now();
+    DateTime temp = DateTime(now.year, now.month, now.day, 0, 0);
+    _startDatetimeController.text = convertToHHMM(temp.toLocal().toString());
+    setState(() {
+      _selectedStartDatetime = temp.toLocal(); // ex: 2021-05-19 23:17:11.279652
+    });
   }
 
   @override
@@ -104,16 +117,23 @@ class _AddEventState extends State<AddEvent> {
     _priceController.dispose();
     _descriptionController.dispose();
     _endDatetimeController.dispose();
+    _startDatetimeController.dispose();
     super.dispose();
   }
 
   _handleChangeEventType(String newEventType) {
     List<String> _valuesOfEventType = getValueOfEventType(newEventType);
     List<DropdownMenuItem<String>> values = [];
+    List<DropdownMenuItem<String>> values2 = [];
 
-    if (newEventType == '3') {
+    if (newEventType == '4') {
       for (int i = 0; i < _valuesOfEventType.length; i++) {
-        values.add(new DropdownMenuItem(child: Text(_valuesOfEventType[i]), value: '${i + 1}'));
+        values.add(new DropdownMenuItem(child: Text(_valuesOfEventType[i]), value: '$i'));
+      }
+
+      List<String> _valuesOfEventType2 = getValueOfEventType("3");
+      for (int i = 0; i < _valuesOfEventType2.length; i++) {
+        values2.add(new DropdownMenuItem(child: Text(_valuesOfEventType2[i]), value: '$i'));
       }
     } else {
       for (int i = 0; i < _valuesOfEventType.length; i++) {
@@ -125,6 +145,8 @@ class _AddEventState extends State<AddEvent> {
       _currentEventType = newEventType;
       _values = values;
       _currentValue = null;
+      _values2 = values2;
+      _currentValue2 = null;
     });
   }
 
@@ -158,6 +180,54 @@ class _AddEventState extends State<AddEvent> {
                       },
                     ),
                   ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: TextFormField(
+                      controller: _startDatetimeController,
+                      showCursor: true,
+                      readOnly: true,
+                      decoration: myInputDecoration('', label: 'Thời gian tạo', inputBorder: Colors.black26),
+                      onTap: () {
+                        _selectTime();
+                      },
+                      validator: (String value) {
+                        return null;
+                      },
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.symmetric(vertical: 10),
+                    // padding: EdgeInsets.symmetric(horizontal: 10),
+                    // decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), border: Border.all(width: 1, color: Colors.black26)),
+                    child: DropdownButtonFormField(
+                      // hint: Text('Kết thúc'),
+                      decoration: myInputDecoration('', label: 'Kết thúc', inputBorder: Colors.black26),
+                      value: _currentEndDateType,
+                      items: _availableEndDateItems,
+                      onChanged: (value) {
+                        setState(() {
+                          _currentEndDateType = value;
+                        });
+                      },
+                    ),
+                  ),
+                  _currentEndDateType == 'true'
+                      ? Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: TextFormField(
+                      controller: _endDatetimeController,
+                      showCursor: true,
+                      readOnly: true,
+                      decoration: myInputDecoration('Bạn chưa chọn thời gian', inputBorder: Colors.black26),
+                      onTap: () {
+                        _selectDatetime();
+                      },
+                      validator: (String value) {
+                        return null;
+                      },
+                    ),
+                  )
+                      : Container(),
                   Container(
                     margin: EdgeInsets.symmetric(vertical: 10),
                     // padding: EdgeInsets.symmetric(horizontal: 10),
@@ -187,9 +257,9 @@ class _AddEventState extends State<AddEvent> {
                         })
 
                   ),
-                  _currentEventType != '1' || _currentEventType == null
+                  _currentEventType == '2' || _currentEventType == '3'
                       ? Container(
-                          margin: EdgeInsets.symmetric(vertical: 10),
+                          margin: EdgeInsets.only(top: 10),
                           // padding: EdgeInsets.symmetric(horizontal: 10),
                           // decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), border: Border.all(width: 1, color: Colors.black26)),
                           child: DropdownButtonFormField(
@@ -204,45 +274,64 @@ class _AddEventState extends State<AddEvent> {
                             },
                             validator: (String value) {
                               if (value == null) {
-                                return 'Thời điểm không dược để trống';
+                                return 'thời điểm không dược để trống';
                               }
                               return null;
                             },
                           ))
                       : Container(),
-                  Container(
-                    margin: EdgeInsets.symmetric(vertical: 10),
-                    // padding: EdgeInsets.symmetric(horizontal: 10),
-                    // decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), border: Border.all(width: 1, color: Colors.black26)),
-                    child: DropdownButtonFormField(
-                      // hint: Text('Kết thúc'),
-                      decoration: myInputDecoration('', label: 'Kết thúc', inputBorder: Colors.black26),
-                      value: _currentEndDateType,
-                      items: _availableEndDateItems,
-                      onChanged: (value) {
-                        setState(() {
-                          _currentEndDateType = value;
-                        });
-                      },
-                    ),
-                  ),
-                  _currentEndDateType == 'true'
-                      ? Padding(
-                          padding: const EdgeInsets.only(top: 10),
-                          child: TextFormField(
-                            controller: _endDatetimeController,
-                            showCursor: true,
-                            readOnly: true,
-                            decoration: myInputDecoration('Bạn chưa chọn thời gian', inputBorder: Colors.black26),
-                            onTap: () {
-                              _selectDatetime();
-                            },
-                            validator: (String value) {
-                              return null;
-                            },
-                          ),
-                        )
+                  _currentEventType == '4'
+                      ? Column(
+                          children: [
+                            Container(
+                                margin: EdgeInsets.symmetric(vertical: 10),
+                                // padding: EdgeInsets.symmetric(horizontal: 10),
+                                // decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), border: Border.all(width: 1, color: Colors.black26)),
+                                child: DropdownButtonFormField(
+                                  hint: Text('Vào ngày'),
+                                  decoration: myInputDecoration('', inputBorder: Colors.black26),
+                                  value: _currentValue2,
+                                  items: _values2,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _currentValue2 = value;
+                                    });
+                                  },
+                                  validator: (String value) {
+                                    if (value == null) {
+                                      return 'Ngày không dược để trống';
+                                    }
+                                    if (_currentValue != null && !isValidMonthDay(int.parse(value), int.parse(_currentValue))) {
+                                      return "Ngày, tháng không hợp lệ";
+                                    }
+                                    return null;
+                                  },
+                                )),
+                            Container(
+                                margin: EdgeInsets.only(top: 10),
+                                // padding: EdgeInsets.symmetric(horizontal: 10),
+                                // decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), border: Border.all(width: 1, color: Colors.black26)),
+                                child: DropdownButtonFormField(
+                                  hint: Text('Vào tháng'),
+                                  decoration: myInputDecoration('', inputBorder: Colors.black26),
+                                  value: _currentValue,
+                                  items: _values,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _currentValue = value;
+                                    });
+                                  },
+                                  validator: (String value) {
+                                    if (value == null) {
+                                      return 'Tháng không dược để trống';
+                                    }
+                                    return null;
+                                  },
+                                )),
+                          ],
+                      )
                       : Container(),
+
                   Padding(
                     padding: const EdgeInsets.only(top: 30.0),
                     child: Align(alignment: Alignment.centerLeft, child: Text('Thông tin giao dịch định kỳ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25))),
@@ -420,6 +509,24 @@ class _AddEventState extends State<AddEvent> {
     }
   }
 
+  void _selectTime() async {
+    final TimeOfDay pickedTime = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay(hour: _selectedStartDatetime.hour, minute: _selectedStartDatetime.minute),
+        helpText: 'Chọn giờ xảy ra sự kiện',
+        cancelText: 'Hủy',
+        confirmText: 'Chọn');
+
+    if (pickedTime != null) {
+      DateTime result = new DateTime(_selectedStartDatetime.year, _selectedStartDatetime.month, _selectedStartDatetime.day, pickedTime.hour, pickedTime.minute);
+
+      setState(() {
+        _selectedStartDatetime = result;
+      });
+      _startDatetimeController.text = convertToHHMM(result.toString());
+    }
+  }
+
   void _changeTxType(String selectedType) {
     setState(() {
       _currentTxType = selectedType;
@@ -443,19 +550,29 @@ class _AddEventState extends State<AddEvent> {
       return;
     }
 
+    String finalValue = _currentValue;
+    if (_currentEventType == '4') {
+      int month = _currentValue == null ? 0 : int.parse(_currentValue);
+      int day = _currentValue2 == null ? 0 : int.parse(_currentValue2);
+      finalValue = (day * 1000 + month).toString();
+    }
+
     EventsProvider eventsProvider = Provider.of<EventsProvider>(context, listen: false);
     CatsProvider catsProvider = Provider.of<CatsProvider>(context, listen: false);
     final Map<String, dynamic> newEvent = {
       'Name': _nameController.text,
       'StartDate': DateTime.now().toIso8601String(),
       'EndDate': _currentEndDateType == 'true' ? _selectedEndDatetime.toIso8601String() : null,
-      'Value': _currentValue == null ? 0 : int.parse(_currentValue),
+      'Value': finalValue == null ? 0 : int.parse(finalValue),
       'ExpectingAmount': _currentTxType == 'Chi' ? price * -1 : price,
       'CategoryID': _currentCategory == null ? catsProvider.fullList[0].id :_currentCategory,
       'EventTypeID': _currentEventType == null ? eventsProvider.eventTypeList[0].id : _currentEventType,
-      'Description': _descriptionController.text
+      'Description': _descriptionController.text,
+      'StartTime': _selectedStartDatetime.toIso8601String(),
     };
+    print(newEvent);
 
+    print(DateTime.parse(newEvent['StartTime']));
     showSnack(_scaffoldKey, 'Đang xử lý...');
     socket.emitWithAck('add_event', {'walletID': widget.walletID, 'newEvent': newEvent}, ack: () {
       Navigator.pop(context);
