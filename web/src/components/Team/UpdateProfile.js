@@ -1,13 +1,20 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { useHistory,useParams  } from 'react-router-dom';
-import Button from '@material-ui/core/Button';
+import { useHistory,useParams, Link  } from 'react-router-dom';
 import {
+    Container,
+    Breadcrumbs,
+    Typography,
+    IconButton,
+    Box,
+    TextField,
+    Card,
+    Popover,
+    InputAdornment,
+    Button,
     makeStyles,
   } from '@material-ui/core/';
 // import ImageUploader from './ImageUploader';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
-import Container from '@material-ui/core/Container';
+import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import SaveIcon from '@material-ui/icons/Save';
 import Grid from '@material-ui/core/Grid';
 import * as helper from '../../utils/helper';
@@ -38,6 +45,29 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'column',
         justifyContent: 'space-between',
       },
+      title: {
+        margin: '20px',
+        display: 'flex',
+        flexDirection: 'column',
+        paddingBottom: '10px'
+      },
+      breadcrumb: {
+    
+      },
+      titleFont: {
+        fontSize: '24px',
+        fontWeight: 'bold',
+      },
+      LinkFont: {
+        fontSize: '24px',
+        '&:hover': {
+          textDecoration: 'underline'
+        }
+    
+      },
+      subTitleFont: {
+        fontSize: '14px',
+      },
 }))
 
 export default function TeamProfile() {
@@ -59,6 +89,7 @@ export default function TeamProfile() {
     const [members, setMembers] = useState([]);
     const [isAdmin, setIsAdmin] = useState(false);
     const [isDisabledInput, setIsDisableInput] = useState(true);
+    const [team, setTeam] = useState({});
 
     useEffect(() => {
         console.log(isLoggedIn);
@@ -133,10 +164,11 @@ export default function TeamProfile() {
         if (res.status === 200) {
             const result = await res.json();
             console.log(result.teams[0]);
-            const team = result.teams[0];
-            setTeamName(team.Name);
-            setDiscription(team.Description)
-            setNumberUser(team.MaxUsers)
+            setTeam(result.teams[0]);
+
+            setTeamName(result.teams[0].Name);
+            setDiscription(result.teams[0].Description)
+            setNumberUser(result.teams[0].MaxUsers)
         } else {
             // alert("Some error when updating!")
         }
@@ -205,8 +237,26 @@ export default function TeamProfile() {
     return (
         <>
             <SnackBar open={showSnackbar} setOpen={(isOpen) => setShowSnackBar(isOpen)} content={content} />
-            {/* <div class="wallpaper" style={{ ...styles.wallpaper }}>
-            </div> */}
+            <div className={classes.title}>
+            <Breadcrumbs className={classes.breadcrumb} separator={<NavigateNextIcon fontSize="large" />} aria-label="breadcrumb">
+            {team ?
+              <Link to={`/Wallet/${team.WalletID}`} style={{ textDecoration: 'none' }}>
+                <Typography className={classes.LinkFont}>
+                  {"Ví nhóm " + team?.Name}
+                </Typography>
+              </Link>
+              :
+              <Link to="/Wallet" style={{ textDecoration: 'none' }}>
+                <Typography className={classes.LinkFont}>
+                  Ví cá nhân
+                </Typography>
+              </Link>
+            }
+            <Typography className={classes.titleFont} color="textPrimary">
+              Thông tin nhóm
+            </Typography>
+          </Breadcrumbs>
+          </div>
             <div className={classes.body}>
                 <Container xs={12} sm={12} md={6} component="main" maxWidth="lg">
                     <Grid container spacing={5} className={classes.grid}>

@@ -178,7 +178,11 @@ export default function Teams() {
       body: JSON.stringify(data),
     });
     if (res.status === 201) {
-      history.push("/teams")
+      const result = await res.json();
+      console.log(result);
+      setContent("Tạo nhóm thành công");
+      setShowSnackBar(true);
+      history.push(`/Wallet/${result.result}`);
     } else {
       const result = await res.json();
       console.log(result);
