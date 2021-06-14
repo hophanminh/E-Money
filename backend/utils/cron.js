@@ -32,13 +32,14 @@ module.exports = io => {
             continue;
           }
         } else {
-          if (endDate.isBefore(nextDate)) {
+          if (endDate < nextDate) {
             await eventModel.updateEvent(event.ID, { Status: 0 });
             console.log('    + This event is overdue, auto changing its status, EndDate: ' + endDate.format(FORMAT_DATETIME_PATTER.DATE));
-          } else if (nextDate.isAfter(now)) {
+            continue;
+          } else if (nextDate > now) {
             console.log('    + This event is not due yet');
+            continue;
           }
-          continue;
         }
 
         let transactionToAdd = {
@@ -66,9 +67,9 @@ module.exports = io => {
             await transactionModel.addTransaction(transactionToAdd);
             await walletModel.updateTotalWallet(transactionToAdd.Money, event.WalletID);
             const history = cloneDeep(transactionToAdd);
-            history.TransactionID = transactionToAdd.ID
-            history.ID = uuidv4()
-            await historyModel.addHistoryTransaction(history)
+            history.TransactionID = transactionToAdd.ID;
+            history.ID = uuidv4();
+            await historyModel.addHistoryTransaction(history);
 
           } catch (e) {
             console.log('Error while adding a new transaction for team\'s wallet', e);
@@ -133,9 +134,9 @@ module.exports = io => {
             await transactionModel.addTransaction(transactionToAdd);
             await walletModel.updateTotalWallet(transactionToAdd.Money, event.WalletID);
             const history = cloneDeep(transactionToAdd);
-            history.TransactionID = transactionToAdd.ID
-            history.ID = uuidv4()
-            await historyModel.addHistoryTransaction(history)
+            history.TransactionID = transactionToAdd.ID;
+            history.ID = uuidv4();
+            await historyModel.addHistoryTransaction(history);
 
           } catch (e) {
             console.log('Error while adding a new transaction', e);
@@ -177,7 +178,7 @@ module.exports = io => {
 
   const calculateStat = (transactionList) => {
     if (!transactionList) {
-      return null
+      return null;
     }
     let total = 0;
     let spend = 0;
