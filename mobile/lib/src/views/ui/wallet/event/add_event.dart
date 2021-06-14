@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:mobile/src/models/CatsProvider.dart';
 import 'package:mobile/src/models/EventsProvider.dart';
@@ -62,7 +61,7 @@ class _AddEventState extends State<AddEvent> {
   List<DropdownMenuItem<String>> _availableCatItems = [];
   String _currentCategory;
 
-  var _descriptionController = TextEditingController(text: "");
+  // var _descriptionController = TextEditingController(text: "");
 
   _initPage() async {
     _iconList = await IconService.instance.iconList;
@@ -115,7 +114,7 @@ class _AddEventState extends State<AddEvent> {
   void dispose() {
     _nameController.dispose();
     _priceController.dispose();
-    _descriptionController.dispose();
+    // _descriptionController.dispose();
     _endDatetimeController.dispose();
     _startDatetimeController.dispose();
     super.dispose();
@@ -180,6 +179,107 @@ class _AddEventState extends State<AddEvent> {
                       },
                     ),
                   ),
+                  Container(
+                      margin: EdgeInsets.symmetric(vertical: 10),
+                      // padding: EdgeInsets.symmetric(horizontal: 10),
+                      // decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), border: Border.all(width: 1, color: Colors.black26)),
+                      child: Consumer<EventsProvider>(builder: (context, eventsProvider, child) {
+                        return DropdownButtonFormField(
+                          // hint: Text('Loại sự kiện'),
+                          decoration: myInputDecoration('', label: 'Loại sự kiện', inputBorder: Colors.black26),
+                          value: _currentEventType == null ? eventsProvider.eventTypeList[0].id : _currentEventType,
+                          items: eventsProvider.eventTypeList.map<DropdownMenuItem<String>>((EventTypes type) {
+                            return DropdownMenuItem(
+                              child: Text(type.name),
+                              value: type.id,
+                            );
+                          }).toList(),
+                          onChanged: (value) {
+                            print(value);
+                            _handleChangeEventType(value);
+                          },
+                          onTap: () {
+                            FocusManager.instance.primaryFocus.unfocus();
+                          },
+                        );
+                      })),
+                  _currentEventType == '2' || _currentEventType == '3'
+                      ? Container(
+                          margin: EdgeInsets.symmetric(vertical: 10),
+                          // padding: EdgeInsets.symmetric(horizontal: 10),
+                          // decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), border: Border.all(width: 1, color: Colors.black26)),
+                          child: DropdownButtonFormField(
+                            hint: Text('Vào thời điểm'),
+                            decoration: myInputDecoration('', inputBorder: Colors.black26),
+                            value: _currentValue,
+                            items: _values,
+                            onChanged: (value) {
+                              setState(() {
+                                _currentValue = value;
+                              });
+                            },
+                            validator: (String value) {
+                              if (value == null) {
+                                return 'thời điểm không dược để trống';
+                              }
+                              return null;
+                            },
+                          ))
+                      : Container(),
+                  _currentEventType == '4'
+                      ? Row(
+                          children: [
+                            Expanded(
+                              child: Container(
+                                  margin: EdgeInsets.symmetric(vertical: 10),
+                                  padding: EdgeInsets.only(right: 5),
+                                  child: DropdownButtonFormField(
+                                    hint: Text('Vào ngày'),
+                                    decoration: myInputDecoration('', inputBorder: Colors.black26),
+                                    value: _currentValue2,
+                                    items: _values2,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        _currentValue2 = value;
+                                      });
+                                    },
+                                    validator: (String value) {
+                                      if (value == null) {
+                                        return 'Ngày không dược để trống';
+                                      }
+                                      if (_currentValue != null && !isValidMonthDay(int.parse(value), int.parse(_currentValue))) {
+                                        return "Ngày, tháng không hợp lệ";
+                                      }
+                                      return null;
+                                    },
+                                  )),
+                            ),
+                            Expanded(
+                              child: Container(
+                                  margin: EdgeInsets.symmetric(vertical: 10),
+                                  padding: EdgeInsets.only(left: 5),
+                                  child: DropdownButtonFormField(
+                                    hint: Text('Vào tháng'),
+                                    decoration: myInputDecoration('', inputBorder: Colors.black26),
+                                    value: _currentValue,
+                                    items: _values,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        _currentValue = value;
+                                      });
+                                    },
+                                    validator: (String value) {
+                                      if (value == null) {
+                                        return 'Tháng không dược để trống';
+                                      }
+                                      return null;
+                                    },
+                                  )),
+                            ),
+                          ],
+                        )
+                      : Container(),
+
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     child: TextFormField(
@@ -213,123 +313,20 @@ class _AddEventState extends State<AddEvent> {
                   ),
                   _currentEndDateType == 'true'
                       ? Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    child: TextFormField(
-                      controller: _endDatetimeController,
-                      showCursor: true,
-                      readOnly: true,
-                      decoration: myInputDecoration('Bạn chưa chọn thời gian', inputBorder: Colors.black26),
-                      onTap: () {
-                        _selectDatetime();
-                      },
-                      validator: (String value) {
-                        return null;
-                      },
-                    ),
-                  )
-                      : Container(),
-                  Container(
-                    margin: EdgeInsets.symmetric(vertical: 10),
-                    // padding: EdgeInsets.symmetric(horizontal: 10),
-                    // decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), border: Border.all(width: 1, color: Colors.black26)),
-                    child: Consumer<EventsProvider>(
-                        builder: (context, eventsProvider, child) {
-                          return DropdownButtonFormField(
-                            // hint: Text('Loại sự kiện'),
-                            decoration: myInputDecoration('', label: 'Loại sự kiện', inputBorder: Colors.black26),
-                            value: _currentEventType == null ? eventsProvider.eventTypeList[0].id : _currentEventType,
-                            items: eventsProvider.eventTypeList
-                                .map<DropdownMenuItem<String>>((EventTypes type) {
-                              return DropdownMenuItem(
-                                child: Text(type.name),
-                                value: type.id,
-                              );
-                            }).toList(),
-                            onChanged: (value) {
-                              print(value);
-                            _handleChangeEventType(value);
-                            },
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          child: TextFormField(
+                            controller: _endDatetimeController,
+                            showCursor: true,
+                            readOnly: true,
+                            decoration: myInputDecoration('Bạn chưa chọn thời gian', inputBorder: Colors.black26),
                             onTap: () {
-                              FocusManager.instance.primaryFocus
-                                  .unfocus();
-                            },
-                          );
-                        })
-
-                  ),
-                  _currentEventType == '2' || _currentEventType == '3'
-                      ? Container(
-                          margin: EdgeInsets.only(top: 10),
-                          // padding: EdgeInsets.symmetric(horizontal: 10),
-                          // decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), border: Border.all(width: 1, color: Colors.black26)),
-                          child: DropdownButtonFormField(
-                            hint: Text('Vào thời điểm'),
-                            decoration: myInputDecoration('', inputBorder: Colors.black26),
-                            value: _currentValue,
-                            items: _values,
-                            onChanged: (value) {
-                              setState(() {
-                                _currentValue = value;
-                              });
+                              _selectDatetime();
                             },
                             validator: (String value) {
-                              if (value == null) {
-                                return 'thời điểm không dược để trống';
-                              }
                               return null;
                             },
-                          ))
-                      : Container(),
-                  _currentEventType == '4'
-                      ? Column(
-                          children: [
-                            Container(
-                                margin: EdgeInsets.symmetric(vertical: 10),
-                                // padding: EdgeInsets.symmetric(horizontal: 10),
-                                // decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), border: Border.all(width: 1, color: Colors.black26)),
-                                child: DropdownButtonFormField(
-                                  hint: Text('Vào ngày'),
-                                  decoration: myInputDecoration('', inputBorder: Colors.black26),
-                                  value: _currentValue2,
-                                  items: _values2,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _currentValue2 = value;
-                                    });
-                                  },
-                                  validator: (String value) {
-                                    if (value == null) {
-                                      return 'Ngày không dược để trống';
-                                    }
-                                    if (_currentValue != null && !isValidMonthDay(int.parse(value), int.parse(_currentValue))) {
-                                      return "Ngày, tháng không hợp lệ";
-                                    }
-                                    return null;
-                                  },
-                                )),
-                            Container(
-                                margin: EdgeInsets.only(top: 10),
-                                // padding: EdgeInsets.symmetric(horizontal: 10),
-                                // decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), border: Border.all(width: 1, color: Colors.black26)),
-                                child: DropdownButtonFormField(
-                                  hint: Text('Vào tháng'),
-                                  decoration: myInputDecoration('', inputBorder: Colors.black26),
-                                  value: _currentValue,
-                                  items: _values,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _currentValue = value;
-                                    });
-                                  },
-                                  validator: (String value) {
-                                    if (value == null) {
-                                      return 'Tháng không dược để trống';
-                                    }
-                                    return null;
-                                  },
-                                )),
-                          ],
-                      )
+                          ),
+                        )
                       : Container(),
 
                   Padding(
@@ -395,75 +392,63 @@ class _AddEventState extends State<AddEvent> {
                     ),
                   ),
                   Container(
-                    margin: EdgeInsets.symmetric(vertical: 10),
-                    padding: EdgeInsets.symmetric(horizontal: 10),
-                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), border: Border.all(width: 1, color: Colors.black26)),
-                    child: Consumer<CatsProvider>(
-                        builder: (context, catsProvider, child) {
-                          return DropdownButtonFormField(
-                            hint: Text('Chọn hạng mục chi tiêu'),
-                            decoration: InputDecoration(
-                              enabledBorder: InputBorder.none,
-                            ),
-                            value: _currentCategory == null ? catsProvider.fullList[0].id : _currentCategory,
-                            items: catsProvider.fullList
-                                .map<DropdownMenuItem<String>>((Categories cat) {
-                              IconCustom selectedIcon = _iconList.firstWhere(
-                                      (element) => element.id == cat.iconID,
-                                  orElse: () => new IconCustom(
-                                      id: '', name: '', color: '', backgroundColor: ''));
+                      margin: EdgeInsets.symmetric(vertical: 10),
+                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), border: Border.all(width: 1, color: Colors.black26)),
+                      child: Consumer<CatsProvider>(builder: (context, catsProvider, child) {
+                        return DropdownButtonFormField(
+                          hint: Text('Chọn hạng mục chi tiêu'),
+                          decoration: InputDecoration(
+                            enabledBorder: InputBorder.none,
+                          ),
+                          value: _currentCategory == null ? catsProvider.fullList[0].id : _currentCategory,
+                          items: catsProvider.fullList.map<DropdownMenuItem<String>>((Categories cat) {
+                            IconCustom selectedIcon =
+                                _iconList.firstWhere((element) => element.id == cat.iconID, orElse: () => new IconCustom(id: '', name: '', color: '', backgroundColor: ''));
 
-
-                              return DropdownMenuItem(
-                                child: Row(
-                                  children: [
-                                    Container(
-                                        width: 28,
-                                        height: 28,
-                                        child: myCircleIcon(
-                                            selectedIcon.name,
-                                            selectedIcon.backgroundColor,
-                                            selectedIcon.color,
-                                            size: 16)),
-                                    Padding(
-                                      padding: const EdgeInsets.only(left: 10.0),
-                                      child: Text(cat.name),
-                                    ),
-                                  ],
-                                ),
-                                value: cat.id,
-                              );
-                            }).toList(),
-                            onChanged: _changeTxCat,
-                            onTap: () {
-                              FocusManager.instance.primaryFocus
-                                  .unfocus();
-                            },
-                          );
-                        })
-
-                  ),
+                            return DropdownMenuItem(
+                              child: Row(
+                                children: [
+                                  Container(width: 28, height: 28, child: myCircleIcon(selectedIcon.name, selectedIcon.backgroundColor, selectedIcon.color, size: 16)),
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 10.0),
+                                    child: Text(cat.name),
+                                  ),
+                                ],
+                              ),
+                              value: cat.id,
+                            );
+                          }).toList(),
+                          onChanged: _changeTxCat,
+                          onTap: () {
+                            FocusManager.instance.primaryFocus.unfocus();
+                          },
+                        );
+                      })),
+                  // Container(
+                  //   margin: EdgeInsets.symmetric(vertical: 10),
+                  //   child: TextFormField(
+                  //     maxLines: 5,
+                  //     maxLength: 500,
+                  //     controller: _descriptionController,
+                  //     decoration: myInputDecoration('Mô tả', inputBorder: Colors.black26),
+                  //     validator: (String value) {
+                  //       if (value.length > 500) {
+                  //         return 'Mô tả không được quá 500 ký tự';
+                  //       }
+                  //       return null;
+                  //     },
+                  //   ),
+                  // ),
                   Container(
                     margin: EdgeInsets.symmetric(vertical: 10),
-                    child: TextFormField(
-                      maxLines: 5,
-                      maxLength: 500,
-                      controller: _descriptionController,
-                      decoration: myInputDecoration('Mô tả', inputBorder: Colors.black26),
-                      validator: (String value) {
-                        if (value.length > 500) {
-                          return 'Mô tả không được quá 500 ký tự';
-                        }
-                        return null;
-                      },
-                    ),
-                  ),
-                  myFullWidthButton('Thêm sự kiện', backgroundColor: primary, action: () {
-                    if (_formKey.currentState.validate()) {
-                      showSnack(_scaffoldKey, 'Đang xử lý...');
-                      _handleAddEvent();
-                    }
-                  })
+                    child: myFullWidthButton('Thêm sự kiện', backgroundColor: primary, action: () {
+                      if (_formKey.currentState.validate()) {
+                        showSnack(_scaffoldKey, 'Đang xử lý...');
+                        _handleAddEvent();
+                      }
+                    }),
+                  )
                 ],
               ),
             ),
@@ -565,9 +550,9 @@ class _AddEventState extends State<AddEvent> {
       'EndDate': _currentEndDateType == 'true' ? _selectedEndDatetime.toIso8601String() : null,
       'Value': finalValue == null ? 0 : int.parse(finalValue),
       'ExpectingAmount': _currentTxType == 'Chi' ? price * -1 : price,
-      'CategoryID': _currentCategory == null ? catsProvider.fullList[0].id :_currentCategory,
+      'CategoryID': _currentCategory == null ? catsProvider.fullList[0].id : _currentCategory,
       'EventTypeID': _currentEventType == null ? eventsProvider.eventTypeList[0].id : _currentEventType,
-      'Description': _descriptionController.text,
+      'Description': '', //_descriptionController.text,
       'StartTime': _selectedStartDatetime.toIso8601String(),
     };
     print(newEvent);

@@ -182,7 +182,7 @@ String timeRemaining(String input) {
   if (mins > 0) {
     return '${mins} phút';
   }
-  return '${secs} giây';
+  return '${secs > 0 ? secs : 0} giây';
 }
 
 final everyWeek = [

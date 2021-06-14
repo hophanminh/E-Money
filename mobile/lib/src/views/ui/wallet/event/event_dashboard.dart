@@ -211,7 +211,8 @@ class _EventDashboardState extends State<EventDashboard> {
       margin: EdgeInsets.symmetric(vertical: 10),
       child: GestureDetector(
         onTap: () {
-          // Navigator.push(context, MaterialPageRoute(builder: (context) => ViewEvent(event: item)));
+          Provider.of<EventsProvider>(context, listen: false).changeSelected(item);
+          Navigator.push(context, MaterialPageRoute(builder: (context) => ViewEvent()));
         },
         child: DefaultTextStyle(
           style: TextStyle(fontSize: 15, color: Colors.white),

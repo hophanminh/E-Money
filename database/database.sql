@@ -35,7 +35,7 @@ CREATE TABLE Events(
     Name VARCHAR(1000) NOT NULL,
     StartDate datetime,
 	NextDate datetime,
-    EndDate DATE,
+    EndDate datetime,
     Status INT, -- 0 or 1
 	Value INT,
     -- Cột Value có giá trị tương ứng như sau:

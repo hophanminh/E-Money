@@ -157,11 +157,11 @@ class _ViewEventState extends State<ViewEvent> {
                           }
                           if (type == 4) {
                             // hằng năm
-                            return eventsProvider.selected.typeName + ' (vào tháng ${eventsProvider.selected.value + 1})';
+                            return eventsProvider.selected.typeName + ' (vào ngày ${(eventsProvider.selected.value ~/ 1000) + 1}/${(eventsProvider.selected.value % 1000) + 1})';
                           }
                         })(), Icon(Icons.event_available)),
-                        _createDetail('Ghi chú', eventsProvider.selected.description.length == 0 ? 'Không có chú thích được tạo' : eventsProvider.selected.description,
-                            Icon(Icons.textsms_outlined)),
+                        // _createDetail('Ghi chú', eventsProvider.selected.description.length == 0 ? 'Không có chú thích được tạo' : eventsProvider.selected.description,
+                        //     Icon(Icons.textsms_outlined)),
                       ],
                     )
                   : Container();

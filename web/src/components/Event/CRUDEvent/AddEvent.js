@@ -150,13 +150,14 @@ export default function AddEvent(props) {
     }
 
     if (newEvent.TypeName === "Hằng năm") {
-      if (!isValidMonthDay(newEvent.Value, newEvent.Value2))
+      if (!isValidMonthDay(newEvent.Value, newEvent.Value2)) {
         setError({
           ...error,
           Value: true,
         });
 
-      return;
+        return;
+      }
     }
 
     setStep(number);
@@ -367,67 +368,8 @@ export default function AddEvent(props) {
                 error={error?.Name}
                 helperText={error?.Name ? "Tên sự kiện không được để trống" : ''}
               />
-              <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                <KeyboardTimePicker
-                  name="StartTime"
-                  label="Thời gian tạo"
-                  size="small"
-                  fullWidth
-                  className={classes.textField}
-                  style={{ marginRight: '0px' }}
-                  value={newEvent.StartTime}
-                  onChange={time => handleChangeStartTime(time)}
-                  mask="__:__ _M"
-                  inputVariant="outlined"
-                  error={error?.StartTime}
-                  helperText={error?.StartTime ? "Thời gian không hợp lệ" : ''}
-                  InputLabelProps={{
-                    shrink: true,
-                  }} />
 
-              </MuiPickersUtilsProvider>
-              <Box className={classes.amountRow}>
-                <TextField
-                  style={{ minWidth: '150px' }}
-                  className={classes.textField}
-                  size="small"
-                  id="isNegative"
-                  name="isNegative"
-                  select
-                  label="Kết thúc"
-                  value={isEndless}
-                  onChange={handleChangeIsEndless}
-                  variant="outlined"
-                >
-                  <MenuItem value={true}>
-                    <Box className={classes.typeBox}>
-                      Vô tận
-                </Box>
-                  </MenuItem>
-                  <MenuItem value={false}>
-                    <Box className={classes.typeBox}>
-                      Vào lúc
-                </Box>
-                  </MenuItem>
-                </TextField>
 
-                <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                  <KeyboardDateTimePicker
-                    name="EndDate"
-                    size="small"
-                    fullWidth
-                    className={classes.textField}
-                    style={{ marginRight: '0px' }}
-                    value={newEvent.EndDate}
-                    onChange={time => handleChangeEndDate(time)}
-                    onError={console.log}
-                    minDate={new Date()}
-                    format="dd/MM/yyyy - hh:mm a"
-                    inputVariant="outlined"
-                    disabled={isEndless}
-                  />
-                </MuiPickersUtilsProvider>
-              </Box>
 
               <TextField
                 className={classes.textField}
@@ -526,7 +468,66 @@ export default function AddEvent(props) {
                   </TextField>
                 </Box>
               }
+              <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                <KeyboardTimePicker
+                  name="StartTime"
+                  label="Thời gian tạo"
+                  size="small"
+                  fullWidth
+                  className={classes.textField}
+                  style={{ marginRight: '0px' }}
+                  value={newEvent.StartTime}
+                  onChange={time => handleChangeStartTime(time)}
+                  mask="__:__ _M"
+                  inputVariant="outlined"
+                  error={error?.StartTime}
+                  helperText={error?.StartTime ? "Thời gian không hợp lệ" : ''}
+                  InputLabelProps={{
+                    shrink: true,
+                  }} />
+              </MuiPickersUtilsProvider>
+            </Box>
+            <Box className={classes.amountRow}>
+              <TextField
+                style={{ minWidth: '150px' }}
+                className={classes.textField}
+                size="small"
+                id="isNegative"
+                name="isNegative"
+                select
+                label="Kết thúc"
+                value={isEndless}
+                onChange={handleChangeIsEndless}
+                variant="outlined"
+              >
+                <MenuItem value={true}>
+                  <Box className={classes.typeBox}>
+                    Vô tận
+                </Box>
+                </MenuItem>
+                <MenuItem value={false}>
+                  <Box className={classes.typeBox}>
+                    Vào lúc
+                </Box>
+                </MenuItem>
+              </TextField>
 
+              <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                <KeyboardDateTimePicker
+                  name="EndDate"
+                  size="small"
+                  fullWidth
+                  className={classes.textField}
+                  style={{ marginRight: '0px' }}
+                  value={newEvent.EndDate}
+                  onChange={time => handleChangeEndDate(time)}
+                  onError={console.log}
+                  minDate={new Date()}
+                  format="dd/MM/yyyy - hh:mm a"
+                  inputVariant="outlined"
+                  disabled={isEndless}
+                />
+              </MuiPickersUtilsProvider>
             </Box>
           </DialogContent>
           <DialogActions>
@@ -624,7 +625,7 @@ export default function AddEvent(props) {
                 ))}
               </TextField>
 
-              <TextField
+              {/* <TextField
                 name="Description"
                 size="small"
                 className={classes.textField}
@@ -638,7 +639,7 @@ export default function AddEvent(props) {
                 variant="outlined"
                 error={error?.Description}
                 helperText={error?.Description ? "Mô tả không được quá 500 ký tự" : ''}
-              />
+              /> */}
             </Box>
           </DialogContent>
           <DialogActions>

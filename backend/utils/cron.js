@@ -32,10 +32,10 @@ module.exports = io => {
             continue;
           }
         } else {
-          if (endDate < nextDate) {
+          if (endDate.isBefore(nextDate)) {
             await eventModel.updateEvent(event.ID, { Status: 0 });
             console.log('    + This event is overdue, auto changing its status, EndDate: ' + endDate.format(FORMAT_DATETIME_PATTER.DATE));
-          } else if (nextDate > now) {
+          } else if (nextDate.isAfter(now)) {
             console.log('    + This event is not due yet');
           }
           continue;
