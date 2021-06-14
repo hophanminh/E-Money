@@ -24,6 +24,10 @@ export const WalletProvider = (props) => {
   }, [])
 
   useEffect(() => {
+    setList([]);
+  }, [walletID])
+
+  useEffect(() => {
     setSelected(selected => {
       if (list && selected) {
         const temp = list.find(i => i?.id === selected?.id)
