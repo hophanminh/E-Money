@@ -56,7 +56,7 @@ class IconCustom {
 
   factory IconCustom.fromJson(Map<String, dynamic> json) {
     return IconCustom(
-      id: json['ID'] as String,
+      id: (json['ID'] as int).toString(),
       name: json['Name'] as String,
       color: json['Color'] as String,
       backgroundColor: json['BackgroundColor'] as String,

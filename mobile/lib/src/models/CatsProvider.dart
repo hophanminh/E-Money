@@ -101,7 +101,7 @@ class Categories {
       name: json['Name'] as String,
       isDefault: json['IsDefault'] == 1 ? true : false,
       walletID: json['WalletID'] as String,
-      iconID: json['IconID'] as String,
+      iconID: (json['IconID'] as int).toString(),
     );
   }
 

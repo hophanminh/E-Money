@@ -181,7 +181,7 @@ class Transactions {
       time: json['time'] as String,
       timeModified: json['timeModified'] as String,
       catID: json['catID'] as String,
-      iconID: json['IconID'] as String,
+      iconID: (json['IconID'] as int).toString(),
       categoryName: json['categoryName'] as String,
       eventID: json['eventID'] as String,
       eventName: json['eventName'] as String,

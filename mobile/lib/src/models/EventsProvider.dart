@@ -136,7 +136,7 @@ class Events {
       eventTypeID: json['EventTypeID'] as String,
       typeName: json['TypeName'] as String,
       categoryName: json['CategoryName'] as String,
-      iconID: json['IconID'] as String,
+      iconID: (json['IconID'] as int).toString(),
       totalAmount: json['TotalAmount'] != null ? json['TotalAmount'].toDouble() : 0,
     );
   }
