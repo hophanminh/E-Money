@@ -14,6 +14,7 @@ module.exports = function (socket, io, decoded_userID) {
     socket.on('add_icon', async ({ newIcon }) => {
         try {
             const entity = {
+                ID: uuidv4(),
                 Name: newIcon.name,
                 Color: newIcon.color,
                 BackgroundColor: newIcon.backgroundColor
