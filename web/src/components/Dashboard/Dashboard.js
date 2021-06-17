@@ -27,6 +27,7 @@ import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import ListIcon from '@material-ui/icons/List';
 import EventIcon from '@material-ui/icons/Event';
 import DefaultIcon from '../../utils/DefaultIcon'
+import BarChartIcon from '@material-ui/icons/BarChart';
 
 import SearchBar from './SearchBar'
 import TransactionMini from './TransactionMini'
@@ -120,15 +121,29 @@ export default function Dashboard() {
       <AddTransaction />
 
       <Container className={classes.root} maxWidth={null}>
-        <div className={classes.title}>
-          <Breadcrumbs className={classes.breadcrumb} separator={<NavigateNextIcon fontSize="large" />} aria-label="breadcrumb">
-            <Typography className={classes.titleFont} color="textPrimary">
-              Ví cá nhân
+        <Box className={classes.header}>
+          <div className={classes.title}>
+            <Breadcrumbs className={classes.breadcrumb} separator={<NavigateNextIcon fontSize="large" />} aria-label="breadcrumb">
+              <Typography className={classes.titleFont} color="textPrimary">
+                Ví cá nhân
             </Typography>
-          </Breadcrumbs>
-          <Typography className={classes.subTitleFont} color="textSecondary">Quản lý các khoản giao dịch tiền tệ cá nhân </Typography>
-        </div>
-
+            </Breadcrumbs>
+            <Typography className={classes.subTitleFont} color="textSecondary">Quản lý các khoản giao dịch tiền tệ cá nhân </Typography>
+          </div>
+          {/* <Box className={classes.actionBox}>
+            <Link
+              to={{
+                pathname: `/Statistic`,
+              }}
+              style={{ textDecoration: 'none', marginRight: 10 }}
+            >
+              <Button className={classes.statisticButton} variant="outlined">
+                <BarChartIcon className={classes.yellow} />
+                &nbsp;Thống kê ví cá nhân
+              </Button>
+            </Link>
+          </Box> */}
+        </Box>
         <div className={classes.body}>
           <Grid container spacing={5} className={classes.grid}>
             <Grid item lg={3} sm={12} >
@@ -406,4 +421,29 @@ const useStyles = makeStyles((theme) => ({
     minHeight: '530px',
   },
 
+  header: {
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingBottom: '10px'
+  },
+
+  actionBox: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+  },
+
+  statisticButton: {
+    height: '40px',
+    textTransform: 'none',
+    borderColor: '#fda92c',
+    padding: '5px 10px',
+    backgroundColor: '#FFFFFF'
+  },
+  yellow: {
+    color: '#fda92c'
+  },
 }));
