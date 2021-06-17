@@ -46,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: 'space-between',
       },
       title: {
-        margin: '20px',
+        margin: '40px',
         display: 'flex',
         flexDirection: 'column',
         paddingBottom: '10px'
@@ -286,6 +286,7 @@ export default function TeamProfile() {
                                                 value={numberUser}
                                                 onChange={e => handleNumberUsers(e.target.value)}
                                                 disabled={isDisabledInput}
+                                                type = "number"
                                     />
 
                                     <div className="container margin-top-10">
