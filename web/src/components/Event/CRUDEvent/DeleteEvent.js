@@ -49,7 +49,7 @@ const DeleteEvent = (props) => {
             >
                 <DialogTitle >
                     <Typography className={classes.title}>
-                        Xóa
+                        Kết thúc
                     </Typography>
                 </DialogTitle>
                 <DialogContent>
@@ -67,7 +67,7 @@ const DeleteEvent = (props) => {
                         Hủy
                     </Button>
                     <Button className={`${classes.button} ${classes.addButton}`} onClick={handleDelete} variant="contained">
-                        Xóa
+                        Kết thúc
                     </Button>
                 </DialogActions>
             </Dialog>
