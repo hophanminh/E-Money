@@ -29,7 +29,13 @@ const useStyles = makeStyles((theme) => ({
 
 export default function PieChartSpent({ date, chartData }) {
   const classes = useStyles();
-
+  const dateString = ()  => {
+    let month = date.getMonth() + 1;
+    let year = date.getFullYear();
+    if(month<10)
+      month = '0' + month;
+    return (month + "/" + year);
+}
   return (
     <div className={classes.container}>
       <div style={{ alignContent: 'center' }}>
@@ -41,7 +47,7 @@ export default function PieChartSpent({ date, chartData }) {
               className={classes.chart}
               palette={PIE_CHART_PALETTE}
               dataSource={chartData}
-              title={"Thống kê các khoản chi tháng " + (date.getMonth() + 1) + "/" + date.getFullYear()}
+              title={"Phân tích chi tháng " + dateString()}
             >
               <Legend
                 orientation="horizontal"
