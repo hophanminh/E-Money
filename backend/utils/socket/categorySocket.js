@@ -76,7 +76,6 @@ module.exports = function (socket, io) {
   // update category
   socket.on('update_category_default', async ({ categoryID, newCategory, IsDefault }) => {
     try {
-      console.log(IsDefault);
       const temp = {
         Name: newCategory.Name,
         IsDefault: true,
@@ -128,7 +127,6 @@ module.exports = function (socket, io) {
     try {
       const deleted = await categoryModel.getCategoryByID(id);
       if (deleted.length === 1) {
-        console.log("Here")
         // change transaction in deleted category to default category
         await transactionModel.updateTransactionCategoryDefault(id, config.CATEGORY.DEFAULT_ID)
         await eventModel.updateEventCategoryDefault(id, config.CATEGORY.DEFAULT_ID)

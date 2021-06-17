@@ -23,14 +23,11 @@ import ActivateDestination from './components/activedestination/ActiveDestinatio
 import Profile from './components/profile/Profile';
 import TeamProfile from './components/Team/TeamProfile';
 import TeamStatistic from './components/Team/TeamStatistic';
-import MyContext from './components/mycontext/MyContext';
 import CombinedProvider from './components/mycontext/combineProvider'
 import Teams from './components/Team/Teams';
 import UpdateProfile from './components/Team/UpdateProfile';
 import ResetDestination from './components/signin/resetpassword/ResetDestination';
 import Admin from './components/admin/admin';
-import { getListIcon } from './utils/DefaultIcon';
-import { getSocket } from './utils/socket';
 
 const routes = [
   {

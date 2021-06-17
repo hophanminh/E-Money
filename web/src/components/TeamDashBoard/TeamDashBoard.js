@@ -225,14 +225,14 @@ const TeamDashBoard = () => {
                 &nbsp;Thông tin nhóm
               </Button>
             </Link>
-            <Link style={{ textDecoration: 'none', marginLeft: 10 }} >
+            <div style={{ textDecoration: 'none', marginLeft: 10 }} >
               <Button className={classes.teamLeaveButton} variant="outlined" 
               onClick={handleClickOpen}
             >
                 <ExitToAppIcon className={classes.red} />
                 {(person.Role === 1) ? ` Xóa nhóm` : ` Rời nhóm`}
               </Button>
-            </Link>
+            </div>
               <Dialog
                 open={open}
                 onClose={handleClose}

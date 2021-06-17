@@ -15,11 +15,12 @@ import {
 } from '@material-ui/core/';
 import {
     PopupContext,
-    CategoryContext
+    CategoryContext,
+    IconContext
 } from '../../../mycontext'
 import POPUP from '../../../../constants/popup.json'
 import { getSocket } from "../../../../utils/socket";
-import DefaultIcon, { getListIcon } from '../../../../utils/DefaultIcon'
+import DefaultIcon from '../../../../utils/DefaultIcon'
 
 const NAME = POPUP.CATEGORY.EDIT_CATEGORY
 
@@ -31,6 +32,7 @@ export default function EditCategory(props) {
     const { id } = useParams();
     const { open, setOpen } = useContext(PopupContext);
     const { selected } = useContext(CategoryContext);
+    const { iconList } = useContext(IconContext);
 
     const isOpen = open === NAME
     const data = selected;
@@ -40,9 +42,8 @@ export default function EditCategory(props) {
 
     // get list of icon
     useEffect(async () => {
-        const temp = await getListIcon();
-        setList(temp);
-    }, []);
+        setList(iconList);
+    }, [iconList]);
 
     // set data
     useEffect(() => {

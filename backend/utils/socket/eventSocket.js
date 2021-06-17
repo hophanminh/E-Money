@@ -7,7 +7,7 @@ module.exports = function (socket, io, decoded_userID) {
 
   // get event of wallet
   socket.on('get_event', async ({ walletID }, callback) => {
-    socket.join(walletID); console.log(walletID);
+    socket.join(walletID);
     try {
       const eventList = await eventModel.getEventByWalletID(walletID);
       callback({ eventList });
@@ -28,7 +28,6 @@ module.exports = function (socket, io, decoded_userID) {
 
   // add event
   socket.on('add_event', async ({ walletID, newEvent }, callback) => {
-    console.log(newEvent);
     try {
       const ID = uuidv4();
       const temp = {

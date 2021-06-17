@@ -44,7 +44,6 @@ router.get('/:id', async (req, res) => {
   }
 
   const user = users[0];
-  console.log(user);
 
   if (user.IsBanned === 1) {
     console.log('banned');

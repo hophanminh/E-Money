@@ -233,7 +233,7 @@ export default function Teams() {
                     <Button size="small"
                       color="primary"
                       onClick={handleClickOpen}
-
+                      fullWidth
                     >
                       <CardActions>
                         <AddIcon style={{ fontSize: 100 }} />

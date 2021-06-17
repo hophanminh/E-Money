@@ -15,7 +15,7 @@ import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import MyContext from '../mycontext/MyContext';
 import Notification from '../Notification/Notification';
 import defaultAvatar from '../../resources/images/defaultAvatar.png';
-import {clearSocket} from '../../utils/socket';
+import { clearSocket } from '../../utils/socket';
 
 const drawerWidth = 240;
 
@@ -35,16 +35,21 @@ function Topbar(props) {
   return (
     <AppBar position="absolute" className={clsx(classes.appBar, openSidebar && classes.appBarShift)}>
       <Toolbar className={`${classes.toolbar} ${classes.spaceBetween} ${classes.colorTopBar}`}>
-        <div>
-          <IconButton
-            edge="start"
-            color="inherit"
-            aria-label="open drawer"
-            onClick={() => props.handleDrawerOpen()}
-            className={clsx(classes.menuButton, openSidebar && classes.menuButtonHidden)}
-          >
-            <MenuIcon />
-          </IconButton>
+        <div className={classes.topBarLogo}>
+          <div>
+            <IconButton
+              edge="start"
+              color="inherit"
+              aria-label="open drawer"
+              onClick={() => props.handleDrawerOpen()}
+              className={clsx(classes.menuButton, openSidebar && classes.menuButtonHidden)}
+            >
+              <MenuIcon />
+            </IconButton>
+          </div>
+          <ListItem button component={NavLink} to="/" className={`${classes.button} ${classes.brandText}`}>
+            {`E-Money`}
+          </ListItem>
         </div>
         <div className={classes.topBarButton}>
           {(
@@ -95,7 +100,7 @@ const useStyles = makeStyles((theme) => ({
     }),
   },
   menuButton: {
-    marginRight: 36,
+    marginRight: 8,
   },
   menuButtonHidden: {
     display: 'none',
@@ -105,6 +110,11 @@ const useStyles = makeStyles((theme) => ({
   },
   invisible: {
     cd: "hidden"
+  },
+  topBarLogo: {
+    display: 'flex',
+    justifyContent: 'flex-start',
+    fontSize: 24,
   },
   topBarButton: {
     display: 'flex',
