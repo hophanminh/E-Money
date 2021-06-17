@@ -29,7 +29,13 @@ const useStyles = makeStyles((theme) => ({
 
 export default function BarChart({ date, chartData }) {
   const classes = useStyles();
-
+  const dateString = ()  => {
+    let month = date.getMonth() + 1;
+    let year = date.getFullYear();
+    if(month < 10)
+      month = '0' + month;
+    return (month + "/" + year);
+}
   return (
     <div className={classes.container}>
       <div style={{ margin: 'auto' }}>
@@ -40,7 +46,7 @@ export default function BarChart({ date, chartData }) {
             palette={['#ff2626', '#1daf1a']}
             dataSource={chartData}
           >
-            <Title text={"Thu nhập trong tháng " + (date.getMonth() + 1) + "/" + date.getFullYear()} />
+          <Title text={"Tình hình thu chi tháng " + dateString()} />
             <CommonSeriesSettings
               argumentField="title"
               valueField="money"
