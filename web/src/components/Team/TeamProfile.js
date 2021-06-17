@@ -133,6 +133,7 @@ export default function TeamProfile() {
                                                margin="normal" required fullWidth
                                                value={numberUser}
                                                onChange={e => handleNumberUsers(e.target.value)}
+                                               type = "number"
                                     />
 
                                     <div class="container margin-top-10">
