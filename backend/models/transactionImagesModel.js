@@ -10,6 +10,8 @@ module.exports = {
 
   deleteImage: (id) => db.delete(`transactionimages`, { ID: id }),
 
+  deleteImageByTxID: (id) => db.delete(`transactionimages`, { TransactionID: id }),
+
   getImageByTransactionID: (transactionID) => db.loadSafe(`SELECT * FROM transactionimages WHERE TransactionID = ?`, [transactionID]),
 
   getImageByID: id => db.loadSafe(`SELECT * FROM transactionimages WHERE ID = ?`, [id]),

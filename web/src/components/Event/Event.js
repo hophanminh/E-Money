@@ -66,17 +66,17 @@ export default function Event() {
     });
 
 
-    socket.on('wait_for_update_event', ({ eventList }) => {
+    socket.on(`wait_for_update_event_${id}`, ({ eventList }) => {
       setEventList(eventList);
     });
 
-    socket.on('wait_for_update_category', ({ defaultList, customList, fullList }) => {
+    socket.on(`wait_for_update_category_${id}`, ({ defaultList, customList, fullList }) => {
       setAllList(defaultList, customList, fullList);
     });
 
     return () => {
-      socket.off("wait_for_update_event");
-      socket.off("wait_for_update_category");
+      socket.off(`wait_for_update_event_${id}`);
+      socket.off(`wait_for_update_category_${id}`);
       setOpen(null);
     }
 

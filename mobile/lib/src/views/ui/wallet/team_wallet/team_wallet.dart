@@ -45,6 +45,7 @@ class _TeamWalletState extends State<TeamWallet> {
   String _userID = '';
   bool _isLoading = true;
   bool _roles = false;
+  String walletID = "";
 
   void _initPage() async {
     _userID = await SecureStorage.readSecureData('userID');
@@ -55,7 +56,7 @@ class _TeamWalletState extends State<TeamWallet> {
     EventsProvider eventsProvider = Provider.of<EventsProvider>(context, listen: false);
     TeamsProvider teamsProvider = Provider.of<TeamsProvider>(context, listen: false);
 
-    final walletID = teamsProvider.selected.walletID;
+    walletID = teamsProvider.selected.walletID;
     _iconList = await IconService.instance.iconList;
 
     _socket = await getSocket();
@@ -69,7 +70,7 @@ class _TeamWalletState extends State<TeamWallet> {
       });
     });
 
-    _socket.on('wait_for_update_transaction', (data) {
+    _socket.on('wait_for_update_transaction_$walletID', (data) {
       print('on updating txs');
       walletsProvider.fetchData(data);
     });
@@ -78,7 +79,7 @@ class _TeamWalletState extends State<TeamWallet> {
       catsProvider.fetchData(data);
     });
 
-    _socket.on('wait_for_update_category', (data) {
+    _socket.on('wait_for_update_category_$walletID', (data) {
       print('on updating cate');
       catsProvider.fetchData(data);
       walletsProvider.updateTxCatAfterUpdateCat(data['fullList']);
@@ -88,7 +89,7 @@ class _TeamWalletState extends State<TeamWallet> {
       eventsProvider.fetchData(data);
     });
 
-    _socket.on('wait_for_update_event', (data) {
+    _socket.on('wait_for_update_event_$walletID', (data) {
       print('update event');
       eventsProvider.fetchData(data);
     });
@@ -129,9 +130,10 @@ class _TeamWalletState extends State<TeamWallet> {
 
   @override
   void dispose() {
-    _socket.off('wait_for_update_transaction');
-    _socket.off('wait_for_update_category');
-    _socket.off('wait_for_update_event');
+    // print('wait_for_update_transaction_$walletID');
+    _socket.off('wait_for_update_transaction_$walletID');
+    _socket.off('wait_for_update_category_$walletID');
+    _socket.off('wait_for_update_event_$walletID');
     _searchController.dispose();
     super.dispose();
   }

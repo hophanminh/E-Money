@@ -36,8 +36,8 @@ class _IndividualWalletState extends State<IndividualWallet> {
   IO.Socket _socket;
   List<IconCustom> _iconList = [];
   FilterType _selectedFilterType = FilterType.all;
-  bool isLoading = true;
-
+  bool _isLoading = true;
+  String walletID = "";
   void _initPage() async {
     _searchController.addListener(_onHandleChangeSearchBar);
 
@@ -45,7 +45,7 @@ class _IndividualWalletState extends State<IndividualWallet> {
     WalletsProvider walletsProvider = Provider.of<WalletsProvider>(context, listen: false);
     CatsProvider catsProvider = Provider.of<CatsProvider>(context, listen: false);
     EventsProvider eventsProvider = Provider.of<EventsProvider>(context, listen: false);
-    final walletID = usersProvider.info.walletID;
+    walletID = usersProvider.info.walletID;
 
     _iconList = await IconService.instance.iconList;
     _socket = await getSocket();
@@ -56,12 +56,12 @@ class _IndividualWalletState extends State<IndividualWallet> {
       walletsProvider.fetchData(data);
       if (mounted) {
         setState(() {
-          isLoading = false;
+          _isLoading = false;
         });
       }
     });
 
-    _socket.on('wait_for_update_transaction', (data) {
+    _socket.on('wait_for_update_transaction_$walletID', (data) {
       print('on updating txs');
       walletsProvider.fetchData(data);
     });
@@ -70,7 +70,7 @@ class _IndividualWalletState extends State<IndividualWallet> {
       catsProvider.fetchData(data);
     });
 
-    _socket.on('wait_for_update_category', (data) {
+    _socket.on('wait_for_update_category_$walletID', (data) {
       print('on updating cate');
       catsProvider.fetchData(data);
       walletsProvider.updateTxCatAfterUpdateCat(data['fullList']);
@@ -80,7 +80,7 @@ class _IndividualWalletState extends State<IndividualWallet> {
       eventsProvider.fetchData(data);
     });
 
-    _socket.on('wait_for_update_event', (data) {
+    _socket.on('wait_for_update_event_$walletID', (data) {
       print('update event');
       eventsProvider.fetchData(data);
     });
@@ -98,9 +98,10 @@ class _IndividualWalletState extends State<IndividualWallet> {
 
   @override
   void dispose() {
-    _socket.off('wait_for_update_transaction');
-    _socket.off('wait_for_update_category');
-    _socket.off('wait_for_update_event');
+    // print('wait_for_update_transaction_$walletID');
+    _socket.off('wait_for_update_transaction_$walletID');
+    _socket.off('wait_for_update_category_$walletID');
+    _socket.off('wait_for_update_event_$walletID');
     _searchController.dispose();
     super.dispose();
   }
@@ -117,7 +118,7 @@ class _IndividualWalletState extends State<IndividualWallet> {
             appBar: _privateWalletAppBar(),
             drawer: widget.sidebar,
             floatingActionButton: _privateWalletActionButton(),
-            body: isLoading
+            body: _isLoading
                 ? Center(child: CircularProgressIndicator())
                 : Container(
                     // height: MediaQuery.of(context).size.height,

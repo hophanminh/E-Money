@@ -55,7 +55,7 @@ export default function Category(props) {
       });
     }
 
-    socket.on('wait_for_update_transaction', ({ transactionList }) => {
+    socket.on(`wait_for_update_transaction_${id}`, ({ transactionList }) => {
       setList(transactionList);
     });
 
@@ -64,13 +64,13 @@ export default function Category(props) {
       setAllList(defaultList, customList, fullList)
     });
 
-    socket.on('wait_for_update_category', ({ defaultList, customList, fullList }) => {
+    socket.on(`wait_for_update_category_${id}`, ({ defaultList, customList, fullList }) => {
       setAllList(defaultList, customList, fullList)
     });
 
     return () => {
-      socket.off("wait_for_update_transaction");
-      socket.off("wait_for_update_category");
+      socket.off(`wait_for_update_transaction_${id}`);
+      socket.off(`wait_for_update_category_${id}`);
       setOpen(null);
     }
   }, []);

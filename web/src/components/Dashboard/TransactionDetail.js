@@ -51,6 +51,7 @@ export default function TransactionDetail(props) {
   }, [selected]);
 
   useEffect(() => {
+    console.log('object');
     socket.on(`wait_for_add_transaction_image_${data?.id}`, ({ urls }) => {
       // if (selected.id === transactionID) {
       const concatenatedList = JSON.parse(JSON.stringify(imageList)).concat(urls);
@@ -63,6 +64,11 @@ export default function TransactionDetail(props) {
       handleSetImageList(filteredList);
       // }
     });
+
+    return () => {
+      socket.off(`wait_for_add_transaction_image_${data?.id}`);
+      socket.off(`wait_for_remove_transaction_image_${data?.id}`);
+    }
   }, [imageList]);
 
 

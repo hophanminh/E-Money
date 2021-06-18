@@ -74,7 +74,7 @@ const TeamDashBoard = () => {
       setTeam(team);
       setTHU(thu.filter(i => i.Role === 1));;
       console.log(thu)
-      var member = thu.filter(function(member) {
+      var member = thu.filter(function (member) {
         return member.UserID === userID;
       });
       console.log(member[0].Role);
@@ -94,7 +94,7 @@ const TeamDashBoard = () => {
       })
     });
 
-    socket.on('wait_for_update_transaction', ({ transactionList, total, spend, receive }) => {
+    socket.on(`wait_for_update_transaction_${id}`, ({ transactionList, total, spend, receive }) => {
       console.log("here")
       setList(transactionList);
       setStat({
@@ -109,7 +109,7 @@ const TeamDashBoard = () => {
     });
 
 
-    socket.on('wait_for_update_category', ({ defaultList, customList, fullList }) => {
+    socket.on(`wait_for_update_category_${id}`, ({ defaultList, customList, fullList }) => {
       setAllList(defaultList, customList, fullList);
       updateTxCategory(fullList);
     });
@@ -119,15 +119,15 @@ const TeamDashBoard = () => {
     });
 
 
-    socket.on('wait_for_update_event', ({ eventList }) => {
+    socket.on(`wait_for_update_event_${id}`, ({ eventList }) => {
       setEventList(eventList);
     });
 
 
     return () => {
-      socket.off("wait_for_update_transaction");
-      socket.off("wait_for_update_category");
-      socket.off("wait_for_update_event");
+      socket.off(`wait_for_update_transaction_${id}`);
+      socket.off(`wait_for_update_category_${id}`);
+      socket.off(`wait_for_update_event_${id}`);
       setOpen(null);
     }
   }, [id]);
@@ -153,7 +153,7 @@ const TeamDashBoard = () => {
   };
 
   const handleDelete = () => {
-    {(person.Role === 1) ? deleteTeam() : leaveTeam()}
+    { (person.Role === 1) ? deleteTeam() : leaveTeam() }
     handleClose();
   }
 
@@ -226,32 +226,32 @@ const TeamDashBoard = () => {
               </Button>
             </Link>
             <div style={{ textDecoration: 'none', marginLeft: 10 }} >
-              <Button className={classes.teamLeaveButton} variant="outlined" 
-              onClick={handleClickOpen}
-            >
+              <Button className={classes.teamLeaveButton} variant="outlined"
+                onClick={handleClickOpen}
+              >
                 <ExitToAppIcon className={classes.red} />
                 {(person.Role === 1) ? ` Xóa nhóm` : ` Rời nhóm`}
               </Button>
             </div>
-              <Dialog
-                open={open}
-                onClose={handleClose}
-                aria-labelledby="alert-dialog-title"
-                aria-describedby="alert-dialog-description"
-              >
-                <DialogTitle >
-                    <Typography className={classes.title}>
-                        Bạn có thực sự muốn {(person.Role === 1) ? ` xóa nhóm` :` rời nhóm`}
-                    </Typography>
-                </DialogTitle>
-                <DialogActions>
-                  <Button style={{ color: "white",backgroundColor: "green", marginLeft: 10 }} variant="contained" color="primary" className={classes.margin} onClick={handleClose}>
-                    Hủy
+            <Dialog
+              open={open}
+              onClose={handleClose}
+              aria-labelledby="alert-dialog-title"
+              aria-describedby="alert-dialog-description"
+            >
+              <DialogTitle >
+                <Typography className={classes.title}>
+                  Bạn có thực sự muốn {(person.Role === 1) ? ` xóa nhóm` : ` rời nhóm`}
+                </Typography>
+              </DialogTitle>
+              <DialogActions>
+                <Button style={{ color: "white", backgroundColor: "green", marginLeft: 10 }} variant="contained" color="primary" className={classes.margin} onClick={handleClose}>
+                  Hủy
                   </Button>
-                  <Button style={{ color: "white",backgroundColor: "red", marginLeft: 10 }} variant="contained" color="primary" className={classes.margin} onClick={handleDelete}>
-                  {(person.Role === 1) ? ` Xóa nhóm` :` Rời nhóm`}
-                  </Button>
-                </DialogActions>
+                <Button style={{ color: "white", backgroundColor: "red", marginLeft: 10 }} variant="contained" color="primary" className={classes.margin} onClick={handleDelete}>
+                  {(person.Role === 1) ? ` Xóa nhóm` : ` Rời nhóm`}
+                </Button>
+              </DialogActions>
             </Dialog>
           </Box>
         </Box>

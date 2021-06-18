@@ -131,22 +131,13 @@ class _NotificationsPageState extends State<NotificationsPage> {
                           decoration: BoxDecoration(color: noti.isRead == 0 ? primary.withOpacity(0.1) : Colors.white, borderRadius: BorderRadius.all(Radius.circular(10))),
                           child: Row(
                             children: [
+                              Padding(
+                                padding: const EdgeInsets.only(right: 15.0),
+                                child: noti.isRead == 0 ? Icon(Icons.brightness_1, size: 14.0, color: Colors.green[800]) : Icon(Icons.check, size: 25
+                                    , color: Colors.transparent),
+                              ),
                               Expanded(
                                 child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                  // Text('${index + 1}'),
-                                  Row(
-                                    children: [
-                                      Icon(
-                                        Icons.account_balance_wallet_outlined,
-                                        size: 26,
-                                      ),
-                                      Expanded(
-                                          child: Text(
-                                        ' - Ví cá nhân',
-                                        style: TextStyle(fontWeight: FontWeight.bold),
-                                      ))
-                                    ],
-                                  ),
                                   Padding(
                                     padding: const EdgeInsets.only(top: 15.0),
                                     child: Text(

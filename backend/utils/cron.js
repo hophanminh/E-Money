@@ -106,12 +106,12 @@ module.exports = io => {
           }
 
           const eventList = await eventModel.getEventByWalletID(event.WalletID);
-          io.in(event.WalletID).emit('wait_for_update_event', { eventList });
+          io.sockets.emit(`wait_for_update_event_${event.WalletID}`, { eventList });
 
           // emit tx
           const transactionList = await transactionModel.getTransactionByWalletID(event.WalletID);
           const { total, spend, receive } = calculateStat(transactionList);
-          io.in(event.WalletID).emit('wait_for_update_transaction', { transactionList, total, spend, receive });
+          io.sockets.emit(`wait_for_update_transaction_${event.WalletID}`, { transactionList, total, spend, receive });
 
         } else {
           // User's wallet
@@ -161,12 +161,12 @@ module.exports = io => {
 
           // emit event
           const eventList = await eventModel.getEventByWalletID(event.WalletID);
-          io.in(event.WalletID).emit('wait_for_update_event', { eventList });
+          io.sockets.emit(`wait_for_update_event_${event.WalletID}`, { eventList });
 
           // emit tx
           const transactionList = await transactionModel.getTransactionByWalletID(event.WalletID);
           const { total, spend, receive } = calculateStat(transactionList);
-          io.in(event.WalletID).emit('wait_for_update_transaction', { transactionList, total, spend, receive });
+          io.sockets.emit(`wait_for_update_transaction_${event.WalletID}`, { transactionList, total, spend, receive });
         }
 
         console.log('    + Auto-doing an event, NextDate: ' + nextDate.format(FORMAT_DATETIME_PATTER.DATE_TIME));

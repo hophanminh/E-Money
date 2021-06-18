@@ -104,7 +104,7 @@ class _DeleteTransactionImageDialogState extends State<DeleteTransactionImageDia
     socket.emitWithAck('remove_transaction_image', { 'imageID': widget.imageID, 'transactionID': widget.txID}, ack: (data) {
       if (data == 200) {
         widget.removeImageByID(widget.imageID);
-        showSnack(widget.wrappingScaffoldKey, "Xóa giao dịch thành công");
+        showSnack(widget.wrappingScaffoldKey, "Xóa hình ảnh giao dịch thành công");
         Navigator.pop(context);
       }
     });

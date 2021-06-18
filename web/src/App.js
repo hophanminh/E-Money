@@ -127,6 +127,10 @@ const useStyles = makeStyles((theme) => ({
 
 function App() {
   const classes = useStyles();
+  useEffect(() => {
+    document.title = "E-Money";
+  });
+
   return (
     <Router>
       <div>

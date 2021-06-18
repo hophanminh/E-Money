@@ -6,12 +6,13 @@ const moment = require('moment');
 const eventModel = require('../../models/eventModel');
 const historyModel = require('../../models/historyModel');
 const { cloneDeep } = require('lodash');
+const transactionImagesModel = require('../../models/transactionImagesModel');
 module.exports = function (socket, io, decoded_userID) {
 
   // get Transaction of wallet
   socket.on('get_transaction', async ({ walletID }, callback) => {
-    console.log('lấy tx', walletID);
-    socket.join(walletID);
+    // console.log('lấy tx', walletID);
+    // socket.join(walletID);
     try {
       const transactionList = await transactionModel.getTransactionByWalletID(walletID);
       const { total, spend, receive } = calculateStat(transactionList);
@@ -60,7 +61,7 @@ module.exports = function (socket, io, decoded_userID) {
       // annouce to other players
       const transactionList = await transactionModel.getTransactionByWalletID(walletID);
       const { total, spend, receive } = calculateStat(transactionList);
-      io.in(walletID).emit('wait_for_update_transaction', { transactionList, total, spend, receive });
+      io.sockets.emit(`wait_for_update_transaction_${walletID}`, { transactionList, total, spend, receive });
 
       callback({ ID })
     } catch (error) {
@@ -95,7 +96,7 @@ module.exports = function (socket, io, decoded_userID) {
       // annouce to other players
       const transactionList = await transactionModel.getTransactionByWalletID(walletID);
       const { total, spend, receive } = calculateStat(transactionList);
-      io.in(walletID).emit('wait_for_update_transaction', { transactionList, total, spend, receive });
+      io.sockets.emit(`wait_for_update_transaction_${walletID}`, { transactionList, total, spend, receive });
     } catch (error) {
       console.log(error);
     }
@@ -107,6 +108,7 @@ module.exports = function (socket, io, decoded_userID) {
       const deleted = await transactionModel.getTransactionByID(id);
       if (deleted.length === 1) {
         await historyModel.deleteHistoryTransaction(id)
+        await transactionImagesModel.deleteImageByTxID(id);
         await transactionModel.deleteTransaction(id);
         await walletModel.updateTotalWallet(0 - deleted[0].Money, deleted[0].WalletID);
       }
@@ -114,7 +116,7 @@ module.exports = function (socket, io, decoded_userID) {
       // annouce to other players
       const transactionList = await transactionModel.getTransactionByWalletID(walletID);
       const { total, spend, receive } = calculateStat(transactionList);
-      io.in(walletID).emit('wait_for_update_transaction', { transactionList, total, spend, receive });
+      io.sockets.emit(`wait_for_update_transaction_${walletID}`, { transactionList, total, spend, receive });
     } catch (error) {
       console.log(error);
     }
@@ -149,7 +151,7 @@ module.exports = function (socket, io, decoded_userID) {
       // annouce to other players
       const transactionList = await transactionModel.getTransactionByWalletID(walletID);
       const { total, spend, receive } = calculateStat(transactionList);
-      io.in(walletID).emit('wait_for_update_transaction', { transactionList, total, spend, receive });
+      io.sockets.emit(`wait_for_update_transaction_${walletID}`, { transactionList, total, spend, receive });
     } catch (error) {
       console.log(error);
     }

@@ -10,7 +10,7 @@ module.exports = function (socket, io) {
 
   // get category of wallet
   socket.on('get_category', async ({ walletID }, callback) => {
-    socket.join(walletID);
+    // socket.join(walletID);
     try {
       const defaultList = await categoryModel.getDefaultCategory() || [];
       const customList = await categoryModel.getCustomCategoryFromWalletID(walletID) || [];
@@ -40,7 +40,7 @@ module.exports = function (socket, io) {
       const customList = await categoryModel.getCustomCategoryFromWalletID(walletID) || [];
       const fullList = defaultList.concat(customList);
       walletID
-        ? io.in(walletID).emit('wait_for_update_category', { defaultList, customList, fullList })
+        ? io.sockets.emit(`wait_for_update_category_${walletID}`, { defaultList, customList, fullList })
         : io.emit('wait_for_update_category_admin', { defaultList, customList, fullList });
     } catch (error) {
       console.log(error);
@@ -65,13 +65,14 @@ module.exports = function (socket, io) {
         const defaultList = await categoryModel.getDefaultCategory() || [];
         const customList = await categoryModel.getCustomCategoryFromWalletID(walletID) || [];
         const fullList = defaultList.concat(customList);
-        io.in(walletID).emit('wait_for_update_category', { defaultList, customList, fullList });
+        io.sockets.emit(`wait_for_update_category_${walletID}`, { defaultList, customList, fullList });
       }
     } catch (error) {
       console.log(error);
     }
   });
 
+  //ADMIN ???
   // update category
   socket.on('update_category_default', async ({ categoryID, newCategory, IsDefault }) => {
     try {
@@ -113,7 +114,7 @@ module.exports = function (socket, io) {
         const defaultList = await categoryModel.getDefaultCategory() || [];
         const customList = await categoryModel.getCustomCategoryFromWalletID(walletID) || [];
         const fullList = defaultList.concat(customList);
-        io.in(walletID).emit('wait_for_update_category', { defaultList, customList, fullList });
+        io.sockets.emit(`wait_for_update_category_${walletID}`, { defaultList, customList, fullList });
       }
     } catch (error) {
       console.log(error);
@@ -121,6 +122,7 @@ module.exports = function (socket, io) {
 
   });
 
+  //ADMIN ???
   // delete category
   socket.on('delete_category_default', async ({ id }) => {
     try {

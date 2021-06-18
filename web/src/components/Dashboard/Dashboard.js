@@ -69,7 +69,7 @@ export default function Dashboard() {
       })
     });
 
-    socket.on('wait_for_update_transaction', ({ transactionList, total, spend, receive }) => {
+    socket.on(`wait_for_update_transaction_${info?.WalletID}`, ({ transactionList, total, spend, receive }) => {
       setList(transactionList);
       setStat({
         spend: spend,
@@ -83,7 +83,7 @@ export default function Dashboard() {
     });
 
 
-    socket.on('wait_for_update_category', ({ defaultList, customList, fullList }) => {
+    socket.on(`wait_for_update_category_${info?.WalletID}`, ({ defaultList, customList, fullList }) => {
       setAllList(defaultList, customList, fullList);
       updateTxCategory(fullList);
     });
@@ -93,15 +93,15 @@ export default function Dashboard() {
     });
 
 
-    socket.on('wait_for_update_event', ({ eventList }) => {
+    socket.on(`wait_for_update_event_${info?.WalletID}`, ({ eventList }) => {
       setEventList(eventList);
     });
 
 
     return () => {
-      socket.off("wait_for_update_transaction");
-      socket.off("wait_for_update_category");
-      socket.off("wait_for_update_event");
+      socket.off(`wait_for_update_transaction_${info?.WalletID}`);
+      socket.off(`wait_for_update_category_${info?.WalletID}`);
+      socket.off(`wait_for_update_event_${info?.WalletID}`);
       setOpen(null);
     }
   }, [info]);

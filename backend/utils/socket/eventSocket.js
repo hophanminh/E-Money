@@ -7,7 +7,7 @@ module.exports = function (socket, io, decoded_userID) {
 
   // get event of wallet
   socket.on('get_event', async ({ walletID }, callback) => {
-    socket.join(walletID);
+    // socket.join(walletID);
     try {
       const eventList = await eventModel.getEventByWalletID(walletID);
       callback({ eventList });
@@ -50,7 +50,7 @@ module.exports = function (socket, io, decoded_userID) {
 
       // annouce to other players
       const eventList = await eventModel.getEventByWalletID(walletID);
-      io.in(walletID).emit('wait_for_update_event', { eventList });
+      io.sockets.emit(`wait_for_update_event_${walletID}`, { eventList });
 
     } catch (error) {
       console.log(error);
@@ -71,7 +71,7 @@ module.exports = function (socket, io, decoded_userID) {
       callback ? callback() : console.log('ko có call back khi end event');
       // annouce to other players
       const eventList = await eventModel.getEventByWalletID(walletID);
-      io.in(walletID).emit('wait_for_update_event', { eventList });
+      io.sockets.emit(`wait_for_update_event_${walletID}`, { eventList });
     } catch (error) {
       console.log(error);
     }

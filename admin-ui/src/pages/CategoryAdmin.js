@@ -63,13 +63,13 @@ export default function CategoryAdmin(props) {
       setAllList(defaultList, customList, fullList)
     });
 
-    socket.on('wait_for_update_category', ({ defaultList, customList, fullList }) => {
+    socket.on('wait_for_update_category_admin', ({ defaultList, customList, fullList }) => {
       setAllList(defaultList, customList, fullList)
     });
 
     return () => {
       socket.off("wait_for_update_transaction");
-      socket.off("wait_for_update_category");
+      socket.off("wait_for_update_category_admin");
       setOpen(null);
     }
   }, []);
@@ -185,7 +185,7 @@ export default function CategoryAdmin(props) {
             <Typography className={classes.subHeaderFont} color="textPrimary">
               Loại mặc định
               </Typography>
-              <Box className={classes.actionBox}>
+            <Box className={classes.actionBox}>
               <TextField
                 className={classes.searchField}
                 value=''
@@ -210,8 +210,8 @@ export default function CategoryAdmin(props) {
             </Box>
           </Box>
           <Box className={classes.categoryBox}>
-          <Button className={classes.categoryCard} variant="outlined" onClick={handleOpenAddDialog}>
-                <AddIcon className={classes.green} />
+            <Button className={classes.categoryCard} variant="outlined" onClick={handleOpenAddDialog}>
+              <AddIcon className={classes.green} />
                 Thêm loại
               </Button>
             {filterList && filterList.map((i, n) => {
