@@ -22,7 +22,7 @@ module.exports = function (socket, io, decoded_userID) {
 
             await iconModel.addIcon(entity);
             const iconList = await iconModel.getAllIcons();
-            io.emit('wait_for_update_icon', { iconList });
+            io.emit('wait_for_update_icon_admin', { iconList });
         } catch (error) {
             console.log(error);
         }
@@ -38,7 +38,7 @@ module.exports = function (socket, io, decoded_userID) {
 
             await iconModel.updateIcon(icon.id, entity);
             const iconList = await iconModel.getAllIcons();
-            io.emit('wait_for_update_icon', { iconList });
+            io.emit('wait_for_update_icon_admin', { iconList });
         } catch (error) {
             console.log(error);
         }
@@ -48,7 +48,7 @@ module.exports = function (socket, io, decoded_userID) {
         try {
             await iconModel.deleteIcon(iconID);
             const iconList = await iconModel.getAllIcons();
-            io.emit('wait_for_update_icon', { iconList });
+            io.emit('wait_for_update_icon_admin', { iconList });
         } catch (error) {
             console.log(error);
         }

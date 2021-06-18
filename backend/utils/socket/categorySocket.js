@@ -19,7 +19,6 @@ module.exports = function (socket, io) {
     } catch (error) {
       console.log(error);
     }
-
   });
 
   // add category
@@ -42,7 +41,7 @@ module.exports = function (socket, io) {
       const fullList = defaultList.concat(customList);
       walletID
         ? io.in(walletID).emit('wait_for_update_category', { defaultList, customList, fullList })
-        : io.emit('wait_for_update_category', { defaultList, customList, fullList });
+        : io.emit('wait_for_update_category_admin', { defaultList, customList, fullList });
     } catch (error) {
       console.log(error);
     }
@@ -89,7 +88,7 @@ module.exports = function (socket, io) {
         const defaultList = await categoryModel.getDefaultCategory() || [];
         const customList = [];
         const fullList = defaultList.concat(customList);
-        io.emit('wait_for_update_category', { defaultList, customList, fullList });
+        io.emit('wait_for_update_category_admin', { defaultList, customList, fullList });
       }
     } catch (error) {
       console.log(error);
@@ -138,12 +137,10 @@ module.exports = function (socket, io) {
         const defaultList = await categoryModel.getDefaultCategory() || [];
         const customList = [];
         const fullList = defaultList.concat(customList);
-        io.emit('wait_for_update_category', { defaultList, customList, fullList });
+        io.emit('wait_for_update_category_admin', { defaultList, customList, fullList });
       }
     } catch (error) {
       console.log(error);
     }
-
   });
-
 };

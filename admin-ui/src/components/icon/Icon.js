@@ -47,13 +47,13 @@ export default function IconList() {
       setIcons(iconList);
     });
 
-    socket.on('wait_for_update_icon', ({ iconList }) => {
+    socket.on('wait_for_update_icon_admin', ({ iconList }) => {
       console.log(iconList);
       setIcons(iconList);
     });
 
     return () => {
-      socket.off('wait_for_update_icon');
+      socket.off('wait_for_update_icon_admin');
     }
   }, []);
 

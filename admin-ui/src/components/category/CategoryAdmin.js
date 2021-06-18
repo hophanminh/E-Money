@@ -43,12 +43,12 @@ export default function CategoryAdmin(props) {
       setAllList(defaultList, customList, fullList);
     });
 
-    socket.on('wait_for_update_category', ({ defaultList, customList, fullList }) => {
+    socket.on('wait_for_update_category_admin', ({ defaultList, customList, fullList }) => {
       setAllList(defaultList, customList, fullList);
     });
 
     return () => {
-      socket.off("wait_for_update_category");
+      socket.off("wait_for_update_category_admin");
       setOpen(null);
     }
   }, []);
