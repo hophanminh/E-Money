@@ -34,7 +34,7 @@ module.exports = {
   getMembersByTeamId: (teamID) => {
     const sql = `SELECT u.ID, u.Name, u.Username, t.Role 
         FROM Teams_Has_Users t 
-        JOIN USERS u on t.UserID = u.ID
+        JOIN Users u on t.UserID = u.ID
         WHERE t.TeamID = '${teamID}'
         ORDER BY t.Role DESC`
     return db.load(sql);
