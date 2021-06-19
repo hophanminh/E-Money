@@ -4,7 +4,7 @@ const router = express.Router();
 const WalletModel = require('../models/walletModel');
 const TeamModel = require('../models/teamModel');
 const TeamHasUserModel = require('../models/TeamHasUserModel');
-const EventModel = require('../models/EventModel');
+const EventModel = require('../models/eventModel');
 
 const config = require("../config/default.json");
 const { convertToRegularDateTime } = require("../utils/helper");
