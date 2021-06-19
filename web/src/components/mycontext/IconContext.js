@@ -1,5 +1,6 @@
-import React, { useState, useEffect, createContext } from 'react';
+import React, { useState, useEffect, createContext, useContext } from 'react';
 import config from '../../constants/config.json';
+import { MyContext } from '../mycontext'
 
 const API_URL = config.API_LOCAL;
 const IconContext = createContext({});
@@ -8,10 +9,13 @@ export default IconContext;
 
 export const IconProvider = (props) => {
   const [iconList, setIconList] = useState([])
+  const { isLoggedIn } = useContext(MyContext);
 
   useEffect(() => {
-    fetchIcon().then(list => setIconList(list))
-  }, [])
+    if (isLoggedIn) {
+      fetchIcon().then(list => setIconList(list))
+    }
+  }, [isLoggedIn])
 
   const fetchIcon = async () => {
     const jwtToken = localStorage.getItem('jwtToken');
