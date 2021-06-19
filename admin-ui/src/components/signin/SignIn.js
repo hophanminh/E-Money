@@ -2,17 +2,12 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
-import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
-import KeyboardReturnIcon from '@material-ui/icons/KeyboardReturn';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
-import GoogleIcon from '../../resources/images/google.png';
-import FacebookIcon from '../../resources/images/facebook.png';
 import SnackBar from '../snackbar/SnackBar';
 import MyContext from '../mycontext/MyContext';
 import Palette from '../../constants/palette.json';
-import ResetPassword from './resetpassword/RequestGenerator';
 import * as helper from '../../utils/helper';
 import config from '../../constants/config.json';
 import { Hidden } from '@material-ui/core';
@@ -27,7 +22,8 @@ export const styles = {
   },
   paper: {
     padding: '40px 20px 40px',
-    borderRadius: '8px'
+    borderRadius: '8px',
+    backgroundColor: '#fff'
   },
   form: {
     width: '100%', // Fix IE 11 issue.
@@ -79,10 +75,6 @@ export default function SignIn() {
       history.push('/');
     }
   }, [isLoggedIn]);
-
-  const signUpClicked = () => {
-    history.push('/signup');
-  }
 
   const handleEnter = async (e) => {
     if (e.key === 'Enter') {
@@ -147,15 +139,15 @@ export default function SignIn() {
   return (
     <>
       <div className="trap-container">
-        <div >
-          <svg fill="white" width="60%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none" style={{ position: 'absolute', left: 0, zIndex: 0 }}>
-            <polygon points="0,0 100,0 80,100 0,100" />
-          </svg>
-        </div>
-        <div style={{ width: '55%', position: 'absolute', right: 0, zIndex: -2, height: '100%' }} className="bgimg">
-
-        </div>
-        <div style={{ width: '45%', position: 'absolute', right: 0, zIndex: -1, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', color: '#fff' }}>
+        <Hidden xsDown>
+          <div>
+            <svg fill="white" width="50%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none" style={{ position: 'absolute', left: 0, zIndex: -1 }}>
+              <polygon points="0,0 100,0 80,100 0,100" />
+            </svg>
+          </div>
+          <div style={{ width: '65%', position: 'absolute', right: 0, zIndex: -2, height: '100%' }} className="bgimg"></div>
+        </Hidden>
+        {/* <div style={{ width: '45%', position: 'absolute', right: 0, zIndex: -1, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', color: '#fff' }}>
           <div style={{ ...styles.socialLoginButton }} >
             <Typography style={styles.logoContainer}>
               <img src={FacebookIcon} alt="Facebook icon" style={styles.logo} />
@@ -168,36 +160,19 @@ export default function SignIn() {
               Đăng nhập bằng Google
             </Typography>
           </div>
-        </div>
+        </div> */}
 
         <div className="trap-content">
           <Container component="main" maxWidth="xl">
             <SnackBar open={showSnackbar} setOpen={(isOpen) => setShowSnackBar(isOpen)} content={content} />
             <Grid container spacing={4}>
-              <Hidden smDown>
-                <Grid item xs={2} sm={2} md={2} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', textAlign: 'left' }}>
-                  <div>
-                    <Button
-                      variant="contained"
-                      onClick={() => signUpClicked()}
-                      style={{
-                        borderRadius: '50%',
-                        height: '65px',
-                        width: '65px',
-                        color: '#FFF',
-                        backgroundColor: Palette.primary,
-                        boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)',
-                      }}
-                    >
-                      <KeyboardReturnIcon />
-                    </Button>
-                    <h4 variant='h6' style={{ color: '#172755' }}>Chưa có tài khoản?</h4>
-                  </div>
+              <Hidden xsDown>
+                <Grid item xs={2} md={4} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', textAlign: 'left' }}>
                 </Grid>
 
               </Hidden>
-              <Grid item xs={7} sm={6} md={4}>
-                <div style={{ ...styles.shadow, ...styles.paper, width: '110%' }}>
+              <Grid item xs={12} sm={10} md={6}>
+                <div style={{ ...styles.shadow, ...styles.paper, width: '90%' }}>
                   <Typography style={{ color: Palette.primary, fontWeight: 'bold' }} variant='h5'>Đăng nhập tài khoản</Typography>
                   <div style={{ margin: '20px 0 20px' }}>
                     <TextField label="Tên tài khoản" variant="outlined"
@@ -217,16 +192,15 @@ export default function SignIn() {
                     <div className="input-invalid">
                       {errors.password}
                     </div>
-                    <Link variant="body2" >
-                      <ResetPassword setContent={setContent} setShowSnackBar={setShowSnackBar} />
-                    </Link>
                   </div>
 
                   <Button
                     type="submit" fullWidth variant="contained"
                     onClick={() => handleSubmit()}
-                    style={{ ...styles.submit, backgroundColor: Palette.primary, color: '#fff', 
-                      fontWeight: 'bold', margin: '5px 0 20px' }}
+                    style={{
+                      ...styles.submit, backgroundColor: Palette.primary, color: '#fff',
+                      fontWeight: 'bold', margin: '5px 0 20px'
+                    }}
                   >
                     Đăng nhập
                   </Button>

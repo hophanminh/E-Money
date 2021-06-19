@@ -17,7 +17,6 @@ import CombinedProvider from './components/mycontext/combineProvider'
 import { getListIcon } from './utils/DefaultIcon';
 import SignIn from './components/signin/SignIn';
 import TeamList from './components/Teams/TeamList.js'
-import ResetDestination from './components/signin/resetpassword/ResetDestination';
 import Profile from './components/profile/Profile';
 import UserList from './components/user/UserList';
 import IconList from './components/icon/Icon';

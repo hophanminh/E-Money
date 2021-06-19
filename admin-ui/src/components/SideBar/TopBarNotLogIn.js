@@ -116,10 +116,6 @@ function TopbarNotLogin() {
   const classes = useStyles();
   const history = useHistory();
 
-  const handleSignUp = () => {
-    history.push("/signup");
-  }
-
   const handleSignIn = () => {
     history.push("/signin");
   }
@@ -127,7 +123,7 @@ function TopbarNotLogin() {
   return (
     <AppBar position="absolute" className={clsx(classes.appBar)}>
       <Toolbar className={`${classes.toolbar} ${classes.spaceBetween} ${classes.colorTopBar}`}>
-        <ListItem button component={NavLink} to="/" className={`${classes.button} ${classes.brandText}`}>
+        <ListItem button component={NavLink} to="/signin" className={`${classes.button} ${classes.brandText}`}>
           {`E-Money`}
         </ListItem>
         <div className={`${classes.topBarButton} `}>
