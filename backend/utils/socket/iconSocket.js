@@ -1,5 +1,5 @@
 const { v4: uuidv4 } = require('uuid');
-const iconModel = require('../../models/iconModel');
+const iconModel = require('../../models/IconModel');
 
 module.exports = function (socket, io, decoded_userID) {
     socket.on('get_icons', async ({ }, callback) => {
