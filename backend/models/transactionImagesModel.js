@@ -2,17 +2,15 @@ const db = require('../utils/database');
 const config = require('../config/default.json');
 
 module.exports = {
-  addImage: entity => db.add('transactionimages', entity),
+  addImage: entity => db.add('TransactionImages', entity),
 
-  // addBatch: entityArray => db.loadSafe(`INSERT INTO transactionimages (ID, URL, TransactionID, DateAdded, PublicID) VALUES ?`, entityArray),
+  updateImage: (id, updatedFields) => db.patch('TransactionImages', updatedFields, { ID: id }),
 
-  updateImage: (id, updatedFields) => db.patch('transactionimages', updatedFields, { ID: id }),
+  deleteImage: (id) => db.delete(`TransactionImages`, { ID: id }),
 
-  deleteImage: (id) => db.delete(`transactionimages`, { ID: id }),
+  deleteImageByTxID: (id) => db.delete(`TransactionImages`, { TransactionID: id }),
 
-  deleteImageByTxID: (id) => db.delete(`transactionimages`, { TransactionID: id }),
+  getImageByTransactionID: (transactionID) => db.loadSafe(`SELECT * FROM TransactionImages WHERE TransactionID = ?`, [transactionID]),
 
-  getImageByTransactionID: (transactionID) => db.loadSafe(`SELECT * FROM transactionimages WHERE TransactionID = ?`, [transactionID]),
-
-  getImageByID: id => db.loadSafe(`SELECT * FROM transactionimages WHERE ID = ?`, [id]),
+  getImageByID: id => db.loadSafe(`SELECT * FROM TransactionImages WHERE ID = ?`, [id]),
 }

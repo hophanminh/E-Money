@@ -2,38 +2,38 @@ const db = require('../utils/database');
 const config = require('../config/default.json');
 
 module.exports = {
-    addCategory: entity => db.add('Categories', entity),
+  addCategory: entity => db.add('Categories', entity),
 
-    updateCategory: (id, updatedFields) => db.patch('Categories', updatedFields, { ID: id }),
+  updateCategory: (id, updatedFields) => db.patch('Categories', updatedFields, { ID: id }),
 
-    deleteCategory: (id) => db.delete(`Categories`, { ID: id }),
+  deleteCategory: (id) => db.delete(`Categories`, { ID: id }),
 
-    getDefaultCategory: () => {
-        const isDefault = config.CATEGORY.DEFAULT;
-        return db.loadSafe(`SELECT cat.*
-                    FROM Categories as cat
-                    WHERE cat.WalletID IS NULL AND cat.isDefault = ? 
+  getDefaultCategory: () => {
+    const isDefault = config.CATEGORY.DEFAULT;
+    return db.loadSafe(`SELECT cat.*
+                    FROM Categories cat
+                    WHERE cat.WalletID IS NULL AND cat.IsDefault = ? 
                     ORDER BY cat.Name`, [isDefault]);
-    },
+  },
 
-    getCustomCategoryFromWalletID: (walletID) => {
-        const isDefault = config.CATEGORY.CUSTOM;
-        return db.loadSafe(`SELECT cat.*
-                    FROM Categories as cat
-                    WHERE cat.WalletID = ? AND cat.isDefault = ?
+  getCustomCategoryFromWalletID: (walletID) => {
+    const isDefault = config.CATEGORY.CUSTOM;
+    return db.loadSafe(`SELECT cat.*
+                    FROM Categories cat
+                    WHERE cat.WalletID = ? AND cat.IsDefault = ?
                     ORDER BY cat.Name`, [walletID, isDefault]);
-    },
+  },
 
-    getAllCategoryFromWalletID: (walletID) => {
-        return db.loadSafe(`SELECT cat.*
-                    FROM Categories as cat
+  getAllCategoryFromWalletID: (walletID) => {
+    return db.loadSafe(`SELECT cat.*
+                    FROM Categories cat
                     WHERE cat.WalletID = ? OR cat.WalletID IS NULL
-                    ORDER BY cat.isDefault DESC, cat.Name ASC`, [walletID]);
-    },
+                    ORDER BY cat.IsDefault DESC, cat.Name ASC`, [walletID]);
+  },
 
-    getCategoryByID: (categoryID) =>
-        db.loadSafe(`SELECT cat.*
-                FROM Categories as cat
+  getCategoryByID: (categoryID) =>
+    db.loadSafe(`SELECT cat.*
+                FROM Categories cat
                 WHERE cat.ID = ?`, [categoryID]),
 
 }

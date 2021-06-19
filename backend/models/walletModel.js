@@ -9,16 +9,11 @@ module.exports = {
                 SET TotalCount = TotalCount + ?
                 WHERE ID = ?`, [amount, walletID]),
 
-  getWalletById: (id) => {
-    const sql = `SELECT * from Wallets t WHERE t.ID = '${id}'`;
-  },
-
   getPrivateWallet: (userID) =>
     db.loadSafe(`SELECT w.*
-                FROM users as u LEFT JOIN Wallets as w ON u.WalletID = w.ID
+                FROM Users u LEFT JOIN Wallets w ON u.WalletID = w.ID
                 WHERE u.ID = ? `, [userID]),
 
-  deleteWallet: (id) => {
-    return db.delete('wallets', {ID: id})
-  }
+  deleteWallet: (id) => db.delete('Wallets', { ID: id })
+
 }

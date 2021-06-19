@@ -19,26 +19,25 @@ module.exports = {
               WHERE CategoryID = ?`, [final, categoryID]),
 
   getTransactionByWalletID: (walletID) =>
-    db.loadSafe(`SELECT t.ID as id, t.Description as description, t.Money as price, t.DateAdded as time, t.DateAdded as timeModified, t.UserID as userID,
-                        cat.ID as catID, cat.IconID as IconID, cat.Name as categoryName, 
-                        events.ID as eventID, events.Name as eventName,
-                        Users.Name as userName, COUNT(h.ID) as editNumber
-                FROM Transactions as t LEFT JOIN Categories as cat ON t.CategoryID = cat.ID
-                                      LEFT JOIN events ON t.EventID = events.ID
-                                      LEFT JOIN Users ON t.UserID = Users.ID
-                                      LEFT JOIN transactionhistories as h on t.ID = h.TransactionID
+    db.loadSafe(`SELECT t.ID AS id, t.Description AS description, t.Money AS price, t.DateAdded AS time, t.DateAdded AS timeModified,
+                        t.UserID AS userID, cat.ID AS catID, cat.IconID AS IconID, cat.Name AS categoryName, 
+                        e.ID AS eventID, e.Name AS eventName, u.Name AS userName, COUNT(h.ID) AS editNumber
+                FROM Transactions t LEFT JOIN Categories cat ON t.CategoryID = cat.ID
+                                      LEFT JOIN Events e ON t.EventID = e.ID
+                                      LEFT JOIN Users u ON t.UserID = u.ID
+                                      LEFT JOIN TransactionHistories h on t.ID = h.TransactionID
                 WHERE t.WalletID = ? 
                 GROUP BY t.ID
                 ORDER BY t.DateAdded DESC`, [walletID]),
 
   getTransactionByID: (transactionID) =>
     db.loadSafe(`SELECT t.*
-                FROM Transactions as t
+                FROM Transactions t
                 WHERE t.ID = ?`, [transactionID]),
 
   getTransactionByWalletIDAndCategoryID: (walletID, CategoryID) =>
     db.loadSafe(`SELECT t.*
-                FROM Transactions as t
+                FROM Transactions t
                 WHERE t.WalletID = ? AND t.CategoryID = ?`, [walletID, CategoryID]),
 
 }
