@@ -1,10 +1,9 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import './App.css';
 import {
   BrowserRouter as Router,
   Switch,
   Route,
-  useHistory,
 } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -27,7 +26,6 @@ import CombinedProvider from './components/mycontext/combineProvider'
 import Teams from './components/Team/Teams';
 import UpdateProfile from './components/Team/UpdateProfile';
 import ResetDestination from './components/signin/resetpassword/ResetDestination';
-import Admin from './components/admin/admin';
 
 const routes = [
   {
@@ -94,11 +92,6 @@ const routes = [
     path: '/teams',
     private: true,
     main: () => <Teams />
-  },
-  {
-    path: '/admin',
-    private: true,
-    main: () => <Admin />
   },
   {
     path: '/reset',

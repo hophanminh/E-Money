@@ -1,5 +1,6 @@
 import React from 'react';
-import { Typography, Button, Grid } from '@material-ui/core';
+import { Link } from 'react-router-dom';
+import { Typography, Button } from '@material-ui/core';
 import PhoneAndroidIcon from '@material-ui/icons/PhoneAndroid';
 import ComputerIcon from '@material-ui/icons/Computer';
 import LanguageIcon from '@material-ui/icons/Language';
@@ -40,9 +41,11 @@ export default function Download() {
             }}
           >
             <ComputerIcon className={classes.icon} />
-            <Typography style={{ textAlign: 'left', fontSize: '20px' }}>
-              Tải về phiên bản trên <b>Window</b>
-            </Typography>
+            <Link to="/robots.txt" target="_blank" download style={{ textDecoration: 'none', color: 'white' }}>
+              <Typography style={{ textAlign: 'left', fontSize: '20px' }}>
+                Tải về phiên bản trên <b>Windows</b>
+              </Typography>
+            </Link>
           </Button>
 
           <Button className={classes.button}
