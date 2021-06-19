@@ -55,6 +55,10 @@ export default function Notification() {
   }
 
   const handleMarkAllAsRead = () => {
+    if (notifications.length === 0) {
+      return;
+    }
+
     socket.emit('mark_all_as_read', {
       userID,
       notificationIDs: notifications.map(notification => notification.ID),
@@ -100,6 +104,12 @@ export default function Notification() {
             >
               <div className={classes.popover}>
                 <div className={classes.scrollable}>
+                  <div className={classes.notifyToolbar}>
+                    <Link className={classes.link} onClick={handleMarkAllAsRead}>
+                      Đánh dấu tất cả đã xem
+                    </Link>
+                  </div>
+                  <Divider />
                   {notifications.map(notification => {
                     return (
                       <div key={notification.ID}>
@@ -128,13 +138,14 @@ export default function Notification() {
                       </div>
                     );
                   })}
+                  <div style={{ flexGrow: 1 }} />
+                  {
+                    notifications.length === 0 ? <Divider /> : <React.Fragment></React.Fragment>
+                  }
                   <div className={classes.notifyToolbar}>
-                    <Link className={classes.link} onClick={handleMarkAllAsRead}>
-                      Đánh dấu tất cả đã xem
-                  </Link>
                     <Link className={classes.link} onClick={handleLoadMoreNotification}>
                       Tải thêm
-                  </Link>
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -167,7 +178,6 @@ const useStyles = makeStyles((theme) => ({
     overflowY: 'scroll',
     display: 'flex',
     flexDirection: 'column',
-    justifyContent: 'space-between'
   },
   notifyCard: {
     height: '100%',
@@ -194,7 +204,6 @@ const useStyles = makeStyles((theme) => ({
   },
   notifyToolbar: {
     display: 'flex',
-    justifyContent: 'space-between',
     alignItems: 'center',
     height: 25,
     padding: 10,
