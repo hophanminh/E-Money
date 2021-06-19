@@ -8,7 +8,7 @@ import TopBarNotLogin from "./TopBarNotLogIn";
 
 export default function Menu(props) {
   const [open, setOpen] = useState(false);
-  const { isLoggedIn, setIsLoggedIn } = useContext(MyContext);
+  const { isLoading, isLoggedIn, setIsLoggedIn } = useContext(MyContext);
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -41,26 +41,27 @@ export default function Menu(props) {
 
   return (
     <>
-      {isLoggedIn ?
-        (
-          <>
-            <Topbar
-              handleDrawerOpen={() => handleDrawerOpen()}
-              open={open}
-              titl e={props.title}
-            />
-            <SideBar
-              handleDrawerClose={() => handleDrawerClose()}
-              open={open}
-            />
-          </>
-        )
-        :
-        (
-          <>
-            <TopBarNotLogin />
-          </>
-        )
+      {
+        isLoggedIn ?
+          (
+            <>
+              <Topbar
+                handleDrawerOpen={() => handleDrawerOpen()}
+                open={open}
+                titl e={props.title}
+              />
+              <SideBar
+                handleDrawerClose={() => handleDrawerClose()}
+                open={open}
+              />
+            </>
+          )
+          :
+          (
+            <>
+              <TopBarNotLogin isLoading={isLoading} />
+            </>
+          )
       }
     </>
   )

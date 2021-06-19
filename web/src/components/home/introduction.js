@@ -1,5 +1,5 @@
 import React from 'react';
-import { Typography, Button } from '@material-ui/core';
+import { Grid, Typography, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
 import imgTemp from '../../resources/images/moneySaving.png';
@@ -13,7 +13,8 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: '8px',
     lineHeight: 'normal',
     fontWeight: 'normal',
-    textTransform: 'none'
+    textTransform: 'none',
+    marginBottom: '15px'
   }
 }));
 
