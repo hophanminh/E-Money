@@ -25,7 +25,7 @@
   "HOST": {
     "LOCAL": "http://localhost:3000",
     "ONLINE": "",
-    "CURRENT": "http://localhost:3000"
+    "CURRENT": "https://e-money-web.herokuapp.com"
   },
   "PORT": 9000,
   "PASSPORTKEY": "whatdoyoumean",
@@ -35,7 +35,6 @@
     "CUSTOM": 0,
     "DEFAULT_ID": 3
   },
-  "APPLOCAL": "http://localhost:3000",
   "APPPRODUCTION": "",
   "CLOUDINARY": {
     "cloud_name": "minhlaccloud",

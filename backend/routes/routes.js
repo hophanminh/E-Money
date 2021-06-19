@@ -72,7 +72,7 @@ router.post('/signup', async (req, res) => {
 
   if (addUser.affectedRows === 1) {
     const content =
-      `<b>CHÀO MỪNG BẠN ĐẾN VỚI E-MONEY!</b><br>Hãy nhấn vào liên kết dưới đây để kích hoạt tài khoản của bạn.<br><a href="${process.env.APPLOCAL || config.APPLOCAL}/active/${newUser.ID.toBase64()}">Kích hoạt</a>`
+      `<b>CHÀO MỪNG BẠN ĐẾN VỚI E-MONEY!</b><br>Hãy nhấn vào liên kết dưới đây để kích hoạt tài khoản của bạn.<br><a href="${config.HOST.CURRENT}/active/${newUser.ID.toBase64()}">Kích hoạt</a>`
     const result = await emailServer.send(newUser.Email, content, "Kích hoạt tài khoản!");
     return res.status(201).send({ msg: "Hãy kiểm tra email vừa khai báo để kích hoạt tài khoản." });
   }
