@@ -121,7 +121,6 @@ export default function Teams() {
   const [showSnackbar, setShowSnackBar] = useState(false);
 
   useEffect(() => {
-    console.log(isLoggedIn);
     if (isLoggedIn !== null && isLoggedIn === false) {
       history.push('/');
     }
@@ -131,7 +130,6 @@ export default function Teams() {
 
   const getTeams = async () => {
 
-    console.log(userID);
     const res = await fetch(`${API_URL}/teams/${userID}`, {
       method: 'GET',
       headers: {
@@ -139,12 +137,10 @@ export default function Teams() {
         Authorization: `Bearer ${token}`,
       }
     });
-    console.log(res.body);
+
     if (res.status === 200) {
       const result = await res.json();
-      console.log(result.teams);
       setTeams(result.teams)
-      console.log(teams)
     } else {
       // alert("Some error when updating!")
     }
@@ -179,13 +175,11 @@ export default function Teams() {
     });
     if (res.status === 201) {
       const result = await res.json();
-      console.log(result);
       setContent("Tạo nhóm thành công");
       setShowSnackBar(true);
       history.push(`/Wallet/${result.result}`);
     } else {
       const result = await res.json();
-      console.log(result);
       setContent(result.msg);
       setShowSnackBar(true);
     }
@@ -210,7 +204,6 @@ export default function Teams() {
     setOpenDiaForm(false);
   };
 
-  console.log(teams)
   return (
     <>
       <SnackBar open={showSnackbar} setOpen={(isOpen) => setShowSnackBar(isOpen)} content={content} />

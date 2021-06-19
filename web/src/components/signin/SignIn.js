@@ -131,6 +131,8 @@ export default function SignIn() {
     if (res.status === 200) {
       window.localStorage.setItem('jwtToken', result.token);
       window.localStorage.setItem('userID', result.user.ID);
+      window.localStorage.removeItem('resetID');
+
       setInfo(result.user);
       setIsLoggedIn(true);
       history.push("/");

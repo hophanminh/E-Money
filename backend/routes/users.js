@@ -26,7 +26,6 @@ router.use(express.static('public'));
  * @deprecated
  */
 router.post('/authenticate', (req, res) => {
-  console.log("authenticated");
   return res.status(200).end();
 });
 
@@ -46,7 +45,6 @@ router.get('/:id', async (req, res) => {
   const user = users[0];
 
   if (user.IsBanned === 1) {
-    console.log('banned');
     return res.status(403).end();
   }
 
@@ -58,7 +56,6 @@ router.patch('/:id/info', async (req, res) => {
 
   const userID = req.params.id;
   const { Name, Email, DateOfBirth } = req.body;
-  console.log(DateOfBirth);
   const formattedDOB = DateOfBirth ? convertToRegularDate(DateOfBirth) : null;
   const result = await userModel.updateUser(userID, { Name, Email, DateOfBirth: formattedDOB });
 
@@ -104,7 +101,6 @@ router.patch('/:id/avatar', upload.single('avatar'), async (req, res) => {
     const firstIndex = user.AvatarURL.lastIndexOf("avatar/");
     const secondIndex = user.AvatarURL.lastIndexOf(".");
     const oldPublicId = user.AvatarURL.substring(firstIndex, secondIndex);
-    console.log(oldPublicId);
     cloudinary.uploader.destroy(oldPublicId, result => { console.log(result) });
   }
 
@@ -121,8 +117,6 @@ router.patch('/:id/avatar', upload.single('avatar'), async (req, res) => {
       if (err) {
         return res.status(500).send({ msg: "Đã xảy ra sự cố khi tải lên ảnh của bạn. Hãy thử lại!" });
       }
-      console.log('uploaded to cloudinary');
-      console.log(image);
       fs.unlinkSync(filePath);
       await userModel.updateUser(userID, { AvatarURL: image.url });
       return res.status(200).json({ url: image.url });

@@ -30,8 +30,6 @@ router.post('/barChart', async (req, res) => {
     }
   }
 
-  console.log(chartData);
-
   return res.status(200).send({ chartData });
 });
 
@@ -52,8 +50,6 @@ router.post('/pieChart', async (req, res) => {
   if (chartData.length === 0) {
     return res.status(400).end();
   }
-
-  console.log(chartData);
 
   return res.status(200).send({ chartData });
 });

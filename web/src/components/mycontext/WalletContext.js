@@ -60,10 +60,9 @@ export const WalletProvider = (props) => {
         }
         else {
           const temp = catList.find(cat => cat.Name === "Khác");
-          console.log(newList[i]);
           newList[i].IconID = temp.IconID;
           newList[i].categoryName = temp.Name;
-          newList[i].catID = temp.ID;  
+          newList[i].catID = temp.ID;
         }
       }
       return [...newList]

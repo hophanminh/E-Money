@@ -11,8 +11,6 @@ module.exports = function (socket, io, decoded_userID) {
 
   // get Transaction of wallet
   socket.on('get_transaction', async ({ walletID }, callback) => {
-    // console.log('lấy tx', walletID);
-    // socket.join(walletID);
     try {
       const transactionList = await transactionModel.getTransactionByWalletID(walletID);
       const { total, spend, receive } = calculateStat(transactionList);

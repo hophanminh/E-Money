@@ -73,11 +73,9 @@ const TeamDashBoard = () => {
     socket.emit("get_team", { walletID: id }, ({ team, thu }) => {
       setTeam(team);
       setTHU(thu.filter(i => i.Role === 1));;
-      console.log(thu)
       var member = thu.filter(function (member) {
         return member.UserID === userID;
       });
-      console.log(member[0].Role);
       setPerson(member[0]);
 
     });
@@ -95,7 +93,6 @@ const TeamDashBoard = () => {
     });
 
     socket.on(`wait_for_update_transaction_${id}`, ({ transactionList, total, spend, receive }) => {
-      console.log("here")
       setList(transactionList);
       setStat({
         spend: spend,
@@ -161,8 +158,6 @@ const TeamDashBoard = () => {
     const data = {
       UserID: userID
     }
-    console.log('data: ' + data);
-    console.log('idTeam: ' + id);
     const res = await fetch(`${API_URL}/teams/${id}/leave`, {
       method: 'POST',
       headers: {
@@ -178,8 +173,6 @@ const TeamDashBoard = () => {
     const data = {
       UserID: userID
     }
-    console.log('data: ' + data);
-    console.log('idTeam: ' + id);
     const res = await fetch(`${API_URL}/teams/${id}/delete`, {
       method: 'POST',
       headers: {

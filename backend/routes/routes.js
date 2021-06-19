@@ -21,7 +21,6 @@ router.get("/", (req, res) => {
 });
 
 router.post('/signin', async (req, res) => {
-  console.log('sign in');
   const { Username, Password } = req.body;
   const users = await userModel.getUserByUserName(Username);
 
@@ -34,7 +33,6 @@ router.post('/signin', async (req, res) => {
     }
 
     if (user.IsBanned === 1) {
-      console.log('banned');
       return res.status(403).send({ msg: "Tài khoản này tạm thời bị khóa bởi Admin. Hãy quay lại sau." });
     }
 
@@ -84,7 +82,6 @@ router.post('/signup', async (req, res) => {
 });
 
 router.post('/active', async (req, res) => {
-  console.log("active");
   const { ID } = req.body;
   const id = ID.fromBase64();
   const user = await userModel.getUserByID(id);
@@ -119,7 +116,6 @@ router.post('/active', async (req, res) => {
 })
 
 router.post('/forgotpassword', async (req, res) => {
-  console.log("Forgot password with body", req.body)
   const { Email, Username } = req.body;
   const users = await userModel.getUserByUserName(Username);
 
@@ -129,11 +125,14 @@ router.post('/forgotpassword', async (req, res) => {
   }
 
   if (users[0].IsBanned === 1) {
-    console.log('reset, banned');
-    return res.status(403).send({ msg: "Tài khoản này tạm thời bị khóa bởi Admin. Hãy quay lại sau." });
+    return res.status(403).send({ msg: "Tài khoản tạm thời bị khóa bởi Admin. Hãy quay lại sau." });
   }
 
+  if (users[0].Email !== Email) {
+    return res.status(400).send({ msg: "Email không trùng với Email đã đăng ký." });
+  }
   const request = await accountModel.findByUserId(users[0].ID);
+
 
   // nếu có request trc đó mà chưa dc dùng để reset thì cập nhật isSuccessful = -1
   if (request.length !== 0) {
@@ -154,7 +153,6 @@ router.post('/forgotpassword', async (req, res) => {
       <br/>Hãy sao chép đoạn mã sau để xác thực trên ứng dụng:
        <h4>${newResetRequest.Code}</h4>`
     const result = await emailServer.send(newResetRequest.Email, content, "Đặt lại mật khẩu!");
-    console.log(result);
 
     return res.status(200).send({ msg: "Hãy kiểm tra email vừa khai báo để nhận mã xác thực.", id: newResetRequest.ID });
   }
@@ -164,7 +162,6 @@ router.post('/forgotpassword', async (req, res) => {
 });
 
 router.post('/checkresetrequest', async (req, res) => {
-  console.log("Check reset request with ", req.body.id);
   const result = await accountModel.findById(req.body.id);
   if (result.length === 1) {
     // thực hiện reset request
@@ -175,7 +172,6 @@ router.post('/checkresetrequest', async (req, res) => {
 });
 
 router.put('/resetpassword', async (req, res) => {
-  console.log("Reset password with ", req.body);
   const { Code, Password, ID } = req.body;
   try {
     const result = await accountModel.findById(ID);
@@ -197,13 +193,11 @@ router.put('/resetpassword', async (req, res) => {
       res.status(401).end(); // spam
     }
   } catch (err) {
-    console.log("Error when reset password: ", err);
     res.status(500).send({ msg: "Hãy thử lại!" });
   }
 })
 
 router.post('/admin/signin', async (req, res) => {
-  console.log('sign in with admin');
   const { Username, Password } = req.body;
   const admins = await adminModel.getAdminByUserName(Username);
 
@@ -225,7 +219,6 @@ router.post('/admin/signin', async (req, res) => {
 
 
 router.post('/admin/forgotpassword', async (req, res) => {
-  console.log("Forgot password with body", req.body)
   const { Email, Username } = req.body;
   const user = await adminModel.getAdminByUserName(Username);
 
@@ -256,7 +249,6 @@ router.post('/admin/forgotpassword', async (req, res) => {
       <br/>Hãy sao chép đoạn mã sau để xác thực trên ứng dụng:
        <h4>${newResetRequest.Code}</h4>`
     const result = await emailServer.send(newResetRequest.Email, content, "Đặt lại mật khẩu!");
-    console.log(result);
 
     return res.status(200).send({ msg: "Hãy kiểm tra email vừa khai báo để nhận mã xác thực.", id: newResetRequest.ID });
   }
@@ -266,7 +258,6 @@ router.post('/admin/forgotpassword', async (req, res) => {
 });
 
 router.put('/admin/resetpassword', async (req, res) => {
-  console.log("Reset password with ", req.body);
   const { Code, Password, ID } = req.body;
   try {
     const result = await accountModel.findById(ID);

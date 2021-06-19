@@ -34,14 +34,12 @@ router.get('/', async (req, res) => {
 
 router.get('/:userId', async (req, res) => {
   const userID = req.params.userId;
-  console.log('Get teams belong to user ', userID);
   const teams = await TeamModel.getTeamsByUserId(userID);
   return res.status(200).send({ teams });
 })
 
 router.get('/details/:teamID', async (req, res) => {
   const teamID = req.params.teamID;
-  console.log('Get team belong to user ', teamID);
   const teams = await TeamModel.getTeamById(teamID);
   if (teams.length === 1) {
     return res.status(200).send({ teams });
@@ -52,7 +50,6 @@ router.get('/details/:teamID', async (req, res) => {
 
 router.get('/:teamID/members', async (req, res) => {
   const teamID = req.params.teamID;
-  console.log('Get member belong to team ', teamID);
   const thu = await TeamModel.getMembersByTeamId(teamID);
   if (thu.length !== 0) {
     return res.status(200).send({ members: thu });
@@ -84,7 +81,6 @@ router.post('/:teamID/roles', async (req, res) => {
 })
 
 router.post('/:userID', async (req, res) => {
-  console.log('Create team');
   const { Name, MaxUsers, Description } = req.body;
   const userID = req.params.userID;
   const newWallet = {
@@ -100,7 +96,6 @@ router.post('/:userID', async (req, res) => {
     return res.status(500)
       .send({ msg: "Hãy thử lại." });
   }
-  console.log("Created Wallet successfully" + newWallet);
 
   const newTeam = {
     ID: uuidv1(),
@@ -115,7 +110,6 @@ router.post('/:userID', async (req, res) => {
     return res.status(500)
       .send({ msg: "Hãy thử lại." });
   }
-  console.log("Create team successfully ", team)
 
   const admin = {
     UserID: userID,
@@ -126,9 +120,8 @@ router.post('/:userID', async (req, res) => {
   const result = await TeamHasUserModel.createTHU(admin);
 
   if (result.affectedRows === 1) {
-    console.log("Created successfully");
     return res.status(201)
-      .send({ msg: "Tạo nhóm thành công." , result: newWallet.ID});
+      .send({ msg: "Tạo nhóm thành công.", result: newWallet.ID });
   } else {
     return res.status(500)
       .send({ msg: "Hãy thử lại." });
@@ -149,7 +142,6 @@ router.patch('/:id/avatar', upload.single('avatar'), async (req, res) => {
     const firstIndex = team.AvatarURL.lastIndexOf("avatar/");
     const secondIndex = team.AvatarURL.lastIndexOf(".");
     const oldPublicId = team.AvatarURL.substring(firstIndex, secondIndex);
-    console.log(oldPublicId);
     cloudinary.uploader.destroy(oldPublicId, result => { console.log(result) });
   }
 
@@ -166,8 +158,6 @@ router.patch('/:id/avatar', upload.single('avatar'), async (req, res) => {
       if (err) {
         return res.status(500).send({ msg: "Đã xảy ra sự cố khi tải lên ảnh của bạn. Hãy thử lại!" });
       }
-      console.log('uploaded to cloudinary');
-      console.log(image);
       fs.unlinkSync(filePath);
       await TeamModel.updateTeam(teamId, { AvatarURL: image.url });
       return res.status(200).json({ url: image.url });
@@ -178,7 +168,6 @@ router.patch('/:id/avatar', upload.single('avatar'), async (req, res) => {
 router.put('/details/:id', async (req, res) => {
   const teamId = req.params.id;
   const { Name, MaxUsers, Description, UserID } = req.body;
-  console.log("Update teams " + teamId)
   const teamObject = await TeamModel.getTeamByIdAndUserId(teamId, UserID);
 
   if (teamObject.length === 0) {
@@ -191,16 +180,13 @@ router.put('/details/:id', async (req, res) => {
   }
 
   const update = TeamModel.updateTeam(teamId, { Name, MaxUsers, Description });
-  console.log(update);
   res.send(update);
 });
 
 router.post('/:id/leave', async (req, res) => {
   const walletId = req.params.id;
-  console.log("delete teams wallet " + walletId)
   const teamObject = await TeamModel.getTeamByWalletId(walletId);
   const { UserID } = req.body;
-  console.log(teamObject.length)
   if (teamObject.length === 0) {
     return res.status(400).send({ msg: "Không tìm thấy nhóm." })
   }
@@ -215,18 +201,14 @@ router.post('/:id/leave', async (req, res) => {
 router.post('/remove/:userId', async (req, res) => {
   const userID = req.params.userId;
   const { teamID } = req.body;
-  console.log(teamID)
-  console.log(userID)
   const c = await TeamHasUserModel.leaveTHU(teamID, userID)
   return res.status(200).send({ msg: "Thành công." })
 })
 
 router.post('/:id/delete', async (req, res) => {
   const walletId = req.params.id;
-  console.log("delete teams wallet " + walletId)
   const teamObject = await TeamModel.getTeamByWalletId(walletId);
   const { UserID } = req.body;
-  console.log(teamObject.length)
   if (teamObject.length === 0) {
     return res.status(400).send({ msg: "Không tìm thấy nhóm." })
   }
@@ -243,11 +225,9 @@ router.post('/:id/delete', async (req, res) => {
 router.post('/join/:userId', async (req, res) => {
   const userID = req.params.userId;
   const { teamID } = req.body
-  console.log(`Invite user ${userID} joins team ${teamID}`);
 
   const team = await TeamModel.getTeamById(teamID);
   const thu = await TeamHasUserModel.getTHUByTeamId(teamID);
-  console.log(team[0].MaxUsers)
   if (team.length === 0) {
     return res.status(404).send({ msg: "Không tìm thấy nhóm." });
   }
@@ -262,21 +242,17 @@ router.post('/join/:userId', async (req, res) => {
       Status: config.STATUS.ACTIVE
     }
     const result = await TeamHasUserModel.createTHU(thuObject);
-    console.log(result.affectedRows)
     if (result.affectedRows === 1) {
-      console.log("Joined successfully");
       return res.status(201)
-        .send({ msg: "Bạn vừa gia nhập vào nhóm." , result: team[0].WalletID});
+        .send({ msg: "Bạn vừa gia nhập vào nhóm.", result: team[0].WalletID });
     } else {
       return res.status(500)
         .send({ msg: "Xin hãy thử lại." });
     }
   } else {
-    console.log("Cannot join teams");
     res.status(500)
       .send({ msg: "Nhóm đã đủ số lượng thành viên" });
   }
-
 })
 
 module.exports = router;

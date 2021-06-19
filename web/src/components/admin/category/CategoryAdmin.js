@@ -60,7 +60,6 @@ export default function CategoryAdmin(props) {
     });
 
     socket.emit("get_category", { walletID: id }, ({ defaultList, customList, fullList }) => {
-      console.log(defaultList)
       setAllList(defaultList, customList, fullList)
     });
 
@@ -187,7 +186,7 @@ export default function CategoryAdmin(props) {
             <Typography className={classes.subHeaderFont} color="textPrimary">
               Loại mặc định
               </Typography>
-              <Box className={classes.actionBox}>
+            <Box className={classes.actionBox}>
               <TextField
                 className={classes.searchField}
                 value=''
@@ -212,8 +211,8 @@ export default function CategoryAdmin(props) {
             </Box>
           </Box>
           <Box className={classes.categoryBox}>
-          <Button className={classes.categoryCard} variant="outlined" onClick={handleOpenAddDialog}>
-                <AddIcon className={classes.green} />
+            <Button className={classes.categoryCard} variant="outlined" onClick={handleOpenAddDialog}>
+              <AddIcon className={classes.green} />
                 Thêm loại
               </Button>
             {filterList && filterList.map((i, n) => {

@@ -43,7 +43,6 @@ router.post('/', upload.array('images', 5), async (req, res) => {
         },
         (err, image) => {
           if (err) { return res.status(500).send({ msg: "Đã xảy ra sự cố khi tải lên ảnh của bạn. Hãy thử lại!" }); }
-          console.log('uploaded to cloudinary');
           const newImage = {
             ID: uuidv1(),
             URL: image.secure_url,
@@ -51,7 +50,6 @@ router.post('/', upload.array('images', 5), async (req, res) => {
             DateAdded: convertToRegularDateTime(uniqueFilename),
             PublicID: image.public_id
           }
-          console.log(newImage);
           fs.unlink(filePath, err => { if (err) console.log(err) });// run this cmd asynchronously
           urls.push(newImage);
         }

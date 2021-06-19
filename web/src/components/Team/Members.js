@@ -29,12 +29,11 @@ const API_URL = config.API_LOCAL;
 const MembersOfTeam = (props) => {
   const classes = useStyles();
 
-  const {members, isAdmin, teamID, getTeamMembers} = props;
+  const { members, isAdmin, teamID, getTeamMembers } = props;
   const token = localStorage.getItem('jwtToken');
   const userID = localStorage.getItem('userID');
 
   const handleRemoveMember = async (userID) => {
-    console.log("remove" + userID);
     const data = {
       teamID: teamID
     }
@@ -53,7 +52,6 @@ const MembersOfTeam = (props) => {
   const [open, setOpenDeleteDialog] = React.useState(false);
 
   const handleClickOpen = (target) => {
-    console.log(target);
     setTarget(target);
     setOpenDeleteDialog(true);
   };
@@ -87,40 +85,40 @@ const MembersOfTeam = (props) => {
                 </Box>
                 <Box>
                   {(isAdmin && cat?.ID !== userID) ?
-                  <div>
-                    <Button onClick={(e) => handleClickOpen(cat)}>
-                      <HighlightOffIcon></HighlightOffIcon>
-                    </Button> 
-                     <Dialog
-                     open={open}
-                     onClose={handleClose}
-                     aria-labelledby="alert-dialog-title"
-                     aria-describedby="alert-dialog-description"
-                   >
-                     <DialogTitle >
-                         <Typography className={classes.title}>
-                             Bạn có thực sự muốn xóa thành viên {target.Name} ra khỏi nhóm
+                    <div>
+                      <Button onClick={(e) => handleClickOpen(cat)}>
+                        <HighlightOffIcon></HighlightOffIcon>
+                      </Button>
+                      <Dialog
+                        open={open}
+                        onClose={handleClose}
+                        aria-labelledby="alert-dialog-title"
+                        aria-describedby="alert-dialog-description"
+                      >
+                        <DialogTitle >
+                          <Typography className={classes.title}>
+                            Bạn có thực sự muốn xóa thành viên {target.Name} ra khỏi nhóm
                          </Typography>
-                     </DialogTitle>
-                     <DialogActions>
-                       <Button style={{ color: "white",backgroundColor: "green", marginLeft: 10 }} variant="contained" color="primary" className={classes.margin} onClick={handleClose}>
-                         Hủy
+                        </DialogTitle>
+                        <DialogActions>
+                          <Button style={{ color: "white", backgroundColor: "green", marginLeft: 10 }} variant="contained" color="primary" className={classes.margin} onClick={handleClose}>
+                            Hủy
                        </Button>
-                       <Button style={{ color: "white",backgroundColor: "red", marginLeft: 10 }} variant="contained" color="primary" className={classes.margin} onClick={(e) => handleRemoveMember(target.ID)}>
-                         Xóa
+                          <Button style={{ color: "white", backgroundColor: "red", marginLeft: 10 }} variant="contained" color="primary" className={classes.margin} onClick={(e) => handleRemoveMember(target.ID)}>
+                            Xóa
                        </Button>
-                     </DialogActions>
-                 </Dialog>
-                 </div>
-                  : ""}
-                
+                        </DialogActions>
+                      </Dialog>
+                    </div>
+                    : ""}
+
                 </Box>
               </AccordionDetails>
               <Divider className={classes.divider} />
             </React.Fragment>
           )
         })}
-        
+
       </Accordion>
     </div>
   );

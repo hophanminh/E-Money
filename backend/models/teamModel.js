@@ -18,18 +18,14 @@ module.exports = {
   },
 
   getTeamByWalletId: (id) => {
-    console.log("ID: ", id);
     const sql = `SELECT * from teams WHERE WalletID = '${id}'`;
     return db.load(sql);
   },
   getTeamById: (id) => {
-    console.log("ID: ", id);
     const sql = `SELECT * from teams WHERE ID = '${id}'`;
     return db.load(sql);
   },
   getTeamByIdAndUserId: (teamId, userId) => {
-    console.log("Team id: ", teamId);
-    console.log("UserId: ", userId);
     const sql = `SELECT t.*
         FROM teams t JOIN teams_has_users thu on t.ID = thu.TeamID 
 

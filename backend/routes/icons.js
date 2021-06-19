@@ -9,7 +9,6 @@ router.get('/', async (req, res) => {
 });
 
 router.post('/list', async (req, res) => {
-  console.log("List icons");
   try {
     const iconList = await iconModel.getAllIcons();
     return res.status(200).send(iconList);

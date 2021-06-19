@@ -110,7 +110,7 @@ export default function Event() {
   };
 
   useEffect(() => {
-    const temp1 = eventList ? eventList.filter(i => i.Status === 0) : []; console.log(temp1);
+    const temp1 = eventList ? eventList.filter(i => i.Status === 0) : [];
 
     const temp2 = temp1 ? rowsPerPage - Math.min(rowsPerPage, temp1.length - page_2 * rowsPerPage) : 0;
     setRows_2(temp1);

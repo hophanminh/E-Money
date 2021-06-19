@@ -34,7 +34,7 @@
     "CUSTOM": 0,
     "DEFAULT_ID": 3
   },
-  "APPLOCAL": "http://192.168.1.93:3000",
+  "APPLOCAL": "http://localhost:3000",
   "APPPRODUCTION": "",
   "CLOUDINARY": {
     "cloud_name": "minhlaccloud",

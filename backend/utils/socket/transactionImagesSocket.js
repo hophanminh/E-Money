@@ -16,14 +16,12 @@ module.exports = function (socket, decoded_userID) {
   });
 
   socket.on('add_transaction_image', ({ transactionID, urls }) => {
-    console.log('thêm ảnh mới');
     socket.broadcast.emit(`wait_for_add_transaction_image_${transactionID}`, { urls });
   });
 
   socket.on('remove_transaction_image', async (data, callback) => {
     const { imageID, transactionID } = data;
 
-    console.log(imageID);
     try {
       const images = await transactionImagesModel.getImageByID(imageID);
 
@@ -31,7 +29,6 @@ module.exports = function (socket, decoded_userID) {
         throw new Error('Image not found by given id');
       }
 
-      console.log(images);
       const removed = await cloudinary.uploader.destroy(images[0].PublicID);
 
       if (removed.result !== 'ok') {

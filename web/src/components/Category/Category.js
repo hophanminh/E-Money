@@ -60,7 +60,6 @@ export default function Category(props) {
     });
 
     socket.emit("get_category", { walletID: id }, ({ defaultList, customList, fullList }) => {
-      console.log(defaultList)
       setAllList(defaultList, customList, fullList)
     });
 

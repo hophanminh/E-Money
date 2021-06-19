@@ -57,8 +57,6 @@ export default function Statistic() {
       date: date
     }
 
-    console.log(data);
-
     // call API here
     const res = await fetch(`${API_URL}/statistic/barChart`, {
       method: 'POST',
