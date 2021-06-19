@@ -2,7 +2,7 @@
   "name": "admin-ui",
   "private": false,
   "scripts": {
-    "start": "react-scripts start",
+    "start": "(set PORT=3006 || export PORT=3006) && react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

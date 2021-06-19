@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import clsx from 'clsx';
-import { NavLink } from "react-router-dom";
+import { NavLink, useHistory } from "react-router-dom";
 import {
   AppBar,
   Toolbar,
@@ -21,13 +21,14 @@ const drawerWidth = 240;
 function Topbar(props) {
   const classes = useStyles();
   const { setIsLoggedIn, info } = useContext(MyContext);
-
+  const history = useHistory();
   const logOut = (e) => {
     localStorage.removeItem("jwtToken");
     localStorage.removeItem("userID");
     //localStorage.clear();
     setIsLoggedIn(false);
     clearSocket();
+    history.push('/signin')
   }
   const openSidebar = props.open;  // sidebar's open
 
