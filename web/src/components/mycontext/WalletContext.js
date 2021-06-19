@@ -39,15 +39,7 @@ export const WalletProvider = (props) => {
         }
       }
     });
-  }, [list])
-
-  //Wallet
-  const updateSelected = () => {
-    if (selected) {
-      const temp = list.find(i => i?.id === selected?.id)
-      setSelected(temp);
-    }
-  }
+  }, [list]);
 
   const updateTxCategory = (catList) => {
     setList(list => {
@@ -88,7 +80,6 @@ export const WalletProvider = (props) => {
         setWalletID,
         setSelected,
         setList,
-        updateSelected,
         setExpanded,
         setFilterList,
         setSimpleOption,

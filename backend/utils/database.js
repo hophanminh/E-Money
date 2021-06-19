@@ -3,7 +3,7 @@ const mysql = require("mysql");
 const util = require("util");
 const config = require("../config/default.json");
 
-const pool = mysql.createPool(config.mysql_freedbtech);
+const pool = mysql.createPool(config.mysql);
 
 pool.getConnection(function (err, connection) {
   console.log("Connected to database.");

@@ -55,7 +55,7 @@ const TeamDashBoard = () => {
   const { id } = useParams();
   const history = useHistory();
   const socket = getSocket();
-  const { setWalletID, selected, setSelected, list, setList, filterList, updateSelected, updateTxCategory } = useContext(WalletContext);
+  const { setWalletID, selected, setSelected, list, setList, filterList, updateTxCategory } = useContext(WalletContext);
   const { setOpen } = useContext(PopupContext);
   const { setAllList } = useContext(CategoryContext);
   const { setEventList } = useContext(EventContext);
@@ -128,10 +128,6 @@ const TeamDashBoard = () => {
       setOpen(null);
     }
   }, [id]);
-
-  useEffect(() => {
-    updateSelected();
-  }, [list])
 
 
   // add transaction

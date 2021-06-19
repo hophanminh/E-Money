@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
@@ -54,7 +55,18 @@ class _AuthenPageState extends State<AuthenPage> with TickerProviderStateMixin {
   void fetch() async {
     // return;
     await Future.delayed(const Duration(seconds: 3), () {});
-    Response res = await AuthService.instance.fetchInfo();
+    Response res;
+    try {
+      res = await AuthService.instance.fetchInfo();
+    } on SocketException catch (e) {
+      print('cannot reach server');
+      // showSnackV2(context, 'Không thể kết nối đến máy chủ');
+      setState(() {
+        authenMessage = 'Không thể kết nối đến máy chủ';
+      });
+      return;
+
+    }
 
     if (res == null || res.statusCode != 200) {
       await SecureStorage.deleteAllSecureData();
@@ -64,8 +76,7 @@ class _AuthenPageState extends State<AuthenPage> with TickerProviderStateMixin {
 
     Map<String, dynamic> body = jsonDecode(res.body);
     print(body['user']);
-    Provider.of<UsersProvider>(context, listen: false)
-        .loadData(body['user'], body['token']);
+    Provider.of<UsersProvider>(context, listen: false).loadData(body['user'], body['token']);
     setState(() {
       widget.setUser(new Map<String, dynamic>.from(body['user']));
     });

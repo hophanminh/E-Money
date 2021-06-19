@@ -11,6 +11,7 @@ import 'package:socket_io_client/socket_io_client.dart';
 
 class AddTransaction extends StatefulWidget {
   final GlobalKey<ScaffoldMessengerState> wrappingScaffoldKey;
+
   const AddTransaction({Key key, @required this.wrappingScaffoldKey}) : super(key: key);
 
   @override
@@ -81,165 +82,160 @@ class _AddTransactionState extends State<AddTransaction> {
   Widget build(BuildContext context) {
     return GestureDetector(
         onTap: () {
-      FocusManager.instance.primaryFocus.unfocus();
-    },
-      child: ScaffoldMessenger(
-        key: _scaffoldKey,
-        child: Scaffold(
-          appBar: mySimpleAppBar('Thêm giao dịch mới'),
-          // backgroundColor: Colors.transparent,
-          body: SingleChildScrollView(
-            child: Container(
-              margin: const EdgeInsets.fromLTRB(10, 0, 10, 20),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(top: 10, bottom: 20.0),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 10.0),
-                            child: Row(
-                              children: [
-                                Container(
-                                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
-                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), border: Border.all(width: 1, color: Colors.black26)),
-                                  child: DropdownButtonHideUnderline(
-                                    child: DropdownButton(
-                                      value: _currentType,
-                                      items: _txTypeMenuItems,
-                                      onChanged: changeType,
-                                      onTap: () {
-                                        FocusManager.instance.primaryFocus.unfocus();
-                                      },
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Container(
-                                    margin: EdgeInsets.only(left: 10),
-                                    child: TextFormField(
-                                      controller: _priceController,
-                                      keyboardType: TextInputType.number,
-                                      decoration: myInputDecoration('Số tiền', inputBorder: Colors.black26, suffix: Text(formatter.currencySymbol)),
-                                      style: TextStyle(color: _currentType == 'Chi' ? Colors.red : Colors.green),
-                                      onChanged: (value) {
-                                        TextSelection cursorPos = _priceController.selection;
-
-                                        String copy = value.replaceAll(new RegExp(r'[^0-9]'), ''); // bỏ tất cả chỉ giữ lại số
-                                        try {
-                                          copy = formatMoneyWithoutSymbol(double.parse(copy));
-                                        } on FormatException {
-                                          copy = '0';
-                                        }
-                                        _priceController.text = copy;
-
-                                        // đưa cursor về chỗ hợp lý
-                                        // if (cursorPos.start > _priceController.text.length) {
-                                        cursorPos = new TextSelection.fromPosition(new TextPosition(offset: _priceController.text.length));
-                                        // } else {
-                                        //   cursorPos = new TextSelection.fromPosition(
-                                        //       new TextPosition(offset: _priceController.text.length + 1));
-                                        // }
-                                        _priceController.selection = cursorPos;
-                                      },
-                                      validator: (String value) {
-                                        if (value.isEmpty) {
-                                          return 'Số tiền không được để trống';
-                                        }
-                                        if (double.parse(value.replaceAll(new RegExp(r'[^0-9]'), '')) == 0) {
-                                          return 'Số tiền không hợp lệ';
-                                        }
-                                        return null;
-                                      },
-                                    ),
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 10),
-                            child: TextFormField(
-                              controller: _datetimeController,
-                              showCursor: true,
-                              readOnly: true,
-                              // keyboardType: TextInputType.datetime,
-                              decoration: myInputDecoration('Bạn chưa chọn thời gian', inputBorder: Colors.black26),
-                              onTap: () {
-                                _selectDatetime();
-                              },
-                              validator: (String value) {
-                                return null;
-                              },
-                            ),
-                          ),
-                          Container(
-                            margin: EdgeInsets.symmetric(vertical: 10),
-                            padding: EdgeInsets.symmetric(horizontal: 10),
-                            decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), border: Border.all(width: 1, color: Colors.black26)),
-                              child: Consumer<CatsProvider>(
-                                  builder: (context, catsProvider, child) {
-                                    return DropdownButtonFormField(
-                                      hint: Text('Chọn hạng mục chi tiêu'),
-                                      decoration: InputDecoration(
-                                        enabledBorder: InputBorder.none,
+          FocusManager.instance.primaryFocus.unfocus();
+        },
+        child: ScaffoldMessenger(
+          key: _scaffoldKey,
+          child: Scaffold(
+            appBar: mySimpleAppBar('Thêm giao dịch mới'),
+            // backgroundColor: Colors.transparent,
+            body: SingleChildScrollView(
+              child: Container(
+                margin: const EdgeInsets.fromLTRB(10, 0, 10, 20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10, bottom: 20.0),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 10.0),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), border: Border.all(width: 1, color: Colors.black26)),
+                                    child: DropdownButtonHideUnderline(
+                                      child: DropdownButton(
+                                        value: _currentType,
+                                        items: _txTypeMenuItems,
+                                        onChanged: changeType,
+                                        onTap: () {
+                                          FocusManager.instance.primaryFocus.unfocus();
+                                        },
                                       ),
-                                      value: _currentCategory == null ? catsProvider.fullList[0].id : _currentCategory,
-                                      items: catsProvider.fullList
-                                          .map<DropdownMenuItem<String>>((Categories cat) {
-                                        IconCustom selectedIcon = _iconList.firstWhere(
-                                                (element) => element.id == cat.iconID,
-                                            orElse: () => new IconCustom(
-                                                id: '', name: '', color: '', backgroundColor: ''));
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Container(
+                                      margin: EdgeInsets.only(left: 10),
+                                      child: TextFormField(
+                                        controller: _priceController,
+                                        keyboardType: TextInputType.number,
+                                        decoration: myInputDecoration('Số tiền', inputBorder: Colors.black26, suffix: Text(formatter.currencySymbol)),
+                                        style: TextStyle(color: _currentType == 'Chi' ? Colors.red : Colors.green),
+                                        onChanged: (value) {
+                                          TextSelection cursorPos = _priceController.selection;
 
-                                        return DropdownMenuItem(
-                                          child: Row(
-                                            children: [
-                                              Container(
-                                                width: 28,
-                                                height: 28,
-                                                child: myCircleIcon(
-                                                    selectedIcon.name,
-                                                    selectedIcon.backgroundColor,
-                                                    selectedIcon.color,
-                                                    size: 16)),
-                                              Padding(
-                                                padding: const EdgeInsets.only(left: 10.0),
-                                                child: Text(cat.name),
-                                              ),
-                                            ],
-                                          ),
-                                          value: cat.id,
-                                        );
-                                      }).toList(),
-                                      onChanged: changeCat,
-                                      onTap: () {
-                                        FocusManager.instance.primaryFocus
-                                            .unfocus();
-                                      },
-                                    );
-                                  })
-                          ),
-                          Container(
-                            margin: EdgeInsets.symmetric(vertical: 10),
-                            padding: EdgeInsets.symmetric(horizontal: 10),
-                            decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), border: Border.all(width: 1, color: Colors.black26)),
-                            child: Consumer<EventsProvider>(
-                                builder: (context, eventsProvider, child) {
+                                          String copy = value.replaceAll(new RegExp(r'[^0-9]'), ''); // bỏ tất cả chỉ giữ lại số
+                                          try {
+                                            copy = formatMoneyWithoutSymbol(double.parse(copy));
+                                          } on FormatException {
+                                            copy = '0';
+                                          }
+                                          _priceController.text = copy;
+
+                                          // đưa cursor về chỗ hợp lý
+                                          // if (cursorPos.start > _priceController.text.length) {
+                                          cursorPos = new TextSelection.fromPosition(new TextPosition(offset: _priceController.text.length));
+                                          // } else {
+                                          //   cursorPos = new TextSelection.fromPosition(
+                                          //       new TextPosition(offset: _priceController.text.length + 1));
+                                          // }
+                                          _priceController.selection = cursorPos;
+                                        },
+                                        validator: (String value) {
+                                          if (value.isEmpty) {
+                                            return 'Số tiền không được để trống';
+                                          }
+                                          if (double.parse(value.replaceAll(new RegExp(r'[^0-9]'), '')) == 0) {
+                                            return 'Số tiền không hợp lệ';
+                                          }
+                                          return null;
+                                        },
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 10),
+                              child: TextFormField(
+                                controller: _datetimeController,
+                                showCursor: true,
+                                readOnly: true,
+                                // keyboardType: TextInputType.datetime,
+                                decoration: myInputDecoration('Bạn chưa chọn thời gian', inputBorder: Colors.black26),
+                                onTap: () {
+                                  _selectDatetime();
+                                },
+                                validator: (String value) {
+                                  return null;
+                                },
+                              ),
+                            ),
+                            Container(
+                                margin: EdgeInsets.symmetric(vertical: 10),
+                                padding: EdgeInsets.symmetric(horizontal: 10),
+                                decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), border: Border.all(width: 1, color: Colors.black26)),
+                                child: Consumer<CatsProvider>(builder: (context, catsProvider, child) {
+                                  // catsProvider.fullList.indexWhere((element) => element.id == _currentCategory) == -1 ? s
+                                  return DropdownButtonFormField(
+                                    hint: Text('Chọn hạng mục chi tiêu'),
+                                    decoration: InputDecoration(
+                                      enabledBorder: InputBorder.none,
+                                    ),
+                                    value: _currentCategory == null ? catsProvider.fullList[0].id : _currentCategory,
+                                    items: catsProvider.fullList.map<DropdownMenuItem<String>>((Categories cat) {
+                                      IconCustom selectedIcon = _iconList.firstWhere((element) => element.id == cat.iconID,
+                                          orElse: () => new IconCustom(id: '', name: '', color: '', backgroundColor: ''));
+
+                                      return DropdownMenuItem(
+                                        child: Row(
+                                          children: [
+                                            Container(width: 28, height: 28, child: myCircleIcon(selectedIcon.name, selectedIcon.backgroundColor, selectedIcon.color, size: 16)),
+                                            Padding(
+                                              padding: const EdgeInsets.only(left: 10.0),
+                                              child: Text(cat.name),
+                                            ),
+                                          ],
+                                        ),
+                                        value: cat.id,
+                                      );
+                                    }).toList(),
+                                    onChanged: (value) {
+                                      print(catsProvider.fullList);
+                                      if(catsProvider.fullList.indexWhere((element) => element.id == value) == -1) {
+                                        print('có');
+                                        changeCat(catsProvider.fullList[0].id);
+                                        return;
+                                      }
+                                      print('ko');
+                                      changeCat(value);
+                                    },
+                                    onTap: () {
+                                      FocusManager.instance.primaryFocus.unfocus();
+                                    },
+                                  );
+                                })),
+                            Container(
+                                margin: EdgeInsets.symmetric(vertical: 10),
+                                padding: EdgeInsets.symmetric(horizontal: 10),
+                                decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), border: Border.all(width: 1, color: Colors.black26)),
+                                child: Consumer<EventsProvider>(builder: (context, eventsProvider, child) {
                                   return DropdownButtonFormField(
                                     hint: Text('Chọn sự kiện'),
                                     decoration: InputDecoration(
                                       enabledBorder: InputBorder.none,
                                     ),
                                     value: _currentEvent,
-                                    items: eventsProvider.eventList
-                                        .map<DropdownMenuItem<String>>((Events event) {
+                                    items: eventsProvider.eventList.map<DropdownMenuItem<String>>((Events event) {
                                       return DropdownMenuItem(child: Text(event.name), value: event.id);
                                     }).toList(),
                                     onChanged: (value) {
@@ -248,45 +244,41 @@ class _AddTransactionState extends State<AddTransaction> {
                                       });
                                     },
                                     onTap: () {
-                                      FocusManager.instance.primaryFocus
-                                          .unfocus();
+                                      FocusManager.instance.primaryFocus.unfocus();
                                     },
                                   );
-                                })
-
-                          ),
-                          Container(
-                            margin: EdgeInsets.symmetric(vertical: 10),
-                            child: TextFormField(
-                              maxLines: 5,
-                              maxLength: 500,
-                              controller: _descriptionController,
-                              decoration: myInputDecoration('Mô tả', inputBorder: Colors.black26),
-                              validator: (String value) {
-                                if (value.length > 500) {
-                                  return 'Mô tả không được quá 500 ký tự';
-                                }
-                                return null;
-                              },
-                            ),
-                          )
-                        ],
+                                })),
+                            Container(
+                              margin: EdgeInsets.symmetric(vertical: 10),
+                              child: TextFormField(
+                                maxLines: 5,
+                                maxLength: 500,
+                                controller: _descriptionController,
+                                decoration: myInputDecoration('Mô tả', inputBorder: Colors.black26),
+                                validator: (String value) {
+                                  if (value.length > 500) {
+                                    return 'Mô tả không được quá 500 ký tự';
+                                  }
+                                  return null;
+                                },
+                              ),
+                            )
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                  myFullWidthButton('Thêm giao dịch', backgroundColor: primary, action: () {
-                    if (_formKey.currentState.validate()) {
-                      showSnack(_scaffoldKey, 'Đang xử lý...');
-                      handleAddTx();
-                    }
-                  })
-                ],
+                    myFullWidthButton('Thêm giao dịch', backgroundColor: primary, action: () {
+                      if (_formKey.currentState.validate()) {
+                        showSnack(_scaffoldKey, 'Đang xử lý...');
+                        handleAddTx();
+                      }
+                    })
+                  ],
+                ),
               ),
             ),
           ),
-        ),
-      )
-    );
+        ));
   }
 
   void _selectDatetime() async {
@@ -304,8 +296,12 @@ class _AddTransactionState extends State<AddTransaction> {
       initialDatePickerMode: DatePickerMode.day,
     );
 
-    final TimeOfDay pickedTime =
-        await showTimePicker(context: context, initialTime: TimeOfDay(hour: _selectedDatetime.hour, minute: _selectedDatetime.minute), helpText: 'Chọn giờ giao dịch', cancelText: 'Hủy', confirmText: 'Chọn');
+    final TimeOfDay pickedTime = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay(hour: _selectedDatetime.hour, minute: _selectedDatetime.minute),
+        helpText: 'Chọn giờ giao dịch',
+        cancelText: 'Hủy',
+        confirmText: 'Chọn');
 
     if (picked != null && pickedTime != null) {
       DateTime result = DateTime(picked.year, picked.month, picked.day, pickedTime.hour, pickedTime.minute);
@@ -329,6 +325,7 @@ class _AddTransactionState extends State<AddTransaction> {
   }
 
   void changeCat(String selectedType) {
+    print('332 $selectedType');
     setState(() {
       _currentCategory = selectedType;
     });

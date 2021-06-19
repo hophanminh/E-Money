@@ -126,8 +126,10 @@ class _IndividualWalletState extends State<IndividualWallet> {
                       return SingleChildScrollView(
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.start,
                           children: <Widget>[
                             Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
                               children: [
                                 Container(
                                   padding: EdgeInsets.all(20),

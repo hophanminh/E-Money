@@ -44,7 +44,7 @@ export default function Dashboard() {
   const classes = useStyles();
   const socket = getSocket();
   const { info } = useContext(MyContext);
-  const { setWalletID, selected, setSelected, list, setList, filterList, updateSelected, updateTxCategory } = useContext(WalletContext);
+  const { setWalletID, selected, setSelected, list, setList, filterList, updateTxCategory } = useContext(WalletContext);
   const { setOpen } = useContext(PopupContext);
   const { setAllList } = useContext(CategoryContext);
   const { setEventList } = useContext(EventContext);
@@ -105,11 +105,6 @@ export default function Dashboard() {
       setOpen(null);
     }
   }, [info]);
-
-  useEffect(() => {
-    updateSelected();
-  }, [list])
-
 
   // add transaction
   const handleOpenAddDialog = () => {
