@@ -4,6 +4,7 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
+  useHistory
 } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -79,10 +80,13 @@ const useStyles = makeStyles((theme) => ({
 
 function App() {
   const classes = useStyles();
-
+  const history = useHistory();
+  
   const { isLoggedIn } = useContext(MyContext);
   if (isLoggedIn) {
     getListIcon();
+  } else {
+    history.push('/signin')
   }
 
   return (
