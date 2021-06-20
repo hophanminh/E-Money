@@ -351,7 +351,7 @@ class _AddTransactionState extends State<AddTransaction> {
       'catID': _currentCategory == null ? fullList[0].id : _currentCategory,
       'eventID': _currentEvent,
       'price': _currentType == 'Chi' ? price * -1 : price,
-      'time': _selectedDatetime.toIso8601String(),
+      'time': _selectedDatetime.toUtc().toIso8601String(),
       'description': _descriptionController.text
     };
 
