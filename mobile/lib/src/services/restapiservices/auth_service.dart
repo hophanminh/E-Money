@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:mobile/src/config/config.dart';
+import 'package:mobile/src/services/create_uri_service.dart';
 import 'package:mobile/src/services/secure_storage_service.dart';
 
 class AuthService {
