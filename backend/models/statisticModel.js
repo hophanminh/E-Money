@@ -43,6 +43,6 @@ module.exports = {
     FROM Transactions T JOIN Teams ON Teams.WalletID = T.WalletID LEFT JOIN Users U ON U.ID = T.UserID
     WHERE Teams.ID = '${teamID}' AND MONTH(T.DateAdded) = ${month} AND YEAR(T.DateAdded) = ${year}
     GROUP BY U.Name
-    ORDER BY U.ID
+    ORDER BY Money DESC
   `)
 }
