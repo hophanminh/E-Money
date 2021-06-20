@@ -48,7 +48,6 @@ class _TeamListState extends State<TeamList> {
 
   @override
   Widget build(BuildContext context) {
-    print(_isLoading);
     return GestureDetector(
         onTap: () {
           FocusManager.instance.primaryFocus.unfocus();

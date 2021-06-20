@@ -92,7 +92,6 @@ class _DeleteTransactionDialogState extends State<DeleteTransactionDialog> {
   }
 
   void handleDeleteTx() async {
-    print('delete tx');
     Socket socket = await getSocket();
 
     String walletID = Provider.of<UsersProvider>(context, listen: false).info.walletID;

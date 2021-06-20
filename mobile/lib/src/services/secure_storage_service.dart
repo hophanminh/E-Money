@@ -6,7 +6,6 @@ class SecureStorage {
 
   static Future writeSecureData(String key, String value)  async {
     var writeData = await _storage.write(key: key, value: value);
-    // print(_storage.readAll().then((value) => print(value.length)));
     return writeData;
   }
   static Future readSecureData(String key) async {
@@ -20,7 +19,6 @@ class SecureStorage {
 
   static Future deleteAllSecureData() async {
     var result = await _storage.deleteAll();
-    // print(_storage.readAll().then((value) => print(value.length)));
     return result;
   }
 }

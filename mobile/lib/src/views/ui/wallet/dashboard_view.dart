@@ -41,7 +41,6 @@ class _DashboardState extends State<Dashboard> {
     _socket = await getSocket();
 
     _socket.emitWithAck('get_notification', {'userID': userID, 'limit': Properties.AMOUNT_TO_LOAD_PER_TIME}, ack: (data) {
-      print('87 - ${data['count']}');
       notificationProvider.fetchData(data);
     });
 

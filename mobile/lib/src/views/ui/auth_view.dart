@@ -75,7 +75,6 @@ class _AuthenPageState extends State<AuthenPage> with TickerProviderStateMixin {
     }
 
     Map<String, dynamic> body = jsonDecode(res.body);
-    print(body['user']);
     Provider.of<UsersProvider>(context, listen: false).loadData(body['user'], body['token']);
     setState(() {
       widget.setUser(new Map<String, dynamic>.from(body['user']));

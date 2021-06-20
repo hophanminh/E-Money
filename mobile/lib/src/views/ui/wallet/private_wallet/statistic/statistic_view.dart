@@ -40,6 +40,9 @@ class _StatisticState extends State<Statistic> {
   }
 
   handleSelectMonth(DateTime date) async {
+    setState(() {
+      _isLoading = true;
+    });
     bool nothingToShow = false;
     String toString = convertToYYYYMMDD(date.toString());
     List<Response> responses = await Future.wait(
@@ -66,6 +69,8 @@ class _StatisticState extends State<Statistic> {
                 data: _barChartData,
                 labelAccessorFn: (dynamic data, _) => '${formatMoneyWithoutSymbol(data['Money'].abs())}')
           ];
+
+          _isLoading = false;
         });
       }
       return;
@@ -132,6 +137,8 @@ class _StatisticState extends State<Statistic> {
             colorFn: (_, index) => charts.MaterialPalette.deepOrange.makeShades(spentPieChartDataBody['chartData'].length)[index],
             insideLabelStyleAccessorFn: (_, __) => charts.TextStyleSpec(color: charts.MaterialPalette.black))
       ];
+
+      _isLoading = false;
     });
   }
 
@@ -161,11 +168,6 @@ class _StatisticState extends State<Statistic> {
 
       handleSelectMonth(_selectedDate);
 
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
     });
   }
 
@@ -265,12 +267,12 @@ class _StatisticState extends State<Statistic> {
               child: Container(
                 padding: EdgeInsets.only(top: 20, bottom: 20, right: 6, left: 5),
                 width: MediaQuery.of(context).size.width,
-                child: Column(
+                child: _isLoading
+                    ? Center(child: CircularProgressIndicator())
+                    : Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    _isLoading
-                        ? Container()
-                        : FittedBox(
+                    FittedBox(
                             child: Container(
                                 constraints: BoxConstraints(maxWidth: 450),
                                 padding: EdgeInsets.all(10),

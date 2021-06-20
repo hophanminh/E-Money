@@ -210,13 +210,10 @@ class _AddTransactionState extends State<AddTransaction> {
                                       );
                                     }).toList(),
                                     onChanged: (value) {
-                                      print(catsProvider.fullList);
                                       if(catsProvider.fullList.indexWhere((element) => element.id == value) == -1) {
-                                        print('có');
                                         changeCat(catsProvider.fullList[0].id);
                                         return;
                                       }
-                                      print('ko');
                                       changeCat(value);
                                     },
                                     onTap: () {
@@ -313,7 +310,6 @@ class _AddTransactionState extends State<AddTransaction> {
       setState(() {
         _selectedDatetime = result;
       });
-      print(result);
       _datetimeController.text = convertToDDMMYYYYHHMM(result.toString());
     }
   }
@@ -325,7 +321,6 @@ class _AddTransactionState extends State<AddTransaction> {
   }
 
   void changeCat(String selectedType) {
-    print('332 $selectedType');
     setState(() {
       _currentCategory = selectedType;
     });
@@ -351,7 +346,6 @@ class _AddTransactionState extends State<AddTransaction> {
       'description': _descriptionController.text
     };
 
-    print(newTx['time']);
 
     showSnack(_scaffoldKey, 'Đang xử lý...');
     String walletID = Provider.of<UsersProvider>(context, listen: false).info.walletID;
@@ -359,8 +353,5 @@ class _AddTransactionState extends State<AddTransaction> {
       Navigator.pop(context);
       showSnack(widget.wrappingScaffoldKey, "Thêm thành công");
     });
-    // for (String key in newTx.keys) {
-    //   print('${key} - ${newTx[key]}');
-    // }
   }
 }

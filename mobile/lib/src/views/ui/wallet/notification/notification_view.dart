@@ -30,7 +30,6 @@ class _NotificationsPageState extends State<NotificationsPage> {
   }
 
   void _loadMoreNotification() async {
-    print('load more notification');
     Socket socket = await getSocket();
     NotificationProvider notificationProvider = Provider.of<NotificationProvider>(context, listen: false);
     UsersProvider usersProvider = Provider.of<UsersProvider>(context, listen: false);

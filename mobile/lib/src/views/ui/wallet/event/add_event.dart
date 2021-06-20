@@ -195,7 +195,6 @@ class _AddEventState extends State<AddEvent> {
                             );
                           }).toList(),
                           onChanged: (value) {
-                            print(value);
                             _handleChangeEventType(value);
                           },
                           onTap: () {
@@ -555,9 +554,7 @@ class _AddEventState extends State<AddEvent> {
       'Description': '', //_descriptionController.text,
       'StartTime': _selectedStartDatetime.toUtc().toIso8601String(),
     };
-    print(newEvent);
 
-    print(DateTime.parse(newEvent['StartTime']));
     showSnack(_scaffoldKey, 'Đang xử lý...');
     socket.emitWithAck('add_event', {'walletID': widget.walletID, 'newEvent': newEvent}, ack: () {
       Navigator.pop(context);

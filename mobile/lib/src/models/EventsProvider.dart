@@ -11,7 +11,6 @@ class EventsProvider extends ChangeNotifier {
   Events _selected;
 
   Future<bool> fetchData(Map<String, dynamic> body) async {
-    print(body['eventList']);
     List<Events> eventList = [];
     for (int i = 0; i < body['eventList'].length; i++) {
       eventList.add(Events.fromJson(body['eventList'][i]));

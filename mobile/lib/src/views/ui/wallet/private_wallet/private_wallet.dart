@@ -51,8 +51,6 @@ class _IndividualWalletState extends State<IndividualWallet> {
     _socket = await getSocket();
 
     _socket.emitWithAck('get_transaction', {'walletID': walletID}, ack: (data) {
-      //{ transactionList, total, spend, receive }
-      // print(data);
       walletsProvider.fetchData(data);
       if (mounted) {
         setState(() {
@@ -98,7 +96,6 @@ class _IndividualWalletState extends State<IndividualWallet> {
 
   @override
   void dispose() {
-    // print('wait_for_update_transaction_$walletID');
     _socket.off('wait_for_update_transaction_$walletID');
     _socket.off('wait_for_update_category_$walletID');
     _socket.off('wait_for_update_event_$walletID');
@@ -466,7 +463,6 @@ class _IndividualWalletState extends State<IndividualWallet> {
             PopupMenuItem(child: _createAppbaPopupMenuItemDetail("Thống kê ví", Icon(Icons.bar_chart_outlined, color: Colors.black)), value: "3"),
           ],
           onSelected: (route) {
-            print(route);
             // Note You must create respective pages for navigation
             String walletId = Provider.of<UsersProvider>(context, listen: false).info.walletID;
 

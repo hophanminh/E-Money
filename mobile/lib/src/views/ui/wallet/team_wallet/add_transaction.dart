@@ -318,7 +318,6 @@ class _AddTransactionState extends State<AddTransaction> {
       setState(() {
         _selectedDatetime = result;
       });
-      print(result);
       _datetimeController.text = convertToDDMMYYYYHHMM(result.toString());
     }
   }
@@ -361,8 +360,5 @@ class _AddTransactionState extends State<AddTransaction> {
       Navigator.pop(context);
       showSnack(widget.wrappingScaffoldKey, "Thêm thành công");
     });
-    // for (String key in newTx.keys) {
-    //   print('${key} - ${newTx[key]}');
-    // }
   }
 }

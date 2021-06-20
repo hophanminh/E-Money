@@ -40,7 +40,6 @@ class _TxChangedDiaryDialogState extends State<TxChangedDiaryDialog> {
     Transactions _selected = walletsProvider.selected;
     Socket socket = await getSocket();
     socket.emitWithAck('get_history_transaction', {'walletID': widget.walletID, 'transactionID': _selected.id}, ack: (data) {
-      print(data['historyList']);
       if (mounted) {
         setState(() {
           _versionList = data['historyList'];
@@ -105,7 +104,7 @@ class _TxChangedDiaryDialogState extends State<TxChangedDiaryDialog> {
                                             style: TextStyle(fontWeight: FontWeight.bold),
                                           ),
                                         ),
-                                        Expanded(child: Text(convertToHHMMDDMMYYYY(e['DateModified']))),
+                                        Expanded(child: Text(convertToDDMMYYYYHHMM(e['DateModified']))),
                                         Column(
                                           children: [
                                             TextButton(

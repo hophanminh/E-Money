@@ -91,7 +91,6 @@ class _DeleteEventDialogState extends State<DeleteEventDialog> {
   }
 
   void handleDeleteEvent() async {
-    print('stop event');
 
     Socket socket = await getSocket();
     socket.emitWithAck('end_event', {'walletID': widget.walletID, 'id': widget.eventID}, ack: () {
