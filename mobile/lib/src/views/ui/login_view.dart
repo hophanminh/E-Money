@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -35,9 +36,15 @@ class _LoginPageState extends State<LoginPage> {
 
   void handleLogin() async {
     FocusScope.of(context).unfocus();
-     http.Response res = await AuthService.instance
-         .signin(usernameController.text, passwordController.text);
-    //http.Response res = await AuthService.instance.signin("admin", "123456");
+    http.Response res;
+    try {
+      res = await AuthService.instance.signin(usernameController.text, passwordController.text);
+      //http.Response res = await AuthService.instance.signin("admin", "123456");
+    } on SocketException catch (e) {
+      print('cannot reach server');
+      showSnack(_scaffoldKey, 'Không thể kết nối đến máy chủ', duration: 5);
+      return;
+    }
 
     Map<String, dynamic> body = jsonDecode(res.body);
 
@@ -48,8 +55,7 @@ class _LoginPageState extends State<LoginPage> {
     await SecureStorage.writeSecureData('jwtToken', body['token']);
     await SecureStorage.writeSecureData('userID', body['user']['ID']);
     // need to store 'user' in global state ==> not done
-    Provider.of<UsersProvider>(context, listen: false)
-        .loadData(body['user'], body['token']);
+    Provider.of<UsersProvider>(context, listen: false).loadData(body['user'], body['token']);
     widget.setUser(body['user']);
     Navigator.pushNamedAndRemoveUntil(context, '/dashboard', (route) => false);
   }
