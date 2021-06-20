@@ -25,7 +25,7 @@
   "HOST": {
     "LOCAL": "http://localhost:3000",
     "ONLINE": "",
-    "CURRENT": "https://e-money-web.herokuapp.com"
+    "CURRENT": "http://localhost:3000"
   },
   "PORT": 9000,
   "PASSPORTKEY": "whatdoyoumean",
