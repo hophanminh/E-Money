@@ -48,6 +48,7 @@ module.exports = function (socket, io, decoded_userID) {
         WalletID: walletID,
         UserID: decoded_userID,
       }
+      console.log(newTransaction.time, convertToRegularDateTime(newTransaction.time))
       await transactionModel.addTransaction(temp);
       await walletModel.updateTotalWallet(newTransaction.price, walletID);
 
