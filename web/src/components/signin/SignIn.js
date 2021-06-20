@@ -199,8 +199,8 @@ export default function SignIn() {
                 </Grid>
 
               </Hidden>
-              <Grid item xs={12} sm={10} md={6}>
-                <div style={{ ...styles.shadow, ...styles.paper, width: '90%' }}>
+              <Grid item xs={12} sm={10} md={6} align="center">
+                <div style={{ ...styles.shadow, ...styles.paper, width: '100%' }}>
                   <Typography style={{ color: Palette.primary, fontWeight: 'bold' }} variant='h5'>Đăng nhập tài khoản</Typography>
                   <div style={{ margin: '20px 0 20px' }}>
                     <TextField label="Tên tài khoản" variant="outlined"

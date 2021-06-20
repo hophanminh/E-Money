@@ -246,7 +246,7 @@ const TeamDashBoard = () => {
         </Box>
         <div className={classes.body}>
           <Grid container spacing={5} className={classes.grid}>
-            <Grid item lg={3} sm={12} >
+            <Grid item lg={3} sm={12} xs={12}>
               <Box
                 boxShadow={3}
                 bgcolor="background.paper"
@@ -261,7 +261,7 @@ const TeamDashBoard = () => {
               </Box>
             </Grid>
 
-            <Grid item lg={3} sm={12} >
+            <Grid item lg={3} sm={12} xs={12}>
               <Box
                 boxShadow={3}
                 bgcolor="background.paper"
@@ -276,7 +276,7 @@ const TeamDashBoard = () => {
               </Box>
             </Grid>
 
-            <Grid item lg={3} sm={12} >
+            <Grid item lg={3} sm={12} xs={12}>
               <Box
                 boxShadow={3}
                 bgcolor="background.paper"
@@ -291,7 +291,7 @@ const TeamDashBoard = () => {
               </Box>
             </Grid>
 
-            <Grid item lg={3} sm={12} >
+            <Grid item lg={3} sm={12} xs={12}>
               <Box
                 boxShadow={3}
                 bgcolor="background.paper"
@@ -309,7 +309,7 @@ const TeamDashBoard = () => {
 
           </Grid>
           <Grid container spacing={5} alignItems="stretch" className={classes.lowerGrid}>
-            <Grid item lg={3} sm={12}>
+            <Grid item lg={3} sm={12} xs={12}>
               <Box
                 boxShadow={3}
                 bgcolor="background.paper"
@@ -329,7 +329,7 @@ const TeamDashBoard = () => {
               </Box>
             </Grid>
 
-            <Grid item lg={6} sm={12}>
+            <Grid item lg={6} sm={12} xs={12}>
               <Box
                 boxShadow={3}
                 bgcolor="background.paper"

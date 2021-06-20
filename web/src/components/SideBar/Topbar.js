@@ -7,6 +7,7 @@ import {
   Typography,
   IconButton,
   ListItem,
+  useMediaQuery,
   makeStyles
 } from '@material-ui/core';
 
@@ -22,6 +23,7 @@ const drawerWidth = 240;
 function Topbar(props) {
   const classes = useStyles();
   const { setIsLoggedIn, info } = useContext(MyContext);
+  const matches = useMediaQuery('(min-width:600px)');
 
   const logOut = (e) => {
     localStorage.removeItem("jwtToken");
@@ -47,15 +49,17 @@ function Topbar(props) {
               <MenuIcon />
             </IconButton>
           </div>
-          <ListItem button component={NavLink} to="/" className={`${classes.button} ${classes.brandText}`}>
-            {`E-Money`}
-          </ListItem>
+          {matches &&
+            <ListItem button component={NavLink} to="/" className={`${classes.button} ${classes.brandText}`}>
+              {`E-Money`}
+            </ListItem>
+          }
         </div>
         <div className={classes.topBarButton}>
           {(
             <>
               <ListItem button component={NavLink} to="/profile" className={classes.button}>
-                <Typography style={{ marginRight: '10px' }}>{info.Name}</Typography>
+                {matches && <Typography style={{ marginRight: '10px' }}>{info.Name}</Typography>}
                 <img src={info.AvatarURL ? info.AvatarURL : defaultAvatar} className={`${classes.avatarImg}`}></img>
               </ListItem>
             </>

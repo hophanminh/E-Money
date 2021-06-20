@@ -24,7 +24,9 @@ function PrivateRoute({ children, ...rest }) {
               )
           )
           : (
-            <CircularProgress />
+            <div style={{ height: '100%', marginTop: '100px',display: "flex", justifyContent: 'center', alignItems: 'center'}}>
+              <CircularProgress />
+            </div>
           )
       }
     />

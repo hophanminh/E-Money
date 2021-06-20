@@ -97,7 +97,7 @@ class WalletsProvider extends ChangeNotifier {
         {
           String searchStr = this._searchString.toLowerCase();
           if (searchStr != '') {
-            return this._txList.where((i) => i.categoryName.toLowerCase().contains(searchStr)).toList();
+            return this._txList.where((i) => i.categoryName.toLowerCase().contains(searchStr) || i.description.toLowerCase().contains(searchStr)).toList();
           }
           return this._txList;
         }
