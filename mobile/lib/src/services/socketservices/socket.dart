@@ -2,7 +2,7 @@ import 'package:mobile/src/config/config.dart';
 import 'package:mobile/src/services/secure_storage_service.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
-const API_URL = Properties.IS_HTTPS ? 'https://' + Properties.API_LOCAL : 'http://' + Properties.API_LOCAL;
+const API_URL = 'http://' + Properties.API_LOCAL;
 IO.Socket socket = null;
 
 // startSocket() async {
@@ -20,7 +20,7 @@ IO.Socket socket = null;
 // }
 
 clearSocket() {
-  if (socket != null) {
+  if(socket != null) {
     socket.close();
     socket = null;
   }
