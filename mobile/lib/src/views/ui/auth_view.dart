@@ -64,8 +64,8 @@ class _AuthenPageState extends State<AuthenPage> with TickerProviderStateMixin {
       setState(() {
         authenMessage = 'Không thể kết nối đến máy chủ';
       });
-      return;
-
+      await Future.delayed(const Duration(seconds: 1), () {});
+      res = null;
     }
 
     if (res == null || res.statusCode != 200) {

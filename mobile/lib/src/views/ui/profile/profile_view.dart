@@ -43,8 +43,6 @@ class _ProfilePageState extends State<ProfilePage> {
       });
       _dobController.text = convertToDDMMYYYY(_info.dateOfBirth);
     } else {
-      print(_selectedDate.toString());
-      print(_selectedDate.toIso8601String());
       _dobController.text = convertToDDMMYYYY(_selectedDate.toLocal().toString());
     }
   }
@@ -74,7 +72,7 @@ class _ProfilePageState extends State<ProfilePage> {
     FocusScope.of(context).unfocus();
     String name = _nameController.text;
     String email = _emailController.text;
-    String dob = _selectedDate.toIso8601String();
+    String dob = _selectedDate.toUtc().toIso8601String();
     Response res = await UserService.instance.changeInfo(name, email, dob);
 
     if (res.statusCode == 200) {
@@ -327,15 +325,10 @@ class _ProfilePageState extends State<ProfilePage> {
       errorInvalidText: 'Ngày sinh không hợp lệ',
       initialDatePickerMode: DatePickerMode.year,
     );
-    print(picked);
     if (picked != null && picked != _selectedDate) {
       setState(() {
         _selectedDate = picked;
       });
-      print('307');
-      print(picked.toString());
-      print(picked.toIso8601String());
-      print(picked.toLocal().toString());
       _dobController.text = convertToDDMMYYYY(picked.toUtc().toIso8601String());
     }
   }

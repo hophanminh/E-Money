@@ -546,14 +546,14 @@ class _AddEventState extends State<AddEvent> {
     CatsProvider catsProvider = Provider.of<CatsProvider>(context, listen: false);
     final Map<String, dynamic> newEvent = {
       'Name': _nameController.text,
-      'StartDate': DateTime.now().toIso8601String(),
-      'EndDate': _currentEndDateType == 'true' ? _selectedEndDatetime.toIso8601String() : null,
+      'StartDate': DateTime.now().toUtc().toIso8601String(),
+      'EndDate': _currentEndDateType == 'true' ? _selectedEndDatetime.toUtc().toIso8601String() : null,
       'Value': finalValue == null ? 0 : int.parse(finalValue),
       'ExpectingAmount': _currentTxType == 'Chi' ? price * -1 : price,
       'CategoryID': _currentCategory == null ? catsProvider.fullList[0].id : _currentCategory,
       'EventTypeID': _currentEventType == null ? eventsProvider.eventTypeList[0].id : _currentEventType,
       'Description': '', //_descriptionController.text,
-      'StartTime': _selectedStartDatetime.toIso8601String(),
+      'StartTime': _selectedStartDatetime.toUtc().toIso8601String(),
     };
     print(newEvent);
 

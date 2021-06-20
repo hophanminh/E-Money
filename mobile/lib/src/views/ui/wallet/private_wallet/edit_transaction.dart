@@ -355,19 +355,11 @@ class _EditTransactionState extends State<EditTransaction> {
       showSnack(_scaffoldKey, 'Số tiền không hợp lệ');
       return;
     }
-    //
-    // final Map<String, dynamic> newTx = {
-    //   'catID': _currentCategory,
-    //   'eventID': _currentEvent,
-    //   'price': _currentType == 'Chi' ? price * -1 : price,
-    //   'time': _selectedDate.toIso8601String(),
-    //   'description': _descriptionController.text
-    // };
 
     _clonedTx.catID = _currentCategory;
     _clonedTx.eventID = _currentEvent;
     _clonedTx.price = _currentType == 'Chi' ? price * -1 : price;
-    _clonedTx.time = _selectedDatetime.toIso8601String();
+    _clonedTx.time = _selectedDatetime.toUtc().toIso8601String();
     _clonedTx.description = _descriptionController.text;
 
     showSnack(_scaffoldKey, 'Đang xử lý...');
