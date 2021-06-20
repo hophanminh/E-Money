@@ -116,7 +116,6 @@ class WalletsProvider extends ChangeNotifier {
 
           if (_searchMonth.isNotEmpty) {
             int _month = int.parse(this._searchMonth);
-            print(_month);
             result = result.where((element) => parseInput(element.time).month == _month).toList();
           }
 

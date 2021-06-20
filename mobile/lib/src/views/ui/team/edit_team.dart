@@ -180,8 +180,6 @@ class _EditTeamState extends State<EditTeam> {
 
     Response res =
         await TeamService.instance.editTeam(name, max, description, teamId);
-    print(res.statusCode);
-    print(res.body);
     if (res.statusCode == 200) {
       Provider.of<TeamsProvider>(context, listen: false).fetchData();
       Navigator.pop(context, true); // trở về private wallet

@@ -61,7 +61,6 @@ class _ViewTransactionState extends State<ViewTransaction> {
 
     _socket = await getSocket();
     _socket.emitWithAck('get_transaction_image', {'TransactionID': widget.txId}, ack: (data) {
-      // print(_sortImageList(data['imageList'])[0]);
       if (!mounted) {
         return;
       }
@@ -74,7 +73,6 @@ class _ViewTransactionState extends State<ViewTransaction> {
       if (!mounted) {
         return;
       }
-      print('CÓ ẢNH MỚI DC THÊM');
       List<dynamic> concatenatedList = List<dynamic>.from(_imageList);
       concatenatedList.addAll(data['urls']); // urls là 1 list các map
       setState(() {
@@ -83,7 +81,6 @@ class _ViewTransactionState extends State<ViewTransaction> {
     });
 
     _socket.on('wait_for_remove_transaction_image_${widget.txId}', (data) {
-      print('XÓA ẢNH');
       // data['imageID'] là 1 string
       _removeImgById(data['imageID']);
     });
@@ -306,9 +303,6 @@ class _ViewTransactionState extends State<ViewTransaction> {
                   childAspectRatio: (4 / 4),
                 ),
                 itemBuilder: (context, index) {
-                  // for (String key in _imageList[index].keys) {
-                  //   print('${key} - ${_imageList[index][key]}');
-                  // }
                   if (index == 0) {
                     return GestureDetector(
                       onTap: () {

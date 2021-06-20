@@ -31,7 +31,6 @@ class _ResetDestinationState extends State<ResetDestination> {
 
   void handleSendRequest() async {
     FocusScope.of(context).unfocus();
-    print(widget.resetID);
     Response res = await AuthService.instance.resetPassword(widget.resetID, _verificationCodeController.text, _passwordController.text);
     Map<String, dynamic> body = jsonDecode(res.body);
 

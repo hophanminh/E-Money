@@ -28,8 +28,6 @@ clearSocket() {
 
 Future<IO.Socket> getSocket() async {
   String jwtToken = await SecureStorage.readSecureData('jwtToken');
-  print(socket);
-  print(jwtToken);
   if (socket == null && jwtToken != null) {
     print('starting socket client');
     socket = IO.io(API_URL, <String, dynamic>{

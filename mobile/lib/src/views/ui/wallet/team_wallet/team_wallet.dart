@@ -62,8 +62,6 @@ class _TeamWalletState extends State<TeamWallet> {
     _socket = await getSocket();
 
     _socket.emitWithAck('get_transaction', {'walletID': walletID}, ack: (data) {
-      //{ transactionList, total, spend, receive }
-      // print(data['transactionList'][0]['id']);
       walletsProvider.fetchData(data);
       setState(() {
         _isLoading = false;
@@ -109,7 +107,6 @@ class _TeamWalletState extends State<TeamWallet> {
       return;
     }
     if (body['info']['Role'] == Properties.ROLE_ADMIN && body['info']['Status'] == Properties.ROLE_ACTIVE) {
-      print('hello admin');
       setState(() {
         _roles = true;
       });
@@ -130,7 +127,6 @@ class _TeamWalletState extends State<TeamWallet> {
 
   @override
   void dispose() {
-    // print('wait_for_update_transaction_$walletID');
     _socket.off('wait_for_update_transaction_$walletID');
     _socket.off('wait_for_update_category_$walletID');
     _socket.off('wait_for_update_event_$walletID');

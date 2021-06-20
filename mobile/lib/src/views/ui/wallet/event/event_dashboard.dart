@@ -121,7 +121,6 @@ class _EventDashboardState extends State<EventDashboard> {
   }
 
   _createRunningEventList(Events item) {
-    // print(item.id);
     return Card(
       margin: EdgeInsets.symmetric(vertical: 10),
       child: GestureDetector(

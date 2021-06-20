@@ -206,9 +206,6 @@ class _CategoryDashboardState extends State<CategoryDashboard> {
                     childAspectRatio: (30 / 8),
                   ),
                   itemBuilder: (context, index) {
-                    // for (String key in _defaultList[index].keys) {
-                    //   print('${key} - ${_defaultList[index][key]}');
-                    // }
                     IconCustom selectedIcon =
                         _iconList.firstWhere((element) => element.id == filteredList[index].iconID, orElse: () => new IconCustom(id: '', name: '', color: '', backgroundColor: ''));
 

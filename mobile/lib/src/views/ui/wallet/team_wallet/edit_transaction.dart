@@ -312,7 +312,6 @@ class _EditTransactionState extends State<EditTransaction> {
       initialDatePickerMode: DatePickerMode.day,
     );
 
-    print(_selectedDatetime);
     final TimeOfDay pickedTime = await showTimePicker(
         context: context,
         initialTime: TimeOfDay(hour: _selectedDatetime.hour, minute: _selectedDatetime.minute),
@@ -329,7 +328,6 @@ class _EditTransactionState extends State<EditTransaction> {
       setState(() {
         _selectedDatetime = result;
       });
-      print(result);
       _datetimeController.text = convertToDDMMYYYYHHMM(result.toString());
     }
   }
@@ -371,9 +369,5 @@ class _EditTransactionState extends State<EditTransaction> {
     });
 
     // socket.emit('update_transaction', {'walletID': widget.walletID, 'newTransaction': _clonedTx, 'transactionID': _clonedTx['id']});
-
-    // for (String key in newTx.keys) {
-    //   print('${key} - ${newTx[key]}');
-    // }
   }
 }

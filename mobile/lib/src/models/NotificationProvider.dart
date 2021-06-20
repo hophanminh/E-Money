@@ -27,8 +27,6 @@ class NotificationProvider extends ChangeNotifier {
   Future<bool> fetchData(Map<String, dynamic> body) async {
     try {
       List<Notifications> notifications = [];
-      print(body['notificationList'].length);
-      print(body['count']);
       for (dynamic noti in body['notificationList']) {
         notifications.add(Notifications.fromJson(noti));
       }
@@ -46,7 +44,6 @@ class NotificationProvider extends ChangeNotifier {
   Future<bool> addNotifications(Map<String, dynamic> body) async {
     try {
       List<Notifications> notifications = [];
-      print(body['notificationList'].length);
       for (dynamic noti in body['notificationList']) {
         notifications.add(Notifications.fromJson(noti));
       }
@@ -55,7 +52,6 @@ class NotificationProvider extends ChangeNotifier {
 
       return true;
     } on Exception catch (e) {
-      print('parse error');
       return false;
     }
   }

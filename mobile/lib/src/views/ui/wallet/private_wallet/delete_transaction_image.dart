@@ -98,7 +98,6 @@ class _DeleteTransactionImageDialogState extends State<DeleteTransactionImageDia
   }
 
   void handleDeleteTxImage() async {
-    print('delete tx image');
     Socket socket = await getSocket();
 
     socket.emitWithAck('remove_transaction_image', { 'imageID': widget.imageID, 'transactionID': widget.txID}, ack: (data) {

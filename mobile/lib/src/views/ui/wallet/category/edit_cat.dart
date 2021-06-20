@@ -142,9 +142,6 @@ class _EditCatDialogState extends State<EditCatDialog> {
   }
 
   void handleEditCat() async {
-    // print(_nameController.text);
-    // print(_currentIcon);
-
     Socket socket = await getSocket();
 
     socket.emitWithAck('update_category', {
@@ -180,7 +177,6 @@ class _EditCatDialogState extends State<EditCatDialog> {
           value: icon.id,
         ));
       }
-      // print(widget.cat['IconID']);
     }
 
     setState(() {});

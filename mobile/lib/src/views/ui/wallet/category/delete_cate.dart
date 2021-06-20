@@ -103,7 +103,6 @@ class _DeleteCateDialogState extends State<DeleteCateDialog> {
   }
 
   void handleDeleteCate() async {
-    print('delete cate');
 
     Socket socket = await getSocket();
     socket.emitWithAck("delete_category", {'walletID': widget.walletID, 'id': widget.cateID}, ack: () {
