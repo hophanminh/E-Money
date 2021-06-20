@@ -1,6 +1,7 @@
 class Properties {
-  static const String API_LOCAL = "192.168.1.93:9000";
-  static const String API_PRODUCTION =  "";
+  static const String API_LOCAL = String.fromEnvironment('API_URL', defaultValue: "192.168.1.93:9000");
+
+  static const String API_PRODUCTION = "";
   static const PASSWORD_MIN_LENGTH = 6;
   static const ROLE_ADMIN = 1;
   static const ROLE_USER = 0;

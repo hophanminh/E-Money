@@ -19,6 +19,7 @@ class AuthService {
   AuthService._internal();
 
   Future<http.Response> signin(String username, String password) async {
+    print(_baseURL);
     return await http.post(Uri.http(_baseURL, '/signin'),
         headers: {
           HttpHeaders.contentTypeHeader: 'application/json; charset=UTF-8',
