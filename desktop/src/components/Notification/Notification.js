@@ -30,8 +30,13 @@ export default function Notification() {
   const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
   const [currentAmountToLoad, setCurrentAmountToLoad] = useState(config.NOTIFICATION_AMOUNT_TO_LOAD);
 
-  useEffect(async () => {
+  useEffect(() => {
     socket.emit('get_notification', { userID, limit: currentAmountToLoad }, ({ notificationList, count }) => {
+      setNotifications(notificationList);
+      setUnreadNotificationCount(count);
+    });
+
+    socket.on(`new_notification_added_${userID}`, ({ notificationList, count }) => {
       setNotifications(notificationList);
       setUnreadNotificationCount(count);
     });
@@ -42,14 +47,18 @@ export default function Notification() {
       userID,
       limit: currentAmountToLoad,
       notificationID: notification.ID,
-      value: !notification.IsRead
+      value: true
     }, ({ notificationList }) => {
       setNotifications(notificationList);
-      setUnreadNotificationCount(unreadNotificationCount + (notification.IsRead ? 1 : -1));
+      setUnreadNotificationCount(unreadNotificationCount - 1);
     });
   }
 
   const handleMarkAllAsRead = () => {
+    if (notifications.length === 0) {
+      return;
+    }
+
     socket.emit('mark_all_as_read', {
       userID,
       notificationIDs: notifications.map(notification => notification.ID),
@@ -95,41 +104,57 @@ export default function Notification() {
             >
               <div className={classes.popover}>
                 <div className={classes.scrollable}>
-                  {notifications.map(notification => {
-                    return (
-                      <div key={notification.ID}>
-                        <Card key={notification.ID} className={classes.notifyCard} style={{ backgroundColor: notification.IsRead ? '#ffffff' : '#eaeaea' }}>
-                          <CardContent className={classes.notifyContent}>
-                            <div className={classes.notifyText} style={{ fontWeight: notification.IsRead ? 'normal' : 'bold' }}>
-                              <FiberManualRecordIcon className={classes.unreadMessageIcon} style={{ visibility: notification.IsRead ? 'hidden' : 'visible' }} />
-                              <div>
-                                <p style={{ margin: '5px 5px 5px 0px', wordBreak: 'break-all', fontSize: '11pt' }}>{notification.Content}</p>
-                                <Typography variant="body2" color="textSecondary" component="p" style={{ fontSize: '9pt' }}>
-                                  {moment(notification.DateNotified).format(config.DATE_TIME_FORMAT)}
-                                </Typography>
-                              </div>
-                              <div style={{ flexGrow: 1 }}></div>
-                              <div>
-                                <Tooltip title={notification.IsRead ? "Đánh dấu là chưa đọc" : "Đánh dấu là đã đọc"} aria-label="mark-as-read">
-                                  <IconButton id={notification.ID} size='small' aria-label="refuse" onClick={() => handleMarkNotification(notification)}>
-                                    <CheckIcon className={classes.checkIcon} />
-                                  </IconButton>
-                                </Tooltip>
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
-                        <Divider />
-                      </div>
-                    );
-                  })}
                   <div className={classes.notifyToolbar}>
                     <Link className={classes.link} onClick={handleMarkAllAsRead}>
                       Đánh dấu tất cả đã xem
-                  </Link>
+                    </Link>
+                  </div>
+                  <Divider />
+                  {
+                    notifications.map(notification => {
+                      return (
+                        <div key={notification.ID}>
+                          <Card key={notification.ID} className={classes.notifyCard} style={{ backgroundColor: notification.IsRead ? '#ffffff' : '#eaeaea' }}>
+                            <CardContent style={{ padding: '10px' }}>
+                              <div className={classes.notifyText} style={{ fontWeight: notification.IsRead ? 'normal' : 'bold' }}>
+                                <FiberManualRecordIcon className={classes.unreadMessageIcon} style={{ visibility: notification.IsRead ? 'hidden' : 'visible' }} />
+                                <div>
+                                  <p className={classes.notifyContent}>{notification.Content}</p>
+                                  <Typography variant="body2" color="textSecondary" component="p" style={{ fontSize: '9pt' }}>
+                                    {moment(notification.DateNotified).format(config.DATE_TIME_FORMAT)}
+                                  </Typography>
+                                </div>
+                                <div style={{ flexGrow: 1 }}></div>
+                                {
+                                  !notification.IsRead
+                                    ? <div>
+                                      <Tooltip title="Đánh dấu là đã đọc" aria-label="mark-as-read">
+                                        <IconButton id={notification.ID} size='small' aria-label="refuse"
+                                          style={{ marginLeft: '5px' }}
+                                          onClick={() => handleMarkNotification(notification)}
+                                        >
+                                          <CheckIcon className={classes.checkIcon} />
+                                        </IconButton>
+                                      </Tooltip>
+                                    </div>
+                                    : <React.Fragment></React.Fragment>
+                                }
+                              </div>
+                            </CardContent>
+                          </Card>
+                          <Divider />
+                        </div>
+                      );
+                    })
+                  }
+                  <div style={{ flexGrow: 1 }} />
+                  {
+                    notifications.length === 0 ? <Divider /> : <React.Fragment></React.Fragment>
+                  }
+                  <div className={classes.notifyToolbar}>
                     <Link className={classes.link} onClick={handleLoadMoreNotification}>
                       Tải thêm
-                  </Link>
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -160,6 +185,8 @@ const useStyles = makeStyles((theme) => ({
     left: 0,
     right: '-17px',
     overflowY: 'scroll',
+    display: 'flex',
+    flexDirection: 'column',
   },
   notifyCard: {
     height: '100%',
@@ -171,7 +198,10 @@ const useStyles = makeStyles((theme) => ({
     }
   },
   notifyContent: {
-    padding: '10px'
+    margin: '5px 5px 5px 0px',
+    wordWrap: 'break-word',
+    textAlign: 'justify',
+    fontSize: '11pt'
   },
   notifyText: {
     display: 'flex',
@@ -183,7 +213,6 @@ const useStyles = makeStyles((theme) => ({
   },
   notifyToolbar: {
     display: 'flex',
-    justifyContent: 'space-between',
     alignItems: 'center',
     height: 25,
     padding: 10,

@@ -29,7 +29,7 @@ class _ProfilePageState extends State<ProfilePage> {
   var _nameController = TextEditingController();
   var _emailController = TextEditingController();
   var _dobController = TextEditingController();
-  var _selectedDate = DateTime.now(); // example: 2021-04-15 23:58:18.949076
+  var _selectedDate = null;// DateTime.now(); // example: 2021-04-15 23:58:18.949076
   Users _info = new Users();
 
   void setInfo(Users _info) {
@@ -43,7 +43,10 @@ class _ProfilePageState extends State<ProfilePage> {
       });
       _dobController.text = convertToDDMMYYYY(_info.dateOfBirth);
     } else {
-      _dobController.text = convertToDDMMYYYY(_selectedDate.toLocal().toString());
+      _dobController.text = null;// convertToDDMMYYYY(_selectedDate.toLocal().toString());
+      setState(() {
+        _selectedDate = null;
+      });
     }
   }
 
@@ -72,7 +75,7 @@ class _ProfilePageState extends State<ProfilePage> {
     FocusScope.of(context).unfocus();
     String name = _nameController.text;
     String email = _emailController.text;
-    String dob = _selectedDate.toUtc().toIso8601String();
+    String dob = _selectedDate != null ? _selectedDate.toUtc().toIso8601String() : null;
     Response res = await UserService.instance.changeInfo(name, email, dob);
 
     if (res.statusCode == 200) {
@@ -315,7 +318,7 @@ class _ProfilePageState extends State<ProfilePage> {
   _selectDOB() async {
     final DateTime picked = await showDatePicker(
       context: context,
-      initialDate: _selectedDate,
+      initialDate: DateTime.now(),
       firstDate: DateTime(1900),
       lastDate: DateTime.now(),
       helpText: 'Chọn ngày sinh',

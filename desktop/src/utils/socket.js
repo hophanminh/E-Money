@@ -6,24 +6,29 @@ const API_URL = config.API_LOCAL;
 let socket = null;
 let errMessage = null;
 export const startSocket = () => {
-    const token = localStorage.getItem('jwtToken');
-    socket = socketIOClient(API_URL, {
-        query: { token }
-    });
-    socket.on("connect_error", (err) => {
-        errMessage = err.message;
-        console.log(err.message);
-    });
+  const token = localStorage.getItem('jwtToken');
+  socket = socketIOClient(API_URL, {
+    query: { token }
+  });
+  socket.on("connect_error", (err) => {
+    errMessage = err.message;
+  });
 }
 
 export const getSocket = () => {
-    const token = localStorage.getItem('jwtToken');
-    if (!socket && token) {
-        startSocket();
-    }
-    return socket;
+  const token = localStorage.getItem('jwtToken');
+  if (!socket && token) {
+    startSocket();
+  }
+  return socket;
+}
+
+export const clearSocket = () => {
+  if (socket) {
+    socket = null;
+  }
 }
 
 export const getError = () => {
-    return errMessage;
+  return errMessage;
 }

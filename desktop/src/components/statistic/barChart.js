@@ -6,10 +6,13 @@ import {
   CommonSeriesSettings,
   Title,
   Legend,
-  Tooltip
+  Tooltip,
+  Font,
+  Export
 } from 'devextreme-react/chart';
 import { makeStyles } from '@material-ui/core/styles';
 import { customizeTextForTooltip } from '../../utils/helper';
+import { MARKER_SIZE, FONT_SIZE } from '../../constants/config.json';
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -26,7 +29,13 @@ const useStyles = makeStyles((theme) => ({
 
 export default function BarChart({ date, chartData }) {
   const classes = useStyles();
-
+  const dateString = ()  => {
+    let month = date.getMonth() + 1;
+    let year = date.getFullYear();
+    if(month < 10)
+      month = '0' + month;
+    return (month + "/" + year);
+}
   return (
     <div className={classes.container}>
       <div style={{ margin: 'auto' }}>
@@ -37,7 +46,7 @@ export default function BarChart({ date, chartData }) {
             palette={['#ff2626', '#1daf1a']}
             dataSource={chartData}
           >
-            <Title text={"Thu nhập trong tháng " + (date.getMonth() + 1) + "/" + date.getFullYear()} />
+          <Title text={"Tình hình thu chi tháng " + dateString()} />
             <CommonSeriesSettings
               argumentField="title"
               valueField="money"
@@ -51,9 +60,15 @@ export default function BarChart({ date, chartData }) {
               horizontalAlignment="center"
               verticalAlignment="bottom"
               columnCount={2}
-            />
+              markerSize={MARKER_SIZE}
+            >
+              <Font size={FONT_SIZE.LEGEND_FONT_SIZE} />
+            </Legend>
             <SeriesTemplate nameField="title" />
-            <Tooltip enabled={true} customizeTooltip={customizeTextForTooltip} />
+            <Tooltip enabled={true} customizeTooltip={customizeTextForTooltip}>
+              <Font size={FONT_SIZE.TOOLTIP_FONT_SIZE} />
+            </Tooltip>
+            <Export enabled={true} />
           </Chart>
         </Paper>
       </div>

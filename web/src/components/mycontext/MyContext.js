@@ -1,6 +1,7 @@
 import React, { useState, useEffect, createContext } from 'react';
 import config from '../../constants/config.json';
 import { getSocket } from "../../utils/socket";
+import { timeoutPromise } from "../../utils/helper";
 
 const API_URL = config.API_LOCAL;
 const MyContext = createContext({});
@@ -16,8 +17,7 @@ export const MyProvider = (props) => {
 
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-
+  useEffect(async () => {
     async function fetchInfo() {
       const res = await fetch(`${API_URL}/users/${userID}`, {
         method: 'GET',
@@ -40,8 +40,19 @@ export const MyProvider = (props) => {
         setIsLoggedIn(false);
         setIsLoading(false);
       }
+      return res
     }
-    fetchInfo();
+
+    try {
+      let res = await timeoutPromise(800, fetchInfo());
+    } catch (error) {
+      // remove if any
+      window.localStorage.removeItem('jwtToken');
+      window.localStorage.removeItem('userID');
+      setIsLoggedIn(false);
+      setIsLoading(false);
+    }
+
   }, []);
 
   useEffect(async () => {

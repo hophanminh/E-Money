@@ -66,17 +66,17 @@ export default function Event() {
     });
 
 
-    socket.on('wait_for_update_event', ({ eventList }) => {
+    socket.on(`wait_for_update_event_${id}`, ({ eventList }) => {
       setEventList(eventList);
     });
 
-    socket.on('wait_for_update_category', ({ defaultList, customList, fullList }) => {
+    socket.on(`wait_for_update_category_${id}`, ({ defaultList, customList, fullList }) => {
       setAllList(defaultList, customList, fullList);
     });
 
     return () => {
-      socket.off("wait_for_update_event");
-      socket.off("wait_for_update_category");
+      socket.off(`wait_for_update_event_${id}`);
+      socket.off(`wait_for_update_category_${id}`);
       setOpen(null);
     }
 
@@ -111,6 +111,7 @@ export default function Event() {
 
   useEffect(() => {
     const temp1 = eventList ? eventList.filter(i => i.Status === 0) : [];
+
     const temp2 = temp1 ? rowsPerPage - Math.min(rowsPerPage, temp1.length - page_2 * rowsPerPage) : 0;
     setRows_2(temp1);
     setEmptyRows_2(temp2);
@@ -203,8 +204,8 @@ export default function Event() {
                           <TableCell align="left">{row?.Name}</TableCell>
                           <TableCell align="left" className={row.ExpectingAmount > 0 ? classes.green : classes.red}>{formatMoney(Math.abs(row?.ExpectingAmount))}</TableCell>
                           <TableCell align="left">{row?.TypeName}</TableCell>
-                          <TableCell align="left">{moment(row?.NextDate).format("DD/MM/YYYY")}</TableCell>
-                          <TableCell align="left" >{row?.EndDate ? moment(row?.EndDate).format("DD/MM/YYYY") : ''}</TableCell>
+                          <TableCell align="left">{moment(row?.NextDate).format("DD/MM/YYYY hh:mm A")}</TableCell>
+                          <TableCell align="left" >{row?.EndDate ? moment(row?.EndDate).format("DD/MM/YYYY hh:mm A") : '--'}</TableCell>
                           <TableCell align="right" className={row.ExpectingAmount >= 0 ? classes.green : classes.red}>{formatMoney(Math.abs(row?.TotalAmount))}</TableCell>
                           <TableCell align="right">
                             <Button
@@ -277,8 +278,8 @@ export default function Event() {
                           <TableCell align="left">{row.Name}</TableCell>
                           <TableCell align="left" className={row.ExpectingAmount > 0 ? classes.green : classes.red}>{formatMoney(Math.abs(row.ExpectingAmount))}</TableCell>
                           <TableCell align="left">{row.TypeName}</TableCell>
-                          <TableCell align="left" >{row.StartDate ? moment(row.StartDate).format("DD/MM/YYYY") : ''}</TableCell>
-                          <TableCell align="left" >{row.EndDate ? moment(row.EndDate).format("DD/MM/YYYY") : ''}</TableCell>
+                          <TableCell align="left" >{row.StartDate ? moment(row.StartDate).format("DD/MM/YYYY - hh:mm A") : ''}</TableCell>
+                          <TableCell align="left" >{row.EndDate ? moment(row.EndDate).format("DD/MM/YYYY - hh:mm A") : ''}</TableCell>
                           <TableCell align="right" className={row.ExpectingAmount >= 0 ? classes.green : classes.red}>{formatMoney(Math.abs(row?.TotalAmount))}</TableCell>
                           <TableCell align="right">
                             <Button

@@ -111,6 +111,7 @@ export default function EditIconAdmin({ isOpen, setOpen, selectedIcon }) {
             <Typography>Chọn màu cho icon</Typography>
             <ColorPicker
               value={icon.color}
+              disableTextfield
               onChange={color => {
                 if (color.hex) {
                   setIcon({
@@ -126,6 +127,7 @@ export default function EditIconAdmin({ isOpen, setOpen, selectedIcon }) {
             <Typography>Chọn màu nền cho icon</Typography>
             <ColorPicker
               value={icon.backgroundColor}
+              disableTextfield
               onChange={color => {
                 if (color.hex) {
                   setIcon({

@@ -1,10 +1,9 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Container } from '@material-ui/core';
 import HorizontalTimeline from "react-horizontal-timeline";
 import moment from 'moment';
 
-import MyContext from '../mycontext/MyContext';
 import Charts from '../statistic/charts';
 import config from '../../constants/config.json';
 
@@ -15,7 +14,6 @@ export default function TeamStatistic() {
 
   const location = useLocation();
   const team = location.state.team;
-  const { info } = useContext(MyContext);
 
   const [dates, setDates] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -61,8 +59,6 @@ export default function TeamStatistic() {
       date: date
     }
 
-    console.log(data);
-
     // call API here
     const res = await fetch(`${API_URL}/statistic/barChart`, {
       method: 'POST',
@@ -106,12 +102,15 @@ export default function TeamStatistic() {
 
     if (res.status === 200) {
       const result = await res.json();
-      const chartData = result.chartData.map(data => {
+      let chartData = result.chartData.map(data => {
         return {
           type: data.Name,
           value: data.Money < 0 ? data.Money * -1 : data.Money
         }
       });
+
+      chartData = chartData.filter(item => item.value !== 0);
+
       if (isSpent) {
         setPieChartSpentData(chartData);
       } else {

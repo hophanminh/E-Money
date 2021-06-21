@@ -4,6 +4,7 @@ import { WalletProvider } from './WalletContext';
 import { PopupProvider } from './PopupContext';
 import { CategoryProvider } from './CategoryContext';
 import { EventProvider } from './EventContext';
+import { IconProvider } from './IconContext';
 
 const CombinedProvider = ({ children }) => (
     <MyProvider>
@@ -11,7 +12,9 @@ const CombinedProvider = ({ children }) => (
             <PopupProvider>
                 <CategoryProvider>
                     <EventProvider>
-                        {children}
+                        <IconProvider>
+                            {children}
+                        </IconProvider>
                     </EventProvider>
                 </CategoryProvider>
             </PopupProvider>

@@ -7,13 +7,10 @@ import MainFeatures from './mainFeatures.js';
 import GettingStarted from './gettingStarted.js';
 import Statistic from './statistic.js';
 import Calendar from './calendar.js';
-import Download from './download.js';
 
 const useStyles = makeStyles((theme) => ({
   container: {
-    margin: '50px 20px 20px 30px',
-    width: '1200px',
-    height: '700px'
+    margin: '50px 20px 20px 30px'
   }
 }));
 
@@ -22,14 +19,13 @@ export default function Home() {
 
   return (
     <>
-      <div component="main">
+      <Container component="main" maxWidth="xl">
         <Introduction />
         <MainFeatures />
         <GettingStarted />
         <Statistic />
         <Calendar />
-        <Download />
-      </div>
+      </Container>
     </>
   );
 }

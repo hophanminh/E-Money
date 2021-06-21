@@ -19,22 +19,52 @@ export const WalletProvider = (props) => {
   const [isSimple, setIsSimple] = useState(true)
 
   useEffect(() => {
-    const check = localStorage.getItem('isSimple') === '0' ? false : true;
-    setIsSimple(check);
-  }, []);
+    const check = window.localStorage.getItem('isSimple') === '0' ? false : true;
+    setIsSimple(check)
+  }, [])
 
-  //Wallet
-  const updateSelected = () => {
-    if (selected) {
-      const temp = list.find(i => i?.id === selected?.id)
-      setSelected(temp);
-    }
+  useEffect(() => {
+    setList([]);
+  }, [walletID])
+
+  useEffect(() => {
+    setSelected(selected => {
+      if (list && selected) {
+        const temp = list.find(i => i?.id === selected?.id)
+        if (temp) {
+          return temp;
+        }
+        else {
+          return null;
+        }
+      }
+    });
+  }, [list]);
+
+  const updateTxCategory = (catList) => {
+    setList(list => {
+      let newList = list.slice();
+      for (let i = 0; i < newList.length; i++) {
+        const newCat = catList.find(cat => cat.ID === newList[i].catID);
+        if (newCat) {
+          newList[i].IconID = newCat.IconID;
+          newList[i].categoryName = newCat.Name;
+        }
+        else {
+          const temp = catList.find(cat => cat.Name === "Khác");
+          newList[i].IconID = temp.IconID;
+          newList[i].categoryName = temp.Name;
+          newList[i].catID = temp.ID;
+        }
+      }
+      return [...newList]
+    });
   }
 
   const setSimpleOption = (status) => {
-    const check = status ? '1' : '0';
-    localStorage.setItem('isSimple', check);
-    setIsSimple(status);
+    const check = status ? '1' : '0'
+    window.localStorage.setItem('isSimple', check);
+    setIsSimple(status)
   }
 
   return (
@@ -50,10 +80,10 @@ export const WalletProvider = (props) => {
         setWalletID,
         setSelected,
         setList,
-        updateSelected,
         setExpanded,
         setFilterList,
         setSimpleOption,
+        updateTxCategory,
       }}>
       {props.children}
     </WalletContext.Provider>

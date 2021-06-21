@@ -27,6 +27,7 @@ import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import ListIcon from '@material-ui/icons/List';
 import EventIcon from '@material-ui/icons/Event';
 import DefaultIcon from '../../utils/DefaultIcon'
+import BarChartIcon from '@material-ui/icons/BarChart';
 
 import SearchBar from './SearchBar'
 import TransactionMini from './TransactionMini'
@@ -36,14 +37,14 @@ import CategoryAccordion from './Accordion/CategoryAccordion'
 import moment from 'moment'
 import AddTransaction from './CRUDTransaction/AddTransaction';
 import { getSocket } from "../../utils/socket";
-import { formatMoney } from '../../utils/currency';
+import { formatMoney } from '../../utils/currency'
 import EventAccordion from './Accordion/EventAccordion';
 
 export default function Dashboard() {
   const classes = useStyles();
   const socket = getSocket();
   const { info } = useContext(MyContext);
-  const { setWalletID, selected, setSelected, list, setList, filterList, updateSelected } = useContext(WalletContext);
+  const { setWalletID, selected, setSelected, list, setList, filterList, updateTxCategory } = useContext(WalletContext);
   const { setOpen } = useContext(PopupContext);
   const { setAllList } = useContext(CategoryContext);
   const { setEventList } = useContext(EventContext);
@@ -68,7 +69,7 @@ export default function Dashboard() {
       })
     });
 
-    socket.on('wait_for_update_transaction', ({ transactionList, total, spend, receive }) => {
+    socket.on(`wait_for_update_transaction_${info?.WalletID}`, ({ transactionList, total, spend, receive }) => {
       setList(transactionList);
       setStat({
         spend: spend,
@@ -82,8 +83,9 @@ export default function Dashboard() {
     });
 
 
-    socket.on('wait_for_update_category', ({ defaultList, customList, fullList }) => {
-      setAllList(defaultList, customList, fullList)
+    socket.on(`wait_for_update_category_${info?.WalletID}`, ({ defaultList, customList, fullList }) => {
+      setAllList(defaultList, customList, fullList);
+      updateTxCategory(fullList);
     });
 
     socket.emit("get_event", { walletID: info?.WalletID }, ({ eventList }) => {
@@ -91,23 +93,18 @@ export default function Dashboard() {
     });
 
 
-    socket.on('wait_for_update_event', ({ eventList }) => {
+    socket.on(`wait_for_update_event_${info?.WalletID}`, ({ eventList }) => {
       setEventList(eventList);
     });
 
 
     return () => {
-      socket.off("wait_for_update_transaction");
-      socket.off("wait_for_update_category");
-      socket.off("wait_for_update_event");
+      socket.off(`wait_for_update_transaction_${info?.WalletID}`);
+      socket.off(`wait_for_update_category_${info?.WalletID}`);
+      socket.off(`wait_for_update_event_${info?.WalletID}`);
       setOpen(null);
     }
   }, [info]);
-
-  useEffect(() => {
-    updateSelected();
-  }, [list])
-
 
   // add transaction
   const handleOpenAddDialog = () => {
@@ -119,18 +116,32 @@ export default function Dashboard() {
       <AddTransaction />
 
       <Container className={classes.root} maxWidth={null}>
-        <div className={classes.title}>
-          <Breadcrumbs className={classes.breadcrumb} separator={<NavigateNextIcon fontSize="large" />} aria-label="breadcrumb">
-            <Typography className={classes.titleFont} color="textPrimary">
-              Ví cá nhân
+        <Box className={classes.header}>
+          <div className={classes.title}>
+            <Breadcrumbs className={classes.breadcrumb} separator={<NavigateNextIcon fontSize="large" />} aria-label="breadcrumb">
+              <Typography className={classes.titleFont} color="textPrimary">
+                Ví cá nhân
             </Typography>
-          </Breadcrumbs>
-          <Typography className={classes.subTitleFont} color="textSecondary">Quản lý các khoản giao dịch tiền tệ cá nhân </Typography>
-        </div>
-
+            </Breadcrumbs>
+            <Typography className={classes.subTitleFont} color="textSecondary">Quản lý các khoản giao dịch tiền tệ cá nhân </Typography>
+          </div>
+          {/* <Box className={classes.actionBox}>
+            <Link
+              to={{
+                pathname: `/Statistic`,
+              }}
+              style={{ textDecoration: 'none', marginRight: 10 }}
+            >
+              <Button className={classes.statisticButton} variant="outlined">
+                <BarChartIcon className={classes.yellow} />
+                &nbsp;Thống kê ví cá nhân
+              </Button>
+            </Link>
+          </Box> */}
+        </Box>
         <div className={classes.body}>
           <Grid container spacing={5} className={classes.grid}>
-            <Grid item lg={3} sm={12} >
+            <Grid item lg={3} sm={12} xs={12}>
               <Box
                 boxShadow={3}
                 bgcolor="background.paper"
@@ -145,7 +156,7 @@ export default function Dashboard() {
               </Box>
             </Grid>
 
-            <Grid item lg={3} sm={12} >
+            <Grid item lg={3} sm={12} xs={12}>
               <Box
                 boxShadow={3}
                 bgcolor="background.paper"
@@ -160,7 +171,7 @@ export default function Dashboard() {
               </Box>
             </Grid>
 
-            <Grid item lg={3} sm={12} >
+            <Grid item lg={3} sm={12} xs={12}>
               <Box
                 boxShadow={3}
                 bgcolor="background.paper"
@@ -175,7 +186,7 @@ export default function Dashboard() {
               </Box>
             </Grid>
 
-            <Grid item lg={3} sm={12} >
+            <Grid item lg={3} sm={12} xs={12}>
               <Box
                 boxShadow={3}
                 bgcolor="background.paper"
@@ -193,7 +204,7 @@ export default function Dashboard() {
 
           </Grid>
           <Grid container spacing={5} alignItems="stretch" className={classes.lowerGrid}>
-            <Grid item lg={3} sm={12}>
+            <Grid item lg={3} sm={12} xs={12}>
               <Box
                 boxShadow={3}
                 bgcolor="background.paper"
@@ -213,7 +224,7 @@ export default function Dashboard() {
               </Box>
             </Grid>
 
-            <Grid item lg={6} sm={12}>
+            <Grid item lg={6} sm={12} xs={12}>
               <Box
                 boxShadow={3}
                 bgcolor="background.paper"
@@ -223,7 +234,7 @@ export default function Dashboard() {
               </Box>
             </Grid>
 
-            <Grid item lg={3} sm={12} >
+            <Grid item lg={3} sm={12} xs={12}>
               <div className={classes.buttonColumn}>
                 <CategoryAccordion />
                 <EventAccordion />
@@ -405,4 +416,29 @@ const useStyles = makeStyles((theme) => ({
     minHeight: '530px',
   },
 
+  header: {
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingBottom: '10px'
+  },
+
+  actionBox: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+  },
+
+  statisticButton: {
+    height: '40px',
+    textTransform: 'none',
+    borderColor: '#fda92c',
+    padding: '5px 10px',
+    backgroundColor: '#FFFFFF'
+  },
+  yellow: {
+    color: '#fda92c'
+  },
 }));
