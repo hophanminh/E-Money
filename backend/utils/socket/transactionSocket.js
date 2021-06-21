@@ -90,7 +90,7 @@ module.exports = function (socket, io, decoded_userID) {
         await transactionModel.updateTransaction(transactionID, temp);
         await walletModel.updateTotalWallet(newTransaction.price - updated[0].Money, updated[0].WalletID);
       }
-      callback ? callback() : console.log('ko có call back');
+      callback ? callback() : console.log('ko có call back khi update');
       // annouce to other players
       const transactionList = await transactionModel.getTransactionByWalletID(walletID);
       const { total, spend, receive } = calculateStat(transactionList);
@@ -101,7 +101,7 @@ module.exports = function (socket, io, decoded_userID) {
   });
 
   // delete Transaction
-  socket.on('delete_transaction', async ({ walletID, id }) => {
+  socket.on('delete_transaction', async ({ walletID, id }, callback) => {
     try {
       const deleted = await transactionModel.getTransactionByID(id);
       if (deleted.length === 1) {
@@ -110,6 +110,8 @@ module.exports = function (socket, io, decoded_userID) {
         await transactionModel.deleteTransaction(id);
         await walletModel.updateTotalWallet(0 - deleted[0].Money, deleted[0].WalletID);
       }
+
+      callback ? callback() : console.log('ko có call back khi delete');
 
       // annouce to other players
       const transactionList = await transactionModel.getTransactionByWalletID(walletID);
