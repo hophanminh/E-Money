@@ -41,7 +41,7 @@ export default function Download() {
             }}
           >
             <ComputerIcon className={classes.icon} />
-            <Link to="/robots.txt" target="_blank" download style={{ textDecoration: 'none', color: 'white' }}>
+            <Link to="https://drive.google.com/drive/folders/19J7NL5vFHzmVa6AK_gtUlrG7y_0GmBbD?usp=sharing" target="_blank" download style={{ textDecoration: 'none', color: 'white' }}>
               <Typography style={{ textAlign: 'left', fontSize: '20px' }}>
                 Tải về phiên bản trên <b>Windows</b>
               </Typography>
@@ -55,9 +55,12 @@ export default function Download() {
             }}
           >
             <PhoneAndroidIcon className={classes.icon} />
-            <Typography style={{ textAlign: 'left', fontSize: '20px' }}>
-              Tải về phiên bản trên <b>Android</b>
-            </Typography>
+            <Link to="https://drive.google.com/drive/folders/1v_sGGlymmbUOC0WqUYfXl0uTVpWpXFsU?usp=sharing" target="_blank" download style={{ textDecoration: 'none', color: 'white' }}>
+              <Typography style={{ textAlign: 'left', fontSize: '20px' }}>
+                Tải về phiên bản trên <b>Android</b>
+              </Typography>
+            </Link>
+
           </Button>
 
           <Button className={classes.button}
