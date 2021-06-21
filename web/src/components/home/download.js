@@ -1,10 +1,11 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useContext } from 'react';
+import { Link, useHistory } from 'react-router-dom';
 import { Typography, Button } from '@material-ui/core';
 import PhoneAndroidIcon from '@material-ui/icons/PhoneAndroid';
 import ComputerIcon from '@material-ui/icons/Computer';
 import LanguageIcon from '@material-ui/icons/Language';
 import { makeStyles } from '@material-ui/core/styles';
+import { MyContext } from '../mycontext';
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -26,7 +27,16 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Download() {
   const classes = useStyles();
+  const history = useHistory();
+  const { isLoggedIn } = useContext(MyContext);
 
+  const handleRedirect = () => {
+    if (isLoggedIn !== null && isLoggedIn) {
+      history.push('/Wallet');
+    } else {
+      history.push('/signin');
+    }
+  }
   return (
     <div className={classes.container}>
       <div style={{ textAlign: 'center' }}>
@@ -39,13 +49,12 @@ export default function Download() {
               height: '100px', width: '300px', color: 'white', backgroundColor: '#1daf1a',
               padding: '0px 15px 0px 15px', margin: '0px 20px 10px 20px'
             }}
+            href="https://drive.google.com/drive/folders/19J7NL5vFHzmVa6AK_gtUlrG7y_0GmBbD?usp=sharing" target="_blank"
           >
             <ComputerIcon className={classes.icon} />
-            <Link to="https://drive.google.com/drive/folders/19J7NL5vFHzmVa6AK_gtUlrG7y_0GmBbD?usp=sharing" target="_blank" download style={{ textDecoration: 'none', color: 'white' }}>
-              <Typography style={{ textAlign: 'left', fontSize: '20px' }}>
-                Tải về phiên bản trên <b>Windows</b>
-              </Typography>
-            </Link>
+            <Typography style={{ textAlign: 'left', fontSize: '20px' }}>
+              Tải về phiên bản trên <b>Windows</b>
+            </Typography>
           </Button>
 
           <Button className={classes.button}
@@ -53,13 +62,13 @@ export default function Download() {
               height: '100px', width: '300px', color: 'white', backgroundColor: '#1daf1a',
               padding: '0px 15px 0px 15px', margin: '0px 20px 10px 20px'
             }}
+            href="https://drive.google.com/drive/folders/1v_sGGlymmbUOC0WqUYfXl0uTVpWpXFsU?usp=sharing"
+            target="_blank"
           >
             <PhoneAndroidIcon className={classes.icon} />
-            <Link to="https://drive.google.com/drive/folders/1v_sGGlymmbUOC0WqUYfXl0uTVpWpXFsU?usp=sharing" target="_blank" download style={{ textDecoration: 'none', color: 'white' }}>
-              <Typography style={{ textAlign: 'left', fontSize: '20px' }}>
-                Tải về phiên bản trên <b>Android</b>
-              </Typography>
-            </Link>
+            <Typography style={{ textAlign: 'left', fontSize: '20px' }}>
+              Tải về phiên bản trên <b>Android</b>
+            </Typography>
 
           </Button>
 
@@ -68,6 +77,7 @@ export default function Download() {
               height: '100px', width: '300px', color: 'white', backgroundColor: '#1daf1a',
               padding: '0px 15px 0px 15px', margin: '0px 20px 10px 20px'
             }}
+            onClick={handleRedirect}
           >
             <LanguageIcon className={classes.icon} />
             <Typography style={{ textAlign: 'left', fontSize: '20px' }}>
