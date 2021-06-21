@@ -42,3 +42,21 @@ function daysInMonth(m) { // m is 0 indexed: 0-11
 export const isValidMonthDay = (d, m) => {
   return m >= 0 && m < 12 && d >= 0 && d < daysInMonth(m);
 }
+
+export function timeoutPromise(ms, promise) {
+  return new Promise((resolve, reject) => {
+    const timeoutId = setTimeout(() => {
+      reject(new Error("promise timeout"))
+    }, ms);
+    promise.then(
+      (res) => {
+        clearTimeout(timeoutId);
+        resolve(res);
+      },
+      (err) => {
+        clearTimeout(timeoutId);
+        reject(err);
+      }
+    );
+  })
+}
