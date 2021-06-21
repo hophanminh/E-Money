@@ -111,6 +111,7 @@ export default function AddIconAdmin({ isOpen, setOpen }) {
             <Typography>Chọn màu cho icon</Typography>
             <ColorPicker
               value={newIcon.color}
+              disableTextfield
               onChange={color => {
                 if (color.hex) {
                   setNewIcon({
@@ -126,6 +127,7 @@ export default function AddIconAdmin({ isOpen, setOpen }) {
             <Typography>Chọn màu nền cho icon</Typography>
             <ColorPicker
               value={newIcon.backgroundColor}
+              disableTextfield
               onChange={color => {
                 if (color.hex) {
                   setNewIcon({
