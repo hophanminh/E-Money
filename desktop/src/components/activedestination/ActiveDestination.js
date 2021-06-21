@@ -31,20 +31,17 @@ export default function ActiveDestination() {
   const [msg, setMsg] = useState("Đang kích hoạt tài khoản. Hãy chờ trong giây lát...");
   const [statusCode, setStatusCode] = useState(-1);
   const { isLoggedIn, setInfo, setIsLoggedIn } = useContext(MyContext);
-
+  // const statusCodeCopy = statusCode;
   useEffect(() => {
     async function active() {
-      alert(isLoggedIn);
 
       if (isLoggedIn === null) {
         return;
       }
       if (isLoggedIn) {
         setStatusCode(200);
-        setMsg("Bạn đã đăng nhập trước đó");
-        // history.push("/");
+        return;
       }
-      // const res = await fetch(`http://192.168.1.93:9000/active`, {
       const res = await fetch(`${API_URL}/active`, {
         method: 'POST',
         body: JSON.stringify({ ID }),
@@ -58,6 +55,7 @@ export default function ActiveDestination() {
         const result = await res.json();
         window.localStorage.setItem('jwtToken', result.token);
         window.localStorage.setItem('userID', result.user.ID);
+        window.localStorage.removeItem('resetID');
         setInfo(result.user);
         setIsLoggedIn(true);
         setMsg(result.msg);

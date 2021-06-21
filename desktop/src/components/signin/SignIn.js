@@ -27,7 +27,8 @@ export const styles = {
   },
   paper: {
     padding: '40px 20px 40px',
-    borderRadius: '8px'
+    borderRadius: '8px',
+    backgroundColor: '#fff'
   },
   form: {
     width: '100%', // Fix IE 11 issue.
@@ -128,8 +129,10 @@ export default function SignIn() {
     const result = await res.json();
 
     if (res.status === 200) {
-      localStorage.setItem('jwtToken', result.token);
-      localStorage.setItem('userID', result.user.ID);
+      window.localStorage.setItem('jwtToken', result.token);
+      window.localStorage.setItem('userID', result.user.ID);
+      window.localStorage.removeItem('resetID');
+
       setInfo(result.user);
       setIsLoggedIn(true);
       history.push("/");
@@ -147,15 +150,15 @@ export default function SignIn() {
   return (
     <>
       <div className="trap-container">
-        <div >
-          <svg fill="white" width="60%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none" style={{ position: 'absolute', left: 0, zIndex: 0 }}>
-            <polygon points="0,0 100,0 80,100 0,100" />
-          </svg>
-        </div>
-        <div style={{ width: '55%', position: 'absolute', right: 0, zIndex: -2, height: '100%' }} className="bgimg">
-
-        </div>
-        <div style={{ width: '45%', position: 'absolute', right: 0, zIndex: -1, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', color: '#fff' }}>
+        <Hidden xsDown>
+          <div>
+            <svg fill="white" width="50%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none" style={{ position: 'absolute', left: 0, zIndex: -1 }}>
+              <polygon points="0,0 100,0 80,100 0,100" />
+            </svg>
+          </div>
+          <div style={{ width: '65%', position: 'absolute', right: 0, zIndex: -2, height: '100%' }} className="bgimg"></div>
+        </Hidden>
+        {/* <div style={{ width: '45%', position: 'absolute', right: 0, zIndex: -1, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', color: '#fff' }}>
           <div style={{ ...styles.socialLoginButton }} >
             <Typography style={styles.logoContainer}>
               <img src={FacebookIcon} alt="Facebook icon" style={styles.logo} />
@@ -168,14 +171,14 @@ export default function SignIn() {
               Đăng nhập bằng Google
             </Typography>
           </div>
-        </div>
+        </div> */}
 
         <div className="trap-content">
           <Container component="main" maxWidth="xl">
             <SnackBar open={showSnackbar} setOpen={(isOpen) => setShowSnackBar(isOpen)} content={content} />
             <Grid container spacing={4}>
-              <Hidden smDown>
-                <Grid item xs={2} sm={2} md={2} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', textAlign: 'left' }}>
+              <Hidden xsDown>
+                <Grid item xs={2} md={4} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', textAlign: 'left' }}>
                   <div>
                     <Button
                       variant="contained"
@@ -196,8 +199,8 @@ export default function SignIn() {
                 </Grid>
 
               </Hidden>
-              <Grid item xs={7} sm={6} md={4}>
-                <div style={{ ...styles.shadow, ...styles.paper, width: '110%' }}>
+              <Grid item xs={12} sm={10} md={6} align="center">
+                <div style={{ ...styles.shadow, ...styles.paper, width: '100%' }}>
                   <Typography style={{ color: Palette.primary, fontWeight: 'bold' }} variant='h5'>Đăng nhập tài khoản</Typography>
                   <div style={{ margin: '20px 0 20px' }}>
                     <TextField label="Tên tài khoản" variant="outlined"
@@ -225,8 +228,10 @@ export default function SignIn() {
                   <Button
                     type="submit" fullWidth variant="contained"
                     onClick={() => handleSubmit()}
-                    style={{ ...styles.submit, backgroundColor: Palette.primary, color: '#fff',
-                      fontWeight: 'bold', margin: '5px 0 20px' }}
+                    style={{
+                      ...styles.submit, backgroundColor: Palette.primary, color: '#fff',
+                      fontWeight: 'bold', margin: '5px 0 20px'
+                    }}
                   >
                     Đăng nhập
                   </Button>

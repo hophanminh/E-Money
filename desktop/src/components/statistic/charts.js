@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: '24px',
   },
   container: {
-    margin: '50px 20px 20px 30px',
+    margin: '50px 20px 20px 30px'
   }
 }));
 
@@ -26,12 +26,17 @@ export default function Charts({ date, barChartData, pieChartSpentData, pieChart
         <BarChart date={date} chartData={barChartData} />
         <div>
           {/* Chi */}
-          <PieChartSpent date={date} chartData={pieChartSpentData} />
+          {barChartData[0]?.money === 0
+            ? <></>
+            : <PieChartSpent date={date} chartData={pieChartSpentData} />
+          }
 
           {/* Thu */}
-          <PieChartIncome date={date} chartData={pieChartIncomeData} />
+          {barChartData[1]?.money === 0
+            ? <></>
+            : <PieChartIncome date={date} chartData={pieChartIncomeData} />
+          }
         </div>
-
       </div>
     </Container>
   );

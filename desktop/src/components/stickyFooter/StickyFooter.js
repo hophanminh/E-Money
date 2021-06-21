@@ -4,11 +4,10 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import PhoneIcon from '@material-ui/icons/Phone';
-import Config from '../../Config/default.json'
 import MailIcon from '@material-ui/icons/Mail';
 import FacebookIcon from '@material-ui/icons/Facebook';
 import TwitterIcon from '@material-ui/icons/Twitter';
-import { Grid } from '@material-ui/core';
+import { Grid, useMediaQuery } from '@material-ui/core';
 
 function Copyright() {
   return (
@@ -23,49 +22,50 @@ function Copyright() {
 
 function ContactInfo() {
   const classes = useStyles();
+  const matches = useMediaQuery('(min-width:600px)');
 
   return (
-    <Typography className={`${classes.flexColumn} ${classes.flexStart}`} component={'span'}>
+    <div className={`${classes.flexColumn} ${classes.flexStart}`} component={'span'} style={{ maxWidth: matches ? '1000px' : '150px' }}>
       <h4>
         {`Thông tin liên hệ`}
       </h4>
       <PhoneInfo />
       <MailInfo />
-    </Typography>
-  )
+    </div>
+  );
 }
 
 function PhoneInfo() {
-  const classes = useStyles();
   return (
-    <div style={{ display: 'table', margin: '5px' }}>
-      <div style={{ display: 'table-cell', verticalAlign: 'middle', paddingRight: '0' }}>
+    <Grid container wrap="nowrap" spacing={2} style={{ marginBottom: '5px' }}>
+      <Grid item>
         <PhoneIcon />
-      </div>
-      <div style={{ display: 'table-cell', verticalAlign: 'middle' }}>
-        <div>
-          0909789651
+      </Grid>
+      <Grid item xs zeroMinWidth overflowWrap >
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <div>
+            0909789651
         </div>
-        <div>
-          0709855627
+          <div>
+            0709855627
         </div>
-      </div>
-    </div>
-  )
+        </div>
+      </Grid>
+    </Grid>
+
+  );
 }
 
 function MailInfo() {
   return (
-    <div style={{ display: 'table', margin: '5px' }}>
-      <div style={{ display: 'table-cell', verticalAlign: 'middle', paddingRight: '16px' }}>
+    <Grid container wrap="nowrap" spacing={2} style={{ marginBottom: '5px' }}>
+      <Grid item >
         <MailIcon />
-      </div>
-      <div style={{ display: 'table-cell', verticalAlign: 'middle' }}>
-        <div>
-          masa23@gmail.com
-        </div>
-      </div>
-    </div>
+      </Grid>
+      <Grid item xs zeroMinWidth overflowWrap >
+        <Typography style={{ overflowWrap: 'break-word' }}>1712592@student.hcmus.edu.vn</Typography>
+      </Grid>
+    </Grid>
   );
 }
 
@@ -106,15 +106,15 @@ function FastConnect() {
         </Link>
       </div>
     </Typography>
-  );
+  )
 }
 
 function Description() {
   return (
-    <Typography style={{ width: `30vw` }}>
-      {`E-money giải pháp giúp bạn dễ dàng quản lý việc thu chi rõ ràng, minh bạch. Quản lý quỹ nhóm cũng đã trở nên dễ dàng hơn với E-money.`}
+    <Typography style={{ width: `30vw`, textAlign: 'justify' }}>
+      {`E-money giải pháp giúp bạn dễ dàng quản lý việc thu chi rõ ràng, minh bạch. Quản lý quỹ nhóm cũng đã trở nên dễ dàng hơn với E-Money.`}
     </Typography>
-  );
+  )
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -164,7 +164,7 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "flex-start"
   },
   containerMargin: {
-    margin: '10px 40px'
+    margin: '10px 40px',
   }
 }));
 
@@ -174,8 +174,8 @@ export default function StickyFooter() {
   return (
     <div className={classes.root}>
       <CssBaseline />
-      <footer className={`${classes.footer}
-                          ${classes.paperLikeShadow}
+      <footer className={`${classes.footer} 
+                          ${classes.paperLikeShadow} 
                           ${classes.textFormat}`}>
         <div className={`${classes.align}  ${classes.flexSpaceBetween}`}>
           <span>

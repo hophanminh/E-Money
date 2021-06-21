@@ -112,9 +112,10 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-function TopbarNotLogin() {
+function TopbarNotLogin(props) {
   const classes = useStyles();
   const history = useHistory();
+  const { isLoading } = props
 
   const handleSignUp = () => {
     history.push("/signup");
@@ -127,26 +128,30 @@ function TopbarNotLogin() {
   return (
     <AppBar position="absolute" className={clsx(classes.appBar)}>
       <Toolbar className={`${classes.toolbar} ${classes.spaceBetween} ${classes.colorTopBar}`}>
-        <ListItem button component={NavLink} to="/" className={`${classes.button} ${classes.brandText}`}>
-          {`E-Money`}
-        </ListItem>
-        <div className={`${classes.topBarButton} `}>
-          <Button
-            variant="outlined"
-            size="large"
-            className={`${classes.margin} ${classes.buttonContent}`}
-            onClick={handleSignUp}
-          >
-            Đăng ký
+        {!isLoading &&
+          <>
+            <ListItem button component={NavLink} to="/" className={`${classes.button} ${classes.brandText}`}>
+              {`E-Money`}
+            </ListItem>
+            <div className={`${classes.topBarButton} `}>
+              <Button
+                variant="outlined"
+                size="large"
+                className={`${classes.margin} ${classes.buttonContent}`}
+                onClick={handleSignUp}
+              >
+                Đăng ký
           </Button>
-          <Button variant="outlined"
-            size="large"
-            className={`${classes.margin} ${classes.buttonContent}`}
-            onClick={handleSignIn}
-          >
-            Đăng nhập
+              <Button variant="outlined"
+                size="large"
+                className={`${classes.margin} ${classes.buttonContent}`}
+                onClick={handleSignIn}
+              >
+                Đăng nhập
           </Button>
-        </div>
+            </div>
+          </>
+        }
       </Toolbar>
     </AppBar>
   );

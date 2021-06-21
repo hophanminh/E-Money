@@ -304,7 +304,7 @@ function ImagesUploader({ transactionID, open, setOpen, images, setImages }) {
     // else { // 400, etc...
     // setContent(result.msg)
     // }
-    // setShowSnackBar(true);      
+    // setShowSnackBar(true);
     setIsWaiting(false)
   }
 

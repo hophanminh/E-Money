@@ -57,8 +57,6 @@ export default function Statistic() {
       date: date
     }
 
-    console.log(data);
-
     // call API here
     const res = await fetch(`${API_URL}/statistic/barChart`, {
       method: 'POST',
@@ -75,7 +73,7 @@ export default function Statistic() {
         return {
           title: data.Title,
           money: data.Money >= 0 ? data.Money : data.Money * -1
-        }
+        };
       });
       setBarChartData(chartData);
     } else {
@@ -110,8 +108,9 @@ export default function Statistic() {
       });
       let temp = [];
       chartData.forEach(data => {
-        if (data.value > 0)
+        if (data.value > 0) {
           temp.push(data);
+        }
       });
       if (isSpent) {
         setPieChartSpentData(temp);

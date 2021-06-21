@@ -7,6 +7,7 @@ import {
   Typography,
   IconButton,
   ListItem,
+  useMediaQuery,
   makeStyles
 } from '@material-ui/core';
 
@@ -22,6 +23,7 @@ const drawerWidth = 240;
 function Topbar(props) {
   const classes = useStyles();
   const { setIsLoggedIn, info } = useContext(MyContext);
+  const matches = useMediaQuery('(min-width:600px)');
 
   const logOut = (e) => {
     localStorage.removeItem("jwtToken");
@@ -35,22 +37,29 @@ function Topbar(props) {
   return (
     <AppBar position="absolute" className={clsx(classes.appBar, openSidebar && classes.appBarShift)}>
       <Toolbar className={`${classes.toolbar} ${classes.spaceBetween} ${classes.colorTopBar}`}>
-        <div>
-          <IconButton
-            edge="start"
-            color="inherit"
-            aria-label="open drawer"
-            onClick={() => props.handleDrawerOpen()}
-            className={clsx(classes.menuButton, openSidebar && classes.menuButtonHidden)}
-          >
-            <MenuIcon />
-          </IconButton>
+        <div className={classes.topBarLogo}>
+          <div>
+            <IconButton
+              edge="start"
+              color="inherit"
+              aria-label="open drawer"
+              onClick={() => props.handleDrawerOpen()}
+              className={clsx(classes.menuButton, openSidebar && classes.menuButtonHidden)}
+            >
+              <MenuIcon />
+            </IconButton>
+          </div>
+          {matches &&
+            <ListItem button component={NavLink} to="/" className={`${classes.button} ${classes.brandText}`}>
+              {`E-Money`}
+            </ListItem>
+          }
         </div>
         <div className={classes.topBarButton}>
           {(
             <>
               <ListItem button component={NavLink} to="/profile" className={classes.button}>
-                <Typography style={{ marginRight: '10px' }}>{info.Name}</Typography>
+                {matches && <Typography style={{ marginRight: '10px' }}>{info.Name}</Typography>}
                 <img src={info.AvatarURL ? info.AvatarURL : defaultAvatar} className={`${classes.avatarImg}`}></img>
               </ListItem>
             </>
@@ -95,7 +104,7 @@ const useStyles = makeStyles((theme) => ({
     }),
   },
   menuButton: {
-    marginRight: 36,
+    marginRight: 8,
   },
   menuButtonHidden: {
     display: 'none',
@@ -105,6 +114,11 @@ const useStyles = makeStyles((theme) => ({
   },
   invisible: {
     cd: "hidden"
+  },
+  topBarLogo: {
+    display: 'flex',
+    justifyContent: 'flex-start',
+    fontSize: 24,
   },
   topBarButton: {
     display: 'flex',

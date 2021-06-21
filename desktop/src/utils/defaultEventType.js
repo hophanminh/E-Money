@@ -14,9 +14,15 @@ export default function getValueOfEventType(eventType) {
         }
     }
     if (eventType === "Hằng năm") {
+        let monthList = [];
         for (let i = 0; i < 12; i++) {
-            tempList = tempList.concat("Tháng " + (i + 1));
+            monthList = monthList.concat("Tháng " + (i + 1));
         }
+        let dayList = [];
+        for (let i = 0; i < 31; i++) {
+            dayList = dayList.concat("Ngày " + (i + 1));
+        }
+        tempList = { monthList, dayList }
     }
     return tempList;
 }

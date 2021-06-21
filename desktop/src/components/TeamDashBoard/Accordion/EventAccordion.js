@@ -28,7 +28,8 @@ const EventAccordion = (props) => {
     const { eventList } = useContext(EventContext);
     const { walletID, expanded, setExpanded } = useContext(WalletContext);
 
-    const list = eventList.slice().sort((a, b) => {
+    const notFinishList = eventList.filter(i => i.Status === 1)
+    const list = notFinishList.slice().sort((a, b) => {
         const time1 = moment(a?.NextDate);
         const time2 = moment(b?.NextDate)
         return time1.isBefore(time2);
