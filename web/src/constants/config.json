@@ -1,5 +1,5 @@
 {
-  "API_LOCAL": "https://e-money-backend.herokuapp.com",
+  "API_LOCAL": "http://localhost:9000",
   "API_PRODUCTION": "",
   "PASSWORDMINLENGTH": 6,
   "DATE_TIME_FORMAT": "DD/MM/YYYY HH:mm:ss",
