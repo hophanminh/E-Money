@@ -63,6 +63,11 @@ export default function TransactionDetail(props) {
       handleSetImageList(filteredList);
       // }
     });
+
+    return () => {
+      socket.off(`wait_for_add_transaction_image_${data?.id}`);
+      socket.off(`wait_for_remove_transaction_image_${data?.id}`);
+    }
   }, [imageList]);
 
 

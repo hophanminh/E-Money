@@ -27,3 +27,18 @@ export const customizeTextForTooltip = arg => {
     text: `${formatMoney(arg.value)}`
   }
 }
+
+function daysInMonth(m) { // m is 0 indexed: 0-11
+  switch (m) {
+    case 1:
+      return 29;
+    case 8: case 3: case 5: case 10:
+      return 30;
+    default:
+      return 31
+  }
+}
+
+export const isValidMonthDay = (d, m) => {
+  return m >= 0 && m < 12 && d >= 0 && d < daysInMonth(m);
+}

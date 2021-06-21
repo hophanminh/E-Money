@@ -29,11 +29,12 @@ import { formatMoney } from '../../utils/currency'
 export default function TransactionDetail(props) {
   const classes = useStyles();
   const socket = getSocket();
+  const { thu } = props;
   const { selected } = useContext(WalletContext)
   const { setOpen } = useContext(PopupContext)
 
   const data = selected;
-
+  const userID = localStorage.getItem('userID');
   ///////////////////////////////////////////////////// imageList[0].URL to access
   const [imageList, setImageList] = useState([]);
 
@@ -103,17 +104,19 @@ export default function TransactionDetail(props) {
                 </Typography>
                 }
               </Box>
-              <div>
-                <IconButton className={`${classes.iconButton} ${classes.green}`} aria-label="edit" onClick={handleOpenEditDialog}>
-                  <EditIcon />
-                </IconButton>
-                <IconButton className={`${classes.iconButton} ${classes.red}`} aria-label="delete" onClick={handleOpenDeleteDialog}>
-                  <DeleteIcon />
-                </IconButton>
-                <IconButton className={`${classes.iconButton} ${classes.blue}`} aria-label="delete" onClick={handleOpenRollbackDialog}>
-                  <RestoreIcon />
-                </IconButton>
-              </div>
+              {(userID === data?.userID || thu.find(i => i.UserID === userID)) &&
+                <div>
+                  <IconButton className={`${classes.iconButton} ${classes.green}`} aria-label="edit" onClick={handleOpenEditDialog}>
+                    <EditIcon />
+                  </IconButton>
+                  <IconButton className={`${classes.iconButton} ${classes.red}`} aria-label="delete" onClick={handleOpenDeleteDialog}>
+                    <DeleteIcon />
+                  </IconButton>
+                  <IconButton className={`${classes.iconButton} ${classes.blue}`} aria-label="delete" onClick={handleOpenRollbackDialog}>
+                    <RestoreIcon />
+                  </IconButton>
+                </div>
+              }
             </div>
 
             <Divider className={classes.dividerBold} />
@@ -146,7 +149,7 @@ export default function TransactionDetail(props) {
                 </Typography>
                 <Typography
                   className={`${classes.transactionSubText}`}>
-                  Đăng bởi: <b>{data?.userName}</b>
+                  Đăng bởi: <b>{data?.userName ? data?.userName : "Hệ thống"}</b>
                 </Typography>
               </Box>
               <TransactionImages transactionID={data?.id} images={imageList} setImages={handleSetImageList} />

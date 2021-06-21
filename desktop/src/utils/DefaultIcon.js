@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
     Icon,
     Box,
@@ -6,36 +6,17 @@ import {
     makeStyles,
 } from '@material-ui/core/';
 import config from '../constants/config.json';
+import { IconContext } from '../components/mycontext'
 
-let list = null;
 const API_URL = config.API_LOCAL;
-
-export const getListIcon = async () => {
-    const jwtToken = localStorage.getItem('jwtToken');
-    if (!list) {
-        try {
-            const res = await fetch(`${API_URL}/icons/list`, {
-                method: 'POST',
-                body: '',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${jwtToken}`
-                }
-            });
-            list = res.json()
-        } catch (error) {
-            list = [];
-        }
-    }
-    return list;
-}
 
 export default function DefaultIcon({ IconID, backgroundSize, iconSize }) {
     const [icon, setIcon] = useState();
+    const { iconList } = useContext(IconContext);
+
     // get initial list of icon
     useEffect(async () => {
-        const temp = await getListIcon();
-        const selected = temp.find(icon => icon.ID === IconID);
+        const selected = iconList.find(icon => icon.ID === IconID);
         setIcon(selected);
     }, [IconID]);
 

@@ -6,10 +6,12 @@ import PieChart, {
   Label,
   Font,
   Connector,
-  Tooltip
+  Tooltip,
+  Export
 } from 'devextreme-react/pie-chart';
 import { makeStyles } from '@material-ui/core/styles';
 import { PIE_CHART_PALETTE } from '../../constants/palette.json';
+import { MARKER_SIZE, FONT_SIZE } from '../../constants/config.json';
 import { customizeTextForLegend, customizeTextForLabel, customizeTextForTooltip } from '../../utils/helper';
 
 const useStyles = makeStyles((theme) => ({
@@ -27,7 +29,13 @@ const useStyles = makeStyles((theme) => ({
 
 export default function PieChartSpent({ date, chartData }) {
   const classes = useStyles();
-
+  const dateString = ()  => {
+    let month = date.getMonth() + 1;
+    let year = date.getFullYear();
+    if(month<10)
+      month = '0' + month;
+    return (month + "/" + year);
+}
   return (
     <div className={classes.container}>
       <div style={{ alignContent: 'center' }}>
@@ -39,7 +47,7 @@ export default function PieChartSpent({ date, chartData }) {
               className={classes.chart}
               palette={PIE_CHART_PALETTE}
               dataSource={chartData}
-              title={"Thống kê các khoản thu tháng " + (date.getMonth() + 1) + "/" + date.getFullYear()}
+              title={"Phân tích thu tháng " + dateString()}
             >
               <Legend
                 orientation="horizontal"
@@ -48,18 +56,24 @@ export default function PieChartSpent({ date, chartData }) {
                 verticalAlignment="bottom"
                 customizeText={arg => customizeTextForLegend(arg.pointName, chartData[arg.pointIndex].value)}
                 columnCount={4}
-              />
+                markerSize={MARKER_SIZE}
+              >
+                <Font size={FONT_SIZE.LEGEND_FONT_SIZE} />
+              </Legend>
               <Series argumentField="type" valueField="value">
                 <Label
                   visible={true}
                   position="columns"
                   customizeText={customizeTextForLabel}
                 >
-                  <Font size={16} />
+                  <Font size={FONT_SIZE.LABEL_FONT_SIZE} />
                   <Connector visible={true} width={0.5} />
                 </Label>
               </Series>
-              <Tooltip enabled={true} customizeTooltip={customizeTextForTooltip} />
+              <Tooltip enabled={true} customizeTooltip={customizeTextForTooltip}>
+                <Font size={FONT_SIZE.TOOLTIP_FONT_SIZE} />
+              </Tooltip>
+              <Export enabled={true} />
             </PieChart>
           }
         </Paper>

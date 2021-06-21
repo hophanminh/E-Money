@@ -15,11 +15,12 @@ import {
 } from '@material-ui/core/';
 import {
   PopupContext,
+  IconContext
 } from '../../mycontext'
 import POPUP from '../../../constants/popup.json'
 import { getSocket } from "../../../utils/socket";
 
-import DefaultIcon, { getListIcon } from '../../../utils/DefaultIcon'
+import DefaultIcon from '../../../utils/DefaultIcon'
 
 
 const fakeEvent = []
@@ -30,6 +31,7 @@ export default function AddCategory(props) {
   const socket = getSocket();
   const { id } = useParams();
   const { open, setOpen } = useContext(PopupContext);
+  const { iconList } = useContext(IconContext);
 
   const isOpen = open === NAME
 
@@ -41,15 +43,14 @@ export default function AddCategory(props) {
 
   // get list of icon
   useEffect(async () => {
-    const temp = await getListIcon();
-    setList(temp);
-    if (temp && temp.length !== 0) {
+    setList(iconList);
+    if (iconList && iconList.length !== 0) {
       setNewCategory({
         ...newCategory,
-        IconID: temp[0].ID,
+        IconID: iconList[0].ID,
       })
     }
-  }, []);
+  }, [iconList]);
 
   const clearNewCategory = () => {
     setNewCategory({
@@ -88,7 +89,6 @@ export default function AddCategory(props) {
     });
   }
 
-  console.log(list)
   return (
     <Dialog open={isOpen} onClose={handleCloseAddDialog} aria-labelledby="form-dialog-title">
       <DialogTitle id="form-dialog-title" >

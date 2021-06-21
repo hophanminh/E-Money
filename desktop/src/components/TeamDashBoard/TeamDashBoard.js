@@ -42,6 +42,10 @@ import EventAccordion from './Accordion/EventAccordion';
 import config from '../../constants/config.json';
 import cf from '../../Config/default.json';
 
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogTitle from '@material-ui/core/DialogTitle';
+
 const API_URL = config.API_LOCAL;
 
 const TeamDashBoard = () => {
@@ -51,7 +55,7 @@ const TeamDashBoard = () => {
   const { id } = useParams();
   const history = useHistory();
   const socket = getSocket();
-  const { setWalletID, selected, setSelected, list, setList, filterList, updateSelected } = useContext(WalletContext);
+  const { setWalletID, selected, setSelected, list, setList, filterList, updateTxCategory } = useContext(WalletContext);
   const { setOpen } = useContext(PopupContext);
   const { setAllList } = useContext(CategoryContext);
   const { setEventList } = useContext(EventContext);
@@ -62,13 +66,18 @@ const TeamDashBoard = () => {
     total: 0
   })
   const [team, setTeam] = useState();
-  const [thu, setTHU] = useState({});
+  const [thu, setTHU] = useState([]);
+  const [person, setPerson] = useState({});
   // get initial data
   useEffect(() => {
     socket.emit("get_team", { walletID: id }, ({ team, thu }) => {
       setTeam(team);
-      setTHU(thu[0]);
-      console.log("THU: ", thu.Role);
+      setTHU(thu.filter(i => i.Role === 1));;
+      var member = thu.filter(function (member) {
+        return member.UserID === userID;
+      });
+      setPerson(member[0]);
+
     });
 
     setWalletID(id);
@@ -83,7 +92,7 @@ const TeamDashBoard = () => {
       })
     });
 
-    socket.on('wait_for_update_transaction', ({ transactionList, total, spend, receive }) => {
+    socket.on(`wait_for_update_transaction_${id}`, ({ transactionList, total, spend, receive }) => {
       setList(transactionList);
       setStat({
         spend: spend,
@@ -97,8 +106,9 @@ const TeamDashBoard = () => {
     });
 
 
-    socket.on('wait_for_update_category', ({ defaultList, customList, fullList }) => {
-      setAllList(defaultList, customList, fullList)
+    socket.on(`wait_for_update_category_${id}`, ({ defaultList, customList, fullList }) => {
+      setAllList(defaultList, customList, fullList);
+      updateTxCategory(fullList);
     });
 
     socket.emit("get_event", { walletID: id }, ({ eventList }) => {
@@ -106,22 +116,18 @@ const TeamDashBoard = () => {
     });
 
 
-    socket.on('wait_for_update_event', ({ eventList }) => {
+    socket.on(`wait_for_update_event_${id}`, ({ eventList }) => {
       setEventList(eventList);
     });
 
 
     return () => {
-      socket.off("wait_for_update_transaction");
-      socket.off("wait_for_update_category");
-      socket.off("wait_for_update_event");
+      socket.off(`wait_for_update_transaction_${id}`);
+      socket.off(`wait_for_update_category_${id}`);
+      socket.off(`wait_for_update_event_${id}`);
       setOpen(null);
     }
   }, [id]);
-
-  useEffect(() => {
-    updateSelected();
-  }, [list])
 
 
   // add transaction
@@ -129,36 +135,47 @@ const TeamDashBoard = () => {
     setOpen(POPUP.TRANSACTION.ADD_TRANSACTION);
   }
 
+  const [open, setOpenDeleteDialog] = React.useState(false);
+
+  const handleClickOpen = () => {
+    setOpenDeleteDialog(true);
+  };
+
+  const handleClose = () => {
+    setOpenDeleteDialog(false);
+  };
+
+  const handleDelete = () => {
+    { (person.Role === 1) ? deleteTeam() : leaveTeam() }
+    handleClose();
+  }
+
   const leaveTeam = async () => {
     const data = {
-        UserID: userID
+      UserID: userID
     }
-    console.log('data: ' + data);
-    console.log('idTeam: ' + id);
     const res = await fetch(`${API_URL}/teams/${id}/leave`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(data),
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
     });
     history.push("/teams")
   }
 
   const deleteTeam = async () => {
     const data = {
-        UserID: userID
+      UserID: userID
     }
-    console.log('data: ' + data);
-    console.log('idTeam: ' + id);
     const res = await fetch(`${API_URL}/teams/${id}/delete`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(data),
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
     });
     history.push("/teams")
   }
@@ -197,19 +214,39 @@ const TeamDashBoard = () => {
                 &nbsp;Thông tin nhóm
               </Button>
             </Link>
-            <Link style={{ textDecoration: 'none', marginLeft: 10 }} >
-              <Button className={classes.teamLeaveButton} variant="outlined" 
-              onClick={() => (thu.Role === 1) ? deleteTeam () :leaveTeam()}
-            >
+            <div style={{ textDecoration: 'none', marginLeft: 10 }} >
+              <Button className={classes.teamLeaveButton} variant="outlined"
+                onClick={handleClickOpen}
+              >
                 <ExitToAppIcon className={classes.red} />
-                {(thu.Role === 1) ? ` Xóa nhóm` : ` Rời nhóm`}
+                {(person.Role === 1) ? ` Xóa nhóm` : ` Rời nhóm`}
               </Button>
-            </Link>
+            </div>
+            <Dialog
+              open={open}
+              onClose={handleClose}
+              aria-labelledby="alert-dialog-title"
+              aria-describedby="alert-dialog-description"
+            >
+              <DialogTitle >
+                <Typography className={classes.title}>
+                  Bạn có thực sự muốn {(person.Role === 1) ? ` xóa nhóm` : ` rời nhóm`}
+                </Typography>
+              </DialogTitle>
+              <DialogActions>
+                <Button style={{ color: "white", backgroundColor: "green", marginLeft: 10 }} variant="contained" color="primary" className={classes.margin} onClick={handleClose}>
+                  Hủy
+                  </Button>
+                <Button style={{ color: "white", backgroundColor: "red", marginLeft: 10 }} variant="contained" color="primary" className={classes.margin} onClick={handleDelete}>
+                  {(person.Role === 1) ? ` Xóa nhóm` : ` Rời nhóm`}
+                </Button>
+              </DialogActions>
+            </Dialog>
           </Box>
         </Box>
         <div className={classes.body}>
           <Grid container spacing={5} className={classes.grid}>
-            <Grid item lg={3} sm={12} >
+            <Grid item lg={3} sm={12} xs={12}>
               <Box
                 boxShadow={3}
                 bgcolor="background.paper"
@@ -224,7 +261,7 @@ const TeamDashBoard = () => {
               </Box>
             </Grid>
 
-            <Grid item lg={3} sm={12} >
+            <Grid item lg={3} sm={12} xs={12}>
               <Box
                 boxShadow={3}
                 bgcolor="background.paper"
@@ -239,7 +276,7 @@ const TeamDashBoard = () => {
               </Box>
             </Grid>
 
-            <Grid item lg={3} sm={12} >
+            <Grid item lg={3} sm={12} xs={12}>
               <Box
                 boxShadow={3}
                 bgcolor="background.paper"
@@ -254,7 +291,7 @@ const TeamDashBoard = () => {
               </Box>
             </Grid>
 
-            <Grid item lg={3} sm={12} >
+            <Grid item lg={3} sm={12} xs={12}>
               <Box
                 boxShadow={3}
                 bgcolor="background.paper"
@@ -272,7 +309,7 @@ const TeamDashBoard = () => {
 
           </Grid>
           <Grid container spacing={5} alignItems="stretch" className={classes.lowerGrid}>
-            <Grid item lg={3} sm={12}>
+            <Grid item lg={3} sm={12} xs={12}>
               <Box
                 boxShadow={3}
                 bgcolor="background.paper"
@@ -292,13 +329,13 @@ const TeamDashBoard = () => {
               </Box>
             </Grid>
 
-            <Grid item lg={6} sm={12}>
+            <Grid item lg={6} sm={12} xs={12}>
               <Box
                 boxShadow={3}
                 bgcolor="background.paper"
                 className={classes.transactionBox}>
                 {filterList &&
-                  <TransactionDetail />}
+                  <TransactionDetail thu={thu} />}
               </Box>
             </Grid>
 

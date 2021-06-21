@@ -21,7 +21,7 @@ export const CategoryProvider = (props) => {
   //Category
   const updateSelected = () => {
     if (selected) {
-      const temp = categoryList.find(i => i?.id === selected?.id)
+      const temp = categoryList?.fullList?.find(i => i?.id === selected?.id)
       setSelected(temp);
     }
   }

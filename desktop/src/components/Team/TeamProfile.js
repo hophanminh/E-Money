@@ -15,143 +15,147 @@ import SnackBar from '../snackbar/SnackBar';
 
 const API_URL = config.API_LOCAL;
 const styles = {
-    wallpaper: {
-        width: '100%',
-        height: '50vh'
-    },
-    body: {
-        marginTop: '10vh',
-        marginBottom: '10vh',
-        display: 'flex',
-        justifyContent: 'center',
-        align: 'center'
-    }
+  wallpaper: {
+    width: '100%',
+    height: '50vh'
+  },
+  body: {
+    marginTop: '10vh',
+    marginBottom: '10vh',
+    display: 'flex',
+    justifyContent: 'center',
+    align: 'center'
+  }
 }
 
 export default function TeamProfile() {
 
-    const userID = localStorage.getItem('userID');
-    const token = localStorage.getItem('jwtToken');
-    const history = useHistory();
-    const [errors, setErrors] = useState({});
-    const [teamName, setTeamName] = useState("");
-    const [description, setDiscription] = useState("");
-    const [numberUser, setNumberUser] = useState(10);
-    const [avatar, setAvatar] = useState(null);
-    const { isLoggedIn } = useContext(MyContext);
+  const userID = localStorage.getItem('userID');
+  const token = localStorage.getItem('jwtToken');
+  const history = useHistory();
+  const [errors, setErrors] = useState({});
+  const [teamName, setTeamName] = useState("");
+  const [description, setDiscription] = useState("");
+  const [numberUser, setNumberUser] = useState(10);
+  const [avatar, setAvatar] = useState(null);
+  const { isLoggedIn } = useContext(MyContext);
 
-    const [content, setContent] = useState("");
-    const [showSnackbar, setShowSnackBar] = useState(false);
+  const [content, setContent] = useState("");
+  const [showSnackbar, setShowSnackBar] = useState(false);
 
-    useEffect(() => {
-        console.log(isLoggedIn);
-        if (isLoggedIn !== null && isLoggedIn === false) {
-            history.push('/');
-        }
-    }, [isLoggedIn]);
-
-    const handleTeamNameChange = (teamName) => {
-        setTeamName(teamName);
+  useEffect(() => {
+    if (isLoggedIn !== null && isLoggedIn === false) {
+      history.push('/');
     }
-    const handleNumberUsers = (number) => {
-        setNumberUser(number);
-    }
-    const handleDescription = (des) => {
-        setDiscription(des);
-    }
+  }, [isLoggedIn]);
+
+  const handleTeamNameChange = (teamName) => {
+    setTeamName(teamName);
+  }
+  const handleNumberUsers = (number) => {
+    setNumberUser(number);
+  }
+  const handleDescription = (des) => {
+    setDiscription(des);
+  }
 
 
-    const handleSaveChange = async () => {
+  const handleSaveChange = async () => {
 
-        const errorObjs = {
-        };
+    const errorObjs = {
+    };
 
-        if (helper.isBlankString(teamName)) {
-            errorObjs.teamName = "Tên hiển thị không được để trống";
-        }
-
-        setErrors(errorObjs);
-
-        if (Object.keys(errorObjs).length > 0) {
-            return;
-        }
-
-        const data = {
-            Name: teamName,
-            MaxUsers: numberUser,
-            Description: description
-        }
-        const res = await fetch(`${API_URL}/teams/${userID}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`
-            },
-            body: JSON.stringify(data),
-        });
-
-        if (res.status === 200) {
-            setContent("Cập nhật thành công");
-            setShowSnackBar(true);
-        } else {
-            // alert("Some error when updating!")
-        }
-
-        history.push("/teams");
+    if (helper.isBlankString(teamName)) {
+      errorObjs.teamName = "Tên hiển thị không được để trống";
     }
 
-    return (
-        <>
-            <SnackBar open={showSnackbar} setOpen={(isOpen) => setShowSnackBar(isOpen)} content={content} />
-            <div style={styles.body}>
-                <Container xs={12} sm={12} md={6} component="main" maxWidth="lg">
-                    <Grid align="center">
-                            <div style={{ textAlign: 'center', width: '80%' }}>
-                                <Typography component="h2" variant="h5" style={{ fontWeight: 'bold' }}>
-                                    Thông tin tạo nhóm
+    setErrors(errorObjs);
+
+    if (Object.keys(errorObjs).length > 0) {
+      return;
+    }
+
+    const data = {
+      Name: teamName,
+      MaxUsers: numberUser,
+      Description: description
+    }
+    const res = await fetch(`${API_URL}/teams/${userID}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (res.status === 201) {
+      const result = await res.json();
+      setContent("Tạo nhóm thành công");
+      setShowSnackBar(true);
+      history.push(`/Wallet/${result.result}`);
+
+    } else {
+      // alert("Some error when updating!")
+      setContent("Tạo nhóm thất bại");
+      setShowSnackBar(true);
+      history.push(`/teams/create`);
+    }
+  }
+
+  return (
+    <>
+      <SnackBar open={showSnackbar} setOpen={(isOpen) => setShowSnackBar(isOpen)} content={content} />
+      <div style={styles.body}>
+        <Container xs={12} sm={12} md={6} component="main" maxWidth="lg">
+          <Grid align="center">
+            <div style={{ textAlign: 'center', width: '80%' }}>
+              <Typography component="h2" variant="h5" style={{ fontWeight: 'bold' }}>
+                Thông tin tạo nhóm
                                 </Typography>
-                                <div style={{ margin: '20px 0 20px' }}>
-                                    <div class="container">
-                                        <Typography style={{ fontWeight: 'bold' }} variant="h6">Tên nhóm</Typography>
-                                        <div class="input-invalid">{errors.teamName}</div>
-                                    </div>
-                                    <TextField placeholder="Tên nhóm" variant="outlined"
-                                               margin="normal" required fullWidth autoFocus
-                                               onChange={e => handleTeamNameChange(e.target.value)}
-                                               value={teamName}
-                                    />
+              <div style={{ margin: '20px 0 20px' }}>
+                <div class="container">
+                  <Typography style={{ fontWeight: 'bold' }} variant="h6">Tên nhóm</Typography>
+                  <div class="input-invalid">{errors.teamName}</div>
+                </div>
+                <TextField placeholder="Tên nhóm" variant="outlined"
+                  margin="normal" required fullWidth autoFocus
+                  onChange={e => handleTeamNameChange(e.target.value)}
+                  value={teamName}
+                />
 
-                                    <div class="container margin-top-10">
-                                        <Typography style={{ fontWeight: 'bold' }} variant="h6">Số lượng thành viên</Typography>
-                                        <div class="input-invalid">{errors.numberUser}</div>
-                                    </div>
-                                    <TextField placeholder="Số lượng" variant="outlined"
-                                               margin="normal" required fullWidth
-                                               value={numberUser}
-                                               onChange={e => handleNumberUsers(e.target.value)}
-                                    />
+                <div class="container margin-top-10">
+                  <Typography style={{ fontWeight: 'bold' }} variant="h6">Số lượng thành viên</Typography>
+                  <div class="input-invalid">{errors.numberUser}</div>
+                </div>
+                <TextField placeholder="Số lượng" variant="outlined"
+                  margin="normal" required fullWidth
+                  value={numberUser}
+                  onChange={e => handleNumberUsers(e.target.value)}
+                  type="number"
+                />
 
-                                    <div class="container margin-top-10">
-                                        <Typography style={{ fontWeight: 'bold' }} variant="h6">Mô tả</Typography>
-                                    </div>
-                                    <TextField placeholder="Mô tả"
-                                                multiline
-                                               variant="outlined" margin="normal" required fullWidth
-                                               onChange={e => handleDescription(e.target.value)}
-                                               value={description}
-                                    />
-                                </div>
+                <div class="container margin-top-10">
+                  <Typography style={{ fontWeight: 'bold' }} variant="h6">Mô tả</Typography>
+                </div>
+                <TextField placeholder="Mô tả"
+                  multiline
+                  variant="outlined" margin="normal" required fullWidth
+                  onChange={e => handleDescription(e.target.value)}
+                  value={description}
+                />
+              </div>
 
-                                <Button type="submit" fullWidth variant="contained" style={{ backgroundColor: palette.primary, color: 'white', fontWeight: 'bold', marginTop: '20px' }}
-                                        onClick={handleSaveChange}
-                                        startIcon={<SaveIcon />}
-                                >
-                                    Tạo nhóm
+              <Button type="submit" fullWidth variant="contained" style={{ backgroundColor: palette.primary, color: 'white', fontWeight: 'bold', marginTop: '20px' }}
+                onClick={handleSaveChange}
+                startIcon={<SaveIcon />}
+              >
+                Tạo nhóm
                                 </Button>
-                            </div>
-                    </Grid>
-                </Container>
             </div>
-        </>
-    );
+          </Grid>
+        </Container>
+      </div>
+    </>
+  );
 }
