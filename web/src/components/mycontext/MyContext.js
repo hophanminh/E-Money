@@ -44,12 +44,12 @@ export const MyProvider = (props) => {
     }
 
     try {
-      let res = await timeoutPromise(800, fetchInfo());
+      let res = await timeoutPromise(10000, fetchInfo());
     } catch (error) {
       // remove if any
-      window.localStorage.removeItem('jwtToken');
-      window.localStorage.removeItem('userID');
-      setIsLoggedIn(false);
+      // window.localStorage.removeItem('jwtToken');
+      // window.localStorage.removeItem('userID');
+      // setIsLoggedIn(false);
       setIsLoading(false);
     }
 
