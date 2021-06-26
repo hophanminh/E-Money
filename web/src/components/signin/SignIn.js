@@ -129,8 +129,8 @@ export default function SignIn() {
     const result = await res.json();
 
     if (res.status === 200) {
-      window.localStorage.setItem('jwtToken', result.token);
       window.localStorage.setItem('userID', result.user.ID);
+      window.localStorage.setItem('jwtToken', result.token);
       window.localStorage.removeItem('resetID');
 
       setInfo(result.user);
