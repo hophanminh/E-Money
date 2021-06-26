@@ -9,16 +9,14 @@ const MyContext = createContext({});
 export default MyContext;
 
 export const MyProvider = (props) => {
-  const socket = getSocket();
   const [isLoggedIn, setIsLoggedIn] = useState(null);
   const [info, setInfo] = useState({});
-  const token = window.localStorage.getItem('jwtToken');
-  const userID = localStorage.getItem('userID');
-
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(async () => {
     async function fetchInfo() {
+      const token = window.localStorage.getItem('jwtToken');
+      const userID = localStorage.getItem('userID');
       const res = await fetch(`${API_URL}/users/${userID}`, {
         method: 'GET',
         headers: {
@@ -55,12 +53,28 @@ export const MyProvider = (props) => {
 
   }, []);
 
-  useEffect(async () => {
+  useEffect(() => {
+    async function fetchInfo() {
+      const token = window.localStorage.getItem('jwtToken');
+      const userID = localStorage.getItem('userID');
+      const res = await fetch(`${API_URL}/users/${userID}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        }
+      });
+      if (res.status === 200) {
+        const result = await res.json();
+        setInfo(result.user);
+        // setIsLoggedIn(true);
+        setIsLoading(false);
+      }
+    }
 
     if (isLoggedIn !== null && isLoggedIn) {
-      socket.on(`update_profile_${info.ID}`, ({ user }) => {
-        setInfo(user);
-      });
+      console.log('object');
+      fetchInfo();
     }
   }, [isLoggedIn])
 
