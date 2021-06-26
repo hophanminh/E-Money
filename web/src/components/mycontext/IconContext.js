@@ -12,7 +12,7 @@ export const IconProvider = (props) => {
   const { isLoggedIn } = useContext(MyContext);
 
   useEffect(() => {
-    if (isLoggedIn) {
+    if (isLoggedIn && iconList?.length === 0) {
       fetchIcon().then(list => setIconList(list))
     }
   }, [isLoggedIn])
