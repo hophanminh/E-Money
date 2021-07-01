@@ -63,6 +63,13 @@ export default function SignUp() {
     history.push('/signin');
   }
 
+  async function handleKeyPress(event) {
+    if (event.code === "Enter" || event.code === "NumpadEnter") {
+      event.preventDefault();
+      await handleSubmit();
+    }
+  }
+
   const handleSubmit = async () => {
     const errorObj = {
     }
@@ -178,7 +185,7 @@ export default function SignUp() {
                     <Typography variant='h6'>Đang xử lý</Typography>
                   </DialogContent>
                 </Dialog>
-                <div style={{ ...styles.shadow, ...styles.paper, width: '100%', alignItems: 'center' }}>
+                <div style={{ ...styles.shadow, ...styles.paper, width: '100%', alignItems: 'center' }} onKeyPress={handleKeyPress}>
                   <Typography gutterBottom style={{ color: palette.primary, fontWeight: 'bold' }} variant='h5'>Đăng ký tài khoản</Typography>
 
                   <Grid container spacing={6}>

@@ -24,6 +24,21 @@ export default function RequestGenerator({ setShowSnackBar, setContent }) {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [errors, setErrors] = useState({});
+  const styles = {
+    button: {
+      borderRadius: '4px',
+      color: '#FFFFFF',
+      fontWeight: 'bold',
+      padding: '5px 40px',
+      marginLeft: '20px'
+    },
+    closeButton: {
+      backgroundColor: '#F50707',
+    },
+    addButton: {
+      backgroundColor: '#1DAF1A',
+    },
+  }
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -87,8 +102,8 @@ export default function RequestGenerator({ setShowSnackBar, setContent }) {
 
   return (
     <div>
-      <Link onClick={handleClickOpen} variant="body2" style={{ cursor: 'pointer ' }}>
-        {"Quên mật khẩu?"}
+      <Link onClick={handleClickOpen} component="button" variant="body2" style={{ cursor: 'pointer ' }}>
+        Quên mật khẩu?
       </Link>
       <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
         <DialogTitle id="form-dialog-title">Đặt lại mật khẩu</DialogTitle>
@@ -104,7 +119,7 @@ export default function RequestGenerator({ setShowSnackBar, setContent }) {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
           />
-          <div class="input-invalid">
+          <div className="input-invalid">
             {errors.username}
           </div>
           <TextField
@@ -115,7 +130,7 @@ export default function RequestGenerator({ setShowSnackBar, setContent }) {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
-          <div class="input-invalid">
+          <div className="input-invalid">
             {errors.email}
           </div>
         </DialogContent>
@@ -126,12 +141,13 @@ export default function RequestGenerator({ setShowSnackBar, setContent }) {
           </DialogContent>
         </Dialog>
         <DialogActions>
-          <Button onClick={handleSubmit} color="primary" variant="outlined">
-            Xác nhận
-          </Button>
-          <Button onClick={handleClose} color="primary">
+          <Button onClick={handleClose} color="primary" style={{ ...styles.button, ...styles.closeButton }}>
             Hủy
           </Button>
+          <Button onClick={handleSubmit} style={{ ...styles.button, ...styles.addButton }}>
+            Xác nhận
+          </Button>
+
         </DialogActions>
       </Dialog>
     </div>

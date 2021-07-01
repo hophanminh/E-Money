@@ -41,7 +41,7 @@ function PhoneInfo() {
       <Grid item>
         <PhoneIcon />
       </Grid>
-      <Grid item xs zeroMinWidth overflowWrap >
+      <Grid item xs zeroMinWidth >
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           <div>
             0909789651
@@ -62,7 +62,7 @@ function MailInfo() {
       <Grid item >
         <MailIcon />
       </Grid>
-      <Grid item xs zeroMinWidth overflowWrap >
+      <Grid item xs zeroMinWidth  >
         <Typography style={{ overflowWrap: 'break-word' }}>1712592@student.hcmus.edu.vn</Typography>
       </Grid>
     </Grid>

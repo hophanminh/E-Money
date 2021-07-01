@@ -85,12 +85,12 @@ export default function SignIn() {
     history.push('/signup');
   }
 
-  const handleEnter = async (e) => {
-    if (e.key === 'Enter') {
+  async function handleKeyPress(event) {
+    if (event.code === "Enter" || event.code === "NumpadEnter") {
+      event.preventDefault();
       await handleSubmit();
     }
-
-  }
+  };
 
   const handleSubmit = async () => {
 
@@ -158,21 +158,6 @@ export default function SignIn() {
           </div>
           <div style={{ width: '65%', position: 'absolute', right: 0, zIndex: -2, height: '100%' }} className="bgimg"></div>
         </Hidden>
-        {/* <div style={{ width: '45%', position: 'absolute', right: 0, zIndex: -1, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', color: '#fff' }}>
-          <div style={{ ...styles.socialLoginButton }} >
-            <Typography style={styles.logoContainer}>
-              <img src={FacebookIcon} alt="Facebook icon" style={styles.logo} />
-              Đăng nhập bằng Facebook
-            </Typography>
-          </div>
-          <div style={styles.socialLoginButton}>
-            <Typography style={{ ...styles.logoContainer }}>
-              <img src={GoogleIcon} alt="Google icon" style={styles.logo} />
-              Đăng nhập bằng Google
-            </Typography>
-          </div>
-        </div> */}
-
         <div className="trap-content">
           <Container component="main" maxWidth="xl">
             <SnackBar open={showSnackbar} setOpen={(isOpen) => setShowSnackBar(isOpen)} content={content} />
@@ -199,98 +184,48 @@ export default function SignIn() {
                 </Grid>
 
               </Hidden>
-              <Grid item xs={12} sm={10} md={6} align="center">
-                <div style={{ ...styles.shadow, ...styles.paper, width: '100%' }}>
-                  <Typography style={{ color: Palette.primary, fontWeight: 'bold' }} variant='h5'>Đăng nhập tài khoản</Typography>
-                  <div style={{ margin: '20px 0 20px' }}>
-                    <TextField label="Tên tài khoản" variant="outlined"
-                      margin="normal" required fullWidth autoFocus
-                      onChange={e => handleUsernameChange(e.target.value)}
-                      value={username}
-                    // onKeyUp={handleEnter}
-                    />
-                    <div className="input-invalid">
-                      {errors.username}
+              <form onKeyPress={handleKeyPress}>
+                <Grid item xs={12} sm={10} md={6} align="center">
+                  <div style={{ ...styles.shadow, ...styles.paper, width: '100%' }}>
+                    <Typography style={{ color: Palette.primary, fontWeight: 'bold' }} variant='h5'>Đăng nhập tài khoản</Typography>
+                    <div style={{ margin: '20px 0 20px' }}>
+                      <TextField label="Tên tài khoản" variant="outlined"
+                        margin="normal" required fullWidth autoFocus
+                        onChange={e => handleUsernameChange(e.target.value)}
+                        value={username}
+                      />
+                      <div className="input-invalid">
+                        {errors.username}
+                      </div>
+                      <TextField label="Mật khẩu" type="password"
+                        variant="outlined" margin="normal" required fullWidth
+                        onChange={e => handlePasswordChange(e.target.value)}
+                        value={password}
+                      // onKeyPress={handleKeyPress}
+                      />
+                      <div className="input-invalid">
+                        {errors.password}
+                      </div>
+                      <Link variant="body2" >
+                        <ResetPassword setContent={setContent} setShowSnackBar={setShowSnackBar} />
+                      </Link>
                     </div>
-                    <TextField label="Mật khẩu" type="password"
-                      variant="outlined" margin="normal" required fullWidth
-                      onChange={e => handlePasswordChange(e.target.value)}
-                      value={password}
-                    />
-                    <div className="input-invalid">
-                      {errors.password}
-                    </div>
-                    <Link variant="body2" >
-                      <ResetPassword setContent={setContent} setShowSnackBar={setShowSnackBar} />
-                    </Link>
-                  </div>
 
-                  <Button
-                    type="submit" fullWidth variant="contained"
-                    onClick={() => handleSubmit()}
-                    style={{
-                      ...styles.submit, backgroundColor: Palette.primary, color: '#fff',
-                      fontWeight: 'bold', margin: '5px 0 20px'
-                    }}
-                  >
-                    Đăng nhập
+                    <Button
+                      type="submit" fullWidth variant="contained"
+                      onClick={() => handleSubmit()}
+                      style={{
+                        ...styles.submit, backgroundColor: Palette.primary, color: '#fff',
+                        fontWeight: 'bold', margin: '5px 0 20px'
+                      }}
+                    >
+                      Đăng nhập
                   </Button>
-                </div>
-              </Grid>
-
-              {/* <Grid item xs={6} sm={6} md={6} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-end' }}> */}
-              {/* <div style={styles.socialLoginButton} >
-                  <Typography style={{ display: 'table-cell', verticalAlign: 'middle', fontWeight: 'bold' }}>
-                    <img src={FacebookIcon} alt="Facebook icon" style={{ width: '40px', height: '40px', margin: '5px', verticalAlign: 'middle' }} />
-                    Đăng nhập bằng Facebook
-                </Typography>
-                </div>
-                <div style={styles.socialLoginButton}>
-                  <Typography style={{ display: 'table-cell', verticalAlign: 'middle', fontWeight: 'bold' }}>
-                    <img src={GoogleIcon} alt="Google icon" style={{ width: '40px', height: '40px', margin: '5px', verticalAlign: 'middle' }} />
-                    Đăng nhập bằng Google
-                </Typography>
-                </div>
-                {/* <FacebookLogin
-                  appId="384191462701845"
-                  autoLoad={false}
-                  fields="name,email,picture"
-                  // onClick={componentClicked}
-                  callback={responseFacebook}
-                  render={renderProps => (
-                    <div className={`${styles.socialLoginButton} ${styles.facebook} ${styles.shadow}`}>
-                      <Typography onClick={renderProps.onClick} style={{ display: 'table-cell', verticalAlign: 'middle', fontWeight: 'bold' }}> <FacebookIcon style={{ margin: '10px', verticalAlign: 'middle' }} />Sign in with FaceBook</Typography>
-                    </div>
-                  )}
-                />
-                <GoogleLogin
-                  clientId="226602372235-lp2s47icle0bm0c58rnsp58f9a4tuid3.apps.googleusercontent.com" // clientID này của account: lactuanminh2121
-                  render={renderProps => (
-                    <div className={`${styles.socialLoginButton} ${styles.google} ${styles.shadow}`}
-                      onClick={renderProps.onClick}>
-                      <Typography style={{ display: 'table-cell', verticalAlign: 'middle', fontWeight: 'bold' }}>
-                        <img src={GoogleIcon} alt="Google icon" style={{ width: '25px', height: '25px', margin: '10px', verticalAlign: 'middle' }} />
-                    Sign in with Google
-                </Typography>
-                    </div>)}
-                  buttonText="Login"
-                  onSuccess={responseGoogle}
-                  onFailure={responseGoogle}
-                  cookiePolicy={'single_host_origin'}
-                  icon={false}
-                > */}
-              {/* <div className={`${styles.socialLoginButton} ${styles.google} ${styles.shadow}`}>
-              <Typography style={{ display: 'table-cell', verticalAlign: 'middle', fontWeight: 'bold' }}>
-                <img src={GoogleIcon} alt="Google icon" style={{ width: '25px', height: '25px', verticalAlign: 'middle' }} />
-                     Sign in with Google
-                 </Typography>
-            </div> 
-                </GoogleLogin> */}
-              {/* </Grid> */}
+                  </div>
+                </Grid>
+              </form>
             </Grid>
-
           </Container>
-
         </div>
       </div>
     </>
