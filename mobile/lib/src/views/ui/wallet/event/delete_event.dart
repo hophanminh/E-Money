@@ -1,12 +1,7 @@
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
-import 'package:mobile/src/config/config.dart';
-import 'package:mobile/src/services/restapiservices/user_service.dart';
 import 'package:mobile/src/services/socketservices/socket.dart';
 import 'package:mobile/src/views/utils/helpers/helper.dart';
-import 'package:mobile/src/views/utils/widgets/widget.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 
 class DeleteEventDialog extends StatefulWidget {
@@ -35,7 +30,7 @@ class _DeleteEventDialogState extends State<DeleteEventDialog> {
           backgroundColor: Colors.white,
           child: SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(15, 0, 15, 20),
+              padding: const EdgeInsets.fromLTRB(15, 0, 15, 10),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -70,7 +65,7 @@ class _DeleteEventDialogState extends State<DeleteEventDialog> {
                           },
                           child: Text(
                             'Hủy',
-                            style: TextStyle(fontSize: 16, color: Colors.red),
+                            style: TextStyle(fontSize: 16, color: Colors.black54),
                           )),
                       TextButton(
                           onPressed: () {

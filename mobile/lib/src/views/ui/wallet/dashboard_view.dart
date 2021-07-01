@@ -65,7 +65,7 @@ class _DashboardState extends State<Dashboard> {
             actions: <Widget>[
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
-                child: new Text('Hủy'),
+                child: new Text('Hủy', style: TextStyle(color: Colors.red),),
               ),
               TextButton(
                 onPressed: () => Navigator.of(context).pop(true),

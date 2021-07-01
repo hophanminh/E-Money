@@ -64,7 +64,7 @@ class _DeleteTransactionImageDialogState extends State<DeleteTransactionImageDia
                     child: Padding(
                       padding: const EdgeInsets.only(bottom: 20.0),
                       child: Text(
-                        'Bạn có chắc chắn muốn ảnh giao dịch này?',
+                        'Bạn có chắc chắn muốn xóa ảnh giao dịch này?',
                       ),
                     ),
                   ),
@@ -77,7 +77,7 @@ class _DeleteTransactionImageDialogState extends State<DeleteTransactionImageDia
                           },
                           child: Text(
                             'Hủy',
-                            style: TextStyle(fontSize: 16, color: Colors.red),
+                            style: TextStyle(fontSize: 16, color: Colors.black54),
                           )),
                       TextButton(
                           onPressed: () {

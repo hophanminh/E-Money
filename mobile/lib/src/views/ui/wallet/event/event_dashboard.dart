@@ -1,9 +1,7 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:mobile/src/models/EventsProvider.dart';
 import 'package:mobile/src/services/socketservices/socket.dart';
-import 'package:mobile/src/views/ui/wallet/category/add_cat.dart';
 import 'package:mobile/src/views/ui/wallet/event/add_event.dart';
 import 'package:mobile/src/views/ui/wallet/event/delete_event.dart';
 import 'package:mobile/src/views/ui/wallet/event/view_event.dart';
@@ -122,6 +120,8 @@ class _EventDashboardState extends State<EventDashboard> {
 
   _createRunningEventList(Events item) {
     return Card(
+      color: Colors.transparent,
+      shadowColor: Colors.transparent,
       margin: EdgeInsets.symmetric(vertical: 10),
       child: GestureDetector(
         onTap: () {
@@ -150,7 +150,11 @@ class _EventDashboardState extends State<EventDashboard> {
           child: DefaultTextStyle(
             style: TextStyle(fontSize: 15, color: Colors.white),
             child: Container(
-              decoration: BoxDecoration(color: Color(0xff13315f), borderRadius: BorderRadius.circular(12)),
+              decoration: BoxDecoration(
+                  gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [primary.withOpacity(0.8), const Color(0xffb3eb50)]
+                      // colors: [primary.withOpacity(0.4), Colors.grey[300]]
+                      ),
+                  borderRadius: BorderRadius.circular(12)),
               padding: EdgeInsets.all(15),
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Container(
@@ -160,15 +164,15 @@ class _EventDashboardState extends State<EventDashboard> {
                       style: TextStyle(fontSize: 20),
                     )),
                 Padding(
-                    padding: const EdgeInsets.only(top: 20),
+                    padding: const EdgeInsets.only(top: 15),
                     child: Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
                           '${item.expectingAmount < 0 ? '' : '+'}${formatMoneyWithSymbol(item.expectingAmount)}',
-                          style: TextStyle(color: item.expectingAmount < 0 ? Colors.redAccent : Colors.lightGreenAccent, fontWeight: FontWeight.bold, fontSize: 35),
+                          style: TextStyle(color: item.expectingAmount < 0 ? Colors.redAccent[100] : Colors.lightGreenAccent[100], fontWeight: FontWeight.bold, fontSize: 35),
                         ))),
                 Padding(
-                  padding: const EdgeInsets.only(top: 20.0),
+                  padding: const EdgeInsets.only(top: 15.0),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -184,16 +188,17 @@ class _EventDashboardState extends State<EventDashboard> {
                         ],
                       )),
                       Expanded(
-                          child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Text('Thời gian còn lại'),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 8.0),
-                            child: Text('${timeRemaining(item.nextDate)}', textAlign: TextAlign.end, style: TextStyle(fontWeight: FontWeight.w300)),
-                          )
-                        ],
-                      ))
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text('Thời gian còn lại'),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 8.0),
+                              child: Text('${timeRemaining(item.nextDate)}', textAlign: TextAlign.end, style: TextStyle(fontWeight: FontWeight.w300)),
+                            )
+                          ],
+                        ),
+                      )
                     ],
                   ),
                 ),
@@ -207,6 +212,8 @@ class _EventDashboardState extends State<EventDashboard> {
 
   _createStoppedEventList(Events item) {
     return Card(
+      color: Colors.transparent,
+      shadowColor: Colors.transparent,
       margin: EdgeInsets.symmetric(vertical: 10),
       child: GestureDetector(
         onTap: () {
@@ -216,7 +223,19 @@ class _EventDashboardState extends State<EventDashboard> {
         child: DefaultTextStyle(
           style: TextStyle(fontSize: 15, color: Colors.white),
           child: Container(
-            decoration: BoxDecoration(color: Color(0xff13315f), borderRadius: BorderRadius.circular(7)),
+            decoration: BoxDecoration(
+                gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Colors.grey[700], Colors.grey[400]]),
+                // color: Color(0xff13315f),
+                // border: Border.all(color: primary, width: 2),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.1),
+                    spreadRadius: 2,
+                    blurRadius: 3,
+                    offset: Offset(0, 2), // changes position of shadow
+                  )
+                ],
+                borderRadius: BorderRadius.circular(7)),
             padding: EdgeInsets.all(15),
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Container(
@@ -226,40 +245,42 @@ class _EventDashboardState extends State<EventDashboard> {
                     style: TextStyle(fontSize: 20),
                   )),
               Padding(
-                  padding: const EdgeInsets.only(top: 20),
+                  padding: const EdgeInsets.only(top: 15),
                   child: Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
                         '${item.expectingAmount < 0 ? '' : '+'}${formatMoneyWithSymbol(item.expectingAmount)}',
-                        style: TextStyle(color: item.expectingAmount < 0 ? Colors.redAccent : Colors.lightGreenAccent, fontWeight: FontWeight.bold, fontSize: 35),
+                        style: TextStyle(color: item.expectingAmount < 0 ? Colors.redAccent[100] : Colors.lightGreenAccent[100], fontWeight: FontWeight.bold, fontSize: 35),
                       ))),
               Padding(
-                padding: const EdgeInsets.only(top: 20.0),
+                padding: const EdgeInsets.only(top: 15.0),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Expanded(
-                        child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Ngày bắt đầu'),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 8.0),
-                          child: Text('${convertToDDMMYYYYHHMM(item.startDate)}', style: TextStyle(fontWeight: FontWeight.w300)),
-                        )
-                      ],
-                    )),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Ngày bắt đầu'),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: Text('${convertToDDMMYYYYHHMM(item.startDate)}', style: TextStyle(fontWeight: FontWeight.w300)),
+                          )
+                        ],
+                      ),
+                    ),
                     Expanded(
-                        child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text('Ngày kết thúc'),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 8.0),
-                          child: Text('${convertToDDMMYYYYHHMM(item.endDate)}', textAlign: TextAlign.end, style: TextStyle(fontWeight: FontWeight.w300)),
-                        )
-                      ],
-                    ))
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text('Ngày kết thúc'),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: Text('${convertToDDMMYYYYHHMM(item.endDate)}', textAlign: TextAlign.end, style: TextStyle(fontWeight: FontWeight.w300)),
+                          )
+                        ],
+                      ),
+                    )
                   ],
                 ),
               ),
@@ -274,7 +295,7 @@ class _EventDashboardState extends State<EventDashboard> {
       onPressed: () async {
         await Navigator.push(context, MaterialPageRoute(builder: (context) => AddEvent(walletID: widget.walletID, wrappingScaffoldKey: _scaffoldKey)));
       },
-      tooltip: 'Thêm loại giao dịch mới',
+      tooltip: 'Thêm sự kiện mới',
       child: Icon(Icons.add),
       backgroundColor: secondary,
       foregroundColor: Colors.white);

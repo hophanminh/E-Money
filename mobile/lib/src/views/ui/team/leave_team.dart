@@ -66,7 +66,7 @@ class _LeaveTeamDialogState extends State<LeaveTeamDialog> {
                         },
                         child: Text(
                           'Hủy',
-                          style: TextStyle(fontSize: 16),
+                          style: TextStyle(fontSize: 16, color: Colors.black54),
                         )),
                     TextButton(
                         onPressed: () {
@@ -74,7 +74,7 @@ class _LeaveTeamDialogState extends State<LeaveTeamDialog> {
                         },
                         child: Text(
                           'Rời nhóm',
-                          style: TextStyle(fontSize: 16),
+                          style: TextStyle(fontSize: 16, color: Colors.red),
                         )),
                   ],
                 )
