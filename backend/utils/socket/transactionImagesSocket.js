@@ -3,7 +3,7 @@ const { v4: uuidv4 } = require('uuid');
 const config = require("../../config/default.json");
 const cloudinary = require('cloudinary').v2;
 cloudinary.config(config.CLOUDINARY);
-module.exports = function (socket, decoded_userID) {
+module.exports = function (socket, io, decoded_userID) {
 
   // get image from 1 transaction
   socket.on('get_transaction_image', async ({ TransactionID }, callback) => {
@@ -16,7 +16,7 @@ module.exports = function (socket, decoded_userID) {
   });
 
   socket.on('add_transaction_image', ({ transactionID, urls }) => {
-    socket.broadcast.emit(`wait_for_add_transaction_image_${transactionID}`, { urls });
+    io.sockets.emit(`wait_for_add_transaction_image_${transactionID}`, { urls });
   });
 
   socket.on('remove_transaction_image', async (data, callback) => {
@@ -36,8 +36,8 @@ module.exports = function (socket, decoded_userID) {
       }
 
       await transactionImagesModel.deleteImage(imageID);
+      io.sockets.emit(`wait_for_remove_transaction_image_${transactionID}`, { imageID });
       callback(200);
-      socket.broadcast.emit(`wait_for_remove_transaction_image_${transactionID}`, { imageID });
     } catch (err) {
       console.log(err);
       callback(500);

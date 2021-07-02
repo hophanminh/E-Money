@@ -113,3 +113,12 @@
 .margin-top-20 {
   margin-top: 20px;
 }
+
+.dropzone-text {
+  font-size: 18px !important; /* or something */
+  color: grey;
+}
+
+.dropzone-height {
+  height: 50% !important;
+}

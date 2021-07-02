@@ -24,13 +24,14 @@ import {
   MuiPickersUtilsProvider,
 } from '@material-ui/pickers';
 import NumberFormat from 'react-number-format';
-
-import DefaultIcon from '../../../utils/DefaultIcon'
-import { getMaxMoney, getCurrencySymbol } from '../../../utils/currency'
+import config from '../../../constants/config.json';
+import DefaultIcon from '../../../utils/DefaultIcon';
+import { getMaxMoney, getCurrencySymbol } from '../../../utils/currency';
 import { getSocket } from "../../../utils/socket";
-import POPUP from '../../../constants/popup.json'
+import POPUP from '../../../constants/popup.json';
+import { DropzoneAreaBase } from 'material-ui-dropzone';
 
-
+const API_URL = config.API_LOCAL;
 const NAME = POPUP.TRANSACTION.ADD_TRANSACTION
 
 export default function AddTransaction(props) {
@@ -40,7 +41,8 @@ export default function AddTransaction(props) {
   const { open, setOpen } = useContext(PopupContext);
   const { fullList } = useContext(CategoryContext);
   const { eventList } = useContext(EventContext);
-  const isOpen = open === NAME
+  const [files, setFiles] = useState([]);
+  const isOpen = open === NAME;
 
   const [type, setType] = useState("Chi");
   const [error, setError] = useState({
@@ -84,6 +86,7 @@ export default function AddTransaction(props) {
   const handleCloseAddDialog = () => {
     setOpen(null);
     clearNewTransaction();
+    setFiles([]);
   }
 
   const handleAdd = () => {
@@ -100,15 +103,35 @@ export default function AddTransaction(props) {
     newTransaction.catID = newTransaction?.catID !== 0 ? newTransaction?.catID : null
     newTransaction.eventID = newTransaction?.eventID !== 0 ? newTransaction?.eventID : null
 
-    socket.emit("add_transaction", { walletID, newTransaction }, ({ ID }) => {
+    socket.emit("add_transaction", { walletID, newTransaction }, async ({ ID }) => {
       //setSelected(ID);
+      const token = window.localStorage.getItem('jwtToken');
+      const data = new FormData();
+      files.forEach(file => {
+        data.append('images', file.file);
+      });
+
+      const res = await fetch(`${API_URL}/transaction-images?transactionID=${ID}`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+        body: data,
+      });
+
+      if (res.status === 200) {
+        const result = await res.json();
+        // setImages(images.slice().concat(result.urls));
+        // setIsDone(true);
+        socket.emit('add_transaction_image', { transactionID: ID, urls: result.urls });
+      }
     });
 
     setOpen(null);
     clearNewTransaction();
+    setFiles([]);
+
   }
-
-
 
   // transaction 
 
@@ -167,6 +190,14 @@ export default function AddTransaction(props) {
 
   }
 
+  const handleAddImg = newFiles => {
+    newFiles = newFiles.filter(file => !files.find(f => f.data === file.data));
+    setFiles([...files, ...newFiles]);
+  };
+
+  const handleDeleteImg = deleted => {
+    setFiles(files.filter(f => f !== deleted));
+  };
 
   return (
     <Dialog open={isOpen} onClose={handleCloseAddDialog} aria-labelledby="form-dialog-title">
@@ -301,14 +332,28 @@ export default function AddTransaction(props) {
             id="outlined-multiline-static"
             label="Mô tả"
             multiline
-            rows={10}
+            rows={7}
             fullWidth
             variant="outlined"
             error={error?.Description}
             helperText={error?.Description ? "Mô tả không được quá 500 ký tự" : ''}
 
           />
-
+          <DropzoneAreaBase
+            fileObjects={files}
+            dropzoneText="Chọn hoặc kéo thả ảnh từ thiết bị vào đây"
+            acceptedFiles={['image/jpeg', 'image/png', 'image/gif']}
+            showPreviewsInDropzone={true}
+            showPreviews={false}
+            showAlerts={true}
+            filesLimit={5}
+            maxFileSize={10000000}
+            onAdd={handleAddImg}
+            onDelete={handleDeleteImg}
+            dropzoneParagraphClass="dropzone-text"
+            // dropzoneClass="dropzone-height"
+            previewGridClasses={{ image: "dropzone-height" }}
+          />
         </Box>
       </DialogContent>
       <DialogActions>

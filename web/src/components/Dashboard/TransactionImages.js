@@ -45,7 +45,7 @@ const Transition = forwardRef(function Transition(props, ref) {
 const Item = ({ image }) => {
   return (
     <>
-      {/* */}<Typography>Đăng vào lúc: {moment(image.DateAdded).format('DD/MM/YYYY HH:mm')}</Typography>
+      <Typography>Đăng vào lúc: {moment(image.DateAdded).format('DD/MM/YYYY HH:mm')}</Typography>
       <div className="carousel" style={{ backgroundImage: `url('${image.URL}')`, height: '72vh', maxHeight: '72vh', width: 'auto', backgroundColor: 'black' }}>
       </div>
     </>
@@ -221,7 +221,7 @@ function RemoveImageDialog({ transactionID, imageID, images, setImages, open, se
     socket.emit(`remove_transaction_image`, { imageID, transactionID }, (status) => {
       if (status === 200) {
         setIsWaiting(false);
-        setImages(images.slice().filter(image => image.ID !== imageID));
+        // setImages(images.slice().filter(image => image.ID !== imageID));
       }
     });
   }
@@ -289,7 +289,6 @@ function ImagesUploader({ transactionID, open, setOpen, images, setImages }) {
     const res = await fetch(`${API_URL}/transaction-images?transactionID=${transactionID}`, {
       method: 'POST',
       headers: {
-        // 'content-type': 'multipart/form-data', // no need
         Authorization: `Bearer ${token}`
       },
       body: data,
@@ -297,9 +296,10 @@ function ImagesUploader({ transactionID, open, setOpen, images, setImages }) {
 
     if (res.status === 200) {
       const result = await res.json();
-      setImages(images.slice().concat(result.urls));
-      setIsDone(true);
+      // setImages(images.slice().concat(result.urls));
       socket.emit('add_transaction_image', { transactionID, urls: result.urls });
+      setIsDone(true);
+
     }
     // else { // 400, etc...
     // setContent(result.msg)
@@ -315,7 +315,7 @@ function ImagesUploader({ transactionID, open, setOpen, images, setImages }) {
         dialogTitle="Thêm hình ảnh giao dịch"
         submitButtonText="Thêm ảnh"
         cancelButtonText="Hủy"
-        dropzoneText="Chọn ảnh từ thiết bị hoặc kéo thả ảnh vào đây"
+        dropzoneText="Chọn hoặc kéo thả ảnh từ thiết bị vào đây"
         onSave={handleSave}
         acceptedFiles={['image/jpeg', 'image/png', 'image/gif']}
         showPreviewsInDropzone={true}
@@ -323,6 +323,7 @@ function ImagesUploader({ transactionID, open, setOpen, images, setImages }) {
         showAlerts={true}
         filesLimit={5}
         maxFileSize={10000000}
+        dropzoneParagraphClass="dropzone-text"
         onClose={handleCloseUploadDialog}
       />
       <Dialog open={isWaiting || isDone} onClick={isDone ? () => handleCloseInformationDialog() : null}>

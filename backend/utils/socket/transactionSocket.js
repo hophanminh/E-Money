@@ -53,15 +53,15 @@ module.exports = function (socket, io, decoded_userID) {
 
       const history = cloneDeep(temp);
       history.TransactionID = temp.ID
-      history.ID = uuidv4()
-      await historyModel.addHistoryTransaction(history)
+      history.ID = uuidv4();
+      await historyModel.addHistoryTransaction(history);
 
       // annouce to other players
       const transactionList = await transactionModel.getTransactionByWalletID(walletID);
       const { total, spend, receive } = calculateStat(transactionList);
       io.sockets.emit(`wait_for_update_transaction_${walletID}`, { transactionList, total, spend, receive });
 
-      callback({ ID })
+      await callback({ ID });
     } catch (error) {
       console.log(error);
     }

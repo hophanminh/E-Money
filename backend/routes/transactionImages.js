@@ -26,45 +26,41 @@ router.post('/', upload.array('images', 5), async (req, res) => {
   const transactionID = req.query.transactionID;
   const files = req.files;
   const urls = [];
-
   try {
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       const filePath = file.path;
       const uniqueFilename = Date.now();
       const publicID = `transactionImages/${uniqueFilename}`;
-      await cloudinary.uploader.upload(
-        filePath,
-        {
-          quality: 80,
-          timeout: 60000,
-          public_id: publicID,
-          tags: 'transactionImages',
-        },
-        (err, image) => {
-          if (err) { return res.status(500).send({ msg: "Đã xảy ra sự cố khi tải lên ảnh của bạn. Hãy thử lại!" }); }
-          const newImage = {
-            ID: uuidv1(),
-            URL: image.secure_url,
-            TransactionID: transactionID,
-            DateAdded: convertToRegularDateTime(uniqueFilename),
-            PublicID: image.public_id
-          }
-          fs.unlink(filePath, err => { if (err) console.log(err) });// run this cmd asynchronously
-          urls.push(newImage);
-        }
-      )
-    };
+      const image = await cloudinary.uploader.upload(filePath, {
+        quality: 80,
+        timeout: 60000,
+        public_id: publicID,
+        tags: 'transactionImages',
+      });
 
-    for (let i = 0; i < urls.length; i++) {
-      await transactionImagesModel.addImage(urls[i]);
-    };
+      const newImage = {
+        ID: uuidv1(),
+        URL: image.secure_url,
+        TransactionID: transactionID,
+        DateAdded: convertToRegularDateTime(uniqueFilename),
+        PublicID: image.public_id
+      }
+      fs.unlink(filePath, err => { if (err) console.log(err) });// run this cmd asynchronously
+      urls.push(newImage);
+    }
+
+    const promises = urls.map(async url => {
+      return await transactionImagesModel.addImage(url);
+    });
+
+    const results = await Promise.all(promises);
 
   } catch (err) {
     console.log("Upload transaction img error: ", err);
+    return res.status(500).send({ msg: "Đã xảy ra sự cố khi tải lên ảnh của bạn. Hãy thử lại!" });
   }
   return res.status(200).send({ urls });
-
 });
 
 router.delete('/:id', async (req, res) => {
