@@ -239,7 +239,7 @@ class _ViewTransactionState extends State<ViewTransaction> {
     showSnack(_scaffoldKey, 'Đang xử lý...', duration: -1);
     String txId = Provider.of<WalletsProvider>(context, listen: false).selected.id;
 
-    StreamedResponse streamedResponse = await WalletService.instance.addTxImage(txId, image);
+    StreamedResponse streamedResponse;// = await WalletService.instance.addTxImage(txId, image);
 
     if (streamedResponse.statusCode == 200) {
       var response = await streamedResponse.stream.bytesToString(); //Response.fromStream(streamedResponse);
@@ -312,7 +312,7 @@ class _ViewTransactionState extends State<ViewTransaction> {
                             barrierDismissible: true,
                             barrierColor: Colors.black.withOpacity(0.5),
                             transitionDuration: Duration(milliseconds: 500),
-                            pageBuilder: (context, ani1, ani2) => createBottomMenu(context, _imgFromGallery, _imgFromCamera),
+                            pageBuilder: (context, ani1, ani2) => createBottomImgPickerMenu(context, _imgFromGallery, _imgFromCamera),
                             transitionBuilder: (context, ani1, ani2, child) =>
                                 SlideTransition(position: Tween(begin: Offset(0, 1), end: Offset(0, 0)).animate(ani1), child: child));
                       },

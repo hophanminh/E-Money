@@ -1,7 +1,7 @@
 import React, { useState, useEffect, forwardRef } from 'react';
 import Carousel from 'react-material-ui-carousel';
 import { Button, Grid, Container, IconButton, DialogActions, DialogContentText, DialogContent, DialogTitle, Dialog } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Badge from '@material-ui/core/Badge';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -11,6 +11,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import CloseIcon from '@material-ui/icons/Close';
 import AddIcon from '@material-ui/icons/Add';
 import AddAPhotoIcon from '@material-ui/icons/AddAPhoto';
+import SnackBar from '../snackbar/SnackBar';
 import { DropzoneDialog } from 'material-ui-dropzone'
 import { getSocket } from '../../utils/socket';
 import config from '../../constants/config.json';
@@ -207,6 +208,7 @@ export default function TransactionImages({ transactionID, images, setImages }) 
 
 function RemoveImageDialog({ transactionID, imageID, images, setImages, open, setOpen }) {
   const socket = getSocket();
+  const classes = useStyles();
   const token = window.localStorage.getItem('jwtToken');
   const [isWaiting, setIsWaiting] = useState(false);
   const handleClose = () => {
@@ -241,11 +243,11 @@ function RemoveImageDialog({ transactionID, imageID, images, setImages, open, se
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="primary">
+          <Button onClick={handleClose} className={`${classes.button} ${classes.closeButton}`}>
             Hủy
           </Button>
-          <Button onClick={handleRemove} color="primary" variant="outlined">
-            Xác nhận
+          <Button onClick={handleRemove} className={`${classes.button} ${classes.addButton}`}>
+            Xóa
           </Button>
         </DialogActions>
       </Dialog>
@@ -267,6 +269,8 @@ function ImagesUploader({ transactionID, open, setOpen, images, setImages }) {
   const socket = getSocket();
   const [isWaiting, setIsWaiting] = useState(false); // child
   const [isDone, setIsDone] = useState(false); // child
+  const [showSnackbar, setShowSnackBar] = useState(false);
+  const [content, setContent] = useState("");
 
   const handleCloseInformationDialog = () => {
     setIsDone(false);
@@ -299,17 +303,18 @@ function ImagesUploader({ transactionID, open, setOpen, images, setImages }) {
       // setImages(images.slice().concat(result.urls));
       socket.emit('add_transaction_image', { transactionID, urls: result.urls });
       setIsDone(true);
-
+    } else { // 400, etc...
+      const result = await res.json();
+      setIsDone(false);
+      setContent(result.msg);
+      setShowSnackBar(true);
     }
-    // else { // 400, etc...
-    // setContent(result.msg)
-    // }
-    // setShowSnackBar(true);      
     setIsWaiting(false)
   }
 
   return (
     <>
+      <SnackBar open={showSnackbar} setOpen={(isOpen) => setShowSnackBar(isOpen)} content={content} />
       <DropzoneDialog
         open={open}
         dialogTitle="Thêm hình ảnh giao dịch"
@@ -358,3 +363,19 @@ function ImagesUploader({ transactionID, open, setOpen, images, setImages }) {
     </>
   );
 }
+
+const useStyles = makeStyles({
+  button: {
+    borderRadius: '4px',
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+    padding: '5px 40px',
+    marginLeft: '20px'
+  },
+  closeButton: {
+    backgroundColor: '#F50707',
+  },
+  addButton: {
+    backgroundColor: '#1DAF1A',
+  },
+});

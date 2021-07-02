@@ -1,9 +1,16 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:mobile/src/models/CatsProvider.dart';
 import 'package:mobile/src/models/EventsProvider.dart';
 import 'package:mobile/src/models/UsersProvider.dart';
 import 'package:mobile/src/services/icon_service.dart';
+import 'package:mobile/src/services/restapiservices/wallet_service.dart';
 import 'package:mobile/src/services/socketservices/socket.dart';
+import 'package:mobile/src/views/ui/profile/avatar_picker_menu.dart';
 import 'package:mobile/src/views/utils/helpers/helper.dart';
 import 'package:mobile/src/views/utils/widgets/widget.dart';
 import 'package:provider/provider.dart';
@@ -22,6 +29,7 @@ class _AddTransactionState extends State<AddTransaction> {
   var _scaffoldKey = GlobalKey<ScaffoldMessengerState>();
   var _formKey = GlobalKey<FormState>();
   List<IconCustom> _iconList = [];
+  List<File> _files = [];
 
   // data section for new transaction
 
@@ -46,7 +54,6 @@ class _AddTransactionState extends State<AddTransaction> {
 
   _initPage() async {
     _iconList = await IconService.instance.iconList;
-
     setState(() {});
   }
 
@@ -63,7 +70,6 @@ class _AddTransactionState extends State<AddTransaction> {
           value: type));
     }
     _currentType = _txTypeMenuItems[0].value;
-
     _currentCategory = null;
     _currentEvent = null;
 
@@ -210,7 +216,7 @@ class _AddTransactionState extends State<AddTransaction> {
                                       );
                                     }).toList(),
                                     onChanged: (value) {
-                                      if(catsProvider.fullList.indexWhere((element) => element.id == value) == -1) {
+                                      if (catsProvider.fullList.indexWhere((element) => element.id == value) == -1) {
                                         changeCat(catsProvider.fullList[0].id);
                                         return;
                                       }
@@ -258,6 +264,105 @@ class _AddTransactionState extends State<AddTransaction> {
                                   }
                                   return null;
                                 },
+                              ),
+                            ),
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Colors.grey.withOpacity(0.05),
+                                border: Border.all(color: Colors.grey.withOpacity(0.8), width: 1),
+                                borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  GestureDetector(
+                                    onTap: () {
+                                      showGeneralDialog(
+                                          context: context,
+                                          barrierLabel: "Label",
+                                          barrierDismissible: true,
+                                          barrierColor: Colors.black.withOpacity(0.5),
+                                          transitionDuration: Duration(milliseconds: 500),
+                                          pageBuilder: (context, ani1, ani2) => createBottomImgPickerMenu(context, _imgFromGallery, _imgFromCamera),
+                                          transitionBuilder: (context, ani1, ani2, child) =>
+                                              SlideTransition(position: Tween(begin: Offset(0, 1), end: Offset(0, 0)).animate(ani1), child: child));
+                                    },
+                                    child: Container(
+                                      padding: EdgeInsets.symmetric(vertical: 30, horizontal: 10),
+                                      // decoration: BoxDecoration(color: Colors.grey),
+                                      child: Icon(
+                                        Icons.add_a_photo_outlined,
+                                        size: 40,
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                                    child: _files.length == 0
+                                        ? Container()
+                                        : GridView.builder(
+                                            scrollDirection: Axis.vertical,
+                                            physics: ScrollPhysics(),
+                                            shrinkWrap: true,
+                                            itemCount: _files.length,
+                                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                              crossAxisCount: MediaQuery.of(context).orientation == Orientation.landscape ? 7 : 4,
+                                              crossAxisSpacing: 8,
+                                              mainAxisSpacing: 8,
+                                              childAspectRatio: (1 / 1),
+                                            ),
+                                            itemBuilder: (context, index) {
+                                              return Stack(
+                                                children: [
+                                                  Positioned.fill(
+                                                      child: ClipRRect(
+                                                          child: Image(image: FileImage(_files[index]), fit: BoxFit.fill), borderRadius: BorderRadius.all(Radius.circular(10)))),
+                                                  Positioned(
+                                                      child: GestureDetector(
+                                                        onTap: () {
+                                                          setState(() {
+                                                            _files.removeAt(index);
+                                                          });
+                                                        },
+                                                        child: Container(
+                                                            decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white),
+                                                            padding: EdgeInsets.all(3),
+                                                            child: Icon(
+                                                              Icons.clear,
+                                                              color: Colors.grey,
+                                                              size: 20,
+                                                            )),
+                                                      ),
+                                                      top: 2,
+                                                      right: 2),
+                                                  // Material(
+                                                  //   color: Colors.transparent,
+                                                  //   child: InkWell(
+                                                  //     splashFactory: InkRipple.splashFactory,
+                                                  //     // customBorder: CircleBorder(),
+                                                  //     child: Container(),
+                                                  //     onTap: () {
+                                                  //       _open(context, index - 1);
+                                                  //     },
+                                                  //     onLongPress: () {
+                                                  //       showDialog(
+                                                  //           context: context,
+                                                  //           builder: (_) =>
+                                                  //               DeleteTransactionImageDialog(
+                                                  //                 wrappingScaffoldKey: _scaffoldKey,
+                                                  //                 imageID: _imageList[index - 1]['ID'],
+                                                  //                 txID: widget.txId,
+                                                  //                 removeImageByID: _removeImgById,
+                                                  //               ));
+                                                  //     },
+                                                  //   ),
+                                                  // ),
+                                                ],
+                                              );
+                                            },
+                                          ),
+                                  )
+                                ],
                               ),
                             )
                           ],
@@ -326,6 +431,44 @@ class _AddTransactionState extends State<AddTransaction> {
     });
   }
 
+  _imgFromCamera() async {
+    final pickedImage = await ImagePicker().getImage(source: ImageSource.camera, imageQuality: 50);
+    if (pickedImage == null) {
+      return;
+    }
+
+    if (_files.length + 1 > 5) {
+      showSnack(_scaffoldKey, 'Tối đa được chọn 5 ảnh.');
+      return;
+    }
+
+    List<File> images = [File(pickedImage.path)];
+    images.addAll(_files);
+    setState(() {
+      _files = images;
+    });
+  }
+
+  _imgFromGallery() async {
+    final pickedImages = await ImagePicker().getMultiImage(imageQuality: 50);
+    if (pickedImages == null) {
+      return;
+    }
+
+    if (_files.length + pickedImages.length > 5) {
+      showSnack(_scaffoldKey, 'Tối đa được chọn 5 ảnh.');
+      return;
+    }
+
+    List<File> images = pickedImages.map((e) => File(e.path)).toList();
+    images.addAll(List.from(_files));
+
+    setState(() {
+      _files = images;
+    });
+    // _handleAddTxImage(images);
+  }
+
   void handleAddTx() async {
     Socket socket = await getSocket();
     double price;
@@ -345,13 +488,28 @@ class _AddTransactionState extends State<AddTransaction> {
       'time': _selectedDatetime.toUtc().toIso8601String(),
       'description': _descriptionController.text
     };
-
+    String walletID = Provider.of<UsersProvider>(context, listen: false).info.walletID;
 
     showSnack(_scaffoldKey, 'Đang xử lý...');
-    String walletID = Provider.of<UsersProvider>(context, listen: false).info.walletID;
-    socket.emitWithAck('add_transaction', {'walletID': walletID, 'newTransaction': newTx}, ack: (data) {
+    socket.emitWithAck('add_transaction', {'walletID': walletID, 'newTransaction': newTx}, ack: (data) async {
       Navigator.pop(context);
-      showSnack(widget.wrappingScaffoldKey, "Thêm thành công");
+
+      if (_files.length == 0) {
+        return;
+      }
+
+      String txId = data['ID'];
+      StreamedResponse streamedResponse = await WalletService.instance.addTxImage(txId, _files);
+      String response = await streamedResponse.stream.bytesToString(); //Response.fromStream(streamedResponse);
+      Map<String, dynamic> body = jsonDecode(response);
+
+      if (streamedResponse.statusCode == 200) {
+        socket.emit('add_transaction_image', {'transactionID': txId, 'urls': body['urls']});
+      } else {
+        print(body['msg']);
+        showSnack(widget.wrappingScaffoldKey, body['msg']);
+      }
+      // showSnack(widget.wrappingScaffoldKey, "Thêm thành công");
     });
   }
 }

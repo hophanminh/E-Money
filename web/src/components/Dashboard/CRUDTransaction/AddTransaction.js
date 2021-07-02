@@ -30,7 +30,7 @@ import { getMaxMoney, getCurrencySymbol } from '../../../utils/currency';
 import { getSocket } from "../../../utils/socket";
 import POPUP from '../../../constants/popup.json';
 import { DropzoneAreaBase } from 'material-ui-dropzone';
-
+import SnackBar from '../../snackbar/SnackBar';
 const API_URL = config.API_LOCAL;
 const NAME = POPUP.TRANSACTION.ADD_TRANSACTION
 
@@ -59,6 +59,9 @@ export default function AddTransaction(props) {
     categoryName: "",
     eventName: "",
   })
+
+  const [showSnackbar, setShowSnackBar] = useState(false);
+  const [content, setContent] = useState("");
 
   useEffect(() => {
     if (fullList && fullList.length !== 0) {
@@ -104,7 +107,11 @@ export default function AddTransaction(props) {
     newTransaction.eventID = newTransaction?.eventID !== 0 ? newTransaction?.eventID : null
 
     socket.emit("add_transaction", { walletID, newTransaction }, async ({ ID }) => {
-      //setSelected(ID);
+
+      if (files.length === 0) {
+        return;
+      }
+
       const token = window.localStorage.getItem('jwtToken');
       const data = new FormData();
       files.forEach(file => {
@@ -122,15 +129,17 @@ export default function AddTransaction(props) {
       if (res.status === 200) {
         const result = await res.json();
         // setImages(images.slice().concat(result.urls));
-        // setIsDone(true);
         socket.emit('add_transaction_image', { transactionID: ID, urls: result.urls });
+      } else { // 400, etc...
+        const result = await res.json();
+        setContent(result.msg);
+        setShowSnackBar(true);
       }
     });
 
     setOpen(null);
     clearNewTransaction();
     setFiles([]);
-
   }
 
   // transaction 
@@ -200,172 +209,175 @@ export default function AddTransaction(props) {
   };
 
   return (
-    <Dialog open={isOpen} onClose={handleCloseAddDialog} aria-labelledby="form-dialog-title">
-      <DialogTitle id="form-dialog-title" >
-        <Typography className={classes.title}>
-          Thêm khoản giao dịch mới
+    <>
+      <SnackBar open={showSnackbar} setOpen={(isOpen) => setShowSnackBar(isOpen)} content={content} />
+      <Dialog open={isOpen} onClose={handleCloseAddDialog} aria-labelledby="form-dialog-title">
+        <DialogTitle id="form-dialog-title" >
+          <Typography className={classes.title}>
+            Thêm khoản giao dịch mới
                 </Typography>
-      </DialogTitle>
-      <DialogContent>
-        <Box>
-          <Box className={classes.amountRow}>
+        </DialogTitle>
+        <DialogContent>
+          <Box>
+            <Box className={classes.amountRow}>
+              <TextField
+                style={{ marginRight: '10px' }}
+                className={classes.textField}
+                size="small"
+                id="isNegative"
+                name="isNegative"
+                select
+                label=""
+                value={type}
+                onChange={handleChangeType}
+                variant="outlined"
+              >
+                <MenuItem value={"Chi"}>
+                  <Box className={`${classes.typeBox} ${classes.type2Text}`}>
+                    Chi
+                </Box>
+                </MenuItem>
+                <MenuItem value={"Thu"}>
+                  <Box className={`${classes.typeBox} ${classes.type1Text}`}>
+                    Thu
+                </Box>
+                </MenuItem>
+              </TextField>
+
+              <TextField
+                className={`${classes.textField}`}
+                size="small"
+                autoFocus
+                id="price"
+                name="price"
+                label="Số tiền *"
+                value={Math.abs(newTransaction.price)}
+                onChange={e => handleChangeMoney(e)}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                InputProps={{
+                  inputComponent: NumberFormatCustom,
+                  className: type === "Thu" ? classes.type1Text : classes.type2Text,
+                  endAdornment:
+                    <Typography>{getCurrencySymbol()}</Typography>
+                }}
+                fullWidth
+                variant="outlined"
+              />
+            </Box>
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+              <KeyboardDateTimePicker
+                name="time"
+                size="small"
+                className={classes.textField}
+                value={newTransaction.time}
+                onChange={time => handleChangeTime(time)}
+                label="Thời gian *"
+                onError={console.log}
+                maxDate={new Date()}
+                format="dd/MM/yyyy - hh:mm a"
+                inputVariant="outlined"
+              />
+            </MuiPickersUtilsProvider>
+
             <TextField
-              style={{ marginRight: '10px' }}
               className={classes.textField}
               size="small"
-              id="isNegative"
-              name="isNegative"
+              id="category"
+              name="catID"
               select
-              label=""
-              value={type}
-              onChange={handleChangeType}
+              label="Hạng mục"
+              value={newTransaction ? newTransaction.catID : 0}
+              onChange={handleChange}
+              fullWidth
               variant="outlined"
             >
-              <MenuItem value={"Chi"}>
-                <Box className={`${classes.typeBox} ${classes.type2Text}`}>
-                  Chi
-                </Box>
+              {fullList && fullList.map((cat) => (
+                <MenuItem key={cat.ID} value={cat.ID}>
+                  <Box className={classes.categoryIconBox}>
+                    <DefaultIcon
+                      IconID={cat.IconID}
+                      backgroundSize={24}
+                      iconSize={14} />
+                    <Typography className={classes.iconText}>
+                      {cat.Name}
+                    </Typography>
+                  </Box>
+                </MenuItem>
+              ))}
+              {(!fullList || fullList.length === 0) &&
+                <MenuItem value={0}>
+                  Không tìm thấy hạng mục
               </MenuItem>
-              <MenuItem value={"Thu"}>
-                <Box className={`${classes.typeBox} ${classes.type1Text}`}>
-                  Thu
-                </Box>
-              </MenuItem>
+              }
+            </TextField>
+            <TextField
+              className={classes.textField}
+              size="small"
+              id="event"
+              name="eventID"
+              select
+              label="Sự kiện"
+              value={newTransaction ? newTransaction?.eventID : 0}
+              onChange={handleChange}
+              fullWidth
+              variant="outlined"
+            >
+              <MenuItem key={0} value={0}>
+                Không có
+            </MenuItem>
+              {(eventList || []).filter(i => i.Status === 1).map((event) => (
+                <MenuItem key={event.ID} value={event.ID}>
+                  {event.Name}
+                </MenuItem>
+              ))}
             </TextField>
 
             <TextField
-              className={`${classes.textField}`}
-              size="small"
-              autoFocus
-              id="price"
-              name="price"
-              label="Số tiền *"
-              value={Math.abs(newTransaction.price)}
-              onChange={e => handleChangeMoney(e)}
-              InputLabelProps={{
-                shrink: true,
-              }}
-              InputProps={{
-                inputComponent: NumberFormatCustom,
-                className: type === "Thu" ? classes.type1Text : classes.type2Text,
-                endAdornment:
-                  <Typography>{getCurrencySymbol()}</Typography>
-              }}
-              fullWidth
-              variant="outlined"
-            />
-          </Box>
-          <MuiPickersUtilsProvider utils={DateFnsUtils}>
-            <KeyboardDateTimePicker
-              name="time"
+              name="description"
               size="small"
               className={classes.textField}
-              value={newTransaction.time}
-              onChange={time => handleChangeTime(time)}
-              label="Thời gian *"
-              onError={console.log}
-              maxDate={new Date()}
-              format="dd/MM/yyyy - hh:mm a"
-              inputVariant="outlined"
+              value={newTransaction.description}
+              onChange={handleChangeDes}
+              id="outlined-multiline-static"
+              label="Mô tả"
+              multiline
+              rows={7}
+              fullWidth
+              variant="outlined"
+              error={error?.Description}
+              helperText={error?.Description ? "Mô tả không được quá 500 ký tự" : ''}
+
             />
-          </MuiPickersUtilsProvider>
-
-          <TextField
-            className={classes.textField}
-            size="small"
-            id="category"
-            name="catID"
-            select
-            label="Hạng mục"
-            value={newTransaction ? newTransaction.catID : 0}
-            onChange={handleChange}
-            fullWidth
-            variant="outlined"
-          >
-            {fullList && fullList.map((cat) => (
-              <MenuItem key={cat.ID} value={cat.ID}>
-                <Box className={classes.categoryIconBox}>
-                  <DefaultIcon
-                    IconID={cat.IconID}
-                    backgroundSize={24}
-                    iconSize={14} />
-                  <Typography className={classes.iconText}>
-                    {cat.Name}
-                  </Typography>
-                </Box>
-              </MenuItem>
-            ))}
-            {(!fullList || fullList.length === 0) &&
-              <MenuItem value={0}>
-                Không tìm thấy hạng mục
-              </MenuItem>
-            }
-          </TextField>
-          <TextField
-            className={classes.textField}
-            size="small"
-            id="event"
-            name="eventID"
-            select
-            label="Sự kiện"
-            value={newTransaction ? newTransaction?.eventID : 0}
-            onChange={handleChange}
-            fullWidth
-            variant="outlined"
-          >
-            <MenuItem key={0} value={0}>
-              Không có
-            </MenuItem>
-            {(eventList || []).filter(i => i.Status === 1).map((event) => (
-              <MenuItem key={event.ID} value={event.ID}>
-                {event.Name}
-              </MenuItem>
-            ))}
-          </TextField>
-
-          <TextField
-            name="description"
-            size="small"
-            className={classes.textField}
-            value={newTransaction.description}
-            onChange={handleChangeDes}
-            id="outlined-multiline-static"
-            label="Mô tả"
-            multiline
-            rows={7}
-            fullWidth
-            variant="outlined"
-            error={error?.Description}
-            helperText={error?.Description ? "Mô tả không được quá 500 ký tự" : ''}
-
-          />
-          <DropzoneAreaBase
-            fileObjects={files}
-            dropzoneText="Chọn hoặc kéo thả ảnh từ thiết bị vào đây"
-            acceptedFiles={['image/jpeg', 'image/png', 'image/gif']}
-            showPreviewsInDropzone={true}
-            showPreviews={false}
-            showAlerts={true}
-            filesLimit={5}
-            maxFileSize={10000000}
-            onAdd={handleAddImg}
-            onDelete={handleDeleteImg}
-            dropzoneParagraphClass="dropzone-text"
-            // dropzoneClass="dropzone-height"
-            previewGridClasses={{ image: "dropzone-height" }}
-          />
-        </Box>
-      </DialogContent>
-      <DialogActions>
-        <Button className={`${classes.button} ${classes.closeButton}`} onClick={handleCloseAddDialog} variant="contained" >
-          Hủy
+            <DropzoneAreaBase
+              fileObjects={files}
+              dropzoneText="Chọn hoặc kéo thả ảnh từ thiết bị vào đây"
+              acceptedFiles={['image/jpeg', 'image/png', 'image/gif']}
+              showPreviewsInDropzone={true}
+              showPreviews={false}
+              showAlerts={true}
+              filesLimit={5}
+              maxFileSize={10000000}
+              onAdd={handleAddImg}
+              onDelete={handleDeleteImg}
+              dropzoneParagraphClass="dropzone-text"
+              // dropzoneClass="dropzone-height"
+              previewGridClasses={{ image: "dropzone-height" }}
+            />
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button className={`${classes.button} ${classes.closeButton}`} onClick={handleCloseAddDialog} variant="contained" >
+            Hủy
         </Button>
-        <Button className={`${classes.button} ${classes.addButton}`} disabled={!isOpen} onClick={handleAdd} variant="contained">
-          Thêm
+          <Button className={`${classes.button} ${classes.addButton}`} disabled={!isOpen} onClick={handleAdd} variant="contained">
+            Thêm
         </Button>
 
-      </DialogActions>
-    </Dialog>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 }
 

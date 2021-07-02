@@ -220,38 +220,46 @@ class _ViewTransactionState extends State<ViewTransaction> {
       return;
     }
 
-    File image = File(pickedImage.path);
-    _handleAddTxImage(image);
+    List<File> images = [];
+    images.add(File(pickedImage.path));
+    _handleAddTxImage(images);
   }
 
   _imgFromGallery() async {
-    final pickedImage = await ImagePicker().getImage(source: ImageSource.gallery, imageQuality: 50);
-    if (pickedImage == null) {
+    final pickedImages = await ImagePicker().getMultiImage(imageQuality: 50);
+    if (pickedImages == null) {
       return;
     }
 
-    File image = File(pickedImage.path);
-    _handleAddTxImage(image);
+    if(pickedImages.length > 5) {
+      showSnack(_scaffoldKey, 'Tối đa 5 ảnh được chọn. Hãy thử lại!');
+      return;
+    }
+
+    List<File> images = pickedImages.map((e) => File(e.path)).toList();
+    _handleAddTxImage(images);
   }
 
-  _handleAddTxImage(File image) async {
+  _handleAddTxImage(List<File> image) async {
     showSnack(_scaffoldKey, 'Đang xử lý...', duration: -1);
     String txId = Provider.of<WalletsProvider>(context, listen: false).selected.id;
 
     StreamedResponse streamedResponse = await WalletService.instance.addTxImage(txId, image);
+    String response = await streamedResponse.stream.bytesToString(); //Response.fromStream(streamedResponse);
+    Map<String, dynamic> body = jsonDecode(response);
 
     if (streamedResponse.statusCode == 200) {
-      var response = await streamedResponse.stream.bytesToString(); //Response.fromStream(streamedResponse);
-      Map<String, dynamic> body = jsonDecode(response);
-      List<dynamic> concatenatedList = List<dynamic>.from(_imageList);
 
-      concatenatedList.addAll(body['urls']);
-      setState(() {
-        _imageList = _sortImageList(concatenatedList);
-      });
+      // List<dynamic> concatenatedList = List<dynamic>.from(_imageList);
+      // concatenatedList.addAll(body['urls']);
+      // setState(() {
+      //   _imageList = _sortImageList(concatenatedList);
+      // });
 
       _socket.emit('add_transaction_image', {'transactionID': txId, 'urls': body['urls']});
       showSnack(_scaffoldKey, 'Thêm thành công');
+    } else {
+      showSnack(_scaffoldKey, body['msg']);
     }
   }
 
@@ -314,7 +322,7 @@ class _ViewTransactionState extends State<ViewTransaction> {
                             barrierDismissible: true,
                             barrierColor: Colors.black.withOpacity(0.5),
                             transitionDuration: Duration(milliseconds: 500),
-                            pageBuilder: (context, ani1, ani2) => createBottomMenu(context, _imgFromGallery, _imgFromCamera),
+                            pageBuilder: (context, ani1, ani2) => createBottomImgPickerMenu(context, _imgFromGallery, _imgFromCamera),
                             transitionBuilder: (context, ani1, ani2, child) =>
                                 SlideTransition(position: Tween(begin: Offset(0, 1), end: Offset(0, 0)).animate(ani1), child: child));
                       },

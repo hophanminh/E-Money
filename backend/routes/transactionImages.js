@@ -33,10 +33,10 @@ router.post('/', upload.array('images', 5), async (req, res) => {
       const uniqueFilename = Date.now();
       const publicID = `transactionImages/${uniqueFilename}`;
       const image = await cloudinary.uploader.upload(filePath, {
-        quality: 80,
+        quality: 65,
         timeout: 60000,
         public_id: publicID,
-        tags: 'transactionImages',
+        tags: 'transactionImages'
       });
 
       const newImage = {
@@ -46,7 +46,7 @@ router.post('/', upload.array('images', 5), async (req, res) => {
         DateAdded: convertToRegularDateTime(uniqueFilename),
         PublicID: image.public_id
       }
-      fs.unlink(filePath, err => { if (err) console.log(err) });// run this cmd asynchronously
+      fs.unlink(filePath, err => { if (err) console.log(err) });// run this stt asynchronously
       urls.push(newImage);
     }
 
@@ -54,15 +54,22 @@ router.post('/', upload.array('images', 5), async (req, res) => {
       return await transactionImagesModel.addImage(url);
     });
 
-    const results = await Promise.all(promises);
-
+    await Promise.all(promises);
   } catch (err) {
-    console.log("Upload transaction img error: ", err);
+    console.log("Upload error: ", err);
+
+    files.forEach(file => {
+      fs.unlink(file.path, err => { if (err) console.log(err) });// run this stt asynchronously
+    });
+
     return res.status(500).send({ msg: "Đã xảy ra sự cố khi tải lên ảnh của bạn. Hãy thử lại!" });
   }
   return res.status(200).send({ urls });
 });
 
+/**
+ * @deprecated
+ */
 router.delete('/:id', async (req, res) => {
 
   const imageID = req.params.id;
