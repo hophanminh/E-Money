@@ -383,6 +383,7 @@ export default function AddTransaction(props) {
               // dropzoneClass="dropzone-height"
               previewGridClasses={{ image: "dropzone-height" }}
             />
+            <Typography style={{ marginTop: '5px', fontStyle: 'italic' }}><b>*</b> Sau khi tạo giao dịch, hình ảnh cần mất vài giây để hiển thị</Typography>
           </Box>
         </DialogContent>
         <DialogActions>
