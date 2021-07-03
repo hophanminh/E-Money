@@ -316,7 +316,6 @@ class _IndividualWalletState extends State<IndividualWallet> {
           Navigator.push(context, MaterialPageRoute(builder: (context) => ViewTransaction(txId: tx.id)));
         },
         onPanDown: (DragDownDetails details) {
-          // print(tx.categoryName);
           setState(() {
             _tappedTx = tx.id;
           });

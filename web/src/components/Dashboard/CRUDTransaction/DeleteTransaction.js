@@ -47,23 +47,22 @@ export default function DeleteTransaction(props) {
         <DialogTitle >
           <Typography className={classes.title}>
             Xóa
-                    </Typography>
+          </Typography>
         </DialogTitle>
         <DialogContent>
           <Box>
             <Typography className={classes.description}>
               Bạn có muốn xóa khoản giao dịch đã chọn ?
-                            </Typography>
+            </Typography>
           </Box>
         </DialogContent>
         <DialogActions>
           <Button className={`${classes.button} ${classes.closeButton}`} onClick={handleClose} variant="contained" >
             Hủy
-                    </Button>
+          </Button>
           <Button className={`${classes.button} ${classes.addButton}`} onClick={handleDelete} variant="contained">
             Xóa
-                    </Button>
-
+          </Button>
         </DialogActions>
       </Dialog>
     </div>

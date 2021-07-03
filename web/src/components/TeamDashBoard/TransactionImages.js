@@ -1,7 +1,7 @@
 import React, { useState, useEffect, forwardRef } from 'react';
 import Carousel from 'react-material-ui-carousel';
-import { Button, Grid, Container, IconButton, DialogActions, DialogContentText, DialogContent, DialogTitle, Dialog } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
+import { Button, Grid, Container, IconButton, DialogActions, DialogContentText, DialogContent, DialogTitle, Dialog, Snackbar } from '@material-ui/core';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Badge from '@material-ui/core/Badge';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -11,7 +11,8 @@ import Tooltip from '@material-ui/core/Tooltip';
 import CloseIcon from '@material-ui/icons/Close';
 import AddIcon from '@material-ui/icons/Add';
 import AddAPhotoIcon from '@material-ui/icons/AddAPhoto';
-import { DropzoneDialog } from 'material-ui-dropzone'
+import SnackBar from '../snackbar/SnackBar';
+import { DropzoneDialog } from 'material-ui-dropzone';
 import { getSocket } from '../../utils/socket';
 import config from '../../constants/config.json';
 import palette from '../../constants/palette.json';
@@ -45,7 +46,7 @@ const Transition = forwardRef(function Transition(props, ref) {
 const Item = ({ image }) => {
   return (
     <>
-      {/* */}<Typography>Đăng vào lúc: {moment(image.DateAdded).format('DD/MM/YYYY HH:mm')}</Typography>
+      <Typography>Đăng vào lúc: {moment(image.DateAdded).format('DD/MM/YYYY HH:mm')}</Typography>
       <div className="carousel" style={{ backgroundImage: `url('${image.URL}')`, height: '72vh', maxHeight: '72vh', width: 'auto', backgroundColor: 'black' }}>
       </div>
     </>
@@ -207,8 +208,10 @@ export default function TransactionImages({ transactionID, images, setImages }) 
 
 function RemoveImageDialog({ transactionID, imageID, images, setImages, open, setOpen }) {
   const socket = getSocket();
+  const classes = useStyles();
   const token = window.localStorage.getItem('jwtToken');
   const [isWaiting, setIsWaiting] = useState(false);
+
   const handleClose = () => {
     setOpen(false);
   };
@@ -221,7 +224,7 @@ function RemoveImageDialog({ transactionID, imageID, images, setImages, open, se
     socket.emit(`remove_transaction_image`, { imageID, transactionID }, (status) => {
       if (status === 200) {
         setIsWaiting(false);
-        setImages(images.slice().filter(image => image.ID !== imageID));
+        // setImages(images.slice().filter(image => image.ID !== imageID));
       }
     });
   }
@@ -241,11 +244,11 @@ function RemoveImageDialog({ transactionID, imageID, images, setImages, open, se
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="primary">
+          <Button onClick={handleClose} className={`${classes.button} ${classes.closeButton}`}>
             Hủy
           </Button>
-          <Button onClick={handleRemove} color="primary" variant="outlined">
-            Xác nhận
+          <Button onClick={handleRemove} className={`${classes.button} ${classes.addButton}`}>
+            Xóa
           </Button>
         </DialogActions>
       </Dialog>
@@ -267,6 +270,8 @@ function ImagesUploader({ transactionID, open, setOpen, images, setImages }) {
   const socket = getSocket();
   const [isWaiting, setIsWaiting] = useState(false); // child
   const [isDone, setIsDone] = useState(false); // child
+  const [showSnackbar, setShowSnackBar] = useState(false);
+  const [content, setContent] = useState("");
 
   const handleCloseInformationDialog = () => {
     setIsDone(false);
@@ -289,7 +294,6 @@ function ImagesUploader({ transactionID, open, setOpen, images, setImages }) {
     const res = await fetch(`${API_URL}/transaction-images?transactionID=${transactionID}`, {
       method: 'POST',
       headers: {
-        // 'content-type': 'multipart/form-data', // no need
         Authorization: `Bearer ${token}`
       },
       body: data,
@@ -297,32 +301,35 @@ function ImagesUploader({ transactionID, open, setOpen, images, setImages }) {
 
     if (res.status === 200) {
       const result = await res.json();
-      setImages(images.slice().concat(result.urls));
-      setIsDone(true);
       socket.emit('add_transaction_image', { transactionID, urls: result.urls });
+      setIsDone(true);
     }
-    // else { // 400, etc...
-    // setContent(result.msg)
-    // }
-    // setShowSnackBar(true);      
+    else { // 400, etc...
+      const result = await res.json();
+      setIsDone(false);
+      setContent(result.msg)
+      setShowSnackBar(true);
+    }
     setIsWaiting(false)
   }
 
   return (
     <>
+      <SnackBar open={showSnackbar} setOpen={(isOpen) => setShowSnackBar(isOpen)} content={content} />
       <DropzoneDialog
         open={open}
         dialogTitle="Thêm hình ảnh giao dịch"
         submitButtonText="Thêm ảnh"
         cancelButtonText="Hủy"
-        dropzoneText="Chọn ảnh từ thiết bị hoặc kéo thả ảnh vào đây"
+        dropzoneText="Chọn hoặc kéo thả ảnh từ thiết bị vào đây"
         onSave={handleSave}
-        acceptedFiles={['image/jpeg', 'image/png', 'image/gif']}
+        acceptedFiles={['image/jpeg', 'image/png']}
         showPreviewsInDropzone={true}
         showPreviews={false}
         showAlerts={true}
         filesLimit={5}
         maxFileSize={10000000}
+        dropzoneParagraphClass="dropzone-text"
         onClose={handleCloseUploadDialog}
       />
       <Dialog open={isWaiting || isDone} onClick={isDone ? () => handleCloseInformationDialog() : null}>
@@ -357,3 +364,19 @@ function ImagesUploader({ transactionID, open, setOpen, images, setImages }) {
     </>
   );
 }
+
+const useStyles = makeStyles({
+  button: {
+    borderRadius: '4px',
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+    padding: '5px 40px',
+    marginLeft: '20px'
+  },
+  closeButton: {
+    backgroundColor: '#F50707',
+  },
+  addButton: {
+    backgroundColor: '#1DAF1A',
+  },
+});

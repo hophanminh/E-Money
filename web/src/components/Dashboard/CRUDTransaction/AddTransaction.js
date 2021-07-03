@@ -59,7 +59,7 @@ export default function AddTransaction(props) {
     IconID: "",
     categoryName: "",
     eventName: "",
-  })
+  });
 
   const [showSnackbar, setShowSnackBar] = useState(false);
   const [content, setContent] = useState("");
@@ -147,7 +147,6 @@ export default function AddTransaction(props) {
   }
 
   // transaction 
-
   const handleChangeType = (event) => {
     setType(event.target.value);
     setNewTransaction({

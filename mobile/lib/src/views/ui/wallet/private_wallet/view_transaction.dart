@@ -231,7 +231,7 @@ class _ViewTransactionState extends State<ViewTransaction> {
       return;
     }
 
-    if(pickedImages.length > 5) {
+    if (pickedImages.length > 5) {
       showSnack(_scaffoldKey, 'Tối đa 5 ảnh được chọn. Hãy thử lại!');
       return;
     }
@@ -249,7 +249,6 @@ class _ViewTransactionState extends State<ViewTransaction> {
     Map<String, dynamic> body = jsonDecode(response);
 
     if (streamedResponse.statusCode == 200) {
-
       // List<dynamic> concatenatedList = List<dynamic>.from(_imageList);
       // concatenatedList.addAll(body['urls']);
       // setState(() {

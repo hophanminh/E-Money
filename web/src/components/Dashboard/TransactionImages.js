@@ -211,6 +211,7 @@ function RemoveImageDialog({ transactionID, imageID, images, setImages, open, se
   const classes = useStyles();
   const token = window.localStorage.getItem('jwtToken');
   const [isWaiting, setIsWaiting] = useState(false);
+
   const handleClose = () => {
     setOpen(false);
   };
@@ -309,7 +310,7 @@ function ImagesUploader({ transactionID, open, setOpen, images, setImages }) {
       setContent(result.msg);
       setShowSnackBar(true);
     }
-    setIsWaiting(false)
+    setIsWaiting(false);
   }
 
   return (
@@ -322,7 +323,7 @@ function ImagesUploader({ transactionID, open, setOpen, images, setImages }) {
         cancelButtonText="Hủy"
         dropzoneText="Chọn hoặc kéo thả ảnh từ thiết bị vào đây"
         onSave={handleSave}
-        acceptedFiles={['image/jpeg', 'image/png', 'image/gif']}
+        acceptedFiles={['image/jpeg', 'image/png']}
         showPreviewsInDropzone={true}
         showPreviews={false}
         showAlerts={true}

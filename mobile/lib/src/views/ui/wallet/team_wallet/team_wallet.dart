@@ -135,9 +135,6 @@ class _TeamWalletState extends State<TeamWallet> {
 
   @override
   Widget build(BuildContext context) {
-    // if (_isLoading) {
-    //   return Container();
-    // }
     return GestureDetector(
         onTap: () {
           FocusManager.instance.primaryFocus.unfocus();

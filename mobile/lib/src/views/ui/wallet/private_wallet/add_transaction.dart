@@ -94,7 +94,6 @@ class _AddTransactionState extends State<AddTransaction> {
           key: _scaffoldKey,
           child: Scaffold(
             appBar: mySimpleAppBar('Thêm giao dịch mới'),
-            // backgroundColor: Colors.transparent,
             body: SingleChildScrollView(
               child: Container(
                 margin: const EdgeInsets.fromLTRB(10, 0, 10, 20),
@@ -191,7 +190,6 @@ class _AddTransactionState extends State<AddTransaction> {
                                 padding: EdgeInsets.symmetric(horizontal: 10),
                                 decoration: BoxDecoration(borderRadius: BorderRadius.circular(10.0), border: Border.all(width: 1, color: Colors.black26)),
                                 child: Consumer<CatsProvider>(builder: (context, catsProvider, child) {
-                                  // catsProvider.fullList.indexWhere((element) => element.id == _currentCategory) == -1 ? s
                                   return DropdownButtonFormField(
                                     hint: Text('Chọn hạng mục chi tiêu'),
                                     decoration: InputDecoration(
@@ -335,34 +333,19 @@ class _AddTransactionState extends State<AddTransaction> {
                                                       ),
                                                       top: 2,
                                                       right: 2),
-                                                  // Material(
-                                                  //   color: Colors.transparent,
-                                                  //   child: InkWell(
-                                                  //     splashFactory: InkRipple.splashFactory,
-                                                  //     // customBorder: CircleBorder(),
-                                                  //     child: Container(),
-                                                  //     onTap: () {
-                                                  //       _open(context, index - 1);
-                                                  //     },
-                                                  //     onLongPress: () {
-                                                  //       showDialog(
-                                                  //           context: context,
-                                                  //           builder: (_) =>
-                                                  //               DeleteTransactionImageDialog(
-                                                  //                 wrappingScaffoldKey: _scaffoldKey,
-                                                  //                 imageID: _imageList[index - 1]['ID'],
-                                                  //                 txID: widget.txId,
-                                                  //                 removeImageByID: _removeImgById,
-                                                  //               ));
-                                                  //     },
-                                                  //   ),
-                                                  // ),
                                                 ],
                                               );
                                             },
                                           ),
                                   )
                                 ],
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                '* Sau khi tạo giao dịch, hình ảnh cần mất vài giây để hiển thị',
+                                style: TextStyle(fontStyle: FontStyle.italic, color: Colors.black54),
                               ),
                             )
                           ],
@@ -466,7 +449,6 @@ class _AddTransactionState extends State<AddTransaction> {
     setState(() {
       _files = images;
     });
-    // _handleAddTxImage(images);
   }
 
   void handleAddTx() async {
