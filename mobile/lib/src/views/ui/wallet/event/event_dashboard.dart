@@ -150,11 +150,16 @@ class _EventDashboardState extends State<EventDashboard> {
           child: DefaultTextStyle(
             style: TextStyle(fontSize: 15, color: Colors.white),
             child: Container(
-              decoration: BoxDecoration(
-                  gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [primary.withOpacity(0.8), const Color(0xffb3eb50)]
-                      // colors: [primary.withOpacity(0.4), Colors.grey[300]]
-                      ),
-                  borderRadius: BorderRadius.circular(12)),
+              decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight,
+                  // colors: [primary.withOpacity(0.9), const Color(0xffb3eb50)]
+                  colors: [Color(0xff3977fe), Color(0xff80b8f1)]), borderRadius: BorderRadius.circular(12), boxShadow: [
+                BoxShadow(
+                  color: Color(0xffd0e6ff),
+                  spreadRadius: 3,
+                  blurRadius: 5,
+                  offset: Offset(0, 2), // changes position of shadow
+                ),
+              ]),
               padding: EdgeInsets.all(15),
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Container(
@@ -224,15 +229,15 @@ class _EventDashboardState extends State<EventDashboard> {
           style: TextStyle(fontSize: 15, color: Colors.white),
           child: Container(
             decoration: BoxDecoration(
-                gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Colors.grey[700], Colors.grey[400]]),
+                gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Colors.grey[700], Colors.grey]),
                 // color: Color(0xff13315f),
                 // border: Border.all(color: primary, width: 2),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.grey.withOpacity(0.1),
-                    spreadRadius: 2,
-                    blurRadius: 3,
-                    offset: Offset(0, 2), // changes position of shadow
+                    color: Colors.grey.withOpacity(0.5),
+                    spreadRadius: 3,
+                    blurRadius: 5,
+                    offset: Offset(1, 2), // changes position of shadow
                   )
                 ],
                 borderRadius: BorderRadius.circular(7)),
