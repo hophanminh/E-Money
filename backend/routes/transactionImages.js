@@ -15,7 +15,13 @@ const storage = multer.diskStorage({
     cb(null, Date.now() + path.extname(file.originalname));// make filename unique in images folder (if happen)
   },
   destination: function (req, file, cb) {
-    cb(null, `./public/images/transactionImages`);
+    const dest = `./public/images/transactionImages`;
+
+    if (!fs.existsSync(dest)) {
+      fs.mkdirSync(dest);
+    }
+
+    cb(null, dest);
   },
 });
 const upload = multer({ storage });

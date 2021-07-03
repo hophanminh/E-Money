@@ -184,46 +184,44 @@ export default function SignIn() {
                 </Grid>
 
               </Hidden>
-              <form onKeyPress={handleKeyPress}>
-                <Grid item xs={12} sm={10} md={6} align="center">
-                  <div style={{ ...styles.shadow, ...styles.paper, width: '100%' }}>
-                    <Typography style={{ color: Palette.primary, fontWeight: 'bold' }} variant='h5'>Đăng nhập tài khoản</Typography>
-                    <div style={{ margin: '20px 0 20px' }}>
-                      <TextField label="Tên tài khoản" variant="outlined"
-                        margin="normal" required fullWidth autoFocus
-                        onChange={e => handleUsernameChange(e.target.value)}
-                        value={username}
-                      />
-                      <div className="input-invalid">
-                        {errors.username}
-                      </div>
-                      <TextField label="Mật khẩu" type="password"
-                        variant="outlined" margin="normal" required fullWidth
-                        onChange={e => handlePasswordChange(e.target.value)}
-                        value={password}
-                      // onKeyPress={handleKeyPress}
-                      />
-                      <div className="input-invalid">
-                        {errors.password}
-                      </div>
-                      <Link variant="body2" >
-                        <ResetPassword setContent={setContent} setShowSnackBar={setShowSnackBar} />
-                      </Link>
+              <Grid item xs={12} sm={10} md={6} align="center">
+                <div style={{ ...styles.shadow, ...styles.paper, width: '100%' }}>
+                  <Typography style={{ color: Palette.primary, fontWeight: 'bold' }} variant='h5'>Đăng nhập tài khoản</Typography>
+                  <div style={{ margin: '20px 0 20px' }} onKeyPress={handleKeyPress}>
+                    <TextField label="Tên tài khoản" variant="outlined"
+                      margin="normal" required fullWidth autoFocus
+                      onChange={e => handleUsernameChange(e.target.value)}
+                      value={username}
+                    />
+                    <div className="input-invalid">
+                      {errors.username}
                     </div>
-
-                    <Button
-                      type="submit" fullWidth variant="contained"
-                      onClick={() => handleSubmit()}
-                      style={{
-                        ...styles.submit, backgroundColor: Palette.primary, color: '#fff',
-                        fontWeight: 'bold', margin: '5px 0 20px'
-                      }}
-                    >
-                      Đăng nhập
-                  </Button>
+                    <TextField label="Mật khẩu" type="password"
+                      variant="outlined" margin="normal" required fullWidth
+                      onChange={e => handlePasswordChange(e.target.value)}
+                      value={password}
+                    // onKeyPress={handleKeyPress}
+                    />
+                    <div className="input-invalid">
+                      {errors.password}
+                    </div>
+                    <Link variant="body2" >
+                      <ResetPassword setContent={setContent} setShowSnackBar={setShowSnackBar} />
+                    </Link>
                   </div>
-                </Grid>
-              </form>
+
+                  <Button
+                    type="submit" fullWidth variant="contained"
+                    onClick={() => handleSubmit()}
+                    style={{
+                      ...styles.submit, backgroundColor: Palette.primary, color: '#fff',
+                      fontWeight: 'bold', margin: '5px 0 20px'
+                    }}
+                  >
+                    Đăng nhập
+                  </Button>
+                </div>
+              </Grid>
             </Grid>
           </Container>
         </div>
