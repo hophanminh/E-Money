@@ -44,6 +44,7 @@ export default function AddTransaction(props) {
 
   const [type, setType] = useState("Chi");
   const [error, setError] = useState({
+    Price: false,
     Description: false,
   })
 
@@ -87,6 +88,9 @@ export default function AddTransaction(props) {
   }
 
   const handleAdd = () => {
+    if (error.Price === true) {
+      return;
+    }
     if (error.Description === true) {
       return;
     }
@@ -156,9 +160,21 @@ export default function AddTransaction(props) {
   const handleChangeMoney = (e) => {
     // format money
     const max = getMaxMoney();
-    let temp = e.target.value === '' ? 0 : e.target.value;
+    let temp = e.target.value === '' ? '0' : e.target.value;
     temp = temp > max ? max : temp;
-    temp = temp < 0 ? 0 : temp;
+    temp = temp < '0' ? '0' : temp;
+    if (temp === '0' && !error.Price) {
+      setError({
+        ...error,
+        Price: true,
+      });
+    }
+    if (temp !== '0' && error.Price) {
+      setError({
+        ...error,
+        Price: false,
+      });
+    }
 
     setNewTransaction({
       ...newTransaction,
@@ -222,6 +238,8 @@ export default function AddTransaction(props) {
               }}
               fullWidth
               variant="outlined"
+              error={error?.Price}
+              helperText={error?.Price ? "Số tiền không được bằng 0" : ''}
             />
           </Box>
           <MuiPickersUtilsProvider utils={DateFnsUtils}>

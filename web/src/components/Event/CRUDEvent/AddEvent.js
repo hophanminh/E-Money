@@ -54,6 +54,7 @@ export default function AddEvent(props) {
 
   const [error, setError] = useState({
     Name: false,
+    Price: false,
     Description: false,
     StartTime: false,
     Value: false,
@@ -164,7 +165,7 @@ export default function AddEvent(props) {
   }
 
   const handleAdd = () => {
-    if (error.Name === true || error.Description === true) {
+    if (error.Name === true || error.Description === true || error.Price === true || error.Value === true || error.StartTime === true) {
       return;
     }
     const newCategory = fullList.find(i => i?.ID === newEvent.CategoryID);
@@ -328,9 +329,21 @@ export default function AddEvent(props) {
   const handleChangeMoney = (e) => {
     // format money
     const max = getMaxMoney();
-    let temp = e.target.value === '' ? 0 : e.target.value;
+    let temp = e.target.value === '' ? '0' : e.target.value;
     temp = temp > max ? max : temp;
-    temp = temp < 0 ? 0 : temp;
+    temp = temp < '0' ? '0' : temp;
+    if (temp === '0' && !error.Price) {
+      setError({
+        ...error,
+        Price: true,
+      });
+    }
+    if (temp !== '0' && error.Price) {
+      setError({
+        ...error,
+        Price: false,
+      });
+    }
 
     setNewEvent({
       ...newEvent,
@@ -441,7 +454,7 @@ export default function AddEvent(props) {
                     onChange={handleChangeValue}
                     variant="outlined"
                     error={error?.Value}
-                    helperText={error?.Value ? "Ngày, tháng lựa chọn không hợp lệ" : ''}
+                    helperText={error?.Value ? "Ngày lựa chọn không hợp lệ" : ''}
                   >
                     {(valueList.dayList || []).map((type, i) => (
                       <MenuItem key={i} value={i}>
@@ -595,6 +608,8 @@ export default function AddEvent(props) {
                   }}
                   fullWidth
                   variant="outlined"
+                  error={error?.Price}
+                  helperText={error?.Price ? "Số tiền không được bằng 0" : ''}
                 />
               </Box>
 

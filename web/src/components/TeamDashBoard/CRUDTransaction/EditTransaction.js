@@ -45,6 +45,10 @@ export default function EditTransaction(props) {
 
     const [type, setType] = useState("Chi");
     const [newTransaction, setNewTransaction] = useState(data);
+    const [error, setError] = useState({
+        Price: false,
+        Description: false,
+    })
 
     useEffect(() => {
         if (data) {
@@ -64,6 +68,12 @@ export default function EditTransaction(props) {
         clearNewTransaction();
     }
     const handleEdit = () => {
+        if (error.Price === true) {
+            return;
+        }
+        if (error.Description === true) {
+            return;
+        }
         const newCategory = fullList.find(i => i?.ID === newTransaction?.catID);
         const newEvent = eventList.find(i => i?.ID === newTransaction?.eventID);
 
@@ -103,12 +113,45 @@ export default function EditTransaction(props) {
     const handleChangeMoney = (e) => {
         // format money
         const max = getMaxMoney();
-        let temp = e.target.value === '' ? 0 : e.target.value;
+        let temp = e.target.value === '' ? '0' : e.target.value;
         temp = temp > max ? max : temp;
-        temp = temp < 0 ? 0 : temp;
+        temp = temp < '0' ? '0' : temp;
+        if (temp === '0' && !error.Price) {
+            setError({
+                ...error,
+                Price: true,
+            });
+        }
+        if (temp !== '0' && error.Price) {
+            setError({
+                ...error,
+                Price: false,
+            });
+        }
+
         setNewTransaction({
             ...newTransaction,
             price: type === "Thu" ? temp : temp * -1,
+        });
+    }
+
+    const handleChangeDes = (event) => {
+        if (event.target.value?.length > 500 && !error.Description) {
+            setError({
+                ...error,
+                Description: true,
+            });
+        }
+        if (event.target.value?.length <= 500 && error.Description) {
+            setError({
+                ...error,
+                Description: false,
+            });
+        }
+
+        setNewTransaction({
+            ...newTransaction,
+            description: event.target.value
         });
     }
 
@@ -166,6 +209,8 @@ export default function EditTransaction(props) {
                             }}
                             fullWidth
                             variant="outlined"
+                            error={error?.Price}
+                            helperText={error?.Price ? "Số tiền không được bằng 0" : ''}
                         />
                     </Box>
                     <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -242,13 +287,15 @@ export default function EditTransaction(props) {
                         className={classes.textField}
                         size="small"
                         value={newTransaction?.description}
-                        onChange={handleChange}
+                        onChange={handleChangeDes}
                         id="outlined-multiline-static"
                         label="Mô tả"
                         multiline
                         rows={10}
                         fullWidth
                         variant="outlined"
+                        error={error?.Description}
+                        helperText={error?.Description ? "Mô tả không được quá 500 ký tự" : ''}
                     />
                 </Box>
             </DialogContent>
