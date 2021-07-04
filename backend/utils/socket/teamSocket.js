@@ -1,4 +1,5 @@
 const teamModel = require('../../models/teamModel');
+const walletModel = require('../../models/walletModel');
 const team_has_model = require('../../models/TeamHasUserModel');
 const config = require("../../config/default.json");
 
@@ -24,4 +25,32 @@ module.exports = function (socket, io, decoded_userID) {
     }
 
   });
+
+  socket.on('get_wallet', async ({ ID }, callback) => {
+    try {
+      const selected = await walletModel.getWalletByID(ID);
+      if (selected.length === 0) {
+        return callback(null);
+      }
+
+      const wallet = await walletModel.getPrivateWallet(decoded_userID);
+      if (wallet.length !== 0 && wallet[0].ID === selected[0].ID) {
+        return callback(selected[0]);
+      }
+
+      const team = await teamModel.getTeamByWalletId(ID);
+      if (team.length > 0) {
+        const info = await team_has_model.getTHUByUserIdAndTeamID(decoded_userID, team[0].ID);
+        if (info.length > 0) {
+          callback(selected);
+        }
+      }
+
+      callback(null);
+    } catch (error) {
+      console.log(error);
+    }
+
+  });
+
 };

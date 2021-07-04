@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useHistory } from "react-router-dom";
 import {
   Container,
   Breadcrumbs,
@@ -40,6 +40,7 @@ import InfoEvent from './CRUDEvent/InfoEvent';
 
 export default function Event() {
   const classes = useStyles();
+  const history = useHistory();
   const { id } = useParams();
   const socket = getSocket();
   const { setOpen } = useContext(PopupContext);
@@ -47,40 +48,53 @@ export default function Event() {
   const { selected, setSelected, eventList, setEventList, setTypeList } = useContext(EventContext);
 
   const [team, setTeam] = useState();
+  const [wallet, setWallet] = useState(null);
   // get initial data
   useEffect(() => {
-    socket.emit("get_team", { walletID: id }, ({ team }) => {
-      setTeam(team);
+    socket.emit("get_wallet", { ID: id }, (wallet) => {
+      const hasWallet = wallet ? true : false
+      setWallet(hasWallet)
     });
+  }, [id])
 
-    socket.emit("get_event", { walletID: id }, ({ eventList }) => {
-      setEventList(eventList);
-    });
-
-    socket.emit("get_event_type", {}, ({ eventTypeList }) => {
-      setTypeList(eventTypeList);
-    });
-
-    socket.emit("get_category", { walletID: id }, ({ defaultList, customList, fullList }) => {
-      setAllList(defaultList, customList, fullList)
-    });
-
-
-    socket.on(`wait_for_update_event_${id}`, ({ eventList }) => {
-      setEventList(eventList);
-    });
-
-    socket.on(`wait_for_update_category_${id}`, ({ defaultList, customList, fullList }) => {
-      setAllList(defaultList, customList, fullList);
-    });
-
-    return () => {
-      socket.off(`wait_for_update_event_${id}`);
-      socket.off(`wait_for_update_category_${id}`);
-      setOpen(null);
+  useEffect(() => {
+    if (wallet === false) {
+      history.push("/");
     }
+    else if (wallet === true) {
 
-  }, []);
+      socket.emit("get_team", { walletID: id }, ({ team }) => {
+        setTeam(team);
+      });
+
+      socket.emit("get_event", { walletID: id }, ({ eventList }) => {
+        setEventList(eventList);
+      });
+
+      socket.emit("get_event_type", {}, ({ eventTypeList }) => {
+        setTypeList(eventTypeList);
+      });
+
+      socket.emit("get_category", { walletID: id }, ({ defaultList, customList, fullList }) => {
+        setAllList(defaultList, customList, fullList)
+      });
+
+
+      socket.on(`wait_for_update_event_${id}`, ({ eventList }) => {
+        setEventList(eventList);
+      });
+
+      socket.on(`wait_for_update_category_${id}`, ({ defaultList, customList, fullList }) => {
+        setAllList(defaultList, customList, fullList);
+      });
+
+      return () => {
+        socket.off(`wait_for_update_event_${id}`);
+        socket.off(`wait_for_update_category_${id}`);
+        setOpen(null);
+      }
+    }
+  }, [wallet]);
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
@@ -139,182 +153,186 @@ export default function Event() {
 
   return (
     <React.Fragment>
-      <InfoEvent
-        data={selected} />
-      <AddEvent />
-      <DeleteEvent />
+      {wallet === true &&
+        <>
+          <InfoEvent
+            data={selected} />
+          <AddEvent />
+          <DeleteEvent />
 
-      <Container className={classes.root} maxWidth={null}>
-        <div className={classes.title}>
-          <Breadcrumbs className={classes.breadcrumb} separator={<NavigateNextIcon fontSize="large" />} aria-label="breadcrumb">
-            {team ?
-              <Link to={`/Wallet/${id}`} style={{ textDecoration: 'none' }}>
-                <Typography className={classes.LinkFont}>
-                  {"Ví " + team?.Name}
+          <Container className={classes.root} maxWidth={null}>
+            <div className={classes.title}>
+              <Breadcrumbs className={classes.breadcrumb} separator={<NavigateNextIcon fontSize="large" />} aria-label="breadcrumb">
+                {team ?
+                  <Link to={`/Wallet/${id}`} style={{ textDecoration: 'none' }}>
+                    <Typography className={classes.LinkFont}>
+                      {"Ví " + team?.Name}
+                    </Typography>
+                  </Link>
+                  :
+                  <Link to="/Wallet" style={{ textDecoration: 'none' }}>
+                    <Typography className={classes.LinkFont}>
+                      Ví cá nhân
                 </Typography>
-              </Link>
-              :
-              <Link to="/Wallet" style={{ textDecoration: 'none' }}>
-                <Typography className={classes.LinkFont}>
-                  Ví cá nhân
-                </Typography>
-              </Link>
-            }
-            <Typography className={classes.titleFont} color="textPrimary">
-              Quản lý sự kiện
+                  </Link>
+                }
+                <Typography className={classes.titleFont} color="textPrimary">
+                  Quản lý sự kiện
             </Typography>
-          </Breadcrumbs>
-          <Typography className={classes.subTitleFont} color="textSecondary">Quản lý các khoản giao dịch tiền tệ cá nhân </Typography>
-        </div>
-        <div className={classes.body}>
-          <Box className={classes.subHeader}>
-            <Typography className={classes.subHeaderFont} color="textPrimary">
-              Sự kiện đang chạy
+              </Breadcrumbs>
+              <Typography className={classes.subTitleFont} color="textSecondary">Quản lý các khoản giao dịch tiền tệ cá nhân </Typography>
+            </div>
+            <div className={classes.body}>
+              <Box className={classes.subHeader}>
+                <Typography className={classes.subHeaderFont} color="textPrimary">
+                  Sự kiện đang chạy
               </Typography>
-            <Box className={classes.actionBox}>
-              <Button className={classes.addButton} variant="outlined" onClick={handleOpenAddDialog}>
-                <AddIcon className={classes.green} />
+                <Box className={classes.actionBox}>
+                  <Button className={classes.addButton} variant="outlined" onClick={handleOpenAddDialog}>
+                    <AddIcon className={classes.green} />
                 Thêm sự kiện
               </Button>
-            </Box>
+                </Box>
 
-          </Box>
-          <Box className={classes.eventBox}>
-            <Paper className={classes.paper}>
-              <TableContainer>
-                <Table className={classes.table}>
-                  <TableHead>
-                    <TableRow className={classes.tableHead}>
-                      <TableCell className={`${classes.bold} ${classes.tableHeadFont}`}>Tên sự kiện</TableCell>
-                      <TableCell className={`${classes.bold} ${classes.tableHeadFont}`} align="left">Khoản định kì</TableCell>
-                      <TableCell className={`${classes.bold} ${classes.tableHeadFont}`} align="left">Loại</TableCell>
-                      <TableCell className={`${classes.bold} ${classes.tableHeadFont}`} align="left">Giao dịch kế tiếp</TableCell>
-                      <TableCell className={`${classes.bold} ${classes.tableHeadFont}`} align="left">Kết thúc</TableCell>
-                      <TableCell className={`${classes.bold} ${classes.tableHeadFont}`} align="right">Tổng tiền</TableCell>
-                      <TableCell className={`${classes.bold} ${classes.tableHeadFont}`} align="right"></TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {(rows || []).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
-                      return (
-                        <TableRow
-                          tabIndex={-1}
-                          key={row.ID}
-                          style={index % 2 ? { background: "rgba(0, 0, 0, 0.04)" } : { background: "white" }}>
-                          <TableCell align="left">{row?.Name}</TableCell>
-                          <TableCell align="left" className={row.ExpectingAmount > 0 ? classes.green : classes.red}>{formatMoney(Math.abs(row?.ExpectingAmount))}</TableCell>
-                          <TableCell align="left">{row?.TypeName}</TableCell>
-                          <TableCell align="left">{moment(row?.NextDate).format("DD/MM/YYYY hh:mm A")}</TableCell>
-                          <TableCell align="left" >{row?.EndDate ? moment(row?.EndDate).format("DD/MM/YYYY hh:mm A") : '--'}</TableCell>
-                          <TableCell align="right" className={row.ExpectingAmount >= 0 ? classes.green : classes.red}>{formatMoney(Math.abs(row?.TotalAmount))}</TableCell>
-                          <TableCell align="right">
-                            <Button
-                              className={classes.infoButton}
-                              onClick={(e) => handleOpenInfoDialog(e, row)}
-                              id={row.ID}
-                              variant="outlined"
-                            >
-                              Thông tin
-                              </Button>
-                            <Button
-                              className={classes.endButton}
-                              onClick={(e) => handleOpenDeleteDialog(e, row)}
-                              id={row.ID}
-                              variant="outlined"
-                              color="secondary"
-                            >
-                              Kết thúc
-                              </Button>
-                          </TableCell>
+              </Box>
+              <Box className={classes.eventBox}>
+                <Paper className={classes.paper}>
+                  <TableContainer>
+                    <Table className={classes.table}>
+                      <TableHead>
+                        <TableRow className={classes.tableHead}>
+                          <TableCell className={`${classes.bold} ${classes.tableHeadFont}`}>Tên sự kiện</TableCell>
+                          <TableCell className={`${classes.bold} ${classes.tableHeadFont}`} align="left">Khoản định kì</TableCell>
+                          <TableCell className={`${classes.bold} ${classes.tableHeadFont}`} align="left">Loại</TableCell>
+                          <TableCell className={`${classes.bold} ${classes.tableHeadFont}`} align="left">Giao dịch kế tiếp</TableCell>
+                          <TableCell className={`${classes.bold} ${classes.tableHeadFont}`} align="left">Kết thúc</TableCell>
+                          <TableCell className={`${classes.bold} ${classes.tableHeadFont}`} align="right">Tổng tiền</TableCell>
+                          <TableCell className={`${classes.bold} ${classes.tableHeadFont}`} align="right"></TableCell>
                         </TableRow>
-                      )
-                    })}
-                    {emptyRows > 0 && (
-                      <TableRow style={{ height: 67 * emptyRows }}>
-                        <TableCell colSpan={6} />
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-              </TableContainer>
+                      </TableHead>
+                      <TableBody>
+                        {(rows || []).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
+                          return (
+                            <TableRow
+                              tabIndex={-1}
+                              key={row.ID}
+                              style={index % 2 ? { background: "rgba(0, 0, 0, 0.04)" } : { background: "white" }}>
+                              <TableCell align="left">{row?.Name}</TableCell>
+                              <TableCell align="left" className={row.ExpectingAmount > 0 ? classes.green : classes.red}>{formatMoney(Math.abs(row?.ExpectingAmount))}</TableCell>
+                              <TableCell align="left">{row?.TypeName}</TableCell>
+                              <TableCell align="left">{moment(row?.NextDate).format("DD/MM/YYYY hh:mm A")}</TableCell>
+                              <TableCell align="left" >{row?.EndDate ? moment(row?.EndDate).format("DD/MM/YYYY hh:mm A") : '--'}</TableCell>
+                              <TableCell align="right" className={row.ExpectingAmount >= 0 ? classes.green : classes.red}>{formatMoney(Math.abs(row?.TotalAmount))}</TableCell>
+                              <TableCell align="right">
+                                <Button
+                                  className={classes.infoButton}
+                                  onClick={(e) => handleOpenInfoDialog(e, row)}
+                                  id={row.ID}
+                                  variant="outlined"
+                                >
+                                  Thông tin
+                              </Button>
+                                <Button
+                                  className={classes.endButton}
+                                  onClick={(e) => handleOpenDeleteDialog(e, row)}
+                                  id={row.ID}
+                                  variant="outlined"
+                                  color="secondary"
+                                >
+                                  Kết thúc
+                              </Button>
+                              </TableCell>
+                            </TableRow>
+                          )
+                        })}
+                        {emptyRows > 0 && (
+                          <TableRow style={{ height: 67 * emptyRows }}>
+                            <TableCell colSpan={6} />
+                          </TableRow>
+                        )}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
 
-              <TablePagination
-                rowsPerPageOptions={[5]}
-                count={rows ? rows.length : 0}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                component='div'
-                onChangePage={handleChangePage}
-              />
-            </Paper>
-          </Box>
-          <Box className={classes.subHeader}>
-            <Typography className={classes.subHeaderFont} color="textPrimary">
-              Sự kiện đã kết thúc
+                  <TablePagination
+                    rowsPerPageOptions={[5]}
+                    count={rows ? rows.length : 0}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    component='div'
+                    onChangePage={handleChangePage}
+                  />
+                </Paper>
+              </Box>
+              <Box className={classes.subHeader}>
+                <Typography className={classes.subHeaderFont} color="textPrimary">
+                  Sự kiện đã kết thúc
               </Typography>
-          </Box>
-          <Box className={classes.eventBox}>
-            <Paper className={classes.paper}>
-              <TableContainer>
-                <Table className={classes.table}>
-                  <TableHead>
-                    <TableRow className={classes.tableHead}>
-                      <TableCell className={`${classes.bold} ${classes.tableHeadFont}`}>Tên sự kiện</TableCell>
-                      <TableCell className={`${classes.bold} ${classes.tableHeadFont}`} align="left">Số tiền</TableCell>
-                      <TableCell className={`${classes.bold} ${classes.tableHeadFont}`} align="left">Loại</TableCell>
-                      <TableCell className={`${classes.bold} ${classes.tableHeadFont}`} align="left">Bắt đầu </TableCell>
-                      <TableCell className={`${classes.bold} ${classes.tableHeadFont}`} align="left">Kết thúc</TableCell>
-                      <TableCell className={`${classes.bold} ${classes.tableHeadFont}`} align="right">Tổng tiền</TableCell>
-                      <TableCell className={`${classes.bold} ${classes.tableHeadFont}`} align="right"></TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {(rows_2 || []).slice(page_2 * rowsPerPage, page_2 * rowsPerPage + rowsPerPage).map((row, index) => {
-                      return (
-                        <TableRow
-                          tabIndex={-1}
-                          key={row.ID}
-                          style={index % 2 ? { background: "rgba(0, 0, 0, 0.04)" } : { background: "white" }}>
-                          <TableCell align="left">{row.Name}</TableCell>
-                          <TableCell align="left" className={row.ExpectingAmount > 0 ? classes.green : classes.red}>{formatMoney(Math.abs(row.ExpectingAmount))}</TableCell>
-                          <TableCell align="left">{row.TypeName}</TableCell>
-                          <TableCell align="left" >{row.StartDate ? moment(row.StartDate).format("DD/MM/YYYY - hh:mm A") : ''}</TableCell>
-                          <TableCell align="left" >{row.EndDate ? moment(row.EndDate).format("DD/MM/YYYY - hh:mm A") : ''}</TableCell>
-                          <TableCell align="right" className={row.ExpectingAmount >= 0 ? classes.green : classes.red}>{formatMoney(Math.abs(row?.TotalAmount))}</TableCell>
-                          <TableCell align="right">
-                            <Button
-                              className={classes.infoButton}
-                              onClick={(e) => handleOpenInfoDialog(e, row)}
-                              id={row.ID}
-                              variant="outlined"
-                            >
-                              Thông tin
-                              </Button>
-                          </TableCell>
+              </Box>
+              <Box className={classes.eventBox}>
+                <Paper className={classes.paper}>
+                  <TableContainer>
+                    <Table className={classes.table}>
+                      <TableHead>
+                        <TableRow className={classes.tableHead}>
+                          <TableCell className={`${classes.bold} ${classes.tableHeadFont}`}>Tên sự kiện</TableCell>
+                          <TableCell className={`${classes.bold} ${classes.tableHeadFont}`} align="left">Số tiền</TableCell>
+                          <TableCell className={`${classes.bold} ${classes.tableHeadFont}`} align="left">Loại</TableCell>
+                          <TableCell className={`${classes.bold} ${classes.tableHeadFont}`} align="left">Bắt đầu </TableCell>
+                          <TableCell className={`${classes.bold} ${classes.tableHeadFont}`} align="left">Kết thúc</TableCell>
+                          <TableCell className={`${classes.bold} ${classes.tableHeadFont}`} align="right">Tổng tiền</TableCell>
+                          <TableCell className={`${classes.bold} ${classes.tableHeadFont}`} align="right"></TableCell>
                         </TableRow>
-                      )
-                    })}
-                    {emptyRows_2 > 0 && (
-                      <TableRow style={{ height: 67 * emptyRows }}>
-                        <TableCell colSpan={6} />
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-              </TableContainer>
+                      </TableHead>
+                      <TableBody>
+                        {(rows_2 || []).slice(page_2 * rowsPerPage, page_2 * rowsPerPage + rowsPerPage).map((row, index) => {
+                          return (
+                            <TableRow
+                              tabIndex={-1}
+                              key={row.ID}
+                              style={index % 2 ? { background: "rgba(0, 0, 0, 0.04)" } : { background: "white" }}>
+                              <TableCell align="left">{row.Name}</TableCell>
+                              <TableCell align="left" className={row.ExpectingAmount > 0 ? classes.green : classes.red}>{formatMoney(Math.abs(row.ExpectingAmount))}</TableCell>
+                              <TableCell align="left">{row.TypeName}</TableCell>
+                              <TableCell align="left" >{row.StartDate ? moment(row.StartDate).format("DD/MM/YYYY - hh:mm A") : ''}</TableCell>
+                              <TableCell align="left" >{row.EndDate ? moment(row.EndDate).format("DD/MM/YYYY - hh:mm A") : ''}</TableCell>
+                              <TableCell align="right" className={row.ExpectingAmount >= 0 ? classes.green : classes.red}>{formatMoney(Math.abs(row?.TotalAmount))}</TableCell>
+                              <TableCell align="right">
+                                <Button
+                                  className={classes.infoButton}
+                                  onClick={(e) => handleOpenInfoDialog(e, row)}
+                                  id={row.ID}
+                                  variant="outlined"
+                                >
+                                  Thông tin
+                              </Button>
+                              </TableCell>
+                            </TableRow>
+                          )
+                        })}
+                        {emptyRows_2 > 0 && (
+                          <TableRow style={{ height: 67 * emptyRows }}>
+                            <TableCell colSpan={6} />
+                          </TableRow>
+                        )}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
 
-              <TablePagination
-                rowsPerPageOptions={[5]}
-                count={rows_2 ? rows_2.length : 0}
-                rowsPerPage={rowsPerPage}
-                page={page_2}
-                component='div'
-                onChangePage={handleChangePage_2}
-              />
-            </Paper>
-          </Box>
-        </div>
-      </Container>
+                  <TablePagination
+                    rowsPerPageOptions={[5]}
+                    count={rows_2 ? rows_2.length : 0}
+                    rowsPerPage={rowsPerPage}
+                    page={page_2}
+                    component='div'
+                    onChangePage={handleChangePage_2}
+                  />
+                </Paper>
+              </Box>
+            </div>
+          </Container>
+        </>
+      }
     </React.Fragment>
   );
 }
