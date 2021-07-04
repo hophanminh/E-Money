@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Link, useParams, useHistory } from "react-router-dom";
+import { Link, useParams, useHistory, useLocation } from "react-router-dom";
 import {
   Container,
   Breadcrumbs,
@@ -54,8 +54,9 @@ const TeamDashBoard = () => {
   const token = localStorage.getItem('jwtToken');
   const { id } = useParams();
   const history = useHistory();
+  const location = useLocation();
   const socket = getSocket();
-  const { setWalletID, selected, setSelected, list, setList, filterList, updateTxCategory } = useContext(WalletContext);
+  const { setWalletID, selected, setSelected, list, setList, filterList, updateTxCategory, setSelectedByID } = useContext(WalletContext);
   const { setOpen } = useContext(PopupContext);
   const { setAllList } = useContext(CategoryContext);
   const { setEventList } = useContext(EventContext);
@@ -68,7 +69,15 @@ const TeamDashBoard = () => {
   const [team, setTeam] = useState();
   const [thu, setTHU] = useState([]);
   const [person, setPerson] = useState({});
+  const [initialSelect, setInitialSelect] = useState(null);
   // get initial data
+  useEffect(() => {
+    if (location?.state?.selected) {
+      setInitialSelect(location?.state?.selected)
+      history.replace()
+    }
+  }, [location?.state?.selected])
+
   useEffect(() => {
     socket.emit("get_team", { walletID: id }, ({ team, thu }) => {
       if (!team) {
@@ -85,6 +94,12 @@ const TeamDashBoard = () => {
       }
     });
   }, [id])
+
+  useEffect(() => {
+    if (list && initialSelect) {
+      setSelectedByID(initialSelect)
+    }
+  }, [initialSelect, list])
 
   useEffect(() => {
 
