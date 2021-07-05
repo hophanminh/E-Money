@@ -18,7 +18,7 @@ const storage = multer.diskStorage({
     const dest = `./public/images/transactionImages`;
 
     if (!fs.existsSync(dest)) {
-      fs.mkdirSync(dest);
+      fs.mkdirSync(dest, { recursive: true });
     }
 
     cb(null, dest);
