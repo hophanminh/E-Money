@@ -110,7 +110,7 @@ export default function Category(props) {
       }
       setCountList(temp);
     }
-  }, [list, defaultList, customList])
+  }, [list, defaultList, customList]);
 
   // popover button
   const [openedPopover, setOpenedPopover] = useState(false)
@@ -124,15 +124,15 @@ export default function Category(props) {
 
   const handlePopoverOpenParent = (event) => {
     setAnchorEl(event.currentTarget);
-    setOpenedPopover(true)
+    setOpenedPopover(true);
   };
 
   const handlePopoverOpenChild = (event) => {
-    setOpenedPopover(true)
+    setOpenedPopover(true);
   };
 
   const handlePopoverClose = () => {
-    setOpenedPopover(false)
+    setOpenedPopover(false);
   };
 
   // add dialog
@@ -167,7 +167,7 @@ export default function Category(props) {
       filtered = filtered.filter(i => i.Name.toLowerCase().includes(searchInput));
     }
     setFilterList(filtered)
-  }, [customList, searchInput])
+  }, [customList, searchInput]);
 
 
   return (
@@ -217,12 +217,12 @@ export default function Category(props) {
                   <Link to="/Wallet" style={{ textDecoration: 'none' }}>
                     <Typography className={classes.LinkFont}>
                       Ví cá nhân
-                </Typography>
+                    </Typography>
                   </Link>
                 }
                 <Typography className={classes.titleFont} color="textPrimary">
                   Quản lý phân loại giao dịch
-            </Typography>
+                </Typography>
               </Breadcrumbs>
               <Typography className={classes.subTitleFont} color="textSecondary">Quản lý các khoản giao dịch tiền tệ cá nhân </Typography>
             </div>
@@ -230,7 +230,7 @@ export default function Category(props) {
               <Box className={classes.subHeader}>
                 <Typography className={classes.subHeaderFont} color="textPrimary">
                   Loại mặc định
-              </Typography>
+                </Typography>
               </Box>
               <Box className={classes.categoryBox}>
                 {defaultList && defaultList.map((i, n) => {
@@ -252,7 +252,7 @@ export default function Category(props) {
                           noWrap={true}
                           className={classes.categoryNumber}>
                           ({countList ? countList[i?.ID]?.count : 0})
-                    </Typography>
+                        </Typography>
                       </Box>
                     </Card>
                   )
@@ -262,12 +262,12 @@ export default function Category(props) {
               <Box className={classes.subHeader}>
                 <Typography className={classes.subHeaderFont} color="textPrimary">
                   Loại tự chọn
-              </Typography>
+                </Typography>
                 <Box className={classes.actionBox}>
                   <Button className={classes.addButton} variant="outlined" onClick={handleOpenAddDialog}>
                     <AddIcon className={classes.green} />
-                Thêm loại
-              </Button>
+                    Thêm loại
+                  </Button>
                   <TextField
                     className={classes.searchField}
                     value=''
@@ -318,7 +318,7 @@ export default function Category(props) {
                           noWrap={true}
                           className={classes.categoryNumber}>
                           ({countList ? countList[i?.ID]?.count : 0})
-                    </Typography>
+                        </Typography>
                       </Box>
                     </Card>
                   )
@@ -441,7 +441,6 @@ const useStyles = makeStyles((theme) => ({
     fontSize: '16px',
     marginLeft: '5px'
   },
-
 
   // popover button
   popover: {

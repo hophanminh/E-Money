@@ -1,7 +1,6 @@
 import React from 'react';
 import { Container } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-
 import Introduction from './introduction.js';
 import MainFeatures from './mainFeatures.js';
 import GettingStarted from './gettingStarted.js';

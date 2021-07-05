@@ -53,8 +53,8 @@ export default function ActiveDestination() {
 
       if (res.status === 200) {
         const result = await res.json();
-        window.localStorage.setItem('userID', result.user.ID);
         window.localStorage.setItem('jwtToken', result.token);
+        window.localStorage.setItem('userID', result.user.ID);
         window.localStorage.removeItem('resetID');
         setInfo(result.user);
         setIsLoggedIn(true);

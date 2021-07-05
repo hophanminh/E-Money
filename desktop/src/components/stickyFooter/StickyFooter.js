@@ -41,18 +41,17 @@ function PhoneInfo() {
       <Grid item>
         <PhoneIcon />
       </Grid>
-      <Grid item xs zeroMinWidth overflowWrap >
+      <Grid item xs zeroMinWidth >
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           <div>
             0909789651
-        </div>
+          </div>
           <div>
             0709855627
-        </div>
+          </div>
         </div>
       </Grid>
     </Grid>
-
   );
 }
 
@@ -62,7 +61,7 @@ function MailInfo() {
       <Grid item >
         <MailIcon />
       </Grid>
-      <Grid item xs zeroMinWidth overflowWrap >
+      <Grid item xs zeroMinWidth  >
         <Typography style={{ overflowWrap: 'break-word' }}>1712592@student.hcmus.edu.vn</Typography>
       </Grid>
     </Grid>
@@ -106,7 +105,7 @@ function FastConnect() {
         </Link>
       </div>
     </Typography>
-  )
+  );
 }
 
 function Description() {
@@ -114,7 +113,7 @@ function Description() {
     <Typography style={{ width: `30vw`, textAlign: 'justify' }}>
       {`E-money giải pháp giúp bạn dễ dàng quản lý việc thu chi rõ ràng, minh bạch. Quản lý quỹ nhóm cũng đã trở nên dễ dàng hơn với E-Money.`}
     </Typography>
-  )
+  );
 }
 
 const useStyles = makeStyles((theme) => ({

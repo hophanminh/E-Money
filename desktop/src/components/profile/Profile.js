@@ -13,7 +13,6 @@ import DateFnsUtils from '@date-io/date-fns';
 import IconButton from '@material-ui/core/IconButton';
 import * as helper from '../../utils/helper';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
-import ReplayIcon from '@material-ui/icons/Replay';
 import config from '../../constants/config.json';
 import palette from '../../constants/palette.json';
 import MyContext from '../mycontext/MyContext';
@@ -38,7 +37,7 @@ export default function Profile() {
   const token = localStorage.getItem('jwtToken');
   const history = useHistory();
   const [errors, setErrors] = useState({});
-  const [username, setUsername] = useState("");// không thay đổi được
+  const [username, setUsername] = useState("");
   const [displayedName, setDisplayedName] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState("Bạn chưa chọn ngày sinh");
   const [avatar, setAvatar] = useState(null);
@@ -61,7 +60,7 @@ export default function Profile() {
     setDateOfBirth(info.DateOfBirth);
     setActiveDate(info.ActivatedDate);
     setAvatar(info.AvatarURL ? info.AvatarURL : defaultAvatar);
-  }, [info])
+  }, [info]);
 
   const handleDisplayedNameChange = (name) => {
     setDisplayedName(name);
@@ -76,7 +75,6 @@ export default function Profile() {
   }
 
   const handleSaveChange = async () => {
-
     const errorObjs = {
     };
 
@@ -105,6 +103,7 @@ export default function Profile() {
       Email: email,
       DateOfBirth: dateOfBirth
     }
+
     const res = await fetch(`${API_URL}/users/${userID}/info`, {
       method: 'PATCH',
       headers: {
@@ -117,18 +116,15 @@ export default function Profile() {
     if (res.status === 200) {
       setContent("Cập nhật thành công");
       setShowSnackBar(true);
-
       const newInfo = {
         ...info,
         Name: data.Name,
         Email: data.Email,
         DateOfBirth: data.DateOfBirth
       };
+
       setInfo(newInfo);
       socket.emit(`update_profile`, { user: newInfo });
-
-    } else {
-      // alert("Some error when updating!")
     }
   }
 
@@ -140,10 +136,10 @@ export default function Profile() {
         Authorization: `Bearer ${token}`
       }
     });
+
     if (res.status === 200) {
       const result = await res.json();
       setInfo(result.user);
-
     }
   }
 
@@ -190,7 +186,7 @@ export default function Profile() {
               <div style={{ textAlign: 'center', width: '80%' }}>
                 <Typography component="h2" variant="h5" style={{ fontWeight: 'bold' }}>
                   Thông tin tài khoản
-                <IconButton onClick={handleResetInfo} title="Reset information" color="primary" aria-label="add an alarm" style={{ fontSize: 'large' }} >
+                  <IconButton onClick={handleResetInfo} title="Reset information" color="primary" aria-label="add an alarm" style={{ fontSize: 'large' }} >
                     <Refresh />
                   </IconButton>
                 </Typography>
@@ -204,14 +200,6 @@ export default function Profile() {
                     onChange={e => handleDisplayedNameChange(e.target.value)}
                     value={displayedName}
                   />
-                  {/* <div className="container margin-top-10">
-                    <Typography style={{ fontWeight: 'bold' }} variant="h6">Tên tài khoản</Typography>
-                    <div className="input-invalid">{errors.userName}</div>
-                  </div>
-                  <TextField placeholder="Tên tài khoản" variant="outlined"
-                    margin="normal" required fullWidth disabled
-                    value={username}
-                  /> */}
                   <div className="container margin-top-10">
                     <Typography style={{ fontWeight: 'bold' }} variant="h6">Email</Typography>
                     <div className="input-invalid">{errors.email}</div>

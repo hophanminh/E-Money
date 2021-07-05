@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useHistory } from "react-router-dom";
 import {
   Typography,
   Badge,
@@ -12,7 +13,6 @@ import {
   Link,
   Tooltip
 } from '@material-ui/core';
-
 import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
 import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
 import CheckIcon from '@material-ui/icons/Check';
@@ -20,9 +20,11 @@ import NotificationsNoneIcon from '@material-ui/icons/NotificationsNone';
 import moment from 'moment';
 import { getSocket } from '../../utils/socket';
 import config from '../../constants/config.json';
+import { splitNotificationID } from '../../utils/helper';
 
 export default function Notification() {
   const classes = useStyles();
+  const history = useHistory();
   const socket = getSocket();
   const userID = localStorage.getItem('userID');
 
@@ -42,7 +44,8 @@ export default function Notification() {
     });
   }, []);
 
-  const handleMarkNotification = (notification) => {
+  const handleMarkNotification = (event, notification) => {
+    event.stopPropagation();
     socket.emit('update_notification', {
       userID,
       limit: currentAmountToLoad,
@@ -74,6 +77,18 @@ export default function Notification() {
     socket.emit('load_more_notifications', { userID, limit: amountToLoad }, ({ notificationList }) => {
       setNotifications(notificationList);
       setCurrentAmountToLoad(amountToLoad);
+    });
+  }
+
+  const goToTransaction = (ID) => {
+    const info = splitNotificationID(ID);
+    let url = '/Wallet';
+    url = url + (info?.isPrivate ? "" : ("/" + info?.walletID))
+    history.push({
+      pathname: url,
+      state: {
+        selected: info?.txID,
+      }
     });
   }
 
@@ -113,37 +128,39 @@ export default function Notification() {
                   {
                     notifications.map(notification => {
                       return (
-                        <div key={notification.ID}>
-                          <Card key={notification.ID} className={classes.notifyCard} style={{ backgroundColor: notification.IsRead ? '#ffffff' : '#eaeaea' }}>
-                            <CardContent style={{ padding: '10px' }}>
-                              <div className={classes.notifyText} style={{ fontWeight: notification.IsRead ? 'normal' : 'bold' }}>
-                                <FiberManualRecordIcon className={classes.unreadMessageIcon} style={{ visibility: notification.IsRead ? 'hidden' : 'visible' }} />
-                                <div>
-                                  <p className={classes.notifyContent}>{notification.Content}</p>
-                                  <Typography variant="body2" color="textSecondary" component="p" style={{ fontSize: '9pt' }}>
-                                    {moment(notification.DateNotified).format(config.DATE_TIME_FORMAT)}
-                                  </Typography>
+                        <>
+                          <div key={notification.ID} onClick={() => goToTransaction(notification.ID)}>
+                            <Card key={notification.ID} className={classes.notifyCard} style={{ backgroundColor: notification.IsRead ? '#ffffff' : '#eaeaea' }}>
+                              <CardContent style={{ padding: '10px' }}>
+                                <div className={classes.notifyText} style={{ fontWeight: notification.IsRead ? 'normal' : 'bold' }}>
+                                  <FiberManualRecordIcon className={classes.unreadMessageIcon} style={{ display: notification.IsRead ? 'none' : 'inline' }} />
+                                  <div>
+                                    <p className={classes.notifyContent}>{notification.Content}</p>
+                                    <Typography variant="body2" color="textSecondary" component="p" style={{ fontSize: '9pt' }}>
+                                      {moment(notification.DateNotified).format(config.DATE_TIME_FORMAT)}
+                                    </Typography>
+                                  </div>
+                                  <div style={{ flexGrow: 1 }}></div>
+                                  {
+                                    !notification.IsRead
+                                      ? <div>
+                                        <Tooltip title="Đánh dấu là đã đọc" aria-label="mark-as-read">
+                                          <IconButton id={notification.ID} size='small' aria-label="refuse"
+                                            style={{ marginLeft: '5px' }}
+                                            onClick={(event) => handleMarkNotification(event, notification)}
+                                          >
+                                            <CheckIcon className={classes.checkIcon} />
+                                          </IconButton>
+                                        </Tooltip>
+                                      </div>
+                                      : <React.Fragment></React.Fragment>
+                                  }
                                 </div>
-                                <div style={{ flexGrow: 1 }}></div>
-                                {
-                                  !notification.IsRead
-                                    ? <div>
-                                      <Tooltip title="Đánh dấu là đã đọc" aria-label="mark-as-read">
-                                        <IconButton id={notification.ID} size='small' aria-label="refuse"
-                                          style={{ marginLeft: '5px' }}
-                                          onClick={() => handleMarkNotification(notification)}
-                                        >
-                                          <CheckIcon className={classes.checkIcon} />
-                                        </IconButton>
-                                      </Tooltip>
-                                    </div>
-                                    : <React.Fragment></React.Fragment>
-                                }
-                              </div>
-                            </CardContent>
-                          </Card>
+                              </CardContent>
+                            </Card>
+                          </div>
                           <Divider />
-                        </div>
+                        </>
                       );
                     })
                   }
@@ -195,6 +212,9 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: '0px',
     "& .MuiCardContent-root:last-child": {
       padding: '10px',
+    },
+    "&&:hover": {
+      cursor: 'pointer',
     }
   },
   notifyContent: {
@@ -226,5 +246,5 @@ const useStyles = makeStyles((theme) => ({
     height: '12px',
     marginRight: 10,
     color: '#2e89ff'
-  }
+  },
 }));

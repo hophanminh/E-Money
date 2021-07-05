@@ -14,7 +14,7 @@ module.exports = function (io) {
     else {
       next(new Error('Authentication error'));
     }
-  })
+  });
 
   io.on("connection", (socket) => {
     const decoded_userID = socket.decoded_userID.id;
@@ -37,5 +37,5 @@ module.exports = function (io) {
       }
       console.log(socket.user.name + " disconnected");
     });
-  })
+  });
 }

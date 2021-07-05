@@ -5,7 +5,6 @@ import {
   DialogTitle,
   Box,
   DialogContent,
-  DialogContentText,
   Button,
   makeStyles,
   DialogActions
@@ -13,11 +12,11 @@ import {
 import {
   WalletContext,
   PopupContext
-} from '../../mycontext'
+} from '../../mycontext';
 import { getSocket } from "../../../utils/socket";
-import POPUP from '../../../constants/popup.json'
+import POPUP from '../../../constants/popup.json';
 
-const NAME = POPUP.TRANSACTION.DELETE_TRANSACTION
+const NAME = POPUP.TRANSACTION.DELETE_TRANSACTION;
 
 export default function DeleteTransaction(props) {
   const classes = useStyles();

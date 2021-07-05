@@ -1,8 +1,12 @@
-import React, { useContext } from 'react';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import './App.css';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+} from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
-
 import Home from './components/home/home';
 import Statistic from './components/statistic/statistic';
 import PrivateRoute from './components/PrivateRoute';
@@ -18,13 +22,10 @@ import ActivateDestination from './components/activedestination/ActiveDestinatio
 import Profile from './components/profile/Profile';
 import TeamProfile from './components/Team/TeamProfile';
 import TeamStatistic from './components/Team/TeamStatistic';
-import MyContext from './components/mycontext/MyContext';
 import CombinedProvider from './components/mycontext/combineProvider'
 import Teams from './components/Team/Teams';
 import UpdateProfile from './components/Team/UpdateProfile';
 import ResetDestination from './components/signin/resetpassword/ResetDestination';
-import { getListIcon } from './utils/DefaultIcon';
-import './App.css';
 
 const routes = [
   {
@@ -105,7 +106,7 @@ const routes = [
   },
 ];
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   body: {
     display: 'flex',
     minHeight: "calc(100vh - 35vh)",
@@ -117,19 +118,18 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function App() {
+function App() {
   const classes = useStyles();
-
-  const { isLoggedIn } = useContext(MyContext);
-  if (isLoggedIn) {
-    getListIcon();
-  }
+  useEffect(() => {
+    document.title = "E-Money";
+  });
 
   return (
     <Router>
       <div>
         <CssBaseline />
         <div className={classes.body}>
+
           <CombinedProvider>
             <Menu />
             <div className={classes.content}>
@@ -157,9 +157,12 @@ export default function App() {
               </Switch>
             </div>
           </CombinedProvider>
+
         </div>
         <StickyFooter />
       </div>
     </Router>
   );
 }
+
+export default App;

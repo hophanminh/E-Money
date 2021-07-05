@@ -1,6 +1,16 @@
 import React, { useState, useEffect, forwardRef } from 'react';
 import Carousel from 'react-material-ui-carousel';
-import { Button, Grid, Container, IconButton, DialogActions, DialogContentText, DialogContent, DialogTitle, Dialog } from '@material-ui/core';
+import {
+  Button,
+  Grid,
+  Container,
+  IconButton,
+  DialogActions,
+  DialogContentText,
+  DialogContent,
+  DialogTitle,
+  Dialog
+} from '@material-ui/core';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Badge from '@material-ui/core/Badge';
@@ -62,9 +72,9 @@ export default function TransactionImages({ transactionID, images, setImages }) 
 
   useEffect(() => {
     if (!addImageDialog && images.length === 0) {
-      handleClose()
+      handleClose();
     }
-  }, [open, images])
+  }, [open, images]);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -209,7 +219,6 @@ export default function TransactionImages({ transactionID, images, setImages }) 
 function RemoveImageDialog({ transactionID, imageID, images, setImages, open, setOpen }) {
   const socket = getSocket();
   const classes = useStyles();
-  const token = window.localStorage.getItem('jwtToken');
   const [isWaiting, setIsWaiting] = useState(false);
 
   const handleClose = () => {
@@ -224,7 +233,6 @@ function RemoveImageDialog({ transactionID, imageID, images, setImages, open, se
     socket.emit(`remove_transaction_image`, { imageID, transactionID }, (status) => {
       if (status === 200) {
         setIsWaiting(false);
-        // setImages(images.slice().filter(image => image.ID !== imageID));
       }
     });
   }
@@ -301,10 +309,9 @@ function ImagesUploader({ transactionID, open, setOpen, images, setImages }) {
 
     if (res.status === 200) {
       const result = await res.json();
-      // setImages(images.slice().concat(result.urls));
       socket.emit('add_transaction_image', { transactionID, urls: result.urls });
       setIsDone(true);
-    } else { // 400, etc...
+    } else {
       const result = await res.json();
       setIsDone(false);
       setContent(result.msg);

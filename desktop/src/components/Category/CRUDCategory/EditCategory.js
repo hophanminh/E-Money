@@ -8,7 +8,6 @@ import {
   DialogTitle,
   Typography,
   TextField,
-  Avatar,
   Button,
   Box,
   makeStyles,
@@ -17,14 +16,12 @@ import {
   PopupContext,
   CategoryContext,
   IconContext
-} from '../../mycontext'
-import POPUP from '../../../constants/popup.json'
+} from '../../mycontext';
+import POPUP from '../../../constants/popup.json';
 import { getSocket } from "../../../utils/socket";
-import DefaultIcon from '../../../utils/DefaultIcon'
+import DefaultIcon from '../../../utils/DefaultIcon';
 
-const NAME = POPUP.CATEGORY.EDIT_CATEGORY
-
-const fakeEvent = [];
+const NAME = POPUP.CATEGORY.EDIT_CATEGORY;
 
 export default function EditCategory(props) {
   const classes = useStyles();
@@ -85,13 +82,13 @@ export default function EditCategory(props) {
 
   return (
     <React.Fragment>
-      { newCategory &&
+      {newCategory &&
         <Dialog open={isOpen} onClose={handleCloseEditDialog} aria-labelledby="form-dialog-title">
 
           <DialogTitle id="form-dialog-title" >
             <Typography className={classes.title}>
               Thay đổi loại giao dịch
-                </Typography>
+            </Typography>
           </DialogTitle>
           <DialogContent>
             <Box>
@@ -143,10 +140,10 @@ export default function EditCategory(props) {
           <DialogActions>
             <Button className={`${classes.button} ${classes.closeButton}`} onClick={handleCloseEditDialog} variant="contained" >
               Hủy
-                        </Button>
+            </Button>
             <Button className={`${classes.button} ${classes.editButton}`} disabled={!isOpen} onClick={handleEdit} variant="contained">
               Thay đổi
-                        </Button>
+            </Button>
 
           </DialogActions>
         </Dialog>
@@ -199,4 +196,3 @@ const useStyles = makeStyles({
     backgroundColor: '#1DAF1A',
   },
 });
-

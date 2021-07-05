@@ -17,7 +17,6 @@ import palette from '../../../constants/palette.json';
 const API_URL = config.API_LOCAL;
 
 export default function RequestGenerator({ setShowSnackBar, setContent }) {
-  const userID = localStorage.getItem('userID');
   const history = useHistory();
   const [waiting, setWaiting] = useState(false);
   const [open, setOpen] = useState(false);
@@ -52,7 +51,6 @@ export default function RequestGenerator({ setShowSnackBar, setContent }) {
   };
 
   const handleSubmit = async () => {
-
     const errorObj = {
     };
 
@@ -61,11 +59,13 @@ export default function RequestGenerator({ setShowSnackBar, setContent }) {
     } else if (helper.containsBlank(username)) {
       errorObj.username = "Tên tài khoản không được chứa khoảng trắng";
     }
+
     if (helper.isBlankString(email)) {
       errorObj.email = "Email không được để trống";
     } else if (!helper.isEmailPattern(email)) {
       errorObj.email = "Email không hợp lệ";
     }
+
     setErrors(errorObj);
 
     if (Object.keys(errorObj).length > 0) {
@@ -77,6 +77,7 @@ export default function RequestGenerator({ setShowSnackBar, setContent }) {
       Username: username,
       Email: email
     }
+
     const res = await fetch(`${API_URL}/forgotpassword`, {
       method: 'POST',
       body: JSON.stringify(data),

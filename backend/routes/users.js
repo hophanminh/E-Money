@@ -27,7 +27,6 @@ const { convertToRegularDate } = require('../utils/helper');
 
 router.use(express.static('public'));
 
-
 /**
  * @deprecated
  */
@@ -59,7 +58,6 @@ router.get('/:id', async (req, res) => {
 });
 
 router.patch('/:id/info', async (req, res) => {
-
   const userID = req.params.id;
   const { Name, Email, DateOfBirth } = req.body;
   const formattedDOB = DateOfBirth ? convertToRegularDate(DateOfBirth) : null;
@@ -67,8 +65,9 @@ router.patch('/:id/info', async (req, res) => {
 
   if (result.affectedRows === 1) {
     res.status(200).end();
-  } else res.status(500).end();
-
+  } else {
+    res.status(500).end();
+  }
 });
 
 router.patch('/:id/password', async (req, res) => {
@@ -87,7 +86,6 @@ router.patch('/:id/password', async (req, res) => {
     } else {
       res.status(500).send({ msg: "Đã xảy ra sự cố khi cập nhật. Hãy thử lại!" });
     }
-
   } else {
     res.status(400).send({ msg: "Mật khẩu hiện tại không đúng" });
   }

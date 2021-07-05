@@ -2,12 +2,10 @@ const categoryModel = require('../../models/categoryModel');
 const eventModel = require('../../models/eventModel');
 const transactionModel = require('../../models/transactionModel');
 const config = require("../../config/default.json");
-
 const { v4: uuidv4 } = require('uuid');
 const historyModel = require('../../models/historyModel');
 
 module.exports = function (socket, io) {
-
   // get category of wallet
   socket.on('get_category', async ({ walletID }, callback) => {
     // socket.join(walletID);
@@ -119,7 +117,6 @@ module.exports = function (socket, io) {
     } catch (error) {
       console.log(error);
     }
-
   });
 
   //ADMIN ???

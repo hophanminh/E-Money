@@ -1,14 +1,11 @@
 const express = require('express');
 const router = express.Router();
-
 const WalletModel = require('../models/walletModel');
 const TeamModel = require('../models/teamModel');
 const TeamHasUserModel = require('../models/TeamHasUserModel');
 const EventModel = require('../models/eventModel');
-
 const config = require("../config/default.json");
 const { convertToRegularDateTime } = require("../utils/helper");
-
 const multer = require("multer");
 const fs = require('fs');
 const path = require('path');
@@ -74,7 +71,6 @@ router.post('/:teamID/roles', async (req, res) => {
   const info = await TeamHasUserModel.getTHUByUserIdAndTeamID(userID, teamID);
   if (info.length === 0) {
     return res.status(400).send({ msg: "Không tìm thấy nhóm." })
-
   } else {
     return res.status(200).send({ info: info[0] });
   }
@@ -93,8 +89,7 @@ router.post('/:userID', async (req, res) => {
   const teamWallet = await WalletModel.addWallet(newWallet);
 
   if (teamWallet.affectedRows !== 1) {
-    return res.status(500)
-      .send({ msg: "Hãy thử lại." });
+    return res.status(500).send({ msg: "Hãy thử lại." });
   }
 
   const newTeam = {
@@ -105,10 +100,10 @@ router.post('/:userID', async (req, res) => {
     CreatedDate: convertToRegularDateTime(new Date()),
     WalletID: newWallet.ID,
   };
+
   const team = await TeamModel.createTeam(newTeam);
   if (team.affectedRows !== 1) {
-    return res.status(500)
-      .send({ msg: "Hãy thử lại." });
+    return res.status(500).send({ msg: "Hãy thử lại." });
   }
 
   const admin = {
@@ -120,11 +115,9 @@ router.post('/:userID', async (req, res) => {
   const result = await TeamHasUserModel.createTHU(admin);
 
   if (result.affectedRows === 1) {
-    return res.status(201)
-      .send({ msg: "Tạo nhóm thành công.", result: newWallet.ID });
+    return res.status(201).send({ msg: "Tạo nhóm thành công.", result: newWallet.ID });
   } else {
-    return res.status(500)
-      .send({ msg: "Hãy thử lại." });
+    return res.status(500).send({ msg: "Hãy thử lại." });
   }
 })
 
@@ -154,10 +147,10 @@ router.patch('/:id/avatar', upload.single('avatar'), async (req, res) => {
       tags: 'avatar'
     },
     async (err, image) => {
-
       if (err) {
         return res.status(500).send({ msg: "Đã xảy ra sự cố khi tải lên ảnh của bạn. Hãy thử lại!" });
       }
+
       fs.unlinkSync(filePath);
       await TeamModel.updateTeam(teamId, { AvatarURL: image.url });
       return res.status(200).json({ url: image.url });
@@ -195,7 +188,6 @@ router.post('/:id/leave', async (req, res) => {
   // Remove user from team
   const c = await TeamHasUserModel.leaveTHU(team.ID, UserID)
   return res.status(200).send({ msg: "Thành công." })
-
 });
 
 router.post('/remove/:userId', async (req, res) => {
@@ -208,7 +200,6 @@ router.post('/remove/:userId', async (req, res) => {
 router.post('/:id/delete', async (req, res) => {
   const walletId = req.params.id;
   const teamObject = await TeamModel.getTeamByWalletId(walletId);
-  const { UserID } = req.body;
   if (teamObject.length === 0) {
     return res.status(400).send({ msg: "Không tìm thấy nhóm." })
   }
@@ -231,9 +222,11 @@ router.post('/join/:userId', async (req, res) => {
   if (team.length === 0) {
     return res.status(404).send({ msg: "Không tìm thấy nhóm." });
   }
+
   if (thu && thu.find(i => i.UserID === userID)) {
     return res.status(500).send({ msg: "Bạn đã là thành viên của nhóm." });
   }
+
   if ((team[0].MaxUsers > thu.length) && (!thu.includes(userID))) {
     const thuObject = {
       TeamID: teamID,
@@ -242,16 +235,15 @@ router.post('/join/:userId', async (req, res) => {
       Status: config.STATUS.ACTIVE
     }
     const result = await TeamHasUserModel.createTHU(thuObject);
+
     if (result.affectedRows === 1) {
       return res.status(201)
         .send({ msg: "Bạn vừa gia nhập vào nhóm.", result: team[0].WalletID });
     } else {
-      return res.status(500)
-        .send({ msg: "Xin hãy thử lại." });
+      return res.status(500).send({ msg: "Xin hãy thử lại." });
     }
   } else {
-    res.status(500)
-      .send({ msg: "Nhóm đã đủ số lượng thành viên" });
+    res.status(500).send({ msg: "Nhóm đã đủ số lượng thành viên" });
   }
 })
 

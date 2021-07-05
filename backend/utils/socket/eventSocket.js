@@ -1,7 +1,7 @@
 const eventModel = require('../../models/eventModel');
 const eventTypeModel = require('../../models/eventTypeModel');
 const { v4: uuidv4 } = require('uuid');
-const { convertToRegularDate, convertToRegularDateTime, getNextEventDate } = require('../helper');
+const { convertToRegularDateTime, getNextEventDate } = require('../helper');
 const { FORMAT_DATETIME_PATTER } = require('../../config/default.json');
 module.exports = function (socket, io, decoded_userID) {
 
@@ -51,7 +51,6 @@ module.exports = function (socket, io, decoded_userID) {
       // annouce to other players
       const eventList = await eventModel.getEventByWalletID(walletID);
       io.sockets.emit(`wait_for_update_event_${walletID}`, { eventList });
-
     } catch (error) {
       console.log(error);
     }
@@ -75,7 +74,5 @@ module.exports = function (socket, io, decoded_userID) {
     } catch (error) {
       console.log(error);
     }
-
   });
-
 };

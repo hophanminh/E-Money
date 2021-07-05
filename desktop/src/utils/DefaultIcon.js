@@ -16,9 +16,9 @@ export default function DefaultIcon({ IconID, backgroundSize, iconSize }) {
 
     // get initial list of icon
     useEffect(async () => {
-        const selected = iconList.find(icon => icon.ID === IconID);
+        const selected = (iconList || []).find(icon => icon.ID === IconID);
         setIcon(selected);
-    }, [IconID]);
+    }, [IconID, iconList]);
 
     // Set name, color and background color for icon
     const styleBackground = {

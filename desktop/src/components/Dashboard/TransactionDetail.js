@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Link, } from "react-router-dom";
 import {
   Typography,
   Box,
@@ -10,9 +9,8 @@ import {
 import {
   WalletContext,
   PopupContext,
-} from '../mycontext'
-import POPUP from '../../constants/popup.json'
-
+} from '../mycontext';
+import POPUP from '../../constants/popup.json';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import RestoreIcon from '@material-ui/icons/Restore';
@@ -23,18 +21,14 @@ import DeleteTransaction from './CRUDTransaction/DeleteTransaction';
 import Rollback from '../Rollback/Rollback';
 import TransactionImages from './TransactionImages';
 import { getSocket } from "../../utils/socket";
-import { formatMoney } from '../../utils/currency'
-
+import { formatMoney } from '../../utils/currency';
 
 export default function TransactionDetail(props) {
   const classes = useStyles();
   const socket = getSocket();
   const { selected } = useContext(WalletContext)
   const { setOpen } = useContext(PopupContext)
-
   const data = selected;
-
-  ///////////////////////////////////////////////////// imageList[0].URL to access
   const [imageList, setImageList] = useState([]);
 
   const handleSetImageList = (imageList) => {
@@ -52,16 +46,13 @@ export default function TransactionDetail(props) {
 
   useEffect(() => {
     socket.on(`wait_for_add_transaction_image_${data?.id}`, ({ urls }) => {
-      // if (selected.id === transactionID) {
       const concatenatedList = JSON.parse(JSON.stringify(imageList)).concat(urls);
       handleSetImageList(concatenatedList);
-      // }
     });
+
     socket.on(`wait_for_remove_transaction_image_${data?.id}`, ({ imageID }) => {
-      // if (selected.id === transactionID) {
       const filteredList = JSON.parse(JSON.stringify(imageList)).filter(image => image.ID !== imageID);
       handleSetImageList(filteredList);
-      // }
     });
 
     return () => {
@@ -105,7 +96,7 @@ export default function TransactionDetail(props) {
                   <Typography
                     className={classes.editedText}>
                     (Có chỉnh sửa)
-                </Typography>
+                  </Typography>
                 }
               </Box>
               <div>
@@ -162,7 +153,6 @@ export default function TransactionDetail(props) {
           </React.Fragment>
         }
       </div>
-
     </React.Fragment>
   );
 }
@@ -275,4 +265,3 @@ const useStyles = makeStyles((theme) => ({
     fontSize: '28px',
   }
 }));
-

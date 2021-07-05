@@ -1,19 +1,12 @@
-import React, { useState, useEffect, createContext } from 'react';
-import config from '../../constants/config.json';
-import { getSocket } from "../../utils/socket";
-import moment from 'moment';
+import React, { useState, createContext } from 'react';
 
-const API_URL = config.API_LOCAL;
 const EventContext = createContext({});
-
 export default EventContext;
 
 export const EventProvider = (props) => {
-  const socket = getSocket();
-
   const [selected, setSelected] = useState();
-  const [eventList, setEventList] = useState([])
-  const [eventTypeList, setTypeList] = useState([])
+  const [eventList, setEventList] = useState([]);
+  const [eventTypeList, setTypeList] = useState([]);
 
   return (
     <EventContext.Provider
@@ -21,12 +14,11 @@ export const EventProvider = (props) => {
         selected,
         eventList,
         eventTypeList,
-
         setSelected,
         setEventList,
         setTypeList,
       }}>
       {props.children}
     </EventContext.Provider>
-  )
+  );
 }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -9,9 +9,7 @@ import {
   NavLink
 } from "react-router-dom";
 
-
 export default function SideBarList(props) {
-  const [currentUser, setCurrentUser] = useState();
   return (
     <div>
       <ListItem button component={NavLink} to="/Wallet">
@@ -37,5 +35,5 @@ export default function SideBarList(props) {
         </ListItem>
       )}
     </div>
-  )
-};
+  );
+}

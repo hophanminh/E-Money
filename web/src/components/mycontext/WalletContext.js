@@ -1,40 +1,33 @@
 import React, { useState, useEffect, createContext } from 'react';
-import config from '../../constants/config.json';
-import { getSocket } from "../../utils/socket";
 
-const API_URL = config.API_LOCAL;
 const WalletContext = createContext({});
-
 export default WalletContext;
 
 export const WalletProvider = (props) => {
-  const socket = getSocket();
-
   const [walletID, setWalletID] = useState();
   const [selected, setSelected] = useState();
-  const [list, setList] = useState([])
-  const [filterList, setFilterList] = useState([])
+  const [list, setList] = useState([]);
+  const [filterList, setFilterList] = useState([]);
 
   const [expanded, setExpanded] = useState('category');
-  const [isSimple, setIsSimple] = useState(true)
+  const [isSimple, setIsSimple] = useState(true);
 
   useEffect(() => {
     const check = window.localStorage.getItem('isSimple') === '0' ? false : true;
-    setIsSimple(check)
-  }, [])
+    setIsSimple(check);
+  }, []);
 
   useEffect(() => {
     setList([]);
-  }, [walletID])
+  }, [walletID]);
 
   useEffect(() => {
     setSelected(selected => {
       if (list && selected) {
-        const temp = list.find(i => i?.id === selected?.id)
+        const temp = list.find(i => i?.id === selected?.id);
         if (temp) {
           return temp;
-        }
-        else {
+        } else {
           return null;
         }
       }
@@ -49,27 +42,26 @@ export const WalletProvider = (props) => {
         if (newCat) {
           newList[i].IconID = newCat.IconID;
           newList[i].categoryName = newCat.Name;
-        }
-        else {
+        } else {
           const temp = catList.find(cat => cat.Name === "Khác");
           newList[i].IconID = temp.IconID;
           newList[i].categoryName = temp.Name;
           newList[i].catID = temp.ID;
         }
       }
-      return [...newList]
+      return [...newList];
     });
   }
 
   const setSimpleOption = (status) => {
     const check = status ? '1' : '0'
     window.localStorage.setItem('isSimple', check);
-    setIsSimple(status)
+    setIsSimple(status);
   }
 
   const setSelectedByID = (ID) => {
     if (list) {
-      const temp = list.find(i => i?.id === ID)
+      const temp = list.find(i => i?.id === ID);
       if (temp) {
         setSelected(temp);
       }
@@ -85,7 +77,6 @@ export const WalletProvider = (props) => {
         expanded,
         filterList,
         isSimple,
-
         setWalletID,
         setSelected,
         setList,
@@ -97,5 +88,5 @@ export const WalletProvider = (props) => {
       }}>
       {props.children}
     </WalletContext.Provider>
-  )
+  );
 }

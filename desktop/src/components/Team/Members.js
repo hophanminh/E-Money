@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { Link, useHistory, useParams } from 'react-router-dom'
+import React from 'react';
 import {
   Typography,
   Box,
@@ -9,22 +8,16 @@ import {
   AccordionDetails,
   Button,
   Divider,
-  Badge,
   makeStyles,
 } from '@material-ui/core/';
 import FormatListBulletedIcon from '@material-ui/icons/FormatListBulleted';
-import MyContext from '../mycontext/MyContext';
 import config from '../../constants/config.json';
 import HighlightOffIcon from '@material-ui/icons/HighlightOff';
-import { NavigateBeforeSharp } from '@material-ui/icons';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
-
 const API_URL = config.API_LOCAL;
-
-
 
 const MembersOfTeam = (props) => {
   const classes = useStyles();
@@ -37,6 +30,7 @@ const MembersOfTeam = (props) => {
     const data = {
       teamID: teamID
     }
+
     const res = await fetch(`${API_URL}/teams/remove/${userID}`, {
       method: 'POST',
       headers: {
@@ -98,33 +92,31 @@ const MembersOfTeam = (props) => {
                         <DialogTitle >
                           <Typography className={classes.title}>
                             Bạn có thực sự muốn xóa thành viên {target.Name} ra khỏi nhóm
-                         </Typography>
+                          </Typography>
                         </DialogTitle>
                         <DialogActions>
                           <Button style={{ color: "white", backgroundColor: "green", marginLeft: 10 }} variant="contained" color="primary" className={classes.margin} onClick={handleClose}>
                             Hủy
-                       </Button>
+                          </Button>
                           <Button style={{ color: "white", backgroundColor: "red", marginLeft: 10 }} variant="contained" color="primary" className={classes.margin} onClick={(e) => handleRemoveMember(target.ID)}>
                             Xóa
-                       </Button>
+                          </Button>
                         </DialogActions>
                       </Dialog>
                     </div>
                     : ""}
-
                 </Box>
               </AccordionDetails>
               <Divider className={classes.divider} />
             </React.Fragment>
           )
         })}
-
       </Accordion>
     </div>
   );
 }
 
-export default MembersOfTeam
+export default MembersOfTeam;
 
 const useStyles = makeStyles(() => ({
   red: {
@@ -152,7 +144,6 @@ const useStyles = makeStyles(() => ({
       minHeight: '58px',
       height: '58px',
     }
-
   },
   accordionHead: {
     display: 'flex',
@@ -220,6 +211,5 @@ const useStyles = makeStyles(() => ({
       //you want this to be the same as the backgroundColor above
       backgroundColor: "#fd9b15"
     }
-
   },
 }));

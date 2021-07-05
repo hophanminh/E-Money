@@ -8,9 +8,6 @@ import {
   DialogTitle,
   Typography,
   TextField,
-  Avatar,
-  FormControlLabel,
-  Checkbox,
   Button,
   Box,
   makeStyles,
@@ -19,7 +16,7 @@ import {
   PopupContext,
   CategoryContext,
   EventContext
-} from '../../mycontext'
+} from '../../mycontext';
 import DateFnsUtils from '@date-io/date-fns';
 import {
   KeyboardDateTimePicker,
@@ -28,16 +25,13 @@ import {
 } from '@material-ui/pickers';
 import NumberFormat from 'react-number-format';
 import moment from 'moment';
-
-import DefaultIcon from '../../../utils/DefaultIcon'
-import getValueOfEventType from '../../../utils/defaultEventType'
-import { getMaxMoney, getCurrencySymbol } from '../../../utils/currency'
-import POPUP from '../../../constants/popup.json'
+import DefaultIcon from '../../../utils/DefaultIcon';
+import getValueOfEventType from '../../../utils/defaultEventType';
+import { getMaxMoney, getCurrencySymbol } from '../../../utils/currency';
+import POPUP from '../../../constants/popup.json';
 import { getSocket } from "../../../utils/socket";
-import { isValidMonthDay } from '../../../utils/helper'
+import { isValidMonthDay } from '../../../utils/helper';
 
-
-const fakeEvent = []
 const NAME = POPUP.EVENT.ADD_EVENT;
 
 export default function AddEvent(props) {
@@ -47,18 +41,15 @@ export default function AddEvent(props) {
   const { open, setOpen } = useContext(PopupContext);
   const { fullList } = useContext(CategoryContext);
   const { eventTypeList } = useContext(EventContext);
-
-  const isOpen = open === NAME
-
+  const isOpen = open === NAME;
   const [step, setStep] = useState(1);
-
   const [error, setError] = useState({
     Name: false,
     Price: false,
     Description: false,
     StartTime: false,
     Value: false,
-  })
+  });
   const [type, setType] = useState("Chi");
   const [isEndless, setIsEndless] = useState(true);
 
@@ -82,7 +73,7 @@ export default function AddEvent(props) {
     Description: '',
     StartTime: initialTime,
     Value2: 0
-  })
+  });
 
   useEffect(() => {
     if (isOpen) {
@@ -96,7 +87,7 @@ export default function AddEvent(props) {
       setNewEvent({
         ...newEvent,
         CategoryID: fullList[0]?.ID
-      })
+      });
     }
   }, [fullList]);
 
@@ -105,7 +96,7 @@ export default function AddEvent(props) {
       setNewEvent({
         ...newEvent,
         EventTypeID: eventTypeList[0]?.ID
-      })
+      });
     }
   }, [eventTypeList]);
 
@@ -125,7 +116,7 @@ export default function AddEvent(props) {
       Description: '',
       StartTime: initialTime,
       Value2: 0
-    })
+    });
   }
 
   const handleCloseAddDialog = () => {
@@ -146,7 +137,6 @@ export default function AddEvent(props) {
         ...error,
         StartTime: true,
       });
-
       return;
     }
 
@@ -156,7 +146,6 @@ export default function AddEvent(props) {
           ...error,
           Value: true,
         });
-
         return;
       }
     }
@@ -165,9 +154,11 @@ export default function AddEvent(props) {
   }
 
   const handleAdd = () => {
-    if (error.Name === true || error.Description === true || error.Price === true || error.Value === true || error.StartTime === true) {
+    if (error.Name === true || error.Description === true || error.Price === true
+      || error.Value === true || error.StartTime === true) {
       return;
     }
+
     const newCategory = fullList.find(i => i?.ID === newEvent.CategoryID);
     const newEventType = eventTypeList.find(i => i?.ID === newEvent.EventTypeID);
 
@@ -178,8 +169,9 @@ export default function AddEvent(props) {
     if (isEndless) {
       newEvent.EndDate = null;
     }
+
     if (newEvent.TypeName === "Hằng năm") {
-      newEvent.Value = newEvent.Value * 1000 + newEvent.Value2
+      newEvent.Value = newEvent.Value * 1000 + newEvent.Value2;
     }
 
     socket.emit("add_event", { walletID: id, newEvent });
@@ -209,6 +201,7 @@ export default function AddEvent(props) {
         Value: 0,
         Value2: 0
       });
+
       setError({
         ...error,
         Value: false,
@@ -223,6 +216,7 @@ export default function AddEvent(props) {
         Name: false,
       });
     }
+
     setNewEvent({
       ...newEvent,
       Name: event.target.value
@@ -236,6 +230,7 @@ export default function AddEvent(props) {
         Description: true,
       });
     }
+
     if (event.target.value?.length <= 500 && error.Description) {
       setError({
         ...error,
@@ -258,12 +253,12 @@ export default function AddEvent(props) {
 
   const handleChangeValue = (event) => {
     if (newEvent.TypeName === "Hằng năm") {
-      if (!isValidMonthDay(event.target.value, newEvent.Value2))
+      if (!isValidMonthDay(event.target.value, newEvent.Value2)) {
         setError({
           ...error,
           Value: true,
         });
-      else {
+      } else {
         setError({
           ...error,
           Value: false,
@@ -279,12 +274,12 @@ export default function AddEvent(props) {
 
   const handleChangeValue2 = (event) => {
     if (newEvent.TypeName === "Hằng năm") {
-      if (!isValidMonthDay(newEvent.Value, event.target.value))
+      if (!isValidMonthDay(newEvent.Value, event.target.value)) {
         setError({
           ...error,
           Value: true,
         });
-      else {
+      } else {
         setError({
           ...error,
           Value: false,
@@ -304,13 +299,11 @@ export default function AddEvent(props) {
         ...error,
         StartTime: false,
       });
-    }
-    else {
+    } else {
       setError({
         ...error,
         StartTime: true,
       });
-
     }
 
     setNewEvent({
@@ -360,7 +353,7 @@ export default function AddEvent(props) {
           <DialogTitle id="form-dialog-title" >
             <Typography className={classes.title}>
               Thêm sự kiện mới
-                </Typography>
+            </Typography>
           </DialogTitle>
           <DialogContent className={classes.dialog}>
             <Box>
@@ -381,8 +374,6 @@ export default function AddEvent(props) {
                 error={error?.Name}
                 helperText={error?.Name ? "Tên sự kiện không được để trống" : ''}
               />
-
-
 
               <TextField
                 className={classes.textField}
@@ -516,12 +507,12 @@ export default function AddEvent(props) {
                 <MenuItem value={true}>
                   <Box className={classes.typeBox}>
                     Vô tận
-                </Box>
+                  </Box>
                 </MenuItem>
                 <MenuItem value={false}>
                   <Box className={classes.typeBox}>
                     Vào lúc
-                </Box>
+                  </Box>
                 </MenuItem>
               </TextField>
 
@@ -559,7 +550,7 @@ export default function AddEvent(props) {
           <DialogTitle id="form-dialog-title" >
             <Typography className={classes.title}>
               Thông tin giao dịch định kì
-                </Typography>
+            </Typography>
           </DialogTitle>
           <DialogContent className={classes.dialog}>
             <Box>
@@ -578,12 +569,12 @@ export default function AddEvent(props) {
                   <MenuItem value={"Chi"}>
                     <Box className={`${classes.typeBox} ${classes.type2Text}`}>
                       Chi
-                </Box>
+                    </Box>
                   </MenuItem>
                   <MenuItem value={"Thu"}>
                     <Box className={`${classes.typeBox} ${classes.type1Text}`}>
                       Thu
-                </Box>
+                    </Box>
                   </MenuItem>
                 </TextField>
 
@@ -639,22 +630,6 @@ export default function AddEvent(props) {
                   </MenuItem>
                 ))}
               </TextField>
-
-              {/* <TextField
-                name="Description"
-                size="small"
-                className={classes.textField}
-                value={newEvent.Description}
-                onChange={handleChangeDes}
-                id="outlined-multiline-static"
-                label="Mô tả"
-                multiline
-                rows={10}
-                fullWidth
-                variant="outlined"
-                error={error?.Description}
-                helperText={error?.Description ? "Mô tả không được quá 500 ký tự" : ''}
-              /> */}
             </Box>
           </DialogContent>
           <DialogActions>
@@ -734,7 +709,6 @@ const useStyles = makeStyles({
   iconText: {
     marginLeft: '10px',
   },
-
   button: {
     borderRadius: '4px',
     color: '#FFFFFF',

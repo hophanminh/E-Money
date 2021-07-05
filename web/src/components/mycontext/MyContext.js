@@ -1,11 +1,9 @@
 import React, { useState, useEffect, createContext } from 'react';
 import config from '../../constants/config.json';
-import { getSocket } from "../../utils/socket";
 import { timeoutPromise } from "../../utils/helper";
 
 const API_URL = config.API_LOCAL;
 const MyContext = createContext({});
-
 export default MyContext;
 
 export const MyProvider = (props) => {
@@ -24,33 +22,27 @@ export const MyProvider = (props) => {
           Authorization: `Bearer ${token}`
         }
       });
+
       if (res.status === 200) {
         const result = await res.json();
         setInfo(result.user);
         setIsLoggedIn(true);
         setIsLoading(false);
-
-      } else { // 400, 403
-
+      } else {
         // remove if any
         window.localStorage.removeItem('jwtToken');
         window.localStorage.removeItem('userID');
         setIsLoggedIn(false);
         setIsLoading(false);
       }
-      return res
+      return res;
     }
 
     try {
       let res = await timeoutPromise(10000, fetchInfo());
     } catch (error) {
-      // remove if any
-      // window.localStorage.removeItem('jwtToken');
-      // window.localStorage.removeItem('userID');
-      // setIsLoggedIn(false);
       setIsLoading(false);
     }
-
   }, []);
 
   useEffect(() => {
@@ -64,10 +56,10 @@ export const MyProvider = (props) => {
           Authorization: `Bearer ${token}`
         }
       });
+
       if (res.status === 200) {
         const result = await res.json();
         setInfo(result.user);
-        // setIsLoggedIn(true);
         setIsLoading(false);
       }
     }
@@ -75,7 +67,7 @@ export const MyProvider = (props) => {
     if (isLoggedIn !== null && isLoggedIn) {
       fetchInfo();
     }
-  }, [isLoggedIn])
+  }, [isLoggedIn]);
 
   return (
     <MyContext.Provider
@@ -88,5 +80,5 @@ export const MyProvider = (props) => {
       }}>
       {props.children}
     </MyContext.Provider>
-  )
+  );
 }

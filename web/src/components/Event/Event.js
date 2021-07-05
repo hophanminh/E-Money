@@ -4,39 +4,32 @@ import {
   Container,
   Breadcrumbs,
   Typography,
-  IconButton,
   Box,
   Paper,
-  Link as TextLink,
   Button,
   Table,
   TableBody,
   TableCell,
   TableRow,
-  TableFooter,
   TableContainer,
   TableHead,
   TablePagination,
   makeStyles,
 } from '@material-ui/core/';
 import {
-  MyContext,
-  WalletContext,
   PopupContext,
   CategoryContext,
   EventContext
-} from '../mycontext'
+} from '../mycontext';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import AddIcon from '@material-ui/icons/Add';
 import moment from 'moment';
-import POPUP from '../../constants/popup.json'
-
+import POPUP from '../../constants/popup.json';
 import { getSocket } from "../../utils/socket";
-import { formatMoney } from '../../utils/currency'
+import { formatMoney } from '../../utils/currency';
 import AddEvent from './CRUDEvent/AddEvent';
 import DeleteEvent from './CRUDEvent/DeleteEvent';
 import InfoEvent from './CRUDEvent/InfoEvent';
-
 
 export default function Event() {
   const classes = useStyles();
@@ -44,7 +37,7 @@ export default function Event() {
   const { id } = useParams();
   const socket = getSocket();
   const { setOpen } = useContext(PopupContext);
-  const { fullList, setAllList } = useContext(CategoryContext);
+  const { setAllList } = useContext(CategoryContext);
   const { selected, setSelected, eventList, setEventList, setTypeList } = useContext(EventContext);
 
   const [team, setTeam] = useState();
@@ -53,16 +46,14 @@ export default function Event() {
   useEffect(() => {
     socket.emit("get_wallet", { ID: id }, (wallet) => {
       const hasWallet = wallet ? true : false
-      setWallet(hasWallet)
+      setWallet(hasWallet);
     });
-  }, [id])
+  }, [id]);
 
   useEffect(() => {
     if (wallet === false) {
       history.push("/");
-    }
-    else if (wallet === true) {
-
+    } else if (wallet === true) {
       socket.emit("get_team", { walletID: id }, ({ team }) => {
         setTeam(team);
       });
@@ -78,7 +69,6 @@ export default function Event() {
       socket.emit("get_category", { walletID: id }, ({ defaultList, customList, fullList }) => {
         setAllList(defaultList, customList, fullList)
       });
-
 
       socket.on(`wait_for_update_event_${id}`, ({ eventList }) => {
         setEventList(eventList);
@@ -125,27 +115,23 @@ export default function Event() {
 
   useEffect(() => {
     const temp1 = eventList ? eventList.filter(i => i.Status === 0) : [];
-
     const temp2 = temp1 ? rowsPerPage - Math.min(rowsPerPage, temp1.length - page_2 * rowsPerPage) : 0;
     setRows_2(temp1);
     setEmptyRows_2(temp2);
   }, [eventList, page]);
 
   // info dialog
-  const [openInfoDialog, setOpenInfoDialog] = useState(false);
   const handleOpenInfoDialog = (e, data) => {
     setSelected(data);
     setOpen(POPUP.EVENT.INFO_EVENT);
   }
 
   // add dialog
-  const [openAddDialog, setOpenAddDialog] = useState(false);
   const handleOpenAddDialog = () => {
     setOpen(POPUP.EVENT.ADD_EVENT);
   }
 
   // delete dialog
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const handleOpenDeleteDialog = (e, data) => {
     setSelected(data);
     setOpen(POPUP.EVENT.DELETE_EVENT);
@@ -159,7 +145,6 @@ export default function Event() {
             data={selected} />
           <AddEvent />
           <DeleteEvent />
-
           <Container className={classes.root} maxWidth={null}>
             <div className={classes.title}>
               <Breadcrumbs className={classes.breadcrumb} separator={<NavigateNextIcon fontSize="large" />} aria-label="breadcrumb">
@@ -173,12 +158,12 @@ export default function Event() {
                   <Link to="/Wallet" style={{ textDecoration: 'none' }}>
                     <Typography className={classes.LinkFont}>
                       Ví cá nhân
-                </Typography>
+                    </Typography>
                   </Link>
                 }
                 <Typography className={classes.titleFont} color="textPrimary">
                   Quản lý sự kiện
-            </Typography>
+                </Typography>
               </Breadcrumbs>
               <Typography className={classes.subTitleFont} color="textSecondary">Quản lý các khoản giao dịch tiền tệ cá nhân </Typography>
             </div>
@@ -186,12 +171,12 @@ export default function Event() {
               <Box className={classes.subHeader}>
                 <Typography className={classes.subHeaderFont} color="textPrimary">
                   Sự kiện đang chạy
-              </Typography>
+                </Typography>
                 <Box className={classes.actionBox}>
                   <Button className={classes.addButton} variant="outlined" onClick={handleOpenAddDialog}>
                     <AddIcon className={classes.green} />
-                Thêm sự kiện
-              </Button>
+                    Thêm sự kiện
+                  </Button>
                 </Box>
 
               </Box>
@@ -231,7 +216,7 @@ export default function Event() {
                                   variant="outlined"
                                 >
                                   Thông tin
-                              </Button>
+                                </Button>
                                 <Button
                                   className={classes.endButton}
                                   onClick={(e) => handleOpenDeleteDialog(e, row)}
@@ -240,7 +225,7 @@ export default function Event() {
                                   color="secondary"
                                 >
                                   Kết thúc
-                              </Button>
+                                </Button>
                               </TableCell>
                             </TableRow>
                           )
@@ -267,7 +252,7 @@ export default function Event() {
               <Box className={classes.subHeader}>
                 <Typography className={classes.subHeaderFont} color="textPrimary">
                   Sự kiện đã kết thúc
-              </Typography>
+                </Typography>
               </Box>
               <Box className={classes.eventBox}>
                 <Paper className={classes.paper}>
@@ -305,7 +290,7 @@ export default function Event() {
                                   variant="outlined"
                                 >
                                   Thông tin
-                              </Button>
+                                </Button>
                               </TableCell>
                             </TableRow>
                           )

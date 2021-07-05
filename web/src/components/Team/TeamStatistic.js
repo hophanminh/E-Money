@@ -3,7 +3,6 @@ import { useLocation } from 'react-router-dom';
 import { Container } from '@material-ui/core';
 import HorizontalTimeline from "react-horizontal-timeline";
 import moment from 'moment';
-
 import Charts from '../statistic/charts';
 import config from '../../constants/config.json';
 
@@ -11,10 +10,8 @@ const API_URL = config.API_LOCAL;
 
 export default function TeamStatistic() {
   const jwtToken = localStorage.getItem('jwtToken');
-
   const location = useLocation();
   const team = location.state.team;
-
   const [dates, setDates] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [preIndex, setPreIndex] = useState(-1);

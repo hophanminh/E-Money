@@ -66,4 +66,3 @@ export const splitNotificationID = (ID) => {
   const isPrivate = split[0] === '0' ? true : false
   return { isPrivate, txID: split[1], walletID: split[2], notiID: split[3] };
 }
-

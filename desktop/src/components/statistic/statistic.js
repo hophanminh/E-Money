@@ -2,7 +2,6 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Container } from '@material-ui/core';
 import HorizontalTimeline from "react-horizontal-timeline";
 import moment from 'moment';
-
 import MyContext from '../mycontext/MyContext';
 import Charts from './charts.js';
 import config from '../../constants/config.json';

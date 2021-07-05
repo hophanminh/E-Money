@@ -5,13 +5,14 @@ import SideBar from "./SideBar";
 import Topbar from "./Topbar";
 import TopBarNotLogin from "./TopBarNotLogIn";
 
-
 export default function Menu(props) {
   const [open, setOpen] = useState(false);
   const { isLoading, isLoggedIn, setIsLoggedIn } = useContext(MyContext);
+
   const handleDrawerOpen = () => {
     setOpen(true);
   };
+
   const handleDrawerClose = () => {
     setOpen(false);
   };
@@ -25,7 +26,6 @@ export default function Menu(props) {
           setIsLoggedIn(false);
           history.push('/signin');
           return;
-
         } else {
           setIsLoggedIn(true);
           history.push('/');
@@ -64,5 +64,5 @@ export default function Menu(props) {
           )
       }
     </>
-  )
+  );
 }

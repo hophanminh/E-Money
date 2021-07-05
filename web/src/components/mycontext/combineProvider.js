@@ -7,19 +7,19 @@ import { EventProvider } from './EventContext';
 import { IconProvider } from './IconContext';
 
 const CombinedProvider = ({ children }) => (
-    <MyProvider>
-        <WalletProvider>
-            <PopupProvider>
-                <CategoryProvider>
-                    <EventProvider>
-                        <IconProvider>
-                            {children}
-                        </IconProvider>
-                    </EventProvider>
-                </CategoryProvider>
-            </PopupProvider>
-        </WalletProvider>
-    </MyProvider>
-)
+  <MyProvider>
+    <WalletProvider>
+      <PopupProvider>
+        <CategoryProvider>
+          <EventProvider>
+            <IconProvider>
+              {children}
+            </IconProvider>
+          </EventProvider>
+        </CategoryProvider>
+      </PopupProvider>
+    </WalletProvider>
+  </MyProvider>
+);
 
-export default CombinedProvider
+export default CombinedProvider;

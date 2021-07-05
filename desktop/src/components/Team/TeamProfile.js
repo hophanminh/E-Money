@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
-// import ImageUploader from './ImageUploader';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
@@ -14,6 +13,7 @@ import MyContext from '../mycontext/MyContext';
 import SnackBar from '../snackbar/SnackBar';
 
 const API_URL = config.API_LOCAL;
+
 const styles = {
   wallpaper: {
     width: '100%',
@@ -29,7 +29,6 @@ const styles = {
 }
 
 export default function TeamProfile() {
-
   const userID = localStorage.getItem('userID');
   const token = localStorage.getItem('jwtToken');
   const history = useHistory();
@@ -37,7 +36,6 @@ export default function TeamProfile() {
   const [teamName, setTeamName] = useState("");
   const [description, setDiscription] = useState("");
   const [numberUser, setNumberUser] = useState(10);
-  const [avatar, setAvatar] = useState(null);
   const { isLoggedIn } = useContext(MyContext);
 
   const [content, setContent] = useState("");
@@ -52,16 +50,16 @@ export default function TeamProfile() {
   const handleTeamNameChange = (teamName) => {
     setTeamName(teamName);
   }
+
   const handleNumberUsers = (number) => {
     setNumberUser(number);
   }
+
   const handleDescription = (des) => {
     setDiscription(des);
   }
 
-
   const handleSaveChange = async () => {
-
     const errorObjs = {
     };
 
@@ -80,6 +78,7 @@ export default function TeamProfile() {
       MaxUsers: numberUser,
       Description: description
     }
+
     const res = await fetch(`${API_URL}/teams/${userID}`, {
       method: 'POST',
       headers: {
@@ -94,9 +93,7 @@ export default function TeamProfile() {
       setContent("Tạo nhóm thành công");
       setShowSnackBar(true);
       history.push(`/Wallet/${result.result}`);
-
     } else {
-      // alert("Some error when updating!")
       setContent("Tạo nhóm thất bại");
       setShowSnackBar(true);
       history.push(`/teams/create`);
@@ -112,7 +109,7 @@ export default function TeamProfile() {
             <div style={{ textAlign: 'center', width: '80%' }}>
               <Typography component="h2" variant="h5" style={{ fontWeight: 'bold' }}>
                 Thông tin tạo nhóm
-                                </Typography>
+              </Typography>
               <div style={{ margin: '20px 0 20px' }}>
                 <div class="container">
                   <Typography style={{ fontWeight: 'bold' }} variant="h6">Tên nhóm</Typography>
@@ -151,7 +148,7 @@ export default function TeamProfile() {
                 startIcon={<SaveIcon />}
               >
                 Tạo nhóm
-                                </Button>
+              </Button>
             </div>
           </Grid>
         </Container>

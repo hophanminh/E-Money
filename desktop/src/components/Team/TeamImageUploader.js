@@ -1,13 +1,13 @@
-import React, { useState } from 'react'
-import { DropzoneDialog } from 'material-ui-dropzone'
+import React, { useState } from 'react';
+import { DropzoneDialog } from 'material-ui-dropzone';
 import Button from '@material-ui/core/Button';
 import AddPhotoAlternateIcon from '@material-ui/icons/AddPhotoAlternate';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import config from '../../constants/config.json';
 import palette from '../../constants/palette.json';
 import { Dialog, DialogContent, Typography } from '@material-ui/core';
-const API_URL = config.API_LOCAL;
 
+const API_URL = config.API_LOCAL;
 
 export default function ImageUploader({ setAvatar, setContent, setShowSnackBar }) {
   const userID = localStorage.getItem('userID');
@@ -20,7 +20,6 @@ export default function ImageUploader({ setAvatar, setContent, setShowSnackBar }
   }
 
   const handleSave = async (files) => {
-
     const data = new FormData();
     data.append('avatar', files[0]);
     setWaiting(true);
@@ -28,7 +27,6 @@ export default function ImageUploader({ setAvatar, setContent, setShowSnackBar }
     const res = await fetch(`${API_URL}/users/${userID}/avatar`, {
       method: 'PATCH',
       headers: {
-        // 'content-type': 'multipart/form-data', // no need
         Authorization: `Bearer ${token}`
       },
       body: data,
@@ -39,11 +37,11 @@ export default function ImageUploader({ setAvatar, setContent, setShowSnackBar }
     if (res.status === 200) {
       setContent("Cập nhật thành công");
       setAvatar(result.url);
-    } else { // 400, etc...
+    } else {
       setContent(result.msg)
     }
     setShowSnackBar(true);
-    setWaiting(false)
+    setWaiting(false);
     setOpen(false);
   }
 

@@ -8,12 +8,9 @@ import config from '../../constants/config.json';
 import MyContext from '../mycontext/MyContext';
 import SnackBar from '../snackbar/SnackBar';
 import { makeStyles } from '@material-ui/core/styles';
-
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
-import CardMedia from '@material-ui/core/CardMedia';
-import AddIcon from '@material-ui/icons/Add';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -23,13 +20,15 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Slide from '@material-ui/core/Slide';
 import TextField from '@material-ui/core/TextField';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
-import { CardHeader, Divider } from '@material-ui/core';
+import AddIcon from '@material-ui/icons/Add';
+import { Divider } from '@material-ui/core';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
 const API_URL = config.API_LOCAL;
+
 const useStyles = makeStyles((theme) => ({
   root: (theme) => ({
     width: '95%',
@@ -88,7 +87,6 @@ const useStyles = makeStyles((theme) => ({
   subTitleFont: {
     fontSize: '14px',
   },
-
   body: {
     display: 'flex',
     flexDirection: 'column',
@@ -102,21 +100,15 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     justifyContent: 'flex-end'
   }
-
-
 }));
 
 export default function Teams() {
-
   const classes = useStyles();
-
   const userID = localStorage.getItem('userID');
   const token = localStorage.getItem('jwtToken');
   const history = useHistory();
-  const [errors, setErrors] = useState({});
   const [teams, setTeams] = useState([]);
   const { isLoggedIn } = useContext(MyContext);
-
   const [content, setContent] = useState("");
   const [showSnackbar, setShowSnackBar] = useState(false);
 
@@ -124,12 +116,10 @@ export default function Teams() {
     if (isLoggedIn !== null && isLoggedIn === false) {
       history.push('/');
     }
-    getTeams()
-
+    getTeams();
   }, [isLoggedIn]);
 
   const getTeams = async () => {
-
     const res = await fetch(`${API_URL}/teams/${userID}`, {
       method: 'GET',
       headers: {
@@ -140,31 +130,33 @@ export default function Teams() {
 
     if (res.status === 200) {
       const result = await res.json();
-      setTeams(result.teams)
-    } else {
-      // alert("Some error when updating!")
+      setTeams(result.teams);
     }
   }
 
   const walletTeam = (walletID) => {
-    history.push(`/Wallet/${walletID}`)
+    history.push(`/Wallet/${walletID}`);
   }
+
   const detailTeam = (teamID) => {
-    history.push(`/teams/${teamID}/details`)
+    history.push(`/teams/${teamID}/details`);
   }
+
   const createTeam = () => {
     setOpen(false);
-    history.push(`/teams/create`)
+    history.push(`/teams/create`);
   }
 
   const [joinID, setJoinID] = useState("");
   const handleJoinTeam = (joinID) => {
     setJoinID(joinID);
   }
+
   const joinTeam = async () => {
     const data = {
       teamID: joinID
     }
+
     const res = await fetch(`${API_URL}/teams/join/${userID}`, {
       method: 'POST',
       headers: {
@@ -173,6 +165,7 @@ export default function Teams() {
       },
       body: JSON.stringify(data),
     });
+
     if (res.status === 201) {
       const result = await res.json();
       setContent("Tạo nhóm thành công");
@@ -191,6 +184,7 @@ export default function Teams() {
   const handleClickOpen = () => {
     setOpen(true);
   };
+
   const handleClose = () => {
     setOpen(false);
   };
@@ -200,6 +194,7 @@ export default function Teams() {
     handleClose();
     setOpenDiaForm(true);
   };
+
   const handleCloseDiaForm = () => {
     setOpenDiaForm(false);
   };
@@ -207,13 +202,12 @@ export default function Teams() {
   return (
     <>
       <SnackBar open={showSnackbar} setOpen={(isOpen) => setShowSnackBar(isOpen)} content={content} />
-
       <Container className={classes.root} maxWidth={null}>
         <div className={classes.title}>
           <Breadcrumbs className={classes.breadcrumb} separator={<NavigateNextIcon fontSize="large" />} aria-label="breadcrumb">
             <Typography className={classes.titleFont} color="textPrimary">
               Danh sách nhóm
-                        </Typography>
+            </Typography>
           </Breadcrumbs>
           <Typography className={classes.subTitleFont} color="textSecondary">Quản lý các khoản giao dịch tiền tệ nhóm </Typography>
         </div>
@@ -244,10 +238,10 @@ export default function Teams() {
                       <DialogActions>
                         <Button onClick={createTeam} color="primary">
                           Tạo nhóm
-                                                </Button>
+                        </Button>
                         <Button onClick={handleClickOpenDiaForm} color="primary">
                           Tham gia nhóm
-                                                </Button>
+                        </Button>
                       </DialogActions>
                     </Dialog>
                     <Dialog open={openDiaForm} onClose={handleCloseDiaForm} aria-labelledby="form-dialog-title">
@@ -255,7 +249,7 @@ export default function Teams() {
                       <DialogContent>
                         <DialogContentText>
                           Nhập mã nhóm
-                                            </DialogContentText>
+                        </DialogContentText>
                         <TextField
                           autoFocus
                           margin="dense"
@@ -268,10 +262,10 @@ export default function Teams() {
                       <DialogActions>
                         <Button onClick={handleCloseDiaForm} color="primary">
                           Hủy
-                                            </Button>
+                        </Button>
                         <Button onClick={joinTeam} color="primary">
                           Tham gia
-                                            </Button>
+                        </Button>
                       </DialogActions>
                     </Dialog>
                   </Card>
@@ -295,10 +289,10 @@ export default function Teams() {
                     <CardActions className={classes.buttonAction}>
                       <Button variant="outlined" size="small" color="primary" onClick={(TeamID) => walletTeam(card.WalletID)}>
                         Ví nhóm
-                                            </Button>
+                      </Button>
                       <Button variant="outlined" size="small" color="primary" onClick={(TeamID) => detailTeam(card.ID)}>
                         Thông tin nhóm
-                                            </Button>
+                      </Button>
                     </CardActions>
                   </Card>
                 </Grid>

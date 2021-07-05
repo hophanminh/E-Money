@@ -1,6 +1,5 @@
 const express = require("express");
 const moment = require('moment');
-
 const router = express.Router();
 const statisticModel = require('../models/statisticModel');
 router.use(express.static('public'));

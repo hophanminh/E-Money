@@ -4,16 +4,10 @@ import {
   Container,
   Breadcrumbs,
   Typography,
-  IconButton,
-  Box,
   TextField,
-  Card,
-  Popover,
-  InputAdornment,
   Button,
   makeStyles,
 } from '@material-ui/core/';
-// import ImageUploader from './ImageUploader';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import SaveIcon from '@material-ui/icons/Save';
 import Grid from '@material-ui/core/Grid';
@@ -24,9 +18,9 @@ import SnackBar from '../snackbar/SnackBar';
 import config from '../../constants/config.json';
 import MembersOfTeam from '../Team/Members';
 import copy from "copy-to-clipboard";
-// import ForwardToInboxIcon from '@material-ui/icons/ForwardToInbox';
 
 const API_URL = config.API_LOCAL;
+
 const useStyles = makeStyles((theme) => ({
   wallpaper: {
     width: '100%',
@@ -51,9 +45,6 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
     paddingBottom: '10px'
   },
-  breadcrumb: {
-
-  },
   titleFont: {
     fontSize: '24px',
     fontWeight: 'bold',
@@ -63,7 +54,6 @@ const useStyles = makeStyles((theme) => ({
     '&:hover': {
       textDecoration: 'underline'
     }
-
   },
   subTitleFont: {
     fontSize: '14px',
@@ -110,10 +100,10 @@ export default function TeamProfile() {
         Authorization: `Bearer ${token}`,
       }
     });
+
     if (res.status === 200) {
       const result = await res.json();
       setMembers(result.members);
-    } else {
     }
   }
 
@@ -121,7 +111,6 @@ export default function TeamProfile() {
     let _isAdmin = false;
 
     members.forEach((mem) => {
-
       if (mem.ID === userID) {
         if (mem.Role === 1) {
           _isAdmin = true;
@@ -145,12 +134,9 @@ export default function TeamProfile() {
     if (res.status === 200) {
       const result = await res.json();
       setTeam(result.teams[0]);
-
       setTeamName(result.teams[0].Name);
-      setDiscription(result.teams[0].Description)
-      setNumberUser(result.teams[0].MaxUsers)
-    } else {
-      // alert("Some error when updating!")
+      setDiscription(result.teams[0].Description);
+      setNumberUser(result.teams[0].MaxUsers);
     }
   }
 
@@ -158,15 +144,16 @@ export default function TeamProfile() {
   const handleTeamNameChange = (teamName) => {
     setTeamName(teamName);
   }
+
   const handleNumberUsers = (number) => {
     setNumberUser(number);
   }
+
   const handleDescription = (des) => {
     setDiscription(des);
   }
 
   const handleSaveChange = async () => {
-
     const errorObjs = {
     };
 
@@ -186,6 +173,7 @@ export default function TeamProfile() {
       Description: description,
       UserID: userID
     }
+
     const res = await fetch(`${API_URL}/teams/details/${teamID}`, {
       method: 'PUT',
       headers: {
@@ -199,7 +187,6 @@ export default function TeamProfile() {
       setContent("Cập nhật thành công");
       setShowSnackBar(true);
     } else {
-      // alert("Some error when updating!")
       const result = await res.json();
       setContent(result.msg);
       setShowSnackBar(true);
@@ -216,7 +203,7 @@ export default function TeamProfile() {
     <>
       <SnackBar open={showSnackbar} setOpen={(isOpen) => setShowSnackBar(isOpen)} content={content} />
       <div className={classes.title}>
-        <Breadcrumbs className={classes.breadcrumb} separator={<NavigateNextIcon fontSize="large" />} aria-label="breadcrumb">
+        <Breadcrumbs separator={<NavigateNextIcon fontSize="large" />} aria-label="breadcrumb">
           {team ?
             <Link to={`/Wallet/${team.WalletID}`} style={{ textDecoration: 'none' }}>
               <Typography className={classes.LinkFont}>
@@ -227,12 +214,12 @@ export default function TeamProfile() {
             <Link to="/Wallet" style={{ textDecoration: 'none' }}>
               <Typography className={classes.LinkFont}>
                 Ví cá nhân
-                </Typography>
+              </Typography>
             </Link>
           }
           <Typography className={classes.titleFont} color="textPrimary">
             Thông tin nhóm
-            </Typography>
+          </Typography>
         </Breadcrumbs>
       </div>
       <div className={classes.body}>
@@ -242,7 +229,7 @@ export default function TeamProfile() {
               <div style={{ textAlign: 'center', width: '80%' }}>
                 <Typography component="h2" variant="h5" style={{ fontWeight: 'bold' }}>
                   Thông tin tạo nhóm
-                                </Typography>
+                </Typography>
                 <div style={{ margin: '20px 0 20px' }}>
                   <div className="container">
                     <Typography style={{ fontWeight: 'bold' }} variant="h6">Tên nhóm</Typography>
@@ -254,7 +241,6 @@ export default function TeamProfile() {
                     value={teamName}
                     disabled={isDisabledInput}
                   />
-
                   <div className="container margin-top-10">
                     <Typography style={{ fontWeight: 'bold' }} variant="h6">Số lượng thành viên</Typography>
                     <div className="input-invalid">{errors.numberUser}</div>
@@ -266,7 +252,6 @@ export default function TeamProfile() {
                     disabled={isDisabledInput}
                     type="number"
                   />
-
                   <div className="container margin-top-10">
                     <Typography style={{ fontWeight: 'bold' }} variant="h6">Mô tả</Typography>
                   </div>
@@ -285,16 +270,15 @@ export default function TeamProfile() {
                     // startIcon={<ForwardToInboxIcon />}
                     >
                       Mã tham gia nhóm
-                                        </Button>
+                    </Button>
                     <Button type="submit" size="large" color="secondary" variant="contained" style={{ color: 'white', fontWeight: 'bold', marginTop: '20px' }}
                       onClick={handleSaveChange}
                       startIcon={<SaveIcon />}
                       disabled={isDisabledInput}
                     >
                       Cập nhật thông tin
-                                        </Button>
+                    </Button>
                   </div>
-
                 </div>
               </div>
             </Grid>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useContext } from 'react';
 import { Route, Redirect } from "react-router-dom";
 import MyContext from './mycontext/MyContext';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -24,7 +24,7 @@ function PrivateRoute({ children, ...rest }) {
               )
           )
           : (
-            <div style={{ height: '100%', marginTop: '100px',display: "flex", justifyContent: 'center', alignItems: 'center'}}>
+            <div style={{ height: '100%', marginTop: '100px', display: "flex", justifyContent: 'center', alignItems: 'center' }}>
               <CircularProgress />
             </div>
           )

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Link, useParams } from "react-router-dom";
+import { useLocation, useHistory } from "react-router-dom";
 import {
   Container,
   Breadcrumbs,
@@ -17,34 +17,30 @@ import {
   PopupContext,
   CategoryContext,
   EventContext
-} from '../mycontext'
-import POPUP from '../../constants/popup.json'
+} from '../mycontext';
+import POPUP from '../../constants/popup.json';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import AccountBalanceWalletIcon from '@material-ui/icons/AccountBalanceWallet';
 import TrendingUpIcon from '@material-ui/icons/TrendingUp';
 import TrendingDownIcon from '@material-ui/icons/TrendingDown';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
-import ListIcon from '@material-ui/icons/List';
-import EventIcon from '@material-ui/icons/Event';
-import DefaultIcon from '../../utils/DefaultIcon'
-import BarChartIcon from '@material-ui/icons/BarChart';
-
-import SearchBar from './SearchBar'
-import TransactionMini from './TransactionMini'
-import TransactionDetail from './TransactionDetail'
-import CategoryAccordion from './Accordion/CategoryAccordion'
-
-import moment from 'moment'
+import SearchBar from './SearchBar';
+import TransactionMini from './TransactionMini';
+import TransactionDetail from './TransactionDetail';
+import CategoryAccordion from './Accordion/CategoryAccordion';
+import moment from 'moment';
 import AddTransaction from './CRUDTransaction/AddTransaction';
 import { getSocket } from "../../utils/socket";
-import { formatMoney } from '../../utils/currency'
+import { formatMoney } from '../../utils/currency';
 import EventAccordion from './Accordion/EventAccordion';
 
 export default function Dashboard() {
   const classes = useStyles();
+  const history = useHistory();
+  const location = useLocation();
   const socket = getSocket();
   const { info } = useContext(MyContext);
-  const { setWalletID, selected, setSelected, list, setList, filterList, updateTxCategory } = useContext(WalletContext);
+  const { setWalletID, setSelected, list, setList, filterList, updateTxCategory, setSelectedByID } = useContext(WalletContext);
   const { setOpen } = useContext(PopupContext);
   const { setAllList } = useContext(CategoryContext);
   const { setEventList } = useContext(EventContext);
@@ -53,9 +49,23 @@ export default function Dashboard() {
     spend: 0,
     receive: 0,
     total: 0
-  })
+  });
 
+  const [initialSelect, setInitialSelect] = useState(null);
   // get initial data
+  useEffect(() => {
+    if (location?.state?.selected) {
+      setInitialSelect(location?.state?.selected);
+      history.replace();
+    }
+  }, [location?.state?.selected]);
+
+  useEffect(() => {
+    if (list && initialSelect) {
+      setSelectedByID(initialSelect);
+    }
+  }, [initialSelect, list]);
+
   useEffect(() => {
     setWalletID(info?.WalletID);
 
@@ -66,7 +76,7 @@ export default function Dashboard() {
         spend: spend,
         receive: receive,
         total: total,
-      })
+      });
     });
 
     socket.on(`wait_for_update_transaction_${info?.WalletID}`, ({ transactionList, total, spend, receive }) => {
@@ -75,11 +85,11 @@ export default function Dashboard() {
         spend: spend,
         receive: receive,
         total: total,
-      })
+      });
     });
 
     socket.emit("get_category", { walletID: info?.WalletID }, ({ defaultList, customList, fullList }) => {
-      setAllList(defaultList, customList, fullList)
+      setAllList(defaultList, customList, fullList);
     });
 
 
@@ -114,30 +124,16 @@ export default function Dashboard() {
   return (
     <>
       <AddTransaction />
-
       <Container className={classes.root} maxWidth={null}>
         <Box className={classes.header}>
           <div className={classes.title}>
             <Breadcrumbs className={classes.breadcrumb} separator={<NavigateNextIcon fontSize="large" />} aria-label="breadcrumb">
               <Typography className={classes.titleFont} color="textPrimary">
                 Ví cá nhân
-            </Typography>
+              </Typography>
             </Breadcrumbs>
             <Typography className={classes.subTitleFont} color="textSecondary">Quản lý các khoản giao dịch tiền tệ cá nhân </Typography>
           </div>
-          {/* <Box className={classes.actionBox}>
-            <Link
-              to={{
-                pathname: `/Statistic`,
-              }}
-              style={{ textDecoration: 'none', marginRight: 10 }}
-            >
-              <Button className={classes.statisticButton} variant="outlined">
-                <BarChartIcon className={classes.yellow} />
-                &nbsp;Thống kê ví cá nhân
-              </Button>
-            </Link>
-          </Box> */}
         </Box>
         <div className={classes.body}>
           <Grid container spacing={5} className={classes.grid}>
@@ -240,12 +236,8 @@ export default function Dashboard() {
                 <EventAccordion />
               </div>
             </Grid>
-
           </Grid>
-
-
         </div>
-
       </Container>
     </>
   );

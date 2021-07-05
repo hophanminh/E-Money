@@ -9,19 +9,15 @@ import {
   AccordionDetails,
   Button,
   Divider,
-  Badge,
   makeStyles,
 } from '@material-ui/core/';
 import {
   CategoryContext,
   WalletContext
-} from '../../mycontext'
-import moment from 'moment'
+} from '../../mycontext';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import FormatListBulletedIcon from '@material-ui/icons/FormatListBulleted';
-import DefaultIcon from '../../../utils/DefaultIcon'
-import { formatMoney } from '../../../utils/currency'
-
+import DefaultIcon from '../../../utils/DefaultIcon';
 
 const CategoryAccordion = (props) => {
   const classes = useStyles();
@@ -30,30 +26,30 @@ const CategoryAccordion = (props) => {
   const { walletID, list, expanded, setExpanded } = useContext(WalletContext);
 
   const [catList, setCatList] = useState([]);
-  const extra = new Array(5 - catList?.length).fill(null)
+  const extra = new Array(5 - catList?.length).fill(null);
 
   useEffect(() => {
-      if (fullList) {
-          const temp = fullList?.sort((a, b) => b.count - a.count);
-          setCatList(temp?.slice(0, 5));
-      }
-  }, [fullList])
+    if (fullList) {
+      const temp = fullList?.sort((a, b) => b.count - a.count);
+      setCatList(temp?.slice(0, 5));
+    }
+  }, [fullList]);
 
   useEffect(() => {
-      if (list && fullList) {
-          const temp = [...fullList];
-          for (let i = 0; i < temp?.length; i++) {
-              const number = list.filter(j => j?.catID === temp[i]?.ID)?.length;
-              temp[i] = { ...temp[i], count: number };
-          }
-          temp?.sort((a, b) => b.count - a.count);
-          setCatList(temp?.slice(0, 5));
+    if (list && fullList) {
+      const temp = [...fullList];
+      for (let i = 0; i < temp?.length; i++) {
+        const number = list.filter(j => j?.catID === temp[i]?.ID)?.length;
+        temp[i] = { ...temp[i], count: number };
       }
-  }, [list, fullList])
+      temp?.sort((a, b) => b.count - a.count);
+      setCatList(temp?.slice(0, 5));
+    }
+  }, [list, fullList]);
 
   const handleChangeExpand = () => {
     const name = 'category';
-    setExpanded(name !== expanded ? name : 'event')
+    setExpanded(name !== expanded ? name : 'event');
   }
 
   return (
@@ -129,7 +125,7 @@ const CategoryAccordion = (props) => {
           <Link className={classes.buttonBoxLink} to={`/Wallet/${walletID}/category`} style={{ textDecoration: 'none' }} >
             <Button className={classes.button} color='primary' variant="contained">
               Xem thêm
-                        </Button>
+            </Button>
           </Link>
         </Box>
       </Accordion>
@@ -233,6 +229,5 @@ const useStyles = makeStyles(() => ({
       //you want this to be the same as the backgroundColor above
       backgroundColor: "#fd9b15"
     }
-
   },
 }));

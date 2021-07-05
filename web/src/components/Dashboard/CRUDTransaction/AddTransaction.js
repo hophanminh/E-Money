@@ -6,7 +6,6 @@ import {
   DialogTitle,
   Typography,
   TextField,
-  Avatar,
   Button,
   Box,
   makeStyles,
@@ -17,7 +16,7 @@ import {
   PopupContext,
   CategoryContext,
   EventContext
-} from '../../mycontext'
+} from '../../mycontext';
 import DateFnsUtils from '@date-io/date-fns';
 import {
   KeyboardDateTimePicker,
@@ -32,12 +31,12 @@ import POPUP from '../../../constants/popup.json';
 import { DropzoneAreaBase } from 'material-ui-dropzone';
 import SnackBar from '../../snackbar/SnackBar';
 const API_URL = config.API_LOCAL;
-const NAME = POPUP.TRANSACTION.ADD_TRANSACTION
+const NAME = POPUP.TRANSACTION.ADD_TRANSACTION;
 
 export default function AddTransaction(props) {
   const classes = useStyles();
   const socket = getSocket();
-  const { walletID, setSelected } = useContext(WalletContext);
+  const { walletID } = useContext(WalletContext);
   const { open, setOpen } = useContext(PopupContext);
   const { fullList } = useContext(CategoryContext);
   const { eventList } = useContext(EventContext);
@@ -48,7 +47,7 @@ export default function AddTransaction(props) {
   const [error, setError] = useState({
     Price: false,
     Description: false,
-  })
+  });
 
   const [newTransaction, setNewTransaction] = useState({
     price: -1000,
@@ -69,7 +68,7 @@ export default function AddTransaction(props) {
       setNewTransaction({
         ...newTransaction,
         catID: fullList[0]?.ID
-      })
+      });
     }
   }, [fullList]);
 
@@ -84,7 +83,7 @@ export default function AddTransaction(props) {
       IconID: "",
       categoryName: "",
       eventName: "",
-    })
+    });
   }
 
   const handleCloseAddDialog = () => {
@@ -107,11 +106,10 @@ export default function AddTransaction(props) {
     newTransaction.IconID = newCategory?.IconID;
     newTransaction.categoryName = newCategory?.Name;
     newTransaction.eventName = newEvent?.name;
-    newTransaction.catID = newTransaction?.catID !== 0 ? newTransaction?.catID : null
-    newTransaction.eventID = newTransaction?.eventID !== 0 ? newTransaction?.eventID : null
+    newTransaction.catID = newTransaction?.catID !== 0 ? newTransaction?.catID : null;
+    newTransaction.eventID = newTransaction?.eventID !== 0 ? newTransaction?.eventID : null;
 
     socket.emit("add_transaction", { walletID, newTransaction }, async ({ ID }) => {
-
       if (files.length === 0) {
         return;
       }
@@ -132,9 +130,8 @@ export default function AddTransaction(props) {
 
       if (res.status === 200) {
         const result = await res.json();
-        // setImages(images.slice().concat(result.urls));
         socket.emit('add_transaction_image', { transactionID: ID, urls: result.urls });
-      } else { // 400, etc...
+      } else {
         const result = await res.json();
         setContent(result.msg);
         setShowSnackBar(true);
@@ -206,12 +203,10 @@ export default function AddTransaction(props) {
         Price: false,
       });
     }
-
     setNewTransaction({
       ...newTransaction,
       price: type === "Thu" ? temp : temp * -1,
     });
-
   }
 
   const handleAddImg = newFiles => {
@@ -230,7 +225,7 @@ export default function AddTransaction(props) {
         <DialogTitle id="form-dialog-title" >
           <Typography className={classes.title}>
             Thêm khoản giao dịch mới
-                </Typography>
+          </Typography>
         </DialogTitle>
         <DialogContent>
           <Box>
@@ -250,12 +245,12 @@ export default function AddTransaction(props) {
                 <MenuItem value={"Chi"}>
                   <Box className={`${classes.typeBox} ${classes.type2Text}`}>
                     Chi
-                </Box>
+                  </Box>
                 </MenuItem>
                 <MenuItem value={"Thu"}>
                   <Box className={`${classes.typeBox} ${classes.type1Text}`}>
                     Thu
-                </Box>
+                  </Box>
                 </MenuItem>
               </TextField>
 
@@ -326,7 +321,7 @@ export default function AddTransaction(props) {
               {(!fullList || fullList.length === 0) &&
                 <MenuItem value={0}>
                   Không tìm thấy hạng mục
-              </MenuItem>
+                </MenuItem>
               }
             </TextField>
             <TextField
@@ -343,7 +338,7 @@ export default function AddTransaction(props) {
             >
               <MenuItem key={0} value={0}>
                 Không có
-            </MenuItem>
+              </MenuItem>
               {(eventList || []).filter(i => i.Status === 1).map((event) => (
                 <MenuItem key={event.ID} value={event.ID}>
                   {event.Name}
@@ -388,11 +383,10 @@ export default function AddTransaction(props) {
         <DialogActions>
           <Button className={`${classes.button} ${classes.closeButton}`} onClick={handleCloseAddDialog} variant="contained" >
             Hủy
-        </Button>
+          </Button>
           <Button className={`${classes.button} ${classes.addButton}`} disabled={!isOpen} onClick={handleAdd} variant="contained">
             Thêm
-        </Button>
-
+          </Button>
         </DialogActions>
       </Dialog>
     </>
@@ -426,7 +420,6 @@ const useStyles = makeStyles({
     fontWeight: 'bold',
     marginBottom: '-10px'
   },
-
   amountRow: {
     display: 'flex',
     width: '100%'
@@ -434,7 +427,6 @@ const useStyles = makeStyles({
   textField: {
     margin: '10px 0px 15px 0px'
   },
-
   typeBox: {
     padding: '0px 15px 0px 0px',
   },
@@ -444,7 +436,6 @@ const useStyles = makeStyles({
   type2Text: {
     color: '#FF2626'
   },
-
   categoryIconBox: {
     display: 'flex',
     justifyContent: 'flex-start',

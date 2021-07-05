@@ -16,8 +16,7 @@ import {
   ListItemText,
   Button,
   makeStyles
-} from '@material-ui/core'
-
+} from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import NotificationsNoneIcon from '@material-ui/icons/NotificationsNone';
@@ -115,7 +114,7 @@ const useStyles = makeStyles((theme) => ({
 function TopbarNotLogin(props) {
   const classes = useStyles();
   const history = useHistory();
-  const { isLoading } = props
+  const { isLoading } = props;
 
   const handleSignUp = () => {
     history.push("/signup");
@@ -141,14 +140,14 @@ function TopbarNotLogin(props) {
                 onClick={handleSignUp}
               >
                 Đăng ký
-          </Button>
+              </Button>
               <Button variant="outlined"
                 size="large"
                 className={`${classes.margin} ${classes.buttonContent}`}
                 onClick={handleSignIn}
               >
                 Đăng nhập
-          </Button>
+              </Button>
             </div>
           </>
         }

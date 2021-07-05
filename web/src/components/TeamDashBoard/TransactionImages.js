@@ -1,6 +1,17 @@
 import React, { useState, useEffect, forwardRef } from 'react';
 import Carousel from 'react-material-ui-carousel';
-import { Button, Grid, Container, IconButton, DialogActions, DialogContentText, DialogContent, DialogTitle, Dialog, Snackbar } from '@material-ui/core';
+import {
+  Button,
+  Grid,
+  Container,
+  IconButton,
+  DialogActions,
+  DialogContentText,
+  DialogContent,
+  DialogTitle,
+  Dialog,
+  Snackbar
+} from '@material-ui/core';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Badge from '@material-ui/core/Badge';
@@ -19,6 +30,7 @@ import palette from '../../constants/palette.json';
 import moment from 'moment';
 
 const API_URL = config.API_LOCAL;
+
 const styles = {
   smallImageItem: { width: '75px', height: '75px', cursor: 'pointer' },
   largeImageItem: { width: '7vw', height: '7vw', cursor: 'pointer' },
@@ -62,9 +74,9 @@ export default function TransactionImages({ transactionID, images, setImages }) 
 
   useEffect(() => {
     if (!addImageDialog && images.length === 0) {
-      handleClose()
+      handleClose();
     }
-  }, [open, images])
+  }, [open, images]);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -217,14 +229,12 @@ function RemoveImageDialog({ transactionID, imageID, images, setImages, open, se
   };
 
   const handleRemove = async () => {
-
     setOpen(false);
     setIsWaiting(true);
 
     socket.emit(`remove_transaction_image`, { imageID, transactionID }, (status) => {
       if (status === 200) {
         setIsWaiting(false);
-        // setImages(images.slice().filter(image => image.ID !== imageID));
       }
     });
   }

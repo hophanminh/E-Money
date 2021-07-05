@@ -1,41 +1,34 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext } from 'react';
 import { useParams } from "react-router-dom";
 import {
   Dialog,
   DialogContent,
-  MenuItem,
   DialogTitle,
   Typography,
   TextField,
-  Avatar,
   Button,
   Box,
   makeStyles,
   DialogActions,
 } from '@material-ui/core/';
-import moment from 'moment'
+import moment from 'moment';
 import NumberFormat from 'react-number-format';
-
-import DefaultIcon from '../../../utils/DefaultIcon'
-import { getMaxMoney, getCurrencySymbol } from '../../../utils/currency'
+import DefaultIcon from '../../../utils/DefaultIcon';
+import { getCurrencySymbol } from '../../../utils/currency';
 import {
   PopupContext,
   EventContext
-} from '../../mycontext'
-import POPUP from '../../../constants/popup.json'
+} from '../../mycontext';
+import POPUP from '../../../constants/popup.json';
 import { getSocket } from "../../../utils/socket";
 
-const NAME = POPUP.EVENT.INFO_EVENT
+const NAME = POPUP.EVENT.INFO_EVENT;
 
 export default function InfoEvent(props) {
   const classes = useStyles();
-  const socket = getSocket();
-  const { id } = useParams();
   const { open, setOpen } = useContext(PopupContext);
   const { selected } = useContext(EventContext);
-
-  const isOpen = open === NAME
-
+  const isOpen = open === NAME;
   const type = selected?.ExpectingAmount >= 0 ? "Thu" : "Chi";
 
   const handleCloseEditDialog = () => {
@@ -49,7 +42,7 @@ export default function InfoEvent(props) {
           <DialogTitle id="form-dialog-title" >
             <Typography className={classes.title}>
               Khoản giao dịch dự kiến
-                </Typography>
+            </Typography>
           </DialogTitle>
           <DialogContent>
             <Box>
@@ -145,29 +138,12 @@ export default function InfoEvent(props) {
 
               >
               </TextField>
-
-              {/* <TextField
-                                name="description"
-                                className={classes.textField}
-                                size="small"
-                                value={selected?.Description || ''}
-                                id="outlined-multiline-static"
-                                label="Mô tả"
-                                multiline
-                                rows={10}
-                                fullWidth
-                                variant="outlined"
-                                InputProps={{
-                                    readOnly: true,
-                                }}
-                            /> */}
             </Box>
           </DialogContent>
           <DialogActions>
             <Button className={`${classes.button} ${classes.closeButton}`} onClick={handleCloseEditDialog} variant="contained" >
               Đóng
-                        </Button>
-
+            </Button>
           </DialogActions>
         </Dialog>
       }

@@ -8,7 +8,6 @@ import {
   DialogTitle,
   Typography,
   TextField,
-  Avatar,
   Button,
   Box,
   makeStyles,
@@ -16,15 +15,12 @@ import {
 import {
   PopupContext,
   IconContext
-} from '../../mycontext'
-import POPUP from '../../../constants/popup.json'
+} from '../../mycontext';
+import POPUP from '../../../constants/popup.json';
 import { getSocket } from "../../../utils/socket";
+import DefaultIcon from '../../../utils/DefaultIcon';
 
-import DefaultIcon from '../../../utils/DefaultIcon'
-
-
-const fakeEvent = []
-const NAME = POPUP.CATEGORY.ADD_CATEGORY
+const NAME = POPUP.CATEGORY.ADD_CATEGORY;
 
 export default function AddCategory(props) {
   const classes = useStyles();
@@ -143,12 +139,12 @@ export default function AddCategory(props) {
         </Box>
       </DialogContent>
       <DialogActions>
-      <Button className={`${classes.button} ${classes.closeButton}`} onClick={handleCloseAddDialog} variant="contained" >
-              Hủy
-                        </Button>
-            <Button className={`${classes.button} ${classes.addButton}`} disabled={!isOpen} onClick={handleAdd} variant="contained">
-              Thêm
-                        </Button>
+        <Button className={`${classes.button} ${classes.closeButton}`} onClick={handleCloseAddDialog} variant="contained" >
+          Hủy
+        </Button>
+        <Button className={`${classes.button} ${classes.addButton}`} disabled={!isOpen} onClick={handleAdd} variant="contained">
+          Thêm
+        </Button>
 
       </DialogActions>
     </Dialog>

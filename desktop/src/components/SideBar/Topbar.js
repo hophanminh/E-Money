@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext } from 'react';
 import clsx from 'clsx';
 import { NavLink } from "react-router-dom";
 import {
@@ -10,13 +10,12 @@ import {
   useMediaQuery,
   makeStyles
 } from '@material-ui/core';
-
 import MenuIcon from '@material-ui/icons/Menu';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import MyContext from '../mycontext/MyContext';
 import Notification from '../Notification/Notification';
 import defaultAvatar from '../../../assets/defaultAvatar.png';
-import {clearSocket} from '../../utils/socket';
+import { clearSocket } from '../../utils/socket';
 
 const drawerWidth = 240;
 
@@ -28,7 +27,6 @@ function Topbar(props) {
   const logOut = (e) => {
     localStorage.removeItem("jwtToken");
     localStorage.removeItem("userID");
-    //localStorage.clear();
     setIsLoggedIn(false);
     clearSocket();
   }

@@ -12,13 +12,12 @@ import {
   makeStyles,
 } from '@material-ui/core/';
 import {
-  MyContext,
   WalletContext,
   PopupContext,
   CategoryContext,
   EventContext
-} from '../mycontext'
-import POPUP from '../../constants/popup.json'
+} from '../mycontext';
+import POPUP from '../../constants/popup.json';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import AccountBalanceWalletIcon from '@material-ui/icons/AccountBalanceWallet';
 import TrendingUpIcon from '@material-ui/icons/TrendingUp';
@@ -27,21 +26,16 @@ import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import SettingsIcon from '@material-ui/icons/Settings';
 import BarChartIcon from '@material-ui/icons/BarChart';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
-
-import SearchBar from './SearchBar'
-import TransactionMini from './TransactionMini'
-import TransactionDetail from './TransactionDetail'
-import CategoryAccordion from './Accordion/CategoryAccordion'
-
-import moment from 'moment'
+import SearchBar from './SearchBar';
+import TransactionMini from './TransactionMini';
+import TransactionDetail from './TransactionDetail';
+import CategoryAccordion from './Accordion/CategoryAccordion';
+import moment from 'moment';
 import AddTransaction from './CRUDTransaction/AddTransaction';
 import { getSocket } from "../../utils/socket";
-import { formatMoney } from '../../utils/currency'
+import { formatMoney } from '../../utils/currency';
 import EventAccordion from './Accordion/EventAccordion';
-
 import config from '../../constants/config.json';
-import cf from '../../Config/default.json';
-
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -56,7 +50,7 @@ const TeamDashBoard = () => {
   const history = useHistory();
   const location = useLocation();
   const socket = getSocket();
-  const { setWalletID, selected, setSelected, list, setList, filterList, updateTxCategory, setSelectedByID } = useContext(WalletContext);
+  const { setWalletID, setSelected, list, setList, filterList, updateTxCategory, setSelectedByID } = useContext(WalletContext);
   const { setOpen } = useContext(PopupContext);
   const { setAllList } = useContext(CategoryContext);
   const { setEventList } = useContext(EventContext);
@@ -65,11 +59,13 @@ const TeamDashBoard = () => {
     spend: 0,
     receive: 0,
     total: 0
-  })
+  });
+
   const [team, setTeam] = useState();
   const [thu, setTHU] = useState([]);
   const [person, setPerson] = useState({});
   const [initialSelect, setInitialSelect] = useState(null);
+
   // get initial data
   useEffect(() => {
     if (location?.state?.selected) {
@@ -82,8 +78,7 @@ const TeamDashBoard = () => {
     socket.emit("get_team", { walletID: id }, ({ team, thu }) => {
       if (!team) {
         history.push("/teams");
-      }
-      else {
+      } else {
         var member = thu.filter(function (member) {
           return member.UserID === userID;
         });
@@ -95,19 +90,17 @@ const TeamDashBoard = () => {
         setPerson(member[0]);
       }
     });
-  }, [id])
+  }, [id]);
 
   useEffect(() => {
     if (list && initialSelect) {
-      setSelectedByID(initialSelect)
+      setSelectedByID(initialSelect);
     }
-  }, [initialSelect, list])
+  }, [initialSelect, list]);
 
   useEffect(() => {
-
     if (team) {
       setWalletID(id);
-
       socket.emit("get_transaction", { walletID: id }, ({ transactionList, total, spend, receive }) => {
         setList(transactionList);
         setSelected(transactionList[0]);
@@ -115,7 +108,7 @@ const TeamDashBoard = () => {
           spend: spend,
           receive: receive,
           total: total,
-        })
+        });
       });
 
       socket.on(`wait_for_update_transaction_${id}`, ({ transactionList, total, spend, receive }) => {
@@ -124,13 +117,12 @@ const TeamDashBoard = () => {
           spend: spend,
           receive: receive,
           total: total,
-        })
+        });
       });
 
       socket.emit("get_category", { walletID: id }, ({ defaultList, customList, fullList }) => {
         setAllList(defaultList, customList, fullList)
       });
-
 
       socket.on(`wait_for_update_category_${id}`, ({ defaultList, customList, fullList }) => {
         setAllList(defaultList, customList, fullList);
@@ -141,11 +133,9 @@ const TeamDashBoard = () => {
         setEventList(eventList);
       });
 
-
       socket.on(`wait_for_update_event_${id}`, ({ eventList }) => {
         setEventList(eventList);
       });
-
 
       return () => {
         socket.off(`wait_for_update_transaction_${id}`);
@@ -153,10 +143,8 @@ const TeamDashBoard = () => {
         socket.off(`wait_for_update_event_${id}`);
         setOpen(null);
       }
-
     }
   }, [team]);
-
 
   // add transaction
   const handleOpenAddDialog = () => {
@@ -182,6 +170,7 @@ const TeamDashBoard = () => {
     const data = {
       UserID: userID
     }
+
     const res = await fetch(`${API_URL}/teams/${id}/leave`, {
       method: 'POST',
       headers: {
@@ -190,13 +179,14 @@ const TeamDashBoard = () => {
       },
       body: JSON.stringify(data),
     });
-    history.push("/teams")
+    history.push("/teams");
   }
 
   const deleteTeam = async () => {
     const data = {
       UserID: userID
     }
+
     const res = await fetch(`${API_URL}/teams/${id}/delete`, {
       method: 'POST',
       headers: {
@@ -205,7 +195,7 @@ const TeamDashBoard = () => {
       },
       body: JSON.stringify(data),
     });
-    history.push("/teams")
+    history.push("/teams");
   }
 
   return (
@@ -234,15 +224,15 @@ const TeamDashBoard = () => {
                 >
                   <Button className={classes.teamStatisticButton} variant="outlined">
                     <BarChartIcon className={classes.yellow} />
-          &nbsp;Thống kê nhóm
-        </Button>
+                    &nbsp;Thống kê nhóm
+                  </Button>
                 </Link>
 
                 <Link to={`/teams/${team?.ID}/details`} style={{ textDecoration: 'none', marginLeft: 10 }} >
                   <Button className={classes.teamInfoButton} variant="outlined">
                     <SettingsIcon className={classes.green} />
-          &nbsp;Thông tin nhóm
-        </Button>
+                    &nbsp;Thông tin nhóm
+                  </Button>
                 </Link>
                 <div style={{ textDecoration: 'none', marginLeft: 10 }} >
                   <Button className={classes.teamLeaveButton} variant="outlined"
@@ -266,7 +256,7 @@ const TeamDashBoard = () => {
                   <DialogActions>
                     <Button style={{ color: "white", backgroundColor: "green", marginLeft: 10 }} variant="contained" color="primary" className={classes.margin} onClick={handleClose}>
                       Hủy
-            </Button>
+                    </Button>
                     <Button style={{ color: "white", backgroundColor: "red", marginLeft: 10 }} variant="contained" color="primary" className={classes.margin} onClick={handleDelete}>
                       {(person.Role === 1) ? ` Xóa nhóm` : ` Rời nhóm`}
                     </Button>
@@ -594,5 +584,4 @@ const useStyles = makeStyles((theme) => ({
     flexShrink: 0,
     minHeight: '530px',
   },
-
 }));

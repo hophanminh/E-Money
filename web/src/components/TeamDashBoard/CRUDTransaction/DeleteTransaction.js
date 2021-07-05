@@ -5,7 +5,6 @@ import {
   DialogTitle,
   Box,
   DialogContent,
-  DialogContentText,
   Button,
   makeStyles,
   DialogActions
@@ -13,11 +12,11 @@ import {
 import {
   WalletContext,
   PopupContext
-} from '../../mycontext'
+} from '../../mycontext';
 import { getSocket } from "../../../utils/socket";
-import POPUP from '../../../constants/popup.json'
+import POPUP from '../../../constants/popup.json';
 
-const NAME = POPUP.TRANSACTION.DELETE_TRANSACTION
+const NAME = POPUP.TRANSACTION.DELETE_TRANSACTION;
 
 export default function DeleteTransaction(props) {
   const classes = useStyles();
@@ -47,22 +46,22 @@ export default function DeleteTransaction(props) {
         <DialogTitle >
           <Typography className={classes.title}>
             Xóa
-                    </Typography>
+          </Typography>
         </DialogTitle>
         <DialogContent>
           <Box>
             <Typography className={classes.description}>
               Bạn có muốn xóa khoản giao dịch đã chọn ?
-                            </Typography>
+            </Typography>
           </Box>
         </DialogContent>
         <DialogActions>
           <Button className={`${classes.button} ${classes.closeButton}`} onClick={handleClose} variant="contained" >
             Hủy
-                    </Button>
+          </Button>
           <Button className={`${classes.button} ${classes.addButton}`} onClick={handleDelete} variant="contained">
             Xóa
-                    </Button>
+          </Button>
         </DialogActions>
       </Dialog>
     </div>

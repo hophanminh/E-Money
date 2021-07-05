@@ -13,8 +13,8 @@ import { isBlankString, containsBlank, containNonDigit } from '../../../utils/he
 import { styles } from '../../signup/SignUp';
 import config from '../../../constants/config.json';
 import palette from '../../../constants/palette.json';
-const API_URL = config.API_LOCAL;
 
+const API_URL = config.API_LOCAL;
 
 function ResetDestination() {
   const history = useHistory();
@@ -28,7 +28,6 @@ function ResetDestination() {
   const { isLoggedIn } = useContext(MyContext);
 
   useEffect(() => {
-
     async function checkRequest() {
       const res = await fetch(`${API_URL}/checkresetrequest`, {
         method: 'POST',
@@ -41,6 +40,7 @@ function ResetDestination() {
         history.push('/signin');
       }
     }
+
     if (isLoggedIn !== null && isLoggedIn === false) {
       checkRequest()
     } else if (isLoggedIn !== null && isLoggedIn === true) {
@@ -69,16 +69,19 @@ function ResetDestination() {
     } else if (containNonDigit(code)) {
       errorObj.code = "Mã xác nhận chỉ được chứa ký tự"
     }
+
     if (password.length < config.PASSWORDMINLENGTH) {
       errorObj.password = "Mật khẩu phải chứa ít nhất 6 ký tự";
     } else if (containsBlank(password)) {
       errorObj.password = "Mật khẩu phải chứa ký tự khác khoảng trắng"
     }
+
     if (confirmPassword.length < config.PASSWORDMINLENGTH) {
       errorObj.confirmPassword = "Mật khẩu phải chứa ít nhất 6 ký tự";
     } else if (confirmPassword !== password) {
       errorObj.confirmPassword = "Mật khẩu xác nhận không đúng"
     }
+
     setErrors(errorObj);
 
     if (Object.keys(errorObj).length > 0) { return; }
@@ -88,6 +91,7 @@ function ResetDestination() {
       Code: code,
       Password: password
     }
+
     const res = await fetch(`${API_URL}/resetpassword`, {
       method: 'PUT',
       body: JSON.stringify(data),
@@ -95,6 +99,7 @@ function ResetDestination() {
         'Content-Type': 'application/json',
       }
     });
+
     if (res.status === 200) {
       const result = await res.json();
       localStorage.clear('resetID');
@@ -107,8 +112,7 @@ function ResetDestination() {
       const result = await res.json();
       setContent(result.msg);
       setShowSnackBar(true);
-    }
-    else if (res.status === 401) {
+    } else if (res.status === 401) {
       history.push('/');
     }
   }

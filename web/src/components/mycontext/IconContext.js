@@ -1,10 +1,9 @@
 import React, { useState, useEffect, createContext, useContext } from 'react';
 import config from '../../constants/config.json';
-import { MyContext } from '../mycontext'
+import { MyContext } from '../mycontext';
 
 const API_URL = config.API_LOCAL;
 const IconContext = createContext({});
-
 export default IconContext;
 
 export const IconProvider = (props) => {
@@ -13,9 +12,9 @@ export const IconProvider = (props) => {
 
   useEffect(() => {
     if (isLoggedIn && iconList?.length === 0) {
-      fetchIcon().then(list => setIconList(list))
+      fetchIcon().then(list => setIconList(list));
     }
-  }, [isLoggedIn])
+  }, [isLoggedIn]);
 
   const fetchIcon = async () => {
     const jwtToken = localStorage.getItem('jwtToken');
@@ -29,7 +28,7 @@ export const IconProvider = (props) => {
             Authorization: `Bearer ${jwtToken}`
           }
         });
-        return res.json()
+        return res.json();
       } catch (error) {
         return [];
       }
@@ -44,5 +43,5 @@ export const IconProvider = (props) => {
       }}>
       {props.children}
     </IconContext.Provider>
-  )
+  );
 }

@@ -7,8 +7,6 @@ import Grid from '@material-ui/core/Grid';
 import KeyboardReturnIcon from '@material-ui/icons/KeyboardReturn';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
-import GoogleIcon from '../../resources/images/google.png';
-import FacebookIcon from '../../resources/images/facebook.png';
 import SnackBar from '../snackbar/SnackBar';
 import MyContext from '../mycontext/MyContext';
 import Palette from '../../constants/palette.json';
@@ -66,7 +64,6 @@ export const styles = {
 }
 
 export default function SignIn() {
-
   const history = useHistory();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -93,7 +90,6 @@ export default function SignIn() {
   };
 
   const handleSubmit = async () => {
-
     const errorObj = {
     };
 
@@ -108,6 +104,7 @@ export default function SignIn() {
     } else if (helper.containsBlank(password)) {
       errorObj.password = "Mật khẩu phải chứa ký tự khác khoảng trắng"
     }
+
     setErrors(errorObj);
 
     if (Object.keys(errorObj).length > 0) {
@@ -118,6 +115,7 @@ export default function SignIn() {
       Username: username,
       Password: password
     };
+
     // call API here
     const res = await fetch(`${API_URL}/signin`, {
       method: 'POST',
@@ -126,13 +124,13 @@ export default function SignIn() {
         'Content-Type': 'application/json',
       }
     });
+
     const result = await res.json();
 
     if (res.status === 200) {
       window.localStorage.setItem('userID', result.user.ID);
       window.localStorage.setItem('jwtToken', result.token);
       window.localStorage.removeItem('resetID');
-
       setInfo(result.user);
       setIsLoggedIn(true);
       history.push("/");
@@ -143,9 +141,13 @@ export default function SignIn() {
     }
   }
 
-  const handleUsernameChange = (username) => { setUsername(username); }
+  const handleUsernameChange = (username) => {
+    setUsername(username);
+  }
 
-  const handlePasswordChange = (password) => { setPassword(password); }
+  const handlePasswordChange = (password) => {
+    setPassword(password);
+  }
 
   return (
     <>
@@ -182,7 +184,6 @@ export default function SignIn() {
                     <h4 variant='h6' style={{ color: '#172755' }}>Chưa có tài khoản?</h4>
                   </div>
                 </Grid>
-
               </Hidden>
               <Grid item xs={12} sm={10} md={6} align="center">
                 <div style={{ ...styles.shadow, ...styles.paper, width: '100%' }}>
@@ -200,7 +201,6 @@ export default function SignIn() {
                       variant="outlined" margin="normal" required fullWidth
                       onChange={e => handlePasswordChange(e.target.value)}
                       value={password}
-                    // onKeyPress={handleKeyPress}
                     />
                     <div className="input-invalid">
                       {errors.password}
@@ -227,6 +227,5 @@ export default function SignIn() {
         </div>
       </div>
     </>
-
   );
 }

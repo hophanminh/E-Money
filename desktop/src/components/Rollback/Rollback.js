@@ -1,32 +1,30 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { useParams } from "react-router-dom";
 import {
   Dialog,
   DialogContent,
   DialogTitle,
   Typography,
   Button,
-  Box,
   makeStyles,
   DialogActions,
 } from '@material-ui/core/';
 import {
   PopupContext,
   WalletContext
-} from '../mycontext'
-import POPUP from '../../constants/popup.json'
+} from '../mycontext';
+import POPUP from '../../constants/popup.json';
 import { getSocket } from "../../utils/socket";
 import RollbackTransaction from './RollbackTransaction';
 import RollbackList from './RollbackList';
 
-const NAME = POPUP.TRANSACTION.ROLLBACK_TRANSACTION
+const NAME = POPUP.TRANSACTION.ROLLBACK_TRANSACTION;
 
 export default function Rollback(props) {
   const classes = useStyles();
   const socket = getSocket();
   const { open, setOpen } = useContext(PopupContext);
   const { walletID, selected } = useContext(WalletContext);
-  const isOpen = open === NAME
+  const isOpen = open === NAME;
 
   const [step, setStep] = useState(1);
   const [versionList, setVersionList] = useState([]);
@@ -37,16 +35,16 @@ export default function Rollback(props) {
       socket.emit("get_history_transaction", { walletID: walletID, transactionID: selected?.id }, ({ historyList }) => {
         setVersionList(historyList);
       });
-      setStep(1)
+      setStep(1);
     }
-  }, [isOpen])
+  }, [isOpen]);
 
   const handleCloseRollbackDialog = () => {
     setOpen(null);
   }
 
   const handleGoBback = () => {
-    setStep(1)
+    setStep(1);
   }
 
   const handleRestore = (newTransaction) => {
@@ -61,7 +59,7 @@ export default function Rollback(props) {
           <DialogTitle id="form-dialog-title" >
             <Typography className={classes.title}>
               Lịch sử thay đổi
-                        </Typography>
+            </Typography>
           </DialogTitle>
           <DialogContent>
             <div style={{ display: step === 1 ? '' : 'none' }}>
@@ -76,16 +74,16 @@ export default function Rollback(props) {
               ?
               <Button className={`${classes.button} ${classes.closeButton}`} onClick={handleCloseRollbackDialog} variant="contained" >
                 Đóng
-                                </Button>
+              </Button>
               :
               <>
                 <Button className={`${classes.button} ${classes.closeButton}`} onClick={handleGoBback} variant="contained" >
                   Trở về
-                                    </Button>
+                </Button>
                 {versionList.findIndex(i => i.ID === version.ID) !== 0 &&
                   <Button className={`${classes.button} ${classes.infoButton}`} onClick={() => handleRestore(version)} variant="contained" >
                     Phục hồi
-                                    </Button>
+                  </Button>
                 }
               </>
             }

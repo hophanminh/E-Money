@@ -13,7 +13,6 @@ import {
   Link,
   Tooltip
 } from '@material-ui/core';
-
 import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
 import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
 import CheckIcon from '@material-ui/icons/Check';
@@ -21,7 +20,7 @@ import NotificationsNoneIcon from '@material-ui/icons/NotificationsNone';
 import moment from 'moment';
 import { getSocket } from '../../utils/socket';
 import config from '../../constants/config.json';
-import { splitNotificationID } from '../../utils/helper'
+import { splitNotificationID } from '../../utils/helper';
 
 export default function Notification() {
   const classes = useStyles();
