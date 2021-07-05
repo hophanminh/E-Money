@@ -300,6 +300,7 @@ class _StatisticState extends State<Statistic> {
                                           color: charts.MaterialPalette.black),
                                     ),
                                   ),
+                                  barRendererDecorator: new charts.BarLabelDecorator<String>(),
                                   behaviors: [
                                     charts.ChartTitle(
                                       'Tình hình thu chi tháng ${convertToMMYYYYY(_selectedDate.toString())}',
