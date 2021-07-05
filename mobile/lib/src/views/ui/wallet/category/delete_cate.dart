@@ -27,9 +27,7 @@ class _DeleteCateDialogState extends State<DeleteCateDialog> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    setState(() {
-
-    });
+    setState(() {});
   }
 
   @override
@@ -58,8 +56,7 @@ class _DeleteCateDialogState extends State<DeleteCateDialog> {
                       padding: const EdgeInsets.only(top: 20, bottom: 15),
                       child: Text(
                         'Xác nhận',
-                        style:
-                        TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                       ),
                     ),
                   ),
@@ -75,14 +72,24 @@ class _DeleteCateDialogState extends State<DeleteCateDialog> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      TextButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          child: Text(
-                            'Hủy',
-                            style: TextStyle(fontSize: 16, color: Colors.red),
-                          )),
+                      // TextButton(
+                      //     onPressed: () {
+                      //       Navigator.pop(context);
+                      //     },
+                      //     child: Text(
+                      //       'Hủy',
+                      //       style: TextStyle(fontSize: 16, color: Colors.red),
+                      //     )),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(primary: Colors.white, shadowColor: Colors.transparent, side: BorderSide(color: Colors.transparent, width: 1.0)),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        }, // != null ? action : () {},
+                        child: Text(
+                          'Hủy',
+                          style: TextStyle(color: Colors.black54),
+                        ),
+                      ),
                       TextButton(
                           onPressed: () {
                             handleDeleteCate();
@@ -103,7 +110,6 @@ class _DeleteCateDialogState extends State<DeleteCateDialog> {
   }
 
   void handleDeleteCate() async {
-
     Socket socket = await getSocket();
     socket.emitWithAck("delete_category", {'walletID': widget.walletID, 'id': widget.cateID}, ack: () {
       Navigator.pop(context);

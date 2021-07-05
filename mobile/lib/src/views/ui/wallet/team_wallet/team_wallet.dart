@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:http/http.dart';
@@ -136,9 +135,6 @@ class _TeamWalletState extends State<TeamWallet> {
 
   @override
   Widget build(BuildContext context) {
-    // if (_isLoading) {
-    //   return Container();
-    // }
     return GestureDetector(
         onTap: () {
           FocusManager.instance.primaryFocus.unfocus();
@@ -337,13 +333,21 @@ class _TeamWalletState extends State<TeamWallet> {
     }
   }
 
+  String _tappedTx = "";
+
   _createCompactTxn(Transactions tx) {
     IconCustom selectedIcon = _iconList.firstWhere((element) => element.id == tx.iconID, orElse: () => new IconCustom(id: '', name: '', color: '', backgroundColor: ''));
     return Card(
+      color: _tappedTx == tx.id ? Colors.grey[300] : Colors.white,
       child: GestureDetector(
         onTap: () {
           Provider.of<WalletsProvider>(context, listen: false).changeSelected(tx);
           Navigator.push(context, MaterialPageRoute(builder: (context) => ViewTransaction(txId: tx.id, isEditable: tx.userID == _userID || _roles)));
+        },
+        onPanDown: (DragDownDetails details) {
+          setState(() {
+            _tappedTx = tx.id;
+          });
         },
         child: Slidable(
           actionPane: SlidableDrawerActionPane(),
@@ -377,7 +381,7 @@ class _TeamWalletState extends State<TeamWallet> {
               child: Container(
                 padding: EdgeInsets.fromLTRB(10, 15, 10, 5),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
+                  // crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Row(children: [
                       Container(

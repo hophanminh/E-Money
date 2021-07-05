@@ -14,6 +14,11 @@ module.exports = {
                 FROM Users u LEFT JOIN Wallets w ON u.WalletID = w.ID
                 WHERE u.ID = ? `, [userID]),
 
+  getWalletByID: (ID) =>
+    db.loadSafe(`SELECT *
+                FROM Wallets
+                WHERE ID = ? `, [ID]),
+
   deleteWallet: (id) => db.delete('Wallets', { ID: id })
 
 }

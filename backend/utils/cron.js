@@ -11,6 +11,7 @@ const teamModel = require('../models/teamModel');
 const { FORMAT_DATETIME_PATTER, NOTIFICATION_AMOUNT_TO_LOAD } = require('../config/default.json');
 const { getNextEventDate } = require('../utils/helper');
 const { cloneDeep } = require('lodash');
+const { nanoid } = require('nanoid')
 
 module.exports = io => {
   cron.schedule('*/5 * * * *', async () => {
@@ -42,8 +43,10 @@ module.exports = io => {
           }
         }
 
+        const txID = uuidv4();
+        const notiID = txID + ":" + event.WalletID;
         let transactionToAdd = {
-          ID: uuidv4(),
+          ID: txID,
           Money: event.ExpectingAmount,
           Description: 'Được thêm tự động từ sự kiện "' + event.Name + '"',
           DateAdded: nextDate.format(FORMAT_DATETIME_PATTER.DATE_TIME),
@@ -83,7 +86,7 @@ module.exports = io => {
 
           for (let i = 0; i < users.length; i++) {
             let notificationToAdd = {
-              ID: uuidv4(),
+              ID: "1:" + notiID  + ":" + nanoid(),
               Content: '',
               DateNotified: tempDate.format(FORMAT_DATETIME_PATTER.DATE_TIME),
               IsRead: false,
@@ -120,7 +123,7 @@ module.exports = io => {
           nextDate = getNextEventDate(event.NextDate, event.EventTypeID, event.Value, event.NextDate);
 
           let notificationToAdd = {
-            ID: uuidv4(),
+            ID: "0:" + notiID + ":" + nanoid(),
             Content: '',
             DateNotified: tempDate.format(FORMAT_DATETIME_PATTER.DATE_TIME),
             IsRead: false,

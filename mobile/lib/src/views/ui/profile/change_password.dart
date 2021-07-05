@@ -192,7 +192,6 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                             if (value != _newPassController.text) {
                               return 'Mật khẩu xác nhận không khớp';
                             }
-                            ;
                             return null;
                           },
                         ),

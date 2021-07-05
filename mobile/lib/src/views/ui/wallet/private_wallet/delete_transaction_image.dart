@@ -1,12 +1,7 @@
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
-import 'package:mobile/src/config/config.dart';
-import 'package:mobile/src/services/restapiservices/user_service.dart';
 import 'package:mobile/src/services/socketservices/socket.dart';
 import 'package:mobile/src/views/utils/helpers/helper.dart';
-import 'package:mobile/src/views/utils/widgets/widget.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 
 class DeleteTransactionImageDialog extends StatefulWidget {
@@ -64,7 +59,7 @@ class _DeleteTransactionImageDialogState extends State<DeleteTransactionImageDia
                     child: Padding(
                       padding: const EdgeInsets.only(bottom: 20.0),
                       child: Text(
-                        'Bạn có chắc chắn muốn ảnh giao dịch này?',
+                        'Bạn có chắc chắn muốn ảnh này?',
                       ),
                     ),
                   ),
@@ -77,7 +72,7 @@ class _DeleteTransactionImageDialogState extends State<DeleteTransactionImageDia
                           },
                           child: Text(
                             'Hủy',
-                            style: TextStyle(fontSize: 16, color: Colors.red),
+                            style: TextStyle(fontSize: 16, color: Colors.black54),
                           )),
                       TextButton(
                           onPressed: () {

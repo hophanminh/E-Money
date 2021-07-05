@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-Widget createBottomMenu(BuildContext context, Function imageFromGallery, Function imageFromCamera) {
+Widget createBottomImgPickerMenu(BuildContext context, Function imageFromGallery, Function imageFromCamera) {
   return Align(
     alignment: Alignment.bottomCenter,
     child: Material(

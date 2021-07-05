@@ -73,7 +73,6 @@ export const MyProvider = (props) => {
     }
 
     if (isLoggedIn !== null && isLoggedIn) {
-      console.log('object');
       fetchInfo();
     }
   }, [isLoggedIn])

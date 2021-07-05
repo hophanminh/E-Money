@@ -184,7 +184,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                             barrierDismissible: true,
                                             barrierColor: Colors.black.withOpacity(0.5),
                                             transitionDuration: Duration(milliseconds: 500),
-                                            pageBuilder: (context, ani1, ani2) => createBottomMenu(context, _imgFromGallery, _imgFromCamera),
+                                            pageBuilder: (context, ani1, ani2) => createBottomImgPickerMenu(context, _imgFromGallery, _imgFromCamera),
                                             transitionBuilder: (context, ani1, ani2, child) =>
                                                 SlideTransition(position: Tween(begin: Offset(0, 1), end: Offset(0, 0)).animate(ani1), child: child));
                                       },

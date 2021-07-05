@@ -1,17 +1,14 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:mobile/src/config/config.dart';
 import 'package:mobile/src/models/CatsProvider.dart';
 import 'package:mobile/src/models/EventsProvider.dart';
-import 'package:mobile/src/models/NotificationProvider.dart';
 import 'package:mobile/src/models/UsersProvider.dart';
 import 'package:mobile/src/models/WalletsProvider.dart';
 import 'package:mobile/src/services/icon_service.dart';
 import 'package:mobile/src/services/socketservices/socket.dart';
 import 'package:mobile/src/views/ui/wallet/category/category_dashboard.dart';
 import 'package:mobile/src/views/ui/wallet/event/event_dashboard.dart';
-import 'package:mobile/src/views/ui/wallet/notification/notification_view.dart';
 import 'package:mobile/src/views/ui/wallet/private_wallet/add_transaction.dart';
 import 'package:mobile/src/views/ui/wallet/private_wallet/delete_transaction.dart';
 import 'package:mobile/src/views/ui/wallet/private_wallet/edit_transaction.dart';
@@ -38,6 +35,7 @@ class _IndividualWalletState extends State<IndividualWallet> {
   FilterType _selectedFilterType = FilterType.all;
   bool _isLoading = true;
   String walletID = "";
+
   void _initPage() async {
     _searchController.addListener(_onHandleChangeSearchBar);
 
@@ -130,7 +128,7 @@ class _IndividualWalletState extends State<IndividualWallet> {
                               children: [
                                 Container(
                                   padding: EdgeInsets.all(20),
-                                  margin: EdgeInsets.only(bottom: 20, left: 5, right: 5, top: 20),
+                                  margin: EdgeInsets.only(bottom: 20, left: 7, right: 7, top: 20),
                                   width: MediaQuery.of(context).size.width,
                                   decoration: BoxDecoration(
                                       gradient: LinearGradient(begin: Alignment.bottomLeft, end: Alignment.topRight, colors: [primary, Colors.lightGreenAccent]),
@@ -306,13 +304,21 @@ class _IndividualWalletState extends State<IndividualWallet> {
     }
   }
 
+  String _tappedTx = "";
+
   _createCompactTxn(Transactions tx) {
     IconCustom selectedIcon = _iconList.firstWhere((element) => element.id == tx.iconID, orElse: () => new IconCustom(id: '', name: '', color: '', backgroundColor: ''));
     return Card(
+      color: _tappedTx == tx.id ? Colors.grey[300] : Colors.white,
       child: GestureDetector(
         onTap: () {
           Provider.of<WalletsProvider>(context, listen: false).changeSelected(tx);
           Navigator.push(context, MaterialPageRoute(builder: (context) => ViewTransaction(txId: tx.id)));
+        },
+        onPanDown: (DragDownDetails details) {
+          setState(() {
+            _tappedTx = tx.id;
+          });
         },
         child: Slidable(
           actionPane: SlidableDrawerActionPane(),

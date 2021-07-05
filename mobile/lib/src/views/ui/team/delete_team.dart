@@ -75,7 +75,7 @@ class _DeleteTeamDialogState extends State<DeleteTeamDialog> {
                         },
                         child: Text(
                           'Hủy',
-                          style: TextStyle(fontSize: 16, color: Colors.red),
+                          style: TextStyle(fontSize: 16, color: Colors.black54),
                         )),
                     TextButton(
                         onPressed: () {

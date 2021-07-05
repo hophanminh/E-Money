@@ -25,7 +25,7 @@ module.exports = function (io) {
     require('./transactionSocket')(socket, io, decoded_userID);
     require('./categorySocket')(socket, io, decoded_userID);
     require('./eventSocket')(socket, io, decoded_userID);
-    require('./transactionImagesSocket')(socket, decoded_userID);
+    require('./transactionImagesSocket')(socket, io, decoded_userID);
     require('./teamSocket')(socket, io, decoded_userID);
     require('./notificationSocket')(socket, io, decoded_userID);
     require('./iconSocket')(socket, io, decoded_userID);

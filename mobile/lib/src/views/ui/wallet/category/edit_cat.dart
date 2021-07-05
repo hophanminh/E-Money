@@ -118,7 +118,7 @@ class _EditCatDialogState extends State<EditCatDialog> {
                           },
                           child: Text(
                             'Hủy',
-                            style: TextStyle(fontSize: 16, color: Colors.green),
+                            style: TextStyle(fontSize: 16, color: Colors.red),
                           )),
                       TextButton(
                           onPressed: () {

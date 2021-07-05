@@ -115,7 +115,7 @@ class _AddCatDialogState extends State<AddCatDialog> {
                           },
                           child: Text(
                             'Hủy',
-                            style: TextStyle(fontSize: 16, color: Colors.green),
+                            style: TextStyle(fontSize: 16, color: Colors.red),
                           )),
                       TextButton(
                           onPressed: () {

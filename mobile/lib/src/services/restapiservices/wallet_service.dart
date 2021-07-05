@@ -23,14 +23,17 @@ class WalletService {
     return res.body;
   }
 
-  Future<http.StreamedResponse> addTxImage(String txID, File image) async {
+  Future<http.StreamedResponse> addTxImage(String txID, List<File> images) async {
     String token = await SecureStorage.readSecureData('jwtToken');
-
-    var stream = image.readAsBytesSync();
     var req = new http.MultipartRequest("POST", Uri.http(_baseURL, 'transaction-images', {'transactionID': txID}));
-    var multipartFile = http.MultipartFile.fromBytes('images', stream, filename: image.path.split("/").last);
     req.headers.addAll({HttpHeaders.authorizationHeader: 'Bearer $token'});
-    req.files.add(multipartFile);
+
+    images.forEach((image) {
+      var stream = image.readAsBytesSync();
+      var multipartFile = http.MultipartFile.fromBytes('images', stream, filename: image.path.split("/").last);
+      req.files.add(multipartFile);
+    });
+
     return await req.send();
   }
 
