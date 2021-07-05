@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useLocation, useHistory } from "react-router-dom";
 import {
   Container,
   Breadcrumbs,
@@ -42,9 +42,11 @@ import EventAccordion from './Accordion/EventAccordion';
 
 export default function Dashboard() {
   const classes = useStyles();
+  const history = useHistory();
+  const location = useLocation();
   const socket = getSocket();
   const { info } = useContext(MyContext);
-  const { setWalletID, selected, setSelected, list, setList, filterList, updateTxCategory } = useContext(WalletContext);
+  const { setWalletID, selected, setSelected, list, setList, filterList, updateTxCategory, setSelectedByID } = useContext(WalletContext);
   const { setOpen } = useContext(PopupContext);
   const { setAllList } = useContext(CategoryContext);
   const { setEventList } = useContext(EventContext);
@@ -55,7 +57,21 @@ export default function Dashboard() {
     total: 0
   })
 
+  const [initialSelect, setInitialSelect] = useState(null);
   // get initial data
+  useEffect(() => {
+    if (location?.state?.selected) {
+      setInitialSelect(location?.state?.selected)
+      history.replace()
+    }
+  }, [location?.state?.selected])
+
+  useEffect(() => {
+    if (list && initialSelect) {
+      setSelectedByID(initialSelect)
+    }
+  }, [initialSelect, list])
+
   useEffect(() => {
     setWalletID(info?.WalletID);
 

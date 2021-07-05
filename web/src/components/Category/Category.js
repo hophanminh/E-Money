@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useHistory } from "react-router-dom";
 import {
   Container,
   Breadcrumbs,
@@ -35,6 +35,7 @@ import DeleteCategory from './CRUDCategory/DeleteCategory';
 
 export default function Category(props) {
   const classes = useStyles();
+  const history = useHistory();
   const { id } = useParams();
   const socket = getSocket();
   const { setOpen } = useContext(PopupContext);
@@ -43,36 +44,50 @@ export default function Category(props) {
 
   const [countList, setCountList] = useState();
   const [team, setTeam] = useState();
+  const [wallet, setWallet] = useState(null);
   // get initial data
   useEffect(() => {
-    socket.emit("get_team", { walletID: id }, ({ team }) => {
-      setTeam(team);
+    socket.emit("get_wallet", { ID: id }, (wallet) => {
+      const hasWallet = wallet ? true : false
+      setWallet(hasWallet)
     });
+  }, [id])
 
-    if (list?.length === 0) {
-      socket.emit("get_transaction", { walletID: id }, ({ transactionList }) => {
+  useEffect(() => {
+    if (wallet === false) {
+      history.push("/");
+    }
+    else if (wallet === true) {
+      socket.emit("get_team", { walletID: id }, ({ team }) => {
+        setTeam(team);
+      });
+
+      if (list?.length === 0) {
+        socket.emit("get_transaction", { walletID: id }, ({ transactionList }) => {
+          setList(transactionList);
+        });
+      }
+
+      socket.on(`wait_for_update_transaction_${id}`, ({ transactionList }) => {
         setList(transactionList);
       });
+
+      socket.emit("get_category", { walletID: id }, ({ defaultList, customList, fullList }) => {
+        setAllList(defaultList, customList, fullList)
+      });
+
+      socket.on(`wait_for_update_category_${id}`, ({ defaultList, customList, fullList }) => {
+        setAllList(defaultList, customList, fullList)
+      });
+
+      return () => {
+        socket.off(`wait_for_update_transaction_${id}`);
+        socket.off(`wait_for_update_category_${id}`);
+        setOpen(null);
+      }
+
     }
-
-    socket.on(`wait_for_update_transaction_${id}`, ({ transactionList }) => {
-      setList(transactionList);
-    });
-
-    socket.emit("get_category", { walletID: id }, ({ defaultList, customList, fullList }) => {
-      setAllList(defaultList, customList, fullList)
-    });
-
-    socket.on(`wait_for_update_category_${id}`, ({ defaultList, customList, fullList }) => {
-      setAllList(defaultList, customList, fullList)
-    });
-
-    return () => {
-      socket.off(`wait_for_update_transaction_${id}`);
-      socket.off(`wait_for_update_category_${id}`);
-      setOpen(null);
-    }
-  }, []);
+  }, [wallet]);
 
   useEffect(() => {
     if (list) {
@@ -157,158 +172,163 @@ export default function Category(props) {
 
   return (
     <React.Fragment>
-      <Popover
-        elevation={0}
-        className={classes.popover}
-        classes={{
-          paper: classes.popoverContent,
-        }}
-        open={openedPopover}
-        anchorEl={anchorEl}
-        anchorOrigin={{
-          vertical: 'top',
-          horizontal: 'right',
-        }}
-        transformOrigin={{
-          vertical: 'bottom',
-          horizontal: 'right',
-        }}
-        PaperProps={{ onMouseEnter: handlePopoverOpenChild, onMouseLeave: handlePopoverClose }}
-      >
-        <div>
-          <IconButton size="small" className={classes.green} aria-label="edit" onClick={handleOpenEditDialog}>
-            <EditIcon />
-          </IconButton>
-          <IconButton size="small" className={classes.red} aria-label="delete" onClick={handleOpenDeleteDialog}>
-            <DeleteIcon />
-          </IconButton>
-        </div>
-      </Popover>
-      <AddCategory />
-      <EditCategory />
-      <DeleteCategory />
-      <Container className={classes.root} maxWidth={null}>
-        <div className={classes.title}>
-          <Breadcrumbs className={classes.breadcrumb} separator={<NavigateNextIcon fontSize="large" />} aria-label="breadcrumb">
-            {team ?
-              <Link to={`/Wallet/${id}`} style={{ textDecoration: 'none' }}>
-                <Typography className={classes.LinkFont}>
-                  {"Ví " + team?.Name}
+      {wallet === true &&
+        <>
+          <Popover
+            elevation={0}
+            className={classes.popover}
+            classes={{
+              paper: classes.popoverContent,
+            }}
+            open={openedPopover}
+            anchorEl={anchorEl}
+            anchorOrigin={{
+              vertical: 'top',
+              horizontal: 'right',
+            }}
+            transformOrigin={{
+              vertical: 'bottom',
+              horizontal: 'right',
+            }}
+            PaperProps={{ onMouseEnter: handlePopoverOpenChild, onMouseLeave: handlePopoverClose }}
+          >
+            <div>
+              <IconButton size="small" className={classes.green} aria-label="edit" onClick={handleOpenEditDialog}>
+                <EditIcon />
+              </IconButton>
+              <IconButton size="small" className={classes.red} aria-label="delete" onClick={handleOpenDeleteDialog}>
+                <DeleteIcon />
+              </IconButton>
+            </div>
+          </Popover>
+          <AddCategory />
+          <EditCategory />
+          <DeleteCategory />
+          <Container className={classes.root} maxWidth={null}>
+            <div className={classes.title}>
+              <Breadcrumbs className={classes.breadcrumb} separator={<NavigateNextIcon fontSize="large" />} aria-label="breadcrumb">
+                {team ?
+                  <Link to={`/Wallet/${id}`} style={{ textDecoration: 'none' }}>
+                    <Typography className={classes.LinkFont}>
+                      {"Ví " + team?.Name}
+                    </Typography>
+                  </Link>
+                  :
+                  <Link to="/Wallet" style={{ textDecoration: 'none' }}>
+                    <Typography className={classes.LinkFont}>
+                      Ví cá nhân
                 </Typography>
-              </Link>
-              :
-              <Link to="/Wallet" style={{ textDecoration: 'none' }}>
-                <Typography className={classes.LinkFont}>
-                  Ví cá nhân
-                </Typography>
-              </Link>
-            }
-            <Typography className={classes.titleFont} color="textPrimary">
-              Quản lý phân loại giao dịch
+                  </Link>
+                }
+                <Typography className={classes.titleFont} color="textPrimary">
+                  Quản lý phân loại giao dịch
             </Typography>
-          </Breadcrumbs>
-          <Typography className={classes.subTitleFont} color="textSecondary">Quản lý các khoản giao dịch tiền tệ cá nhân </Typography>
-        </div>
-        <div className={classes.body}>
-          <Box className={classes.subHeader}>
-            <Typography className={classes.subHeaderFont} color="textPrimary">
-              Loại mặc định
+              </Breadcrumbs>
+              <Typography className={classes.subTitleFont} color="textSecondary">Quản lý các khoản giao dịch tiền tệ cá nhân </Typography>
+            </div>
+            <div className={classes.body}>
+              <Box className={classes.subHeader}>
+                <Typography className={classes.subHeaderFont} color="textPrimary">
+                  Loại mặc định
               </Typography>
-          </Box>
-          <Box className={classes.categoryBox}>
-            {defaultList && defaultList.map((i, n) => {
-              return (
-                <Card key={i.ID} className={classes.categoryCard}>
-                  <Box className={classes.categoryInfo}>
-                    <DefaultIcon
-                      IconID={i.IconID}
-                      backgroundSize={40}
-                      iconSize={20} />
-                    <Typography
-                      noWrap={true}
-                      className={classes.categoryText}>
-                      {i.Name}
+              </Box>
+              <Box className={classes.categoryBox}>
+                {defaultList && defaultList.map((i, n) => {
+                  return (
+                    <Card key={i.ID} className={classes.categoryCard}>
+                      <Box className={classes.categoryInfo}>
+                        <DefaultIcon
+                          IconID={i.IconID}
+                          backgroundSize={40}
+                          iconSize={20} />
+                        <Typography
+                          noWrap={true}
+                          className={classes.categoryText}>
+                          {i.Name}
+                        </Typography>
+                      </Box>
+                      <Box>
+                        <Typography
+                          noWrap={true}
+                          className={classes.categoryNumber}>
+                          ({countList ? countList[i?.ID]?.count : 0})
                     </Typography>
-                  </Box>
-                  <Box>
-                    <Typography
-                      noWrap={true}
-                      className={classes.categoryNumber}>
-                      ({countList ? countList[i?.ID]?.count : 0})
-                    </Typography>
-                  </Box>
-                </Card>
-              )
-            })}
+                      </Box>
+                    </Card>
+                  )
+                })}
 
-          </Box>
-          <Box className={classes.subHeader}>
-            <Typography className={classes.subHeaderFont} color="textPrimary">
-              Loại tự chọn
+              </Box>
+              <Box className={classes.subHeader}>
+                <Typography className={classes.subHeaderFont} color="textPrimary">
+                  Loại tự chọn
               </Typography>
-            <Box className={classes.actionBox}>
-              <Button className={classes.addButton} variant="outlined" onClick={handleOpenAddDialog}>
-                <AddIcon className={classes.green} />
+                <Box className={classes.actionBox}>
+                  <Button className={classes.addButton} variant="outlined" onClick={handleOpenAddDialog}>
+                    <AddIcon className={classes.green} />
                 Thêm loại
               </Button>
-              <TextField
-                className={classes.searchField}
-                value=''
-                size="small"
-                variant="outlined"
-                placeholder="Tìm kiếm"
-                value={searchInput}
-                onChange={changeSearchInput}
-                InputProps={{
-                  startAdornment:
-                    <InputAdornment position="start" >
-                      <SearchIcon />
-                    </InputAdornment>,
-                  endAdornment:
-                    <InputAdornment position="end">
-                      <IconButton size='small' aria-label="clear" onClick={clearSearchInput}>
-                        <ClearIcon />
-                      </IconButton>
-                    </InputAdornment>
-                }}
-              />
-            </Box>
-          </Box>
-          <Box className={classes.categoryBox}>
-            {filterList && filterList.map((i, n) => {
-              return (
-                <Card
-                  id={i.ID}
-                  key={i.ID}
-                  className={classes.categoryCard}
-                  aria-owns="mouse-over-popover"
-                  aria-haspopup="true"
-                  onMouseEnter={handlePopoverOpenParent}
-                  onMouseLeave={handlePopoverClose}>
-                  <Box className={classes.categoryInfo}>
-                    <DefaultIcon
-                      IconID={i.IconID}
-                      backgroundSize={40}
-                      iconSize={20} />
-                    <Typography
-                      noWrap={true}
-                      className={classes.categoryText}>
-                      {i.Name}
+                  <TextField
+                    className={classes.searchField}
+                    value=''
+                    size="small"
+                    variant="outlined"
+                    placeholder="Tìm kiếm"
+                    value={searchInput}
+                    onChange={changeSearchInput}
+                    InputProps={{
+                      startAdornment:
+                        <InputAdornment position="start" >
+                          <SearchIcon />
+                        </InputAdornment>,
+                      endAdornment:
+                        <InputAdornment position="end">
+                          <IconButton size='small' aria-label="clear" onClick={clearSearchInput}>
+                            <ClearIcon />
+                          </IconButton>
+                        </InputAdornment>
+                    }}
+                  />
+                </Box>
+              </Box>
+              <Box className={classes.categoryBox}>
+                {filterList && filterList.map((i, n) => {
+                  return (
+                    <Card
+                      id={i.ID}
+                      key={i.ID}
+                      className={classes.categoryCard}
+                      aria-owns="mouse-over-popover"
+                      aria-haspopup="true"
+                      onMouseEnter={handlePopoverOpenParent}
+                      onMouseLeave={handlePopoverClose}>
+                      <Box className={classes.categoryInfo}>
+                        <DefaultIcon
+                          IconID={i.IconID}
+                          backgroundSize={40}
+                          iconSize={20} />
+                        <Typography
+                          noWrap={true}
+                          className={classes.categoryText}>
+                          {i.Name}
+                        </Typography>
+                      </Box>
+                      <Box>
+                        <Typography
+                          noWrap={true}
+                          className={classes.categoryNumber}>
+                          ({countList ? countList[i?.ID]?.count : 0})
                     </Typography>
-                  </Box>
-                  <Box>
-                    <Typography
-                      noWrap={true}
-                      className={classes.categoryNumber}>
-                      ({countList ? countList[i?.ID]?.count : 0})
-                    </Typography>
-                  </Box>
-                </Card>
-              )
-            })}
-          </Box>
-        </div>
-      </Container>
+                      </Box>
+                    </Card>
+                  )
+                })}
+              </Box>
+            </div>
+          </Container>
+
+        </>
+      }
     </React.Fragment>
   );
 }

@@ -67,6 +67,15 @@ export const WalletProvider = (props) => {
     setIsSimple(status)
   }
 
+  const setSelectedByID = (ID) => {
+    if (list) {
+      const temp = list.find(i => i?.id === ID)
+      if (temp) {
+        setSelected(temp);
+      }
+    }
+  }
+
   return (
     <WalletContext.Provider
       value={{
@@ -84,6 +93,7 @@ export const WalletProvider = (props) => {
         setFilterList,
         setSimpleOption,
         updateTxCategory,
+        setSelectedByID,
       }}>
       {props.children}
     </WalletContext.Provider>
