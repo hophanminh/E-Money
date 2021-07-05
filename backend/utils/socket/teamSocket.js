@@ -42,10 +42,9 @@ module.exports = function (socket, io, decoded_userID) {
       if (team.length > 0) {
         const info = await team_has_model.getTHUByUserIdAndTeamID(decoded_userID, team[0].ID);
         if (info.length > 0) {
-          callback(selected);
+          return callback(selected);
         }
       }
-
       callback(null);
     } catch (error) {
       console.log(error);

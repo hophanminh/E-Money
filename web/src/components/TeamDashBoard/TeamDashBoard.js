@@ -84,13 +84,15 @@ const TeamDashBoard = () => {
         history.push("/teams");
       }
       else {
-        setTeam(team);
-        setTHU(thu.filter(i => i.Role === 1));;
         var member = thu.filter(function (member) {
           return member.UserID === userID;
         });
+        if (member?.length === 0) {
+          history.push("/teams");
+        }
+        setTeam(team);
+        setTHU(thu.filter(i => i.Role === 1));;
         setPerson(member[0]);
-
       }
     });
   }, [id])
