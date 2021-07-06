@@ -5,6 +5,7 @@ import 'package:mobile/src/views/ui/team/add_team.dart';
 import 'package:mobile/src/views/ui/team/join_team.dart';
 import 'package:mobile/src/views/ui/wallet/team_wallet/team_wallet.dart';
 import 'package:mobile/src/views/utils/helpers/helper.dart';
+import 'package:mobile/src/views/utils/widgets/widget.dart';
 import 'package:provider/provider.dart';
 
 class TeamList extends StatefulWidget {
@@ -18,6 +19,7 @@ class TeamList extends StatefulWidget {
 
 class _TeamListState extends State<TeamList> {
   var _scaffoldKey = GlobalKey<ScaffoldMessengerState>();
+  var _scaffoldKey2 = GlobalKey<ScaffoldState>();
   bool _isLoading = true;
   final _searchController = TextEditingController(text: "");
 
@@ -73,6 +75,7 @@ class _TeamListState extends State<TeamList> {
         child: ScaffoldMessenger(
             key: _scaffoldKey,
             child: Scaffold(
+                key: _scaffoldKey2,
                 appBar: _privateWalletAppBar(),
                 drawer: widget.sidebar,
                 floatingActionButton: _privateWalletActionButton(),
@@ -201,6 +204,7 @@ class _TeamListState extends State<TeamList> {
 
   AppBar _privateWalletAppBar() => AppBar(
       iconTheme: IconThemeData(color: Colors.white),
+      leading: myAppBarIcon(_scaffoldKey2),
       title: Text('Danh sách nhóm', style: TextStyle(color: Colors.white)),
       actions: [
         IconButton(

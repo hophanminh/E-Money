@@ -31,6 +31,7 @@ class IndividualWallet extends StatefulWidget {
 
 class _IndividualWalletState extends State<IndividualWallet> {
   var _scaffoldKey = GlobalKey<ScaffoldMessengerState>();
+  var _scaffoldKey2 = GlobalKey<ScaffoldState>();
   IO.Socket _socket;
   List<IconCustom> _iconList = [];
   FilterType _selectedFilterType = FilterType.all;
@@ -126,6 +127,7 @@ class _IndividualWalletState extends State<IndividualWallet> {
         child: ScaffoldMessenger(
           key: _scaffoldKey,
           child: Scaffold(
+            key: _scaffoldKey2,
             appBar: _privateWalletAppBar(),
             drawer: widget.sidebar,
             floatingActionButton: _privateWalletActionButton(),
@@ -448,6 +450,7 @@ class _IndividualWalletState extends State<IndividualWallet> {
 
   AppBar _privateWalletAppBar() => AppBar(
       iconTheme: IconThemeData(color: Colors.white),
+      leading: myAppBarIcon(_scaffoldKey2),
       title: Text('Ví cá nhân', style: TextStyle(color: Colors.white)),
       actions: [
         // IconButton(

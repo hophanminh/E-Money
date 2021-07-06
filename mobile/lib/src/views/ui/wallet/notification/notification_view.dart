@@ -23,6 +23,7 @@ class NotificationsPage extends StatefulWidget {
 
 class _NotificationsPageState extends State<NotificationsPage> {
   bool _isLoading = false;
+  var _scaffoldKey2 = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -104,7 +105,8 @@ class _NotificationsPageState extends State<NotificationsPage> {
   Widget build(BuildContext context) {
     return ScaffoldMessenger(
       child: Scaffold(
-          appBar: mySimpleAppBar('Thông báo'),
+          key: _scaffoldKey2,
+          appBar: _privateWalletAppBar(),
           drawer: widget.sidebar,
           body: Consumer<NotificationProvider>(
             builder: (context, notificationProvider, child) {
@@ -223,4 +225,11 @@ class _NotificationsPageState extends State<NotificationsPage> {
           ),
     );
   }
+
+  AppBar _privateWalletAppBar() => AppBar(
+      iconTheme: IconThemeData(color: Colors.white),
+      leading: myAppBarIcon(_scaffoldKey2),
+      title: Text('Thông báo', style: TextStyle(color: Colors.white)),
+      backgroundColor: primary,
+      centerTitle: true);
 }

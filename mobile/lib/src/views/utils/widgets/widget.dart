@@ -301,3 +301,47 @@ Widget mySearchBar(BuildContext context, TextEditingController controller, Strin
         ),
       ),
     );
+
+Widget myAppBarIcon(_scaffoldKey){
+  return Padding(
+      padding: EdgeInsets.only(top: 5),
+      child: Stack(
+        children: <Widget>[
+          new IconButton(
+              icon: Icon(Icons.menu),
+              onPressed: () {
+                _scaffoldKey.currentState.openDrawer();
+              }),
+          Consumer<NotificationProvider>(
+              builder: (context, notificationProvider, child) {
+                if (notificationProvider.count != 0) {
+                  return Positioned(
+                    right: 11,
+                    top: 11,
+                    child: new Container(
+                      padding: EdgeInsets.all(2),
+                      decoration: new BoxDecoration(
+                        color: Colors.red,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      constraints: BoxConstraints(
+                        minWidth: 14,
+                        minHeight: 14,
+                      ),
+                      child: Text(
+                        notificationProvider.count.toString(),
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 8,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  );
+                } else {
+                  return Container();
+                }
+              })
+        ],
+      ));
+}
