@@ -63,6 +63,10 @@ class TeamsProvider extends ChangeNotifier {
     }
   }
 
+  Teams findTeams(String id) {
+    return this._teamList.firstWhere((i) => i.walletID == id, orElse: () => null);
+  }
+
   Teams get selected => _selected;
 
   List<Teams> get teamList => _teamList;

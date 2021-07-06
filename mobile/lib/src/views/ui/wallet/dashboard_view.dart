@@ -98,7 +98,7 @@ class _DashboardState extends State<Dashboard> {
     } else if (mainRouteName == 'teamList') {
       return TeamList(sidebar: sidebar);
     } else if (mainRouteName == 'notifications') {
-      return NotificationsPage(sidebar: sidebar);
+      return NotificationsPage(sidebar: sidebar, setMainRoute: setMainRoute);
     } else if (mainRouteName == 'profile') {
       return ProfilePage(sidebar: sidebar);
     } else if (mainRouteName == 'changepassword') {

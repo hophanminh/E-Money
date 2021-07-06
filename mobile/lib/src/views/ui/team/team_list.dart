@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/src/models/TeamsProvider.dart';
+import 'package:mobile/src/models/NotificationProvider.dart';
 import 'package:mobile/src/views/ui/team/add_team.dart';
 import 'package:mobile/src/views/ui/team/join_team.dart';
 import 'package:mobile/src/views/ui/wallet/team_wallet/team_wallet.dart';
@@ -25,7 +26,24 @@ class _TeamListState extends State<TeamList> {
   }
 
   void _fetchData() async {
-    await Provider.of<TeamsProvider>(context, listen: false).fetchData();
+    NotificationProvider notificationProvider = Provider.of<NotificationProvider>(context, listen: false);
+    TeamsProvider teamsProvider = Provider.of<TeamsProvider>(context, listen: false);
+
+    bool res = await teamsProvider.fetchData();
+    Map<String, dynamic> selected = notificationProvider.selected;
+    print(res);
+    if (res && selected != null) {
+      Teams temp = teamsProvider.findTeams(selected['walletID']);
+      if (temp != null) {
+        teamsProvider.changeSelected(temp);
+        Navigator.push(context, MaterialPageRoute(builder: (context) => TeamWallet(wrappingScaffoldKey: _scaffoldKey, walletId: temp.walletID)));
+        await Future.delayed(const Duration(seconds: 1), () {});
+      }
+      else {
+        notificationProvider.setSelected(null);
+        showSnack(_scaffoldKey, "Không tìm thấy nhóm của giao dịch.");
+      }
+    }
     if (mounted) {
       setState(() {
         _isLoading = false;
