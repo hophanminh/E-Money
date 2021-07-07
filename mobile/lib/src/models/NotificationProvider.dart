@@ -6,6 +6,7 @@ class NotificationProvider extends ChangeNotifier {
   // List<Notifications> _readNotifications = [];
   int _unreadCount = 0;
   int currentLoad = Properties.AMOUNT_TO_LOAD_PER_TIME;
+  Map<String, dynamic> _selected = null;
 
   setList(List<Notifications> notifications) {
     this._notifications = notifications;//.where((element) => element.isRead == 0).toList();
@@ -21,6 +22,11 @@ class NotificationProvider extends ChangeNotifier {
 
   setCurrentLoad(int current) {
     this.currentLoad = current;
+    notifyListeners();
+  }
+
+  setSelected(Map<String, dynamic> _selected) {
+    this._selected = _selected;
     notifyListeners();
   }
 
@@ -56,7 +62,10 @@ class NotificationProvider extends ChangeNotifier {
     }
   }
 
+
   int get count => this._unreadCount;
+
+  Map<String, dynamic> get selected => this._selected;
 
   List<Notifications> get unreadNotifications => this._notifications;
 

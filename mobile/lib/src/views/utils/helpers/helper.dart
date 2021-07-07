@@ -230,3 +230,18 @@ int daysInMonth(m) { // m is 0 indexed: 0-11
 bool isValidMonthDay(int d, int m) {
   return m >= 0 && m < 12 && d >= 0 && d < daysInMonth(m);
 }
+
+Map<String, dynamic> splitNotificationID(String id) {
+  List<String> split = id.split(":");
+  if (split.length != 4) {
+    return null;
+  }
+  bool isPrivate = split[0] == '0' ? true : false;
+  final Map<String, dynamic> result = {
+    "isPrivate": isPrivate,
+    'txID': split[1],
+    'walletID': split[2],
+    'notiID': split[3],
+  };
+  return result;
+}

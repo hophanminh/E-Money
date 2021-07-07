@@ -124,6 +124,10 @@ class WalletsProvider extends ChangeNotifier {
     }
   }
 
+  Transactions findTransaction(String id) {
+    return this._txList.firstWhere((i) => i.id == id, orElse: () => null);
+  }
+
   Transactions get selected => _selected;
 
   List<Transactions> get txList => _txList;

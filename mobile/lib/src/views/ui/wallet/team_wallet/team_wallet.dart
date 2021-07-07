@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -6,6 +7,7 @@ import 'package:http/http.dart';
 import 'package:mobile/src/config/config.dart';
 import 'package:mobile/src/models/CatsProvider.dart';
 import 'package:mobile/src/models/EventsProvider.dart';
+import 'package:mobile/src/models/NotificationProvider.dart';
 import 'package:mobile/src/models/TeamsProvider.dart';
 import 'package:mobile/src/models/UsersProvider.dart';
 import 'package:mobile/src/models/WalletsProvider.dart';
@@ -43,10 +45,11 @@ class _TeamWalletState extends State<TeamWallet> {
   FilterType _selectedFilterType = FilterType.all;
   String _userID = '';
   bool _isLoading = true;
-  bool _roles = false;
+  bool _roles = true;
   String walletID = "";
 
   void _initPage() async {
+    await _checkIsAdmin();
     _userID = await SecureStorage.readSecureData('userID');
     _searchController.addListener(_onHandleChangeSearchBar);
     UsersProvider usersProvider = Provider.of<UsersProvider>(context, listen: false);
@@ -54,47 +57,68 @@ class _TeamWalletState extends State<TeamWallet> {
     CatsProvider catsProvider = Provider.of<CatsProvider>(context, listen: false);
     EventsProvider eventsProvider = Provider.of<EventsProvider>(context, listen: false);
     TeamsProvider teamsProvider = Provider.of<TeamsProvider>(context, listen: false);
+    NotificationProvider notificationProvider = Provider.of<NotificationProvider>(context, listen: false);
 
     walletID = teamsProvider.selected.walletID;
     _iconList = await IconService.instance.iconList;
 
     _socket = await getSocket();
+    bool res = await _checkWallet();
+    if (res != null && res) {
+      _socket.emitWithAck(
+          'get_transaction', {'walletID': walletID}, ack: (data) async {
+        walletsProvider.fetchData(data);
 
-    _socket.emitWithAck('get_transaction', {'walletID': walletID}, ack: (data) {
-      walletsProvider.fetchData(data);
-      setState(() {
-        _isLoading = false;
+        Map<String, dynamic> selected = notificationProvider.selected;
+        if (selected != null) {
+          Transactions temp = walletsProvider.findTransaction(selected['txID']);
+          if (temp != null) {
+            walletsProvider.changeSelected(temp);
+            Navigator.push(context, MaterialPageRoute(builder: (context) =>
+                ViewTransaction(txId: temp.id,
+                    isEditable: temp.userID == _userID || _roles)));
+            await Future.delayed(const Duration(seconds: 1), () {});
+          }
+          else {
+            showSnack(_scaffoldKey, "Không tìm thấy giao dịch.");
+          }
+          notificationProvider.setSelected(null);
+        }
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
       });
-    });
 
-    _socket.on('wait_for_update_transaction_$walletID', (data) {
-      print('on updating txs');
-      walletsProvider.fetchData(data);
-    });
+      _socket.on('wait_for_update_transaction_$walletID', (data) {
+        print('on updating txs');
+        walletsProvider.fetchData(data);
+      });
 
-    _socket.emitWithAck("get_category", {'walletID': walletID}, ack: (data) {
-      catsProvider.fetchData(data);
-    });
+      _socket.emitWithAck("get_category", {'walletID': walletID}, ack: (data) {
+        catsProvider.fetchData(data);
+      });
 
-    _socket.on('wait_for_update_category_$walletID', (data) {
-      print('on updating cate');
-      catsProvider.fetchData(data);
-      walletsProvider.updateTxCatAfterUpdateCat(data['fullList']);
-    });
+      _socket.on('wait_for_update_category_$walletID', (data) {
+        print('on updating cate');
+        catsProvider.fetchData(data);
+        walletsProvider.updateTxCatAfterUpdateCat(data['fullList']);
+      });
 
-    _socket.emitWithAck("get_event", {'walletID': walletID}, ack: (data) {
-      eventsProvider.fetchData(data);
-    });
+      _socket.emitWithAck("get_event", {'walletID': walletID}, ack: (data) {
+        eventsProvider.fetchData(data);
+      });
 
-    _socket.on('wait_for_update_event_$walletID', (data) {
-      print('update event');
-      eventsProvider.fetchData(data);
-    });
-
+      _socket.on('wait_for_update_event_$walletID', (data) {
+        print('update event');
+        eventsProvider.fetchData(data);
+      });
+    }
     setState(() {});
   }
 
-  void _checkIsAdmin() async {
+  Future<void> _checkIsAdmin() async {
     String id = Provider.of<TeamsProvider>(context, listen: false).selected.id;
     Response res = await TeamService.instance.getRoles(id);
     if (res == null || res.statusCode != 200) {
@@ -116,11 +140,34 @@ class _TeamWalletState extends State<TeamWallet> {
     }
   }
 
+  Future<bool> _checkWallet() async {
+    var completer = Completer<bool>();
+
+    _socket.emitWithAck("get_team", {'walletID': walletID}, ack: (data) {
+      if (data['team'] == null) {
+        Navigator.pop(context);
+        showSnack(widget.wrappingScaffoldKey, "Không tìm thấy ví nhóm.");
+        completer.complete(false);
+      }
+      else {
+        var member = data['thu'].toList().firstWhere((member) => member['UserID'] == _userID, orElse: () => null);
+        if (member == null) {
+          Navigator.pop(context);
+          showSnack(widget.wrappingScaffoldKey, "Bạn không là thành viên nhóm.");
+          completer.complete(false);
+        }
+        else {
+          completer.complete(true);
+        }
+      }
+    });
+    return completer.future;
+  }
+
   @override
   void initState() {
     super.initState();
     _initPage();
-    _checkIsAdmin();
     setState(() {});
   }
 
