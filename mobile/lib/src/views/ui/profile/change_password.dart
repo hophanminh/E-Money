@@ -21,6 +21,7 @@ class ChangePasswordPage extends StatefulWidget {
 class _ChangePasswordPageState extends State<ChangePasswordPage> {
   var _formKey = GlobalKey<FormState>();
   var _scaffoldKey = GlobalKey<ScaffoldMessengerState>();
+  var _scaffoldKey2 = GlobalKey<ScaffoldState>();
   var _currentPassController = TextEditingController();
   var _newPassController = TextEditingController();
   var _repeatPassController = TextEditingController();
@@ -65,9 +66,10 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
         child: ScaffoldMessenger(
       key: _scaffoldKey,
       child: Scaffold(
+        key: _scaffoldKey2,
         drawer: widget.sidebar,
         backgroundColor: Colors.white,
-        appBar: mySimpleAppBar('Đổi mật khẩu'),
+        appBar: _privateWalletAppBar(),
         body: SingleChildScrollView(
           // physics: NeverScrollableScrollPhysics(),
           child: Column(
@@ -216,4 +218,12 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
       ),
     ));
   }
+
+  AppBar _privateWalletAppBar() => AppBar(
+      iconTheme: IconThemeData(color: Colors.white),
+      leading: myAppBarIcon(_scaffoldKey2),
+      title: Text('Đổi mật khẩu', style: TextStyle(color: Colors.white)),
+      backgroundColor: primary,
+      centerTitle: true);
+
 }

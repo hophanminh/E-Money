@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/src/models/TeamsProvider.dart';
+import 'package:mobile/src/models/NotificationProvider.dart';
 import 'package:mobile/src/views/ui/team/add_team.dart';
 import 'package:mobile/src/views/ui/team/join_team.dart';
 import 'package:mobile/src/views/ui/wallet/team_wallet/team_wallet.dart';
 import 'package:mobile/src/views/utils/helpers/helper.dart';
+import 'package:mobile/src/views/utils/widgets/widget.dart';
 import 'package:provider/provider.dart';
 
 class TeamList extends StatefulWidget {
@@ -17,6 +19,7 @@ class TeamList extends StatefulWidget {
 
 class _TeamListState extends State<TeamList> {
   var _scaffoldKey = GlobalKey<ScaffoldMessengerState>();
+  var _scaffoldKey2 = GlobalKey<ScaffoldState>();
   bool _isLoading = true;
   final _searchController = TextEditingController(text: "");
 
@@ -25,7 +28,24 @@ class _TeamListState extends State<TeamList> {
   }
 
   void _fetchData() async {
-    await Provider.of<TeamsProvider>(context, listen: false).fetchData();
+    NotificationProvider notificationProvider = Provider.of<NotificationProvider>(context, listen: false);
+    TeamsProvider teamsProvider = Provider.of<TeamsProvider>(context, listen: false);
+
+    bool res = await teamsProvider.fetchData();
+    Map<String, dynamic> selected = notificationProvider.selected;
+    print(res);
+    if (res && selected != null) {
+      Teams temp = teamsProvider.findTeams(selected['walletID']);
+      if (temp != null) {
+        teamsProvider.changeSelected(temp);
+        Navigator.push(context, MaterialPageRoute(builder: (context) => TeamWallet(wrappingScaffoldKey: _scaffoldKey, walletId: temp.walletID)));
+        await Future.delayed(const Duration(seconds: 1), () {});
+      }
+      else {
+        notificationProvider.setSelected(null);
+        showSnack(_scaffoldKey, "Không tìm thấy nhóm của giao dịch.");
+      }
+    }
     if (mounted) {
       setState(() {
         _isLoading = false;
@@ -55,6 +75,7 @@ class _TeamListState extends State<TeamList> {
         child: ScaffoldMessenger(
             key: _scaffoldKey,
             child: Scaffold(
+                key: _scaffoldKey2,
                 appBar: _privateWalletAppBar(),
                 drawer: widget.sidebar,
                 floatingActionButton: _privateWalletActionButton(),
@@ -183,6 +204,7 @@ class _TeamListState extends State<TeamList> {
 
   AppBar _privateWalletAppBar() => AppBar(
       iconTheme: IconThemeData(color: Colors.white),
+      leading: myAppBarIcon(_scaffoldKey2),
       title: Text('Danh sách nhóm', style: TextStyle(color: Colors.white)),
       actions: [
         IconButton(

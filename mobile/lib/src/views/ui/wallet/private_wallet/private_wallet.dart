@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:mobile/src/models/CatsProvider.dart';
 import 'package:mobile/src/models/EventsProvider.dart';
+import 'package:mobile/src/models/NotificationProvider.dart';
 import 'package:mobile/src/models/UsersProvider.dart';
 import 'package:mobile/src/models/WalletsProvider.dart';
 import 'package:mobile/src/services/icon_service.dart';
@@ -30,6 +31,7 @@ class IndividualWallet extends StatefulWidget {
 
 class _IndividualWalletState extends State<IndividualWallet> {
   var _scaffoldKey = GlobalKey<ScaffoldMessengerState>();
+  var _scaffoldKey2 = GlobalKey<ScaffoldState>();
   IO.Socket _socket;
   List<IconCustom> _iconList = [];
   FilterType _selectedFilterType = FilterType.all;
@@ -43,13 +45,28 @@ class _IndividualWalletState extends State<IndividualWallet> {
     WalletsProvider walletsProvider = Provider.of<WalletsProvider>(context, listen: false);
     CatsProvider catsProvider = Provider.of<CatsProvider>(context, listen: false);
     EventsProvider eventsProvider = Provider.of<EventsProvider>(context, listen: false);
+    NotificationProvider notificationProvider = Provider.of<NotificationProvider>(context, listen: false);
     walletID = usersProvider.info.walletID;
 
     _iconList = await IconService.instance.iconList;
     _socket = await getSocket();
 
-    _socket.emitWithAck('get_transaction', {'walletID': walletID}, ack: (data) {
+    _socket.emitWithAck('get_transaction', {'walletID': walletID}, ack: (data) async {
       walletsProvider.fetchData(data);
+
+      Map<String, dynamic> selected = notificationProvider.selected;
+      if (selected != null) {
+         Transactions temp = walletsProvider.findTransaction(selected['txID']);
+         if (temp != null) {
+           walletsProvider.changeSelected(temp);
+           Navigator.push(context, MaterialPageRoute(builder: (context) => ViewTransaction(txId: temp.id)));
+           await Future.delayed(const Duration(seconds: 1), () {});
+         }
+         else {
+           showSnack(_scaffoldKey, "Không tìm thấy giao dịch.");
+         }
+         notificationProvider.setSelected(null);
+      }
       if (mounted) {
         setState(() {
           _isLoading = false;
@@ -110,6 +127,7 @@ class _IndividualWalletState extends State<IndividualWallet> {
         child: ScaffoldMessenger(
           key: _scaffoldKey,
           child: Scaffold(
+            key: _scaffoldKey2,
             appBar: _privateWalletAppBar(),
             drawer: widget.sidebar,
             floatingActionButton: _privateWalletActionButton(),
@@ -432,6 +450,7 @@ class _IndividualWalletState extends State<IndividualWallet> {
 
   AppBar _privateWalletAppBar() => AppBar(
       iconTheme: IconThemeData(color: Colors.white),
+      leading: myAppBarIcon(_scaffoldKey2),
       title: Text('Ví cá nhân', style: TextStyle(color: Colors.white)),
       actions: [
         // IconButton(

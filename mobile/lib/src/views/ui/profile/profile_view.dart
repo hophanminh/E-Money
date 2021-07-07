@@ -25,6 +25,7 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   var _formKey = GlobalKey<FormState>();
   var _scaffoldKey = GlobalKey<ScaffoldMessengerState>();
+  var _scaffoldKey2 = GlobalKey<ScaffoldState>();
   var _accountNameController = TextEditingController();
   var _nameController = TextEditingController();
   var _emailController = TextEditingController();
@@ -115,6 +116,7 @@ class _ProfilePageState extends State<ProfilePage> {
         child: ScaffoldMessenger(
           key: _scaffoldKey,
           child: Scaffold(
+            key: _scaffoldKey2,
             backgroundColor: Colors.white,
             appBar: _privateWalletAppBar(),
             drawer: widget.sidebar,
@@ -313,7 +315,11 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   AppBar _privateWalletAppBar() =>
-      AppBar(iconTheme: IconThemeData(color: Colors.white), title: Text('Thông tin cá nhân', style: TextStyle(color: Colors.white)), backgroundColor: primary, centerTitle: true);
+      AppBar(
+          leading: myAppBarIcon(_scaffoldKey2),
+          iconTheme: IconThemeData(color: Colors.white),
+          title: Text('Thông tin cá nhân', style: TextStyle(color: Colors.white)),
+          backgroundColor: primary, centerTitle: true);
 
   _selectDOB() async {
     final DateTime picked = await showDatePicker(
